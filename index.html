@@ -421,14 +421,16 @@ nav button.on .i{filter:none}
    Todo corre en el navegador: el token nunca sale de tu dispositivo.
 ===================================================================== */
 
-const GRAPH = "https://graph.facebook.com/v23.0";
-const LS = { token:"rp_token", igid:"rp_igid", user:"rp_user", chk:"rp_chk", mode:"rp_mode", cache:"rp_insCache", hist:"rp_history", aikey:"rp_aikey" };
+const GRAPH_FB = "https://graph.facebook.com/v23.0";
+const GRAPH_IG = "https://graph.instagram.com/v23.0";
+const LS = { token:"rp_token", igid:"rp_igid", user:"rp_user", chk:"rp_chk", mode:"rp_mode", cache:"rp_insCache", hist:"rp_history", aikey:"rp_aikey", base:"rp_base" };
 const CACHE_TTL = 12*3600e3; // 12 h: minimiza llamadas a la API de Meta
 let apiCalls = 0;
 
 const state = {
   mode: null,            // 'demo' | 'live'
   token: null, igid: null, username: null,
+  apiBase: GRAPH_IG,      // graph.instagram.com (Instagram Login) o graph.facebook.com (clásico, vía Página)
   reels: [],             // normalizados
   sort: "score_asc",
 };
@@ -623,9 +625,13 @@ function optimizeCaption(r){
   };
 }
 
-/* ---------------- API Instagram ---------------- */
-async function api(path, params={}){
-  const u = new URL(GRAPH + path);
+/* ---------------- API Instagram ----------------
+   Dos superficies posibles:
+   - graph.instagram.com  → token de "API de Instagram con inicio de sesión de Instagram" (recomendado por Meta, sin Página de Facebook)
+   - graph.facebook.com   → token clásico vía Página de Facebook vinculada
+*/
+async function api(path, params={}, base=null){
+  const u = new URL((base||state.apiBase) + path);
   for (const k in params) u.searchParams.set(k, params[k]);
   u.searchParams.set("access_token", state.token);
   apiCalls++;
@@ -658,11 +664,23 @@ async function connect(){
   const msg = $("connMsg"); msg.innerHTML = '<div class="spin"></div>';
   try{
     let igid = $("igidIn").value.trim();
+
+    // 1) Probar el flujo moderno: "API de Instagram con inicio de sesión de Instagram" (graph.instagram.com)
     if (!igid){
-      // detectar cuenta: páginas del usuario → instagram_business_account
+      try{
+        const me = await api("/me", {fields:"id,username,account_type"}, GRAPH_IG);
+        state.apiBase = GRAPH_IG;
+        igid = me.id;
+        state.username = me.username;
+      }catch(e){ /* no es ese tipo de token: probamos el flujo clásico */ }
+    }
+
+    // 2) Flujo clásico: token vía Página de Facebook vinculada
+    if (!igid){
+      state.apiBase = GRAPH_FB;
       const me = await api("/me/accounts", {fields:"name,instagram_business_account{id,username,profile_picture_url,followers_count}"});
       const accs = (me.data||[]).filter(p=>p.instagram_business_account);
-      if (!accs.length) throw new Error("No encontré ninguna cuenta de Instagram Business/Creator vinculada a tus páginas. Vincula tu IG a una página de Facebook y revisa los permisos del token (instagram_basic, instagram_manage_insights, pages_show_list).");
+      if (!accs.length) throw new Error("No encontré ninguna cuenta de Instagram vinculada. Si generaste el token con la API de Instagram (inicio de sesión de Instagram) revisa que incluya instagram_business_basic e instagram_business_manage_insights. Si usaste el flujo clásico, vincula tu IG a una página de Facebook y revisa los permisos (instagram_basic, instagram_manage_insights, pages_show_list).");
       if (accs.length>1){
         $("discCard").hidden = false;
         $("discList").innerHTML = accs.map(p=>`<div class="comp" style="margin-top:10px" onclick="pickAcc('${p.instagram_business_account.id}','${esc(p.instagram_business_account.username)}')"><div class="av">${esc((p.instagram_business_account.username||"?")[0].toUpperCase())}</div><div><div class="u">@${esc(p.instagram_business_account.username)}</div><div class="s">${fmt(p.instagram_business_account.followers_count)} seguidores</div></div></div>`).join("");
@@ -688,6 +706,7 @@ async function finishConnect(igid){
   localStorage.setItem(LS.igid, state.igid);
   localStorage.setItem(LS.user, state.username||"");
   localStorage.setItem(LS.mode, "live");
+  localStorage.setItem(LS.base, state.apiBase);
   msg.innerHTML = '<span class="pill ok">✅ Conectado como @'+esc(state.username||igid)+'</span>';
   $("discBtn").hidden = false;
   refreshAll();
@@ -1035,7 +1054,8 @@ async function analyzeComp(){
   try{
     let prof;
     if (state.mode==="live"){
-      const q = await api(`/${state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){like_count,comments_count,media_product_type,timestamp,caption}}`});
+      if (state.apiBase===GRAPH_IG) throw new Error("El análisis de competencia (business_discovery) solo está disponible con el flujo clásico vía Página de Facebook. Con el token de \"Instagram Login\" que usas ahora, Meta no ofrece este dato por ahora.");
+      const q = await api(`/${state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){like_count,comments_count,media_product_type,timestamp,caption}}`}, GRAPH_FB);
       prof = q.business_discovery;
     } else {
       await new Promise(r=>setTimeout(r,700));
@@ -1121,6 +1141,7 @@ function refreshAll(){
     state.token = localStorage.getItem(LS.token);
     state.igid = localStorage.getItem(LS.igid);
     state.username = localStorage.getItem(LS.user);
+    state.apiBase = localStorage.getItem(LS.base) || GRAPH_IG;
     $("tokenIn").value = state.token; $("igidIn").value = state.igid; $("discBtn").hidden=false;
     try{ await fetchReels(); state.mode="live"; refreshAll(); }
     catch(e){ toast("⚠️ Token caducado: reconecta"); go("conectar"); }
