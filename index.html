@@ -1055,8 +1055,17 @@ async function analyzeComp(){
   try{
     let prof;
     if (state.mode==="live"){
-      if (state.apiBase===GRAPH_IG) throw new Error("El análisis de competencia (business_discovery) solo está disponible con el flujo clásico vía Página de Facebook. Con el token de \"Instagram Login\" que usas ahora, Meta no ofrece este dato por ahora.");
-      const q = await api(`/${state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){like_count,comments_count,media_product_type,timestamp,caption}}`}, GRAPH_FB);
+      // intenta primero en la base activa (normalmente graph.instagram.com); si el campo no existe ahí, prueba graph.facebook.com
+      let q;
+      try{
+        q = await api(`/${state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){like_count,comments_count,media_product_type,timestamp,caption}}`}, state.apiBase);
+      }catch(e1){
+        try{
+          q = await api(`/${state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){like_count,comments_count,media_product_type,timestamp,caption}}`}, GRAPH_FB);
+        }catch(e2){
+          throw new Error("Meta no permite business_discovery con tu conexión actual ("+(e2.message||e1.message)+"). Es una limitación de tu tipo de token/cuenta, no de la app.");
+        }
+      }
       prof = q.business_discovery;
     } else {
       await new Promise(r=>setTimeout(r,700));
