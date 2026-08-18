@@ -658,7 +658,8 @@ const insCache = {
 };
 
 async function connect(){
-  const tok = $("tokenIn").value.trim();
+  // limpia espacios/saltos de línea que a veces se cuelan al copiar desde Word/Notas
+  const tok = $("tokenIn").value.replace(/\s+/g, "");
   if (!tok) return toast("Pega primero tu token");
   state.token = tok;
   const msg = $("connMsg"); msg.innerHTML = '<div class="spin"></div>';
