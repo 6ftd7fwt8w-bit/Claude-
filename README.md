@@ -36,6 +36,17 @@ Señales de ranking confirmadas por Adam Mosseri (jefe de Instagram), por orden 
 
 Además, en 2026 Instagram prioriza contenido humano y original, penaliza marcas de agua de otras apps y el engagement-bait, y funciona cada vez más como buscador (palabras clave en el caption > hashtags masivos).
 
+## 🛡️ Seguridad: ¿puede Instagram penalizar o suspender la cuenta?
+
+**No por esto.** ReelPulse usa exclusivamente la Graph API oficial de Meta en modo lectura — el canal documentado y permitido para cuentas Business/Creator — con un token que el propio usuario genera y puede revocar. No publica, no da likes, no sigue a nadie, no envía mensajes ni pide la contraseña.
+
+Las suspensiones históricas vinieron de otra cosa: bots de automatización (Instagress, Mass Planner, Instaplus — cerradas por Instagram en 2017), apps de API privada/scraping que piden usuario y contraseña, y compra de seguidores o engagement (oleadas de bans por detección de patrones desde finales de 2025). Nada de eso ocurre aquí.
+
+Protecciones incorporadas en la app:
+- **Caché de métricas de 12 h** en el dispositivo + **máximo 3 peticiones simultáneas**: queda muy por debajo del límite de Meta (~200 llamadas/hora/usuario). El contador de llamadas se muestra en el dashboard.
+- Si Meta devuelve un error de rate-limit (códigos 4/17), la app lo explica y pide reintentar más tarde — ese error es temporal y **no** afecta al estado de la cuenta.
+- El token y la clave de IA se guardan solo en `localStorage` del dispositivo; las llamadas van directas del navegador a Meta/Anthropic, sin servidores intermedios.
+
 ## 🔌 Hasta dónde llega la API oficial (lo que puede y no puede hacer)
 
 **Puede** (y ReelPulse lo usa):
@@ -53,10 +64,17 @@ Además, en 2026 Instagram prioriza contenido humano y original, penaliza marcas
 - `index.html` — toda la app (HTML + CSS + JS, sin dependencias ni build).
 - `manifest.json` — manifiesto PWA para instalarla en el móvil.
 
+## 🤖 Optimizador con IA (opcional)
+
+En **Conectar → Optimizador con IA** se puede guardar una clave de la API de Claude (console.anthropic.com). Con ella, el detalle de cada reel ofrece "Reescritura con Claude": envía caption + métricas + debilidades detectadas y devuelve 3 hooks y un caption optimizado (JSON), vía `POST https://api.anthropic.com/v1/messages` (modelo `claude-opus-5`, fallback automático activado) directamente desde el navegador. Sin clave, funciona el motor de reglas local.
+
+## 📈 Histórico
+
+Cada análisis en vivo guarda un snapshot diario (ReelScore y alcance medios) en `localStorage` (máx. 90). El dashboard dibuja la evolución del ReelScore y el alcance por reel en orden cronológico, con puntos/barras tocables.
+
 ## 🛣️ Ideas de evolución
 
 - OAuth completo (botón "Login con Facebook") para no pegar tokens a mano — requiere registrar dominio en la app de Meta.
-- Reescritura de hooks/captions con la API de Claude (ahora es un motor de reglas local).
-- Histórico: guardar snapshots en localStorage/IndexedDB y graficar la evolución del ReelScore.
 - Alertas semanales y análisis A/B de horarios con datos acumulados.
 - Publicación programada vía `POST /{ig-user-id}/media` (la API permite publicar reels).
+- Exportar informe PDF/imagen para compartir con clientes.

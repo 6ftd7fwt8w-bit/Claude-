@@ -247,6 +247,8 @@ nav button.on .i{filter:none}
           </div>
         </div>
         <div class="statgrid" id="statGrid"></div>
+        <h2 class="sec">📈 Evolución <span class="hint" id="trendHint"></span></h2>
+        <div class="card" id="trendCard"></div>
         <h2 class="sec">🚨 Diagnóstico principal <span class="hint" onclick="go('reels')">ver reels →</span></h2>
         <div id="dashRecs"></div>
         <h2 class="sec">🗓️ Tu mejor momento para publicar</h2>
@@ -318,6 +320,23 @@ nav button.on .i{filter:none}
         </ul>
       </div>
       <div class="gcard">
+        <h3>🛡️ ¿Pueden suspenderme la cuenta por conectar esta app?</h3>
+        <p><b>No por usar la API oficial en modo lectura, que es lo único que hace ReelPulse.</b> Los casos históricos de suspensiones vinieron siempre de otra cosa:</p>
+        <ul>
+          <li><b>Bots de automatización</b> que daban likes, seguían y comentaban por ti (Instagress, Mass Planner, Instaplus… Instagram las cerró en 2017 y baneó cuentas que las usaban).</li>
+          <li><b>Apps que piden tu contraseña</b> de Instagram para entrar "como si fueran tú" (API privada no oficial / scrapers). Eso viola las condiciones de uso y dispara los detectores de actividad sospechosa.</li>
+          <li><b>Comprar seguidores o engagement</b>, follow/unfollow masivo, comentarios automáticos: desde finales de 2025 Meta lo detecta por patrones y restringe o desactiva cuentas en oleadas.</li>
+        </ul>
+        <p style="margin-top:6px">ReelPulse está en el lado seguro por diseño:</p>
+        <ul>
+          <li>Usa <b>solo la Graph API oficial de Meta</b>, el canal explícitamente permitido y documentado para cuentas Business/Creator. Nunca te pide la contraseña: usas un token que <b>tú</b> generas en la web de Meta y que puedes revocar cuando quieras.</li>
+          <li>Es <b>100 % lectura</b>: no publica, no comenta, no da likes, no sigue a nadie ni envía mensajes. No hay ninguna "acción automatizada" que penalizar.</li>
+          <li>Respeta los <b>límites de peticiones</b> de Meta (~200 llamadas/hora por usuario): guarda las métricas en caché en tu dispositivo y hace pocas llamadas espaciadas. Superar el límite además no suspende la cuenta: solo devuelve un error temporal.</li>
+          <li>Analizar competencia vía <i>business_discovery</i> también es una función oficial de la API (no es scraping): solo devuelve datos públicos de cuentas profesionales.</li>
+        </ul>
+        <p style="margin-top:6px"><b>Lo que sí debes evitar</b> (con esta o cualquier app): pegar tu token en webs desconocidas, usar servicios de "crecimiento automático", comprar interacciones, y apps que pidan usuario y contraseña de Instagram.</p>
+      </div>
+      <div class="gcard">
         <h3>🔗 Hasta dónde puede conectarse esta app (API oficial de Meta)</h3>
         <p>Con una cuenta <b>Business o Creator</b> y un token de la <b>Instagram Graph API</b>, ReelPulse puede leer directamente desde tu navegador (nada se envía a servidores de terceros):</p>
         <ul>
@@ -348,6 +367,10 @@ nav button.on .i{filter:none}
       <div class="card">
         <div style="font-size:15px;font-weight:800">🔗 Conectar tu Instagram</div>
         <p class="muted" style="margin-top:6px">Pega tu <b>token de acceso</b> de la Graph API de Meta. Se guarda solo en tu dispositivo y las llamadas van directas de tu navegador a Instagram. <span style="color:var(--violet);font-weight:700" onclick="go('guia')">¿Cómo consigo el token? →</span></p>
+        <div style="margin-top:10px;background:rgba(52,211,153,.09);border:1px solid rgba(52,211,153,.3);border-radius:12px;padding:11px 13px">
+          <div style="font-size:12px;font-weight:800;color:var(--ok)">🛡️ Conexión segura para tu cuenta</div>
+          <div class="tiny" style="margin-top:4px;color:var(--tx2)">Solo lectura por la API oficial de Meta: no publica, no automatiza acciones ni pide tu contraseña, y usa caché para quedar muy por debajo de los límites de Meta. Instagram no penaliza este uso. <span style="color:var(--violet);font-weight:700" onclick="go('guia')">Más detalles →</span></div>
+        </div>
         <label>Token de acceso</label>
         <textarea id="tokenIn" rows="3" placeholder="EAAG..." autocapitalize="none"></textarea>
         <label>ID de cuenta de Instagram <span style="font-weight:400;color:var(--tx3)">(opcional, lo detecto solo)</span></label>
@@ -361,6 +384,14 @@ nav button.on .i{filter:none}
         <div style="font-size:14px;font-weight:800">✨ ¿Sin token todavía?</div>
         <p class="muted" style="margin-top:4px">Explora la app completa con una cuenta de ejemplo realista.</p>
         <button class="btn" style="margin-top:12px" onclick="loadDemo()">Cargar modo demo</button>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div style="font-size:14px;font-weight:800">🤖 Optimizador con IA <span class="pill" style="margin-left:4px">opcional</span></div>
+        <p class="muted" style="margin-top:4px">Con una clave de la <b>API de Claude</b> (console.anthropic.com), el optimizador reescribe hooks y captions con IA de verdad, usando las métricas reales de cada reel. Sin clave, funciona el motor de reglas local. La clave se guarda solo en tu dispositivo.</p>
+        <label>Clave de la API de Claude (sk-ant-…)</label>
+        <input id="aiKeyIn" placeholder="sk-ant-api03-…" autocapitalize="none">
+        <button class="btn" style="margin-top:12px" onclick="saveAiKey()">Guardar clave</button>
+        <div id="aiKeyMsg" style="margin-top:8px"></div>
       </div>
       <div class="card" style="margin-top:12px" id="discCard" hidden>
         <div style="font-size:13px;font-weight:800">Cuentas encontradas</div>
@@ -391,7 +422,9 @@ nav button.on .i{filter:none}
 ===================================================================== */
 
 const GRAPH = "https://graph.facebook.com/v23.0";
-const LS = { token:"rp_token", igid:"rp_igid", user:"rp_user", chk:"rp_chk", mode:"rp_mode" };
+const LS = { token:"rp_token", igid:"rp_igid", user:"rp_user", chk:"rp_chk", mode:"rp_mode", cache:"rp_insCache", hist:"rp_history", aikey:"rp_aikey" };
+const CACHE_TTL = 12*3600e3; // 12 h: minimiza llamadas a la API de Meta
+let apiCalls = 0;
 
 const state = {
   mode: null,            // 'demo' | 'live'
@@ -595,11 +628,28 @@ async function api(path, params={}){
   const u = new URL(GRAPH + path);
   for (const k in params) u.searchParams.set(k, params[k]);
   u.searchParams.set("access_token", state.token);
+  apiCalls++;
   const res = await fetch(u);
   const j = await res.json();
-  if (j.error) throw Object.assign(new Error(j.error.message), {code:j.error.code, sub:j.error.error_subcode});
+  if (j.error){
+    if (j.error.code===4 || j.error.code===17) throw new Error("Límite temporal de peticiones de Meta alcanzado. No pasa nada con tu cuenta: espera ~1 hora y reintenta (la app usa caché para que esto casi nunca ocurra).");
+    throw Object.assign(new Error(j.error.message), {code:j.error.code, sub:j.error.error_subcode});
+  }
   return j;
 }
+
+/* ejecuta como máximo n peticiones a la vez (respeto de rate limits) */
+async function pool(items, n, fn){
+  const res = new Array(items.length); let i = 0;
+  await Promise.all(Array.from({length:Math.min(n,items.length)}, async ()=>{
+    while (i < items.length){ const idx = i++; res[idx] = await fn(items[idx], idx); }
+  }));
+  return res;
+}
+const insCache = {
+  read(id){ try{ const c=JSON.parse(localStorage.getItem(LS.cache)||"{}")[id]; return (c && Date.now()-c.t<CACHE_TTL)? c.ins : null; }catch(e){ return null; } },
+  write(id, ins){ try{ const all=JSON.parse(localStorage.getItem(LS.cache)||"{}"); all[id]={t:Date.now(), ins}; localStorage.setItem(LS.cache, JSON.stringify(all)); }catch(e){} },
+};
 
 async function connect(){
   const tok = $("tokenIn").value.trim();
@@ -656,7 +706,10 @@ async function fetchReels(){
     "plays,reach,saved,shares,ig_reels_avg_watch_time",
     "reach,saved,shares",
   ];
-  const out = await Promise.all(reels.map(async media=>{
+  apiCalls = 1; // la llamada a /media
+  const out = await pool(reels, 3, async media=>{
+    const cached = insCache.read(media.id);
+    if (cached) return normalize(media, cached, null);
     let ins = {};
     for (const set of metricSets){
       try{
@@ -672,9 +725,11 @@ async function fetchReels(){
         break;
       }catch(e){ /* prueba el siguiente set */ }
     }
+    insCache.write(media.id, ins);
     return normalize(media, ins, null);
-  }));
+  });
   state.reels = out;
+  saveSnapshot();
   // duración real: la API no la da; la leemos de los metadatos del vídeo
   reels.forEach((media,i)=>{
     if (!media.media_url) return;
@@ -779,7 +834,75 @@ function renderDash(){
   rs.forEach(r=>{ const k=r.ts.getDay()+"-"+(r.ts.getHours()<12?"mañana":r.ts.getHours()<18?"tarde":"noche"); const er=(r.rShares||0)*3+(r.rSaves||0)*2+(r.rLikes||0); slots[k]=slots[k]||[]; slots[k].push(er); });
   const days=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
   const best=Object.entries(slots).map(([k,v])=>[k,v.reduce((a,b)=>a+b,0)/v.length]).sort((a,b)=>b[1]-a[1]).slice(0,2);
+  renderTrend();
   $("timeCard").innerHTML = best.length? best.map(([k],i)=>{ const [d,f]=k.split("-"); return `<div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">${i===0?"🥇":"🥈"} ${days[+d].charAt(0).toUpperCase()+days[+d].slice(1)} por la ${f}</div><span class="pill ok">mejor engagement</span></div>`;}).join("")+`<p class="tiny" style="margin-top:8px">Basado en el rendimiento de tus propios reels. Publica en la franja en que tu audiencia responde y estarás online la primera hora para contestar comentarios.</p>` : '<p class="muted">Aún no hay datos suficientes.</p>';
+}
+
+/* -------- histórico + gráficas -------- */
+function saveSnapshot(){
+  if (!state.reels.length) return;
+  try{
+    const avg = a=>{ const v=a.filter(x=>x!=null); return v.length? v.reduce((x,y)=>x+y,0)/v.length : null; };
+    const snap = { t: new Date().toISOString().slice(0,10),
+      score: Math.round(avg(state.reels.map(r=>r.score))),
+      reach: Math.round(avg(state.reels.map(r=>r.reach))||0) };
+    let h = JSON.parse(localStorage.getItem(LS.hist)||"[]").filter(x=>x.t!==snap.t);
+    h.push(snap); h = h.slice(-90);
+    localStorage.setItem(LS.hist, JSON.stringify(h));
+  }catch(e){}
+}
+function getHistory(){
+  if (state.mode==="demo"){
+    const s = Math.round(state.reels.reduce((a,r)=>a+r.score,0)/state.reels.length);
+    const deltas=[-16,-13,-17,-9,-11,-5,-7,0];
+    return deltas.map((d,i)=>({ t:new Date(Date.now()-(deltas.length-1-i)*7*864e5).toISOString().slice(0,10),
+      score: Math.max(5,Math.min(95,s+d)), reach: null }));
+  }
+  try{ return JSON.parse(localStorage.getItem(LS.hist)||"[]"); }catch(e){ return []; }
+}
+function renderTrend(){
+  const card=$("trendCard"), hist=getHistory();
+  $("trendHint").textContent = state.mode==="live" ? (apiCalls+" llamadas API esta sesión") : "";
+  let html = "";
+  if (hist.length>=2){
+    const W=320,H=64,P=4, xs=hist.map((_,i)=>P+i*(W-2*P)/(hist.length-1));
+    const min=Math.min(...hist.map(h=>h.score)), max=Math.max(...hist.map(h=>h.score));
+    const y=v=>H-P-(v-min)/Math.max(max-min,1)*(H-2*P);
+    const pts=hist.map((h,i)=>xs[i].toFixed(1)+","+y(h.score).toFixed(1)).join(" ");
+    const last=hist[hist.length-1], first=hist[0];
+    const up=last.score>=first.score;
+    html += `<div style="font-size:12px;font-weight:800;color:var(--tx2)">ReelScore medio por análisis</div>
+    <svg viewBox="0 0 ${W} ${H+14}" style="width:100%;display:block;margin-top:6px" id="sparkSvg">
+      <polygon points="${xs[0]},${H-P} ${pts} ${xs[xs.length-1]},${H-P}" fill="rgba(139,92,246,.15)"/>
+      <polyline points="${pts}" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${hist.map((h,i)=>`<circle cx="${xs[i]}" cy="${y(h.score)}" r="7" fill="transparent" data-i="${i}"/>`).join("")}
+      <circle cx="${xs[xs.length-1]}" cy="${y(last.score)}" r="4" fill="var(--violet)" stroke="var(--bg2)" stroke-width="2"/>
+      <text x="${xs[xs.length-1]}" y="${H+10}" text-anchor="end" font-size="11" font-weight="800" fill="${up?"var(--ok)":"var(--bad)"}">${last.score} ${up?"▲":"▼"}</text>
+      <text x="${xs[0]}" y="${H+10}" font-size="10" fill="var(--tx3)">${first.t.slice(5)}</text>
+    </svg>
+    <div class="tiny" id="sparkOut" style="min-height:14px;margin-top:2px">Toca la línea para ver cada punto · ${up?"tendencia al alza 🎉":"tendencia a la baja — aplica el plan de abajo"}</div>`;
+  } else {
+    html += `<div class="tiny">📈 Aún no hay histórico: cada vez que analices tu cuenta guardo una foto del ReelScore y el alcance (solo en tu dispositivo) para dibujar aquí tu evolución.</div>`;
+  }
+  // alcance por reel (cronológico)
+  const rs = state.reels.slice().sort((a,b)=>a.ts-b.ts).filter(r=>r.reach!=null);
+  if (rs.length>=2){
+    const mx = Math.max(...rs.map(r=>r.reach));
+    html += `<div style="font-size:12px;font-weight:800;color:var(--tx2);margin-top:14px">Alcance por reel (antiguo → reciente)</div>
+    <div style="display:flex;align-items:flex-end;gap:2px;height:64px;margin-top:8px">
+      ${rs.map(r=>`<div data-id="${r.id}" class="tbar" style="flex:1;height:${Math.max(6,Math.round(r.reach/mx*100))}%;background:var(--pink);opacity:.85;border-radius:4px 4px 0 0;min-width:8px"></div>`).join("")}
+    </div>
+    <div class="tiny" id="barOut" style="min-height:14px;margin-top:4px">Toca una barra para ver el reel</div>`;
+  }
+  card.innerHTML = html;
+  card.querySelectorAll("#sparkSvg circle[data-i]").forEach(c=>c.addEventListener("click",()=>{
+    const h=hist[+c.dataset.i];
+    $("sparkOut").innerHTML = `<b style="color:var(--tx)">${h.t}</b> · ReelScore ${h.score}${h.reach?` · alcance medio ${fmt(h.reach)}`:""}`;
+  }));
+  card.querySelectorAll(".tbar").forEach(b=>b.addEventListener("click",()=>{
+    const r=state.reels.find(x=>x.id===b.dataset.id);
+    $("barOut").innerHTML = `<b style="color:var(--tx)">${fmt(r.reach)} de alcance</b> · ${esc(r.caption.slice(0,40))}… <span style="color:var(--violet);font-weight:700" onclick="openSheet('${r.id}')">abrir →</span>`;
+  }));
 }
 
 /* -------- sheet detalle -------- */
@@ -832,6 +955,13 @@ function openSheet(id){
       <button class="copybtn" onclick="copyTxt('optCap')">📋 Copiar caption</button>
       <div class="tiny" style="margin-top:8px">${opt.tips.map(t=>"• "+esc(t)).join("<br>")}</div>
     </div>
+    <div class="optbox">
+      <h4>🤖 Reescritura con Claude (IA)</h4>
+      ${localStorage.getItem(LS.aikey)
+        ? `<p class="muted">La IA usará las métricas y debilidades reales de este reel para proponer 3 hooks y un caption a medida.</p><button class="btn primary" style="margin-top:10px" onclick="aiRewrite('${r.id}')">✨ Generar con IA</button>`
+        : `<p class="muted">Guarda tu clave de la API de Claude en <b>Conectar</b> y este botón reescribirá hooks y captions con IA usando las métricas reales del reel.</p><button class="btn ghost" style="margin-top:10px" onclick="closeSheet();go('conectar')">Configurar IA →</button>`}
+      <div id="aiOut" style="margin-top:10px"></div>
+    </div>
     <p class="tiny" style="margin:6px 2px 0">💡 Instagram permite <b>editar el caption</b> de un reel ya publicado (⋯ → Editar) sin perder métricas. El hook de vídeo aplícalo al re-grabar o en tu próximo reel del mismo tema.</p>
     <button class="btn ghost" style="margin-top:14px" onclick="closeSheet()">Cerrar</button>`;
   $("sheetWrap").classList.add("open");
@@ -839,6 +969,59 @@ function openSheet(id){
 }
 function closeSheet(){ $("sheetWrap").classList.remove("open"); document.body.style.overflow=""; }
 function copyTxt(id){ navigator.clipboard.writeText($(id).textContent).then(()=>toast("📋 Copiado")); }
+
+/* -------- optimizador con Claude (IA) -------- */
+function saveAiKey(){
+  const k = $("aiKeyIn").value.trim();
+  if (!k){ localStorage.removeItem(LS.aikey); $("aiKeyMsg").innerHTML='<span class="pill">Clave borrada</span>'; return; }
+  if (!k.startsWith("sk-ant-")){ $("aiKeyMsg").innerHTML='<span class="pill bad">La clave debe empezar por sk-ant-</span>'; return; }
+  localStorage.setItem(LS.aikey, k);
+  $("aiKeyMsg").innerHTML='<span class="pill ok">✅ Guardada en este dispositivo</span>';
+}
+async function claudeCall(prompt){
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key": localStorage.getItem(LS.aikey),
+      "anthropic-version":"2023-06-01",
+      "anthropic-beta":"server-side-fallback-2026-07-01",
+      "anthropic-dangerous-direct-browser-access":"true",
+    },
+    body: JSON.stringify({ model:"claude-opus-5", max_tokens:2000, fallbacks:"default",
+      messages:[{role:"user", content:prompt}] }),
+  });
+  const j = await res.json();
+  if (j.error) throw new Error(j.error.message||"Error de la API de Claude");
+  if (j.stop_reason==="refusal") throw new Error("Claude declinó esta petición.");
+  return (j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+}
+async function aiRewrite(id){
+  const r = state.reels.find(x=>x.id===id); if(!r) return;
+  const out = $("aiOut"); out.innerHTML = '<div class="spin"></div>';
+  const debil = r.recs.filter(x=>x.p<3).map(x=>x.t).join("; ") || "ninguna grave";
+  const prompt = `Eres experto en el algoritmo de Instagram Reels 2026 (señales por peso: watch time, envíos por DM, guardados, comentarios; likes es la más débil; el caption funciona como SEO interno).
+Reescribe el contenido de este reel para maximizar su alcance.
+
+Caption actual: """${r.caption||"(sin caption)"}"""
+Métricas: alcance ${r.reach??"?"}, envíos/alcance ${pct(r.rShares)}, guardados/alcance ${pct(r.rSaves)}, comentarios ${r.comments}, tiempo medio visto ${secs(r.avgWatch)}${r.duration?` de ${secs(r.duration)}`:""}.
+Debilidades detectadas: ${debil}.
+
+Responde SOLO con JSON válido, en español, con esta forma exacta:
+{"hooks":["hook 1 (texto en pantalla para los primeros 2s)","hook 2","hook 3"],"caption":"caption completo optimizado con primera línea gancho, 1-2 frases con palabras clave buscables, CTA de compartir/guardar y 3-5 hashtags de nicho","consejos":["consejo accionable 1","consejo 2"]}`;
+  try{
+    const txt = await claudeCall(prompt);
+    const m = txt.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error("Respuesta inesperada de la IA");
+    const d = JSON.parse(m[0]);
+    out.innerHTML = `
+      ${(d.hooks||[]).map((h,i)=>`<pre id="aih${i}" style="margin-top:${i?8:0}px">${esc(h)}</pre><button class="copybtn" onclick="copyTxt('aih${i}')">📋 Copiar hook ${i+1}</button>`).join("")}
+      <pre id="aicap" style="margin-top:10px">${esc(d.caption||"")}</pre><button class="copybtn" onclick="copyTxt('aicap')">📋 Copiar caption</button>
+      ${(d.consejos||[]).length?`<div class="tiny" style="margin-top:8px">${d.consejos.map(c=>"• "+esc(c)).join("<br>")}</div>`:""}`;
+  }catch(e){
+    out.innerHTML = `<span class="pill bad" style="white-space:normal;line-height:1.5">⚠️ ${esc(e.message)}</span><p class="tiny" style="margin-top:6px">Comprueba la clave en Conectar y tu saldo en console.anthropic.com.</p>`;
+  }
+}
 
 /* -------- competencia -------- */
 async function analyzeComp(){
@@ -932,6 +1115,7 @@ function refreshAll(){
 }
 (async function init(){
   renderChk();
+  if (localStorage.getItem(LS.aikey)) $("aiKeyIn").value = localStorage.getItem(LS.aikey);
   const savedMode = localStorage.getItem(LS.mode);
   if (savedMode==="live" && localStorage.getItem(LS.token)){
     state.token = localStorage.getItem(LS.token);
