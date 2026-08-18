@@ -357,6 +357,11 @@ nav button.on .i{filter:none}
         </ol>
       </div>
       <div class="gcard">
+        <h3>🔍 Activar Competencia: el token clásico</h3>
+        <p>El análisis de competencia (<i>business_discovery</i>) solo existe en la API clásica (graph.facebook.com), no en la de "Instagram Login". Para activarlo necesitas un segundo token generado en el <b>Graph API Explorer</b> con los permisos <i>instagram_basic</i>, <i>instagram_manage_insights</i> y <i>pages_show_list</i>, con tu Instagram vinculado a una Página de Facebook.</p>
+        <p style="margin-top:6px"><b>Truco si el selector de permisos del Explorer falla</b> (al escribir un permiso borra el anterior): los permisos concedidos se acumulan en tu cuenta aunque los pidas de uno en uno. Añade <i>instagram_basic</i> → Generate Access Token → autoriza. Repite el ciclo con <i>instagram_manage_insights</i> y luego con <i>pages_show_list</i>. El último token generado incluye todos los permisos ya concedidos. Pégalo en <b>Conectar → Competencia</b> y pulsa "Guardar y verificar".</p>
+      </div>
+      <div class="gcard">
         <h3>📱 Instalar como app</h3>
         <p>En Safari/Chrome del móvil: <b>Compartir → Añadir a pantalla de inicio</b>. ReelPulse funciona como una app nativa a pantalla completa.</p>
       </div>
@@ -379,6 +384,14 @@ nav button.on .i{filter:none}
           <button class="btn primary" onclick="connect()">Conectar y analizar</button>
         </div>
         <div id="connMsg" style="margin-top:12px"></div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div style="font-size:14px;font-weight:800">🔍 Competencia <span class="pill" style="margin-left:4px">opcional</span></div>
+        <p class="muted" style="margin-top:4px">Meta no incluye el análisis de competencia (<i>business_discovery</i>) en los tokens de "Instagram Login". Si quieres esa pestaña con datos reales, pega aquí un <b>token clásico</b> generado vía tu Página de Facebook (Graph API Explorer, permisos: <i>instagram_basic, instagram_manage_insights, pages_show_list</i>). Se usa solo para Competencia; el resto de la app sigue con tu token principal.</p>
+        <label>Token clásico (EAAG…)</label>
+        <textarea id="fbTokIn" rows="2" placeholder="EAAG…" autocapitalize="none"></textarea>
+        <button class="btn" style="margin-top:12px" onclick="saveFbToken()">Guardar y verificar</button>
+        <div id="fbTokMsg" style="margin-top:8px"></div>
       </div>
       <div class="card" style="margin-top:12px">
         <div style="font-size:14px;font-weight:800">✨ ¿Sin token todavía?</div>
@@ -423,7 +436,7 @@ nav button.on .i{filter:none}
 
 const GRAPH_FB = "https://graph.facebook.com/v23.0";
 const GRAPH_IG = "https://graph.instagram.com/v23.0";
-const LS = { token:"rp_token", igid:"rp_igid", user:"rp_user", chk:"rp_chk", mode:"rp_mode", cache:"rp_insCache", hist:"rp_history", aikey:"rp_aikey", base:"rp_base" };
+const LS = { token:"rp_token", igid:"rp_igid", user:"rp_user", chk:"rp_chk", mode:"rp_mode", cache:"rp_insCache", hist:"rp_history", aikey:"rp_aikey", base:"rp_base", fbtok:"rp_fbtoken", fbigid:"rp_fbigid" };
 const CACHE_TTL = 12*3600e3; // 12 h: minimiza llamadas a la API de Meta
 let apiCalls = 0;
 
@@ -630,10 +643,10 @@ function optimizeCaption(r){
    - graph.instagram.com  → token de "API de Instagram con inicio de sesión de Instagram" (recomendado por Meta, sin Página de Facebook)
    - graph.facebook.com   → token clásico vía Página de Facebook vinculada
 */
-async function api(path, params={}, base=null){
+async function api(path, params={}, base=null, token=null){
   const u = new URL((base||state.apiBase) + path);
   for (const k in params) u.searchParams.set(k, params[k]);
-  u.searchParams.set("access_token", state.token);
+  u.searchParams.set("access_token", token||state.token);
   apiCalls++;
   const res = await fetch(u);
   const j = await res.json();
@@ -1044,6 +1057,26 @@ Responde SOLO con JSON válido, en español, con esta forma exacta:
 }
 
 /* -------- competencia -------- */
+async function saveFbToken(){
+  const t = $("fbTokIn").value.replace(/\s+/g, "");
+  const msg = $("fbTokMsg");
+  if (!t){
+    localStorage.removeItem(LS.fbtok); localStorage.removeItem(LS.fbigid);
+    msg.innerHTML = '<span class="pill">Token clásico borrado</span>'; return;
+  }
+  msg.innerHTML = '<div class="spin"></div>';
+  try{
+    const me = await api("/me/accounts", {fields:"instagram_business_account{id,username}"}, GRAPH_FB, t);
+    const acc = (me.data||[]).find(p=>p.instagram_business_account);
+    if (!acc) throw new Error("Este token no tiene ninguna Página de Facebook con Instagram vinculado. Necesita los permisos pages_show_list e instagram_basic.");
+    localStorage.setItem(LS.fbtok, t);
+    localStorage.setItem(LS.fbigid, acc.instagram_business_account.id);
+    msg.innerHTML = '<span class="pill ok">✅ Competencia activada vía @'+esc(acc.instagram_business_account.username||"")+'</span>';
+    toast("🔍 Análisis de competencia activado");
+  }catch(e){
+    msg.innerHTML = '<span class="pill bad" style="white-space:normal;line-height:1.5">⚠️ '+esc(e.message)+'</span>';
+  }
+}
 async function analyzeComp(){
   const u = $("compUser").value.trim().replace(/^@/,"");
   if(!u) return toast("Escribe un @usuario");
@@ -1055,12 +1088,19 @@ async function analyzeComp(){
   try{
     let prof;
     if (state.mode==="live"){
-      // el token de "Instagram Login" no es válido en graph.facebook.com (audiencias distintas), así que solo probamos su propia base
+      const fields = `business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){like_count,comments_count,media_product_type,timestamp,caption}}`;
+      const fbTok = localStorage.getItem(LS.fbtok), fbIgid = localStorage.getItem(LS.fbigid);
       let q;
-      try{
-        q = await api(`/${state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){like_count,comments_count,media_product_type,timestamp,caption}}`}, state.apiBase);
-      }catch(e1){
-        throw new Error("Meta responde: \""+e1.message+"\" al pedir business_discovery en "+(state.apiBase===GRAPH_IG?"graph.instagram.com":"graph.facebook.com")+". "+(state.apiBase===GRAPH_IG?"Con tokens de \"Instagram Login\" esta función parece no estar disponible todavía.":"Revisa que el token incluya instagram_manage_insights."));
+      if (fbTok && fbIgid){
+        // token clásico dedicado a Competencia (business_discovery solo existe en graph.facebook.com)
+        q = await api(`/${fbIgid}`, {fields}, GRAPH_FB, fbTok);
+      } else {
+        try{
+          q = await api(`/${state.igid}`, {fields}, state.apiBase);
+        }catch(e1){
+          if (state.apiBase===GRAPH_IG) throw new Error("Confirmado por Meta: los tokens de \"Instagram Login\" no incluyen business_discovery. Para activar esta pestaña, añade el \"token clásico\" opcional en Conectar → Competencia.");
+          throw new Error("Meta responde: "+e1.message+". Revisa que el token incluya instagram_manage_insights.");
+        }
       }
       prof = q.business_discovery;
     } else {
@@ -1142,6 +1182,7 @@ function refreshAll(){
 (async function init(){
   renderChk();
   if (localStorage.getItem(LS.aikey)) $("aiKeyIn").value = localStorage.getItem(LS.aikey);
+  if (localStorage.getItem(LS.fbtok)) $("fbTokIn").value = localStorage.getItem(LS.fbtok);
   const savedMode = localStorage.getItem(LS.mode);
   if (savedMode==="live" && localStorage.getItem(LS.token)){
     state.token = localStorage.getItem(LS.token);
