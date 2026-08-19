@@ -448,6 +448,7 @@ const state = {
   reels: [],             // normalizados
   sort: "score_asc",
   lastFetch: null,
+  _followers: null,
 };
 
 /* ---------------- utilidades ---------------- */
@@ -1091,13 +1092,26 @@ async function saveFbToken(){
     msg.innerHTML = '<span class="pill bad" style="white-space:normal;line-height:1.5">⚠️ '+esc(e.message)+'</span>';
   }
 }
+async function myFollowers(){
+  if (state.mode!=="live") return 15000+Math.floor(Math.random()*5000); // demo
+  if (state._followers!=null) return state._followers;
+  try{
+    const r = await api(`/${state.igid}`, {fields:"followers_count"}, state.apiBase);
+    state._followers = r.followers_count ?? null;
+  }catch(e){ state._followers = null; }
+  return state._followers;
+}
 async function analyzeComp(){
   const u = $("compUser").value.trim().replace(/^@/,"");
   if(!u) return toast("Escribe un @usuario");
   const box=$("compResults"); box.innerHTML='<div class="spin"></div>';
-  const mine = state.reels.length ? {
-    er: avgOf(state.reels.map(r=> r.reach? ((r.likes+r.comments)/r.reach) : null)),
-    erF: null, user: state.username||"tú",
+  // misma base que usaremos para la competencia: interacción / seguidores (NO alcance — comparar
+  // alcance propio contra seguidores ajenos siempre te haría "ganar" a ti, sin significar nada)
+  const myFollow = await myFollowers();
+  const mine = (state.reels.length && myFollow) ? {
+    er: avgOf(state.reels.map(r=> (r.likes+r.comments)/myFollow)),
+    followers: myFollow,
+    user: state.username||"tú",
   } : null;
   try{
     let prof;
@@ -1123,29 +1137,54 @@ async function analyzeComp(){
         media:{data:Array.from({length:12},(_,i)=>({like_count:200+Math.floor(Math.random()*3800), comments_count:5+Math.floor(Math.random()*220), media_product_type: i%3?"REELS":"FEED", timestamp:new Date(Date.now()-i*3*864e5).toISOString(), caption:"Ejemplo de post "+(i+1)}))} };
     }
     const posts = prof.media?.data||[];
-    const erPosts = posts.map(p=> (p.like_count+p.comments_count)/Math.max(prof.followers_count,1));
+    const erOf = p => (p.like_count+p.comments_count)/Math.max(prof.followers_count,1);
+    const erPosts = posts.map(erOf);
     const er = erPosts.length? erPosts.reduce((a,b)=>a+b,0)/erPosts.length : null;
+    const reelPosts = posts.filter(p=>p.media_product_type==="REELS");
+    const feedPosts = posts.filter(p=>p.media_product_type!=="REELS");
+    const erReels = reelPosts.length? avgOf(reelPosts.map(erOf)) : null;
+    const erFeed = feedPosts.length? avgOf(feedPosts.map(erOf)) : null;
     const perWeek = posts.length>=2 ? (posts.length-1)/Math.max((new Date(posts[0].timestamp)-new Date(posts[posts.length-1].timestamp))/(7*864e5),0.1) : null;
-    const reelsPct = posts.length? posts.filter(p=>p.media_product_type==="REELS").length/posts.length : null;
-    const top = posts.slice().sort((a,b)=>(b.like_count+b.comments_count)-(a.like_count+a.comments_count))[0];
+    const reelsPct = posts.length? reelPosts.length/posts.length : null;
+    const topPosts = posts.slice().sort((a,b)=>(b.like_count+b.comments_count)-(a.like_count+a.comments_count)).slice(0,3);
+    const top = topPosts[0];
     const myEr = mine?.er;
+
+    // veredicto en una frase, generado de los propios datos
+    let verdict;
+    if (myEr==null) verdict = "Conecta tu cuenta con datos reales para ver la comparativa directa.";
+    else if (er==null) verdict = "No hay suficientes posts públicos de @"+esc(u)+" para comparar con fiabilidad.";
+    else {
+      const ratio = myEr/er;
+      if (ratio>=1.15) verdict = "Tu interacción por seguidor es <b>"+ratio.toFixed(1)+"× mejor</b> que @"+esc(u)+". Su ventaja está en otro sitio (alcance, volumen de seguidores, frecuencia) — no copies su contenido, solo su cadencia.";
+      else if (ratio<=0.85) verdict = "@"+esc(u)+" saca <b>"+(1/ratio).toFixed(1)+"× más interacción por seguidor</b> que tú. Con audiencias de tamaño similar, eso indica que su contenido conecta mejor — mira qué formato repite abajo.";
+      else verdict = "Estáis en un nivel de interacción por seguidor muy parecido (diferencia menor al 15%). La diferencia de resultados vendrá de frecuencia o alcance, no de calidad del contenido.";
+    }
     box.innerHTML = `
       <div class="comp"><div class="av">${esc(u[0].toUpperCase())}</div>
         <div><div class="u">@${esc(prof.username)}</div><div class="s">${fmt(prof.followers_count)} seguidores · ${fmt(prof.media_count)} posts</div></div>
-        <div class="er"><div class="v" style="color:${er>=.03?"var(--ok)":er>=.01?"var(--warn)":"var(--bad)"}">${pct(er)}</div><div class="k">ENG. RATE</div></div>
+        <div class="er"><div class="v" style="color:${er>=.03?"var(--ok)":er>=.01?"var(--warn)":"var(--bad)"}">${pct(er)}</div><div class="k">ENG/SEGUIDOR</div></div>
       </div>
-      ${myEr!=null?`<div class="card">
-        <div style="font-size:13px;font-weight:800">⚔️ Tú vs @${esc(u)} (interacción por alcance/seguidores)</div>
-        <div class="vsbar"><i style="width:${Math.round(myEr/(myEr+er)*100)}%;background:var(--grad)"></i><i style="flex:1;background:var(--card2)"></i></div>
-        <div style="display:flex;justify-content:space-between"><span class="tiny" style="color:var(--pink);font-weight:700">@${esc(mine.user)} ${pct(myEr)}</span><span class="tiny">@${esc(u)} ${pct(er)}</span></div>
-      </div>`:""}
+      <div class="card">
+        <p style="font-size:13px;line-height:1.55">🧭 ${verdict}</p>
+        ${myEr!=null?`<div class="vsbar" style="margin-top:12px"><i style="width:${Math.round(myEr/(myEr+er)*100)}%;background:var(--grad)"></i><i style="flex:1;background:var(--card2)"></i></div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px"><span class="tiny" style="color:var(--pink);font-weight:700">@${esc(mine.user)} ${pct(myEr)}</span><span class="tiny">@${esc(u)} ${pct(er)}</span></div>
+        <div class="tiny" style="margin-top:4px;color:var(--tx3)">Misma base para los dos: (likes+comentarios) ÷ seguidores, promedio de sus últimos posts.</div>`:""}
+      </div>
       <div class="card" style="margin-top:10px">
         <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">📅 Frecuencia</div><span class="pill">${perWeek?perWeek.toFixed(1)+" posts/semana":"–"}</span></div>
         <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">🎬 % de reels</div><span class="pill">${reelsPct!=null?Math.round(reelsPct*100)+"%":"–"}</span></div>
+        ${erReels!=null&&erFeed!=null?`<div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">⚔️ Reels vs feed (su cuenta)</div><span class="pill ${erReels>=erFeed?'ok':''}">${pct(erReels)} reels · ${pct(erFeed)} feed</span></div>`:""}
         <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">🏆 Mejor post</div><span class="pill ok">${top?fmt(top.like_count)+" ❤️ · "+fmt(top.comments_count)+" 💬":"–"}</span></div>
       </div>
-      ${top?.caption?`<div class="card" style="margin-top:10px"><div style="font-size:12px;font-weight:800;color:var(--tx2);margin-bottom:6px">SU POST MÁS FUERTE — analiza el enfoque:</div><p class="muted">"${esc(top.caption.slice(0,220))}${top.caption.length>220?"…":""}"</p></div>`:""}
-      <p class="tiny" style="margin-top:10px">💡 Copia la <b>estrategia</b>, no el contenido: fíjate en su frecuencia, sus hooks y qué formato repite cuando algo le funciona.${state.mode!=="live"?" <b>(datos de ejemplo — conecta tu cuenta para datos reales)</b>":""}</p>`;
+      ${topPosts.length?`<div class="card" style="margin-top:10px">
+        <div style="font-size:12px;font-weight:800;color:var(--tx2);margin-bottom:8px">SUS 3 POSTS MÁS FUERTES — busca el patrón</div>
+        ${topPosts.map((p,i)=>`<div style="padding:${i?"9px 0 0":"0"};${i?"border-top:1px solid var(--line);margin-top:9px":""}">
+          <div style="display:flex;gap:8px;align-items:center;font-size:11.5px;color:var(--tx2);font-weight:700">${p.media_product_type==="REELS"?"🎬 Reel":"🖼️ Feed"} · ${fmt(p.like_count)} ❤️ · ${fmt(p.comments_count)} 💬</div>
+          ${p.caption?`<p class="muted" style="margin-top:3px;font-size:12.5px">"${esc(p.caption.slice(0,160))}${p.caption.length>160?"…":""}"</p>`:'<p class="tiny" style="margin-top:3px">Sin caption</p>'}
+        </div>`).join("")}
+      </div>`:""}
+      <p class="tiny" style="margin-top:10px">💡 Copia la <b>estrategia</b>, no el contenido: fíjate en su frecuencia, qué formato repite cuando algo le funciona, y el gancho de sus 3 mejores posts.${state.mode!=="live"?" <b>(datos de ejemplo — conecta tu cuenta para datos reales)</b>":""}</p>`;
   }catch(e){
     box.innerHTML = `<div class="card"><span class="pill bad" style="white-space:normal;line-height:1.5">⚠️ ${esc(e.message)}</span><p class="tiny" style="margin-top:8px">business_discovery solo funciona con cuentas Business/Creator públicas y con el permiso <i>instagram_manage_insights</i> en el token.</p></div>`;
   }
