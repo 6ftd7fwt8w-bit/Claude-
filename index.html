@@ -1017,7 +1017,7 @@ function openSheet(id){
       <div class="met"><div class="v">${fmt(r.saved)}</div><div class="k">Guardados</div>${bmB(r.rSaves,BM.saves)}</div>
       <div class="met"><div class="v">${fmt(r.comments)}</div><div class="k">Coment.</div>${bmB(r.rComments,BM.comments)}</div>
     </div>
-    <p class="tiny" style="margin:8px 2px 0">ℹ️ "Visualizaciones" es la métrica <code>views</code> de la API de Meta — puede diferir un poco del contador que ves en la app de Instagram, ya que Meta a veces usa ventanas de recuento o definiciones distintas entre su app y su API.${r.lowSample?' Con este alcance ('+fmt(r.reach)+' personas), trata los <b>porcentajes</b> de abajo como orientativos, no como diagnóstico fino.':""}</p>
+    <p class="tiny" style="margin:8px 2px 0">ℹ️ "Visualizaciones" son <b>solo de Instagram</b>. Si compartiste este reel también en Facebook, el contador que ves en la cuadrícula de Reels de Instagram suma las dos plataformas (Instagram + Facebook) — para ver el desglose exacto, entra al reel en Instagram → ⋯ → <b>Insights de reel</b>, y compara la línea "Instagram" con este número: deberían coincidir. La API pública no permite leer las vistas de Facebook desde aquí, por eso ReelPulse no puede sumarlas.${r.lowSample?' Además, con este alcance ('+fmt(r.reach)+' personas), trata los <b>porcentajes</b> de abajo como orientativos, no como diagnóstico fino.':""}</p>
     <h2 class="sec">🩺 Diagnóstico por señal</h2>
     <div class="card diag" style="padding:6px 16px">
       ${diagRow("⏱️ Retención", r.watchRatio!=null?pct(r.watchRatio):secs(r.avgWatch), r.subs.retention)}
