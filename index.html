@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b0b12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>ReelPulse — Analizador de Reels</title>
+<style>
+:root{
+  --bg:#0b0b12; --bg2:#12121d; --card:#181826; --card2:#1f1f31;
+  --tx:#f2f2f8; --tx2:#9c9cb8; --tx3:#6b6b88;
+  --line:#26263c;
+  --grad:linear-gradient(45deg,#f9ce34,#ee2a7b 45%,#6228d7);
+  --pink:#ee2a7b; --violet:#8b5cf6; --yellow:#f9ce34;
+  --ok:#34d399; --warn:#fbbf24; --bad:#f87171;
+  --r:18px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  overscroll-behavior-y:none;
+}
+#app{max-width:520px;margin:0 auto;min-height:100%;position:relative;padding-bottom:calc(84px + var(--safe-b))}
+
+/* ---------- header ---------- */
+header{
+  position:sticky;top:0;z-index:40;
+  padding:calc(14px + var(--safe-t)) 18px 12px;
+  background:rgba(11,11,18,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);
+}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;font-size:18px;flex:none}
+header h1{font-size:18px;font-weight:800;letter-spacing:-.3px}
+header .sub{font-size:11px;color:var(--tx2);margin-top:1px}
+#connBadge{margin-left:auto;font-size:11px;font-weight:700;padding:6px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--tx2);cursor:pointer;white-space:nowrap}
+#connBadge.on{color:#0b0b12;background:var(--ok);border-color:var(--ok)}
+#connBadge.demo{color:#0b0b12;background:var(--yellow);border-color:var(--yellow)}
+
+/* ---------- generic ---------- */
+main{padding:16px 16px 8px}
+.view{display:none;animation:fade .22s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h2.sec{font-size:15px;font-weight:800;margin:22px 2px 10px;display:flex;align-items:center;gap:8px}
+h2.sec:first-child{margin-top:4px}
+h2.sec .hint{font-size:11px;font-weight:600;color:var(--tx3);margin-left:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;padding:13px 18px;font-size:14px;font-weight:700;cursor:pointer;color:#fff;background:var(--card2);width:100%}
+.btn.primary{background:var(--grad)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--tx2)}
+.btn:active{transform:scale(.98)}
+input,textarea,select{
+  width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+  color:var(--tx);padding:12px 14px;font-size:14px;outline:none;font-family:inherit;
+}
+input:focus,textarea:focus{border-color:var(--violet)}
+label{font-size:12px;font-weight:700;color:var(--tx2);display:block;margin:14px 0 6px}
+.muted{color:var(--tx2);font-size:12.5px;line-height:1.55}
+.tiny{color:var(--tx3);font-size:11px;line-height:1.5}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--card2);color:var(--tx2)}
+.pill.ok{background:rgba(52,211,153,.14);color:var(--ok)}
+.pill.warn{background:rgba(251,191,36,.14);color:var(--warn)}
+.pill.bad{background:rgba(248,113,113,.14);color:var(--bad)}
+.spin{width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--pink);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ---------- dashboard ---------- */
+.hero{background:linear-gradient(135deg,#1b1230,#25123a 55%,#31103a);border:1px solid #372a55;border-radius:22px;padding:18px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:-40% -20% auto auto;width:220px;height:220px;background:radial-gradient(circle,rgba(238,42,123,.28),transparent 70%)}
+.hero .big{font-size:40px;font-weight:900;letter-spacing:-1px;line-height:1}
+.hero .lbl{font-size:12px;color:var(--tx2);font-weight:600;margin-top:4px}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px}
+.stat .v{font-size:20px;font-weight:800;letter-spacing:-.4px}
+.stat .k{font-size:11px;color:var(--tx2);margin-top:2px;font-weight:600}
+.stat .d{font-size:10.5px;margin-top:4px;font-weight:700}
+.up{color:var(--ok)}.down{color:var(--bad)}
+
+/* ---------- reel cards ---------- */
+.reel{display:flex;gap:13px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:12px;cursor:pointer;transition:transform .12s}
+.reel:active{transform:scale(.985)}
+.thumb{width:86px;height:126px;border-radius:12px;object-fit:cover;flex:none;background:var(--card2);position:relative}
+.thumbwrap{position:relative;flex:none}
+.thumbwrap .dur{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.7);border-radius:6px;font-size:10px;font-weight:700;padding:2px 6px}
+.thumbwrap .ply{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.65);border-radius:6px;font-size:10px;font-weight:700;padding:2px 6px;display:flex;gap:3px;align-items:center}
+.reel .body{flex:1;min-width:0;display:flex;flex-direction:column}
+.reel .cap{font-size:13px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.reel .date{font-size:11px;color:var(--tx3);margin-top:3px}
+.mrow{display:flex;gap:12px;margin-top:auto;padding-top:8px;flex-wrap:wrap}
+.mrow .m{font-size:11.5px;color:var(--tx2);display:flex;gap:4px;align-items:center;font-weight:600}
+.reel .foot{display:flex;align-items:center;gap:8px;margin-top:8px}
+.bar{flex:1;height:5px;border-radius:99px;background:var(--card2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px}
+.scoreN{font-size:12px;font-weight:800;width:56px;text-align:right}
+
+/* score ring */
+.ring{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;flex:none;position:relative}
+.ring .in{width:52px;height:52px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-weight:900;font-size:16px;flex-direction:column}
+.ring .in small{font-size:8px;color:var(--tx2);font-weight:700;display:block;text-align:center}
+
+/* ---------- sheet (detalle) ---------- */
+#sheetWrap{position:fixed;inset:0;z-index:100;display:none}
+#sheetWrap.open{display:block}
+#sheetBg{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px)}
+#sheet{
+  position:absolute;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;
+  background:var(--bg2);border-radius:24px 24px 0 0;border:1px solid var(--line);border-bottom:none;
+  max-height:92dvh;overflow-y:auto;padding:10px 18px calc(26px + var(--safe-b));
+  animation:up .28s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes up{from{transform:translateY(60%)}to{transform:none}}
+.grab{width:42px;height:5px;border-radius:99px;background:var(--line);margin:0 auto}
+.sheetTop{position:sticky;top:0;z-index:6;background:var(--bg2);margin:0 -18px;padding:10px 18px 14px;display:flex;align-items:center;justify-content:center}
+.sheetTop .xbtn{position:absolute;right:18px;top:8px;width:32px;height:32px;border-radius:50%;background:var(--card2);border:1px solid var(--line);color:var(--tx2);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
+.dhead{display:flex;gap:14px}
+.dhead .thumb{width:100px;height:148px}
+.dhead .info{flex:1;min-width:0}
+.dhead .cap{font-size:13.5px;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.metgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px}
+.met{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px 6px;text-align:center}
+.met .v{font-size:15px;font-weight:800}
+.met .k{font-size:9.5px;color:var(--tx2);margin-top:2px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.met .b{font-size:9px;margin-top:3px;font-weight:700}
+
+/* diagnóstico */
+.diag{margin-top:16px}
+.diagrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.diagrow:last-child{border-bottom:none}
+.diagrow .n{font-size:12.5px;font-weight:700;width:118px;flex:none;color:var(--tx2)}
+.diagrow .val{font-size:11px;font-weight:800;width:52px;text-align:right;flex:none}
+.rec{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:15px;padding:13px;margin-bottom:10px}
+.rec.p1{border-left:3px solid var(--bad)}
+.rec.p2{border-left:3px solid var(--warn)}
+.rec.p3{border-left:3px solid var(--ok)}
+.rec .ic{font-size:19px;flex:none}
+.rec .t{font-size:13px;font-weight:800}
+.rec .d{font-size:12px;color:var(--tx2);line-height:1.5;margin-top:3px}
+.rec .d b{color:var(--tx)}
+
+/* optimizador */
+.optbox{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:10px}
+.optbox h4{font-size:12px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.optbox pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.55;background:var(--bg);border-radius:10px;padding:11px;border:1px dashed var(--line)}
+.copybtn{margin-top:8px;font-size:11.5px;font-weight:700;color:var(--violet);background:none;border:none;cursor:pointer;padding:4px 0}
+
+/* ---------- competencia ---------- */
+.comp{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;margin-bottom:10px}
+.av{width:46px;height:46px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-weight:900;font-size:17px;flex:none;color:#fff}
+.comp .u{font-weight:800;font-size:14px}
+.comp .s{font-size:11.5px;color:var(--tx2);margin-top:2px}
+.comp .er{margin-left:auto;text-align:right;flex:none}
+.comp .er .v{font-weight:900;font-size:16px}
+.comp .er .k{font-size:9.5px;color:var(--tx3);font-weight:700}
+.vsbar{display:flex;height:10px;border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.vsbar i{height:100%}
+
+/* ---------- checklist ---------- */
+.chk{display:flex;gap:12px;align-items:flex-start;padding:13px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border:none}
+.box{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:14px;color:#fff;margin-top:1px}
+.chk.done .box{background:var(--grad);border-color:transparent}
+.chk .t{font-size:13.5px;font-weight:700}
+.chk.done .t{color:var(--tx3);text-decoration:line-through}
+.chk .d{font-size:11.5px;color:var(--tx2);margin-top:2px;line-height:1.45}
+.prog{height:8px;border-radius:99px;background:var(--card2);overflow:hidden;margin:8px 0 4px}
+.prog i{display:block;height:100%;background:var(--grad);border-radius:99px;transition:width .3s}
+
+/* ---------- guía ---------- */
+.gcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:11px}
+.gcard h3{font-size:14px;font-weight:800;display:flex;gap:8px;align-items:center;margin-bottom:7px}
+.gcard p,.gcard li{font-size:12.5px;color:var(--tx2);line-height:1.6}
+.gcard ul,.gcard ol{padding-left:18px;margin-top:6px}
+.gcard b{color:var(--tx)}
+.gcard a{color:var(--violet)}
+
+/* ---------- filtros ---------- */
+.filters{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.fch{flex:none;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--tx2);cursor:pointer}
+.fch.on{background:var(--grad);color:#fff;border-color:transparent}
+
+/* ---------- tabbar ---------- */
+nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:50;max-width:520px;margin:0 auto;
+  background:rgba(15,15,24,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);display:flex;padding:8px 4px calc(8px + var(--safe-b));
+}
+nav button{flex:1;background:none;border:none;color:var(--tx3);font-size:10px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 0}
+nav button .i{font-size:21px;line-height:1;filter:grayscale(1) opacity(.55)}
+nav button.on{color:var(--tx)}
+nav button.on .i{filter:none}
+
+/* toast */
+#toast{position:fixed;bottom:calc(100px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(20px);background:var(--card2);border:1px solid var(--line);color:var(--tx);font-size:13px;font-weight:700;padding:11px 18px;border-radius:99px;opacity:0;transition:.25s;z-index:200;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;padding:40px 20px;color:var(--tx2);font-size:13px;line-height:1.6}
+.empty .e{font-size:44px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">📊</div>
+    <div>
+      <h1>ReelPulse</h1>
+      <div class="sub">Analizador de alcance para Reels</div>
+    </div>
+    <button id="connBadge" onclick="go('conectar')">Sin conectar</button>
+  </header>
+
+  <main>
+    <!-- ============ INICIO ============ -->
+    <section class="view active" id="v-inicio">
+      <div id="dashEmpty">
+        <div class="hero">
+          <div style="font-size:13px;font-weight:800;color:#e9b6ff">👋 Bienvenido a ReelPulse</div>
+          <div class="big" style="font-size:26px;margin-top:8px">¿Por qué tus Reels no<br>tienen alcance?</div>
+          <div class="lbl" style="margin-top:8px;line-height:1.5">Conecta tu cuenta de Instagram (o prueba el modo demo) y te diré exactamente qué cambiar, reel por reel, según las señales reales del algoritmo.</div>
+          <div style="display:flex;gap:10px;margin-top:16px;position:relative;z-index:2">
+            <button class="btn primary" style="width:auto;flex:1" onclick="go('conectar')">🔗 Conectar</button>
+            <button class="btn" style="width:auto;flex:1" onclick="loadDemo()">✨ Ver demo</button>
+          </div>
+        </div>
+        <h2 class="sec">🧠 Lo que el algoritmo mide en 2026</h2>
+        <div class="card">
+          <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">⏱️ Tiempo de visualización</div><span class="pill ok">Señal nº1</span></div>
+          <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">📤 Envíos por DM / alcance</div><span class="pill ok">3–5× un like</span></div>
+          <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">🔖 Guardados por alcance</div><span class="pill warn">Muy fuerte</span></div>
+          <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">💬 Comentarios con respuesta</div><span class="pill warn">Fuerte</span></div>
+          <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">❤️ Likes por alcance</div><span class="pill">La más débil</span></div>
+        </div>
+      </div>
+
+      <div id="dashFull" style="display:none">
+        <div class="hero">
+          <div style="display:flex;align-items:center;gap:14px;position:relative;z-index:2">
+            <div class="ring" id="dashRing"><div class="in"><span id="dashScore">–</span><small>ReelScore</small></div></div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:800" id="dashTitle">Salud de tu cuenta</div>
+              <div class="lbl" id="dashMsg" style="line-height:1.45"></div>
+            </div>
+          </div>
+        </div>
+        <div class="statgrid" id="statGrid"></div>
+        <h2 class="sec">📈 Evolución <span class="hint" id="trendHint"></span></h2>
+        <div class="card" id="trendCard"></div>
+        <h2 class="sec">🚨 Diagnóstico principal <span class="hint" onclick="go('reels')">ver reels →</span></h2>
+        <div id="dashRecs"></div>
+        <div id="patternsWrap" style="display:none">
+          <h2 class="sec">📊 Patrones en tus reels</h2>
+          <div class="card" id="patternsCard"></div>
+        </div>
+        <h2 class="sec">🗓️ Tu mejor momento para publicar</h2>
+        <div class="card" id="timeCard"></div>
+      </div>
+    </section>
+
+    <!-- ============ REELS ============ -->
+    <section class="view" id="v-reels">
+      <div class="filters" id="filterRow">
+        <button class="fch on" data-s="score_asc" onclick="setSort(this)">⚠️ Peor score primero</button>
+        <button class="fch" data-s="score_desc" onclick="setSort(this)">🏆 Mejor score</button>
+        <button class="fch" data-s="date" onclick="setSort(this)">🕐 Recientes</button>
+        <button class="fch" data-s="reach" onclick="setSort(this)">👁️ Más alcance</button>
+        <button class="fch" id="refreshChip" onclick="refreshData()" style="display:none">↻ Actualizar datos</button>
+      </div>
+      <div id="reelList"><div class="empty"><div class="e">🎬</div>Conecta tu cuenta o carga el modo demo<br>para analizar tus reels.<br><br><button class="btn primary" style="width:auto;padding:11px 22px" onclick="loadDemo()">✨ Cargar demo</button></div></div>
+    </section>
+
+    <!-- ============ COMPETENCIA ============ -->
+    <section class="view" id="v-comp">
+      <div class="card">
+        <div style="font-size:14px;font-weight:800">🔍 Espía legal de competencia</div>
+        <p class="muted" style="margin-top:6px">Analiza cualquier cuenta <b>Business o Creator</b> pública con la API oficial (business_discovery): seguidores, engagement y sus últimos posts. Compárala contigo.</p>
+        <label>@usuario de la competencia</label>
+        <div style="display:flex;gap:8px">
+          <input id="compUser" placeholder="p. ej. natgeo" autocapitalize="none">
+          <button class="btn primary" style="width:auto;padding:0 18px" onclick="analyzeComp()">Analizar</button>
+        </div>
+        <p class="tiny" style="margin-top:8px">Requiere cuenta conectada. En modo demo se usan datos de ejemplo.</p>
+      </div>
+      <div id="compResults" style="margin-top:14px"></div>
+    </section>
+
+    <!-- ============ CHECKLIST ============ -->
+    <section class="view" id="v-check">
+      <div class="card">
+        <div style="font-size:14px;font-weight:800">✅ Checklist antes de publicar</div>
+        <p class="muted" style="margin-top:4px">Repásala con cada reel. Cada punto está ligado a una señal real del algoritmo.</p>
+        <div class="prog"><i id="chkBar" style="width:0%"></i></div>
+        <div class="tiny" id="chkTxt">0 de 12 completados</div>
+      </div>
+      <div class="card" style="margin-top:12px" id="chkList"></div>
+      <button class="btn ghost" style="margin-top:12px" onclick="resetChk()">↺ Reiniciar checklist</button>
+    </section>
+
+    <!-- ============ GUÍA ============ -->
+    <section class="view" id="v-guia">
+      <div class="gcard">
+        <h3>🧠 Cómo decide Instagram el alcance de un reel</h3>
+        <p>Instagram muestra tu reel a un grupo pequeño (seguidores + no seguidores) y mide cómo reacciona. Si las señales son buenas, lo enseña a olas cada vez mayores. Las señales, por orden de peso confirmado por Adam Mosseri:</p>
+        <ol>
+          <li><b>Watch time</b>: segundos vistos y % de finalización. Es la señal nº 1. Los primeros 1,5–3 s (el "hook") deciden casi todo.</li>
+          <li><b>Envíos por alcance</b>: que te compartan por DM pesa 3–5 veces más que un like. Es la señal que más alcance a NO seguidores genera.</li>
+          <li><b>Guardados y comentarios</b> significativos.</li>
+          <li><b>Likes</b>: la señal más débil del grupo.</li>
+        </ol>
+        <p style="margin-top:6px">Además, en 2026 Instagram prioriza <b>contenido humano y original</b> (penaliza refritos con marca de agua de TikTok y contenido 100 % IA sin toque humano) y recomienda <b>publicar reels con regularidad</b> (3–5/semana) y usar <b>palabras clave en el texto</b> (SEO interno) más que hashtags masivos.</p>
+      </div>
+      <div class="gcard">
+        <h3>📉 Causas típicas de poco alcance</h3>
+        <ul>
+          <li>Hook débil: la gente se va antes del segundo 3 → watch time bajo.</li>
+          <li>Reels demasiado largos sin ritmo (ideal 7–30 s si no retienes bien).</li>
+          <li>Marca de agua de TikTok o calidad < 720p.</li>
+          <li>Sin motivo para compartir/guardar (no hay valor práctico ni emoción).</li>
+          <li>Caption sin palabras clave buscables y hashtags irrelevantes o >10.</li>
+          <li>Publicar cuando tu audiencia duerme, o semanas sin publicar.</li>
+          <li>Contenido no "recomendable" (temas sensibles, clickbait, engagement bait) → Instagram lo excluye de Explorar/Reels. Revisa <b>Estado de la cuenta</b> en la app.</li>
+        </ul>
+      </div>
+      <div class="gcard">
+        <h3>🛡️ ¿Pueden suspenderme la cuenta por conectar esta app?</h3>
+        <p><b>No por usar la API oficial en modo lectura, que es lo único que hace ReelPulse.</b> Los casos históricos de suspensiones vinieron siempre de otra cosa:</p>
+        <ul>
+          <li><b>Bots de automatización</b> que daban likes, seguían y comentaban por ti (Instagress, Mass Planner, Instaplus… Instagram las cerró en 2017 y baneó cuentas que las usaban).</li>
+          <li><b>Apps que piden tu contraseña</b> de Instagram para entrar "como si fueran tú" (API privada no oficial / scrapers). Eso viola las condiciones de uso y dispara los detectores de actividad sospechosa.</li>
+          <li><b>Comprar seguidores o engagement</b>, follow/unfollow masivo, comentarios automáticos: desde finales de 2025 Meta lo detecta por patrones y restringe o desactiva cuentas en oleadas.</li>
+        </ul>
+        <p style="margin-top:6px">ReelPulse está en el lado seguro por diseño:</p>
+        <ul>
+          <li>Usa <b>solo la Graph API oficial de Meta</b>, el canal explícitamente permitido y documentado para cuentas Business/Creator. Nunca te pide la contraseña: usas un token que <b>tú</b> generas en la web de Meta y que puedes revocar cuando quieras.</li>
+          <li>Es <b>100 % lectura</b>: no publica, no comenta, no da likes, no sigue a nadie ni envía mensajes. No hay ninguna "acción automatizada" que penalizar.</li>
+          <li>Respeta los <b>límites de peticiones</b> de Meta (~200 llamadas/hora por usuario): guarda las métricas en caché en tu dispositivo y hace pocas llamadas espaciadas. Superar el límite además no suspende la cuenta: solo devuelve un error temporal.</li>
+          <li>Analizar competencia vía <i>business_discovery</i> también es una función oficial de la API (no es scraping): solo devuelve datos públicos de cuentas profesionales.</li>
+        </ul>
+        <p style="margin-top:6px"><b>Lo que sí debes evitar</b> (con esta o cualquier app): pegar tu token en webs desconocidas, usar servicios de "crecimiento automático", comprar interacciones, y apps que pidan usuario y contraseña de Instagram.</p>
+      </div>
+      <div class="gcard">
+        <h3>🔗 Hasta dónde puede conectarse esta app (API oficial de Meta)</h3>
+        <p>Con una cuenta <b>Business o Creator</b> y un token de la <b>Instagram Graph API</b>, ReelPulse puede leer directamente desde tu navegador (nada se envía a servidores de terceros):</p>
+        <ul>
+          <li>Tus reels con miniatura, caption, fecha y enlace.</li>
+          <li>Métricas por reel: visualizaciones, alcance, likes, comentarios, <b>guardados, compartidos y tiempo medio de visualización</b>.</li>
+          <li>Competencia pública vía <i>business_discovery</i> (seguidores + últimos posts con likes/comentarios).</li>
+        </ul>
+        <p style="margin-top:6px">Lo que la API <b>no</b> permite a nadie: ver el desglose de retención segundo a segundo (solo en la app de IG), datos de cuentas personales privadas, ni "hackear" el algoritmo. Publicar/editar reels vía API es posible, pero la optimización se hace antes de subir.</p>
+      </div>
+      <div class="gcard">
+        <h3>💰 ¿Por qué no coincide con Instagram si promocioné un reel?</h3>
+        <p>ReelPulse muestra <b>solo alcance orgánico</b> — el que consigue tu contenido gratis, por el algoritmo — y es así a propósito: es la única forma de saber si tu contenido funciona por sí solo, sin dinero de por medio.</p>
+        <p style="margin-top:6px">Cuando promocionas un reel con un anuncio, la pantalla de Insights de Instagram mezcla las vistas/interacciones orgánicas con las del anuncio (la propia app te avisa: "incluye datos de tu reel y de todos los anuncios"). Esos datos de Ads Manager viven en un sistema totalmente aparte de Meta, y la <b>API pública no da acceso a ellos</b> — por eso, en un reel promocionado, el número de ReelPulse será siempre menor que el de Instagram, y es lo correcto: la diferencia es justo el alcance que compraste.</p>
+        <p style="margin-top:6px" class="tiny">(Lo mismo pasa si compartes el reel también en Facebook: la cuadrícula de Reels suma ambas plataformas, la API solo puede leer Instagram.)</p>
+      </div>
+      <div class="gcard">
+        <h3>🔑 Conseguir tu token en 5 pasos (gratis)</h3>
+        <ol>
+          <li>Pasa tu cuenta a <b>Profesional</b> (Business/Creator) en la app de Instagram y vincúlala a una Página de Facebook.</li>
+          <li>Entra en <a href="https://developers.facebook.com" target="_blank" rel="noopener">developers.facebook.com</a> → crea una app (tipo Business).</li>
+          <li>Abre el <b>Graph API Explorer</b>, selecciona tu app y pide permisos: <i>instagram_basic, instagram_manage_insights, pages_show_list, business_management</i>.</li>
+          <li>Genera el token, pulsa "Generate Access Token" y cópialo.</li>
+          <li>Pégalo en la pestaña <b>Conectar</b> de esta app. Listo ✅ (El token caduca; puedes generar uno de larga duración de 60 días en la misma web.)</li>
+        </ol>
+      </div>
+      <div class="gcard">
+        <h3>🔍 Activar Competencia: el token clásico</h3>
+        <p>El análisis de competencia (<i>business_discovery</i>) solo existe en la API clásica (graph.facebook.com), no en la de "Instagram Login". Para activarlo necesitas un segundo token generado en el <b>Graph API Explorer</b> con los permisos <i>instagram_basic</i>, <i>instagram_manage_insights</i> y <i>pages_show_list</i>, con tu Instagram vinculado a una Página de Facebook.</p>
+        <p style="margin-top:6px"><b>Truco si el selector de permisos del Explorer falla</b> (al escribir un permiso borra el anterior): los permisos concedidos se acumulan en tu cuenta aunque los pidas de uno en uno. Añade <i>instagram_basic</i> → Generate Access Token → autoriza. Repite el ciclo con <i>instagram_manage_insights</i> y luego con <i>pages_show_list</i>. El último token generado incluye todos los permisos ya concedidos. Pégalo en <b>Conectar → Competencia</b> y pulsa "Guardar y verificar".</p>
+      </div>
+      <div class="gcard">
+        <h3>📱 Instalar como app</h3>
+        <p>En Safari/Chrome del móvil: <b>Compartir → Añadir a pantalla de inicio</b>. ReelPulse funciona como una app nativa a pantalla completa.</p>
+      </div>
+    </section>
+
+    <!-- ============ CONECTAR ============ -->
+    <section class="view" id="v-conectar">
+      <div class="card">
+        <div style="font-size:15px;font-weight:800">🔗 Conectar tu Instagram</div>
+        <p class="muted" style="margin-top:6px">Pega tu <b>token de acceso</b> de la Graph API de Meta. Se guarda solo en tu dispositivo y las llamadas van directas de tu navegador a Instagram. <span style="color:var(--violet);font-weight:700" onclick="go('guia')">¿Cómo consigo el token? →</span></p>
+        <div style="margin-top:10px;background:rgba(52,211,153,.09);border:1px solid rgba(52,211,153,.3);border-radius:12px;padding:11px 13px">
+          <div style="font-size:12px;font-weight:800;color:var(--ok)">🛡️ Conexión segura para tu cuenta</div>
+          <div class="tiny" style="margin-top:4px;color:var(--tx2)">Solo lectura por la API oficial de Meta: no publica, no automatiza acciones ni pide tu contraseña, y usa caché para quedar muy por debajo de los límites de Meta. Instagram no penaliza este uso. <span style="color:var(--violet);font-weight:700" onclick="go('guia')">Más detalles →</span></div>
+        </div>
+        <label>Token de acceso</label>
+        <textarea id="tokenIn" rows="3" placeholder="EAAG..." autocapitalize="none"></textarea>
+        <label>ID de cuenta de Instagram <span style="font-weight:400;color:var(--tx3)">(opcional, lo detecto solo)</span></label>
+        <input id="igidIn" placeholder="1784xxxxxxxxxxx" inputmode="numeric">
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn primary" onclick="connect()">Conectar y analizar</button>
+        </div>
+        <div id="connMsg" style="margin-top:12px"></div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div style="font-size:14px;font-weight:800">🔍 Competencia <span class="pill" style="margin-left:4px">opcional</span></div>
+        <p class="muted" style="margin-top:4px">Meta no incluye el análisis de competencia (<i>business_discovery</i>) en los tokens de "Instagram Login". Si quieres esa pestaña con datos reales, pega aquí un <b>token clásico</b> generado vía tu Página de Facebook (Graph API Explorer, permisos: <i>instagram_basic, instagram_manage_insights, pages_show_list</i>). Se usa solo para Competencia; el resto de la app sigue con tu token principal.</p>
+        <label>Token clásico (EAAG…)</label>
+        <textarea id="fbTokIn" rows="2" placeholder="EAAG…" autocapitalize="none"></textarea>
+        <button class="btn" style="margin-top:12px" onclick="saveFbToken()">Guardar y verificar</button>
+        <div id="fbTokMsg" style="margin-top:8px"></div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div style="font-size:14px;font-weight:800">✨ ¿Sin token todavía?</div>
+        <p class="muted" style="margin-top:4px">Explora la app completa con una cuenta de ejemplo realista.</p>
+        <button class="btn" style="margin-top:12px" onclick="loadDemo()">Cargar modo demo</button>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div style="font-size:14px;font-weight:800">🤖 Optimizador con IA <span class="pill" style="margin-left:4px">opcional</span></div>
+        <p class="muted" style="margin-top:4px">Con una clave de la <b>API de Claude</b> (console.anthropic.com), el optimizador reescribe hooks y captions con IA de verdad, usando las métricas reales de cada reel. Sin clave, funciona el motor de reglas local. La clave se guarda solo en tu dispositivo.</p>
+        <label>Clave de la API de Claude (sk-ant-…)</label>
+        <input id="aiKeyIn" placeholder="sk-ant-api03-…" autocapitalize="none">
+        <button class="btn" style="margin-top:12px" onclick="saveAiKey()">Guardar clave</button>
+        <div id="aiKeyMsg" style="margin-top:8px"></div>
+      </div>
+      <div class="card" style="margin-top:12px" id="discCard" hidden>
+        <div style="font-size:13px;font-weight:800">Cuentas encontradas</div>
+        <div id="discList"></div>
+      </div>
+      <button class="btn ghost" style="margin-top:12px" onclick="disconnect()" id="discBtn" hidden>Desconectar y borrar datos locales</button>
+    </section>
+  </main>
+
+  <nav>
+    <button data-v="inicio" class="on" onclick="go('inicio')"><span class="i">🏠</span>Inicio</button>
+    <button data-v="reels" onclick="go('reels')"><span class="i">🎬</span>Reels</button>
+    <button data-v="comp" onclick="go('comp')"><span class="i">🔍</span>Competencia</button>
+    <button data-v="check" onclick="go('check')"><span class="i">✅</span>Checklist</button>
+    <button data-v="guia" onclick="go('guia')"><span class="i">📖</span>Guía</button>
+  </nav>
+
+  <!-- sheet detalle -->
+  <div id="sheetWrap"><div id="sheetBg" onclick="closeSheet()"></div><div id="sheet"></div></div>
+  <div id="toast"></div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   ReelPulse — analizador de alcance para Instagram Reels
+   Todo corre en el navegador: el token nunca sale de tu dispositivo.
+===================================================================== */
+const RP_VERSION = "2026-08-19.1"; // súbelo en cada cambio para que el auto-check detecte la novedad
+
+/* Auto-actualización: los iconos guardados en pantalla de inicio de iOS cachean
+   el HTML de forma muy persistente (más allá de la caché HTTP normal). En cada
+   apertura, comprobamos en segundo plano si hay una versión más nueva publicada
+   y recargamos una sola vez si la hay, sin que el usuario tenga que borrar el
+   icono manualmente. */
+(async function checkForUpdate(){
+  if (sessionStorage.getItem("rp_justUpdated")) return; // evita bucles si algo va mal
+  try{
+    const res = await fetch(location.pathname + "?_v=" + Date.now(), {cache:"no-store"});
+    const html = await res.text();
+    const m = html.match(/const RP_VERSION\s*=\s*"([^"]+)"/);
+    if (m && m[1] && m[1] !== RP_VERSION){
+      sessionStorage.setItem("rp_justUpdated", "1");
+      location.href = location.pathname + "?_v=" + Date.now();
+    }
+  }catch(e){ /* sin red o fallo puntual: seguimos con la versión actual */ }
+})();
+
+const GRAPH_FB = "https://graph.facebook.com/v23.0";
+const GRAPH_IG = "https://graph.instagram.com/v23.0";
+const LS = { token:"rp_token", igid:"rp_igid", user:"rp_user", chk:"rp_chk", mode:"rp_mode", cache:"rp_insCache", hist:"rp_history", aikey:"rp_aikey", base:"rp_base", fbtok:"rp_fbtoken", fbigid:"rp_fbigid" };
+const CACHE_TTL = 3*3600e3; // 3 h: equilibrio entre datos frescos y respeto a los límites de Meta
+let apiCalls = 0;
+
+const state = {
+  mode: null,            // 'demo' | 'live'
+  token: null, igid: null, username: null,
+  apiBase: GRAPH_IG,      // graph.instagram.com (Instagram Login) o graph.facebook.com (clásico, vía Página)
+  reels: [],             // normalizados
+  sort: "score_asc",
+  lastFetch: null,
+  _followers: null,
+};
+
+/* ---------------- utilidades ---------------- */
+const $ = id => document.getElementById(id);
+const fmt = n => n==null ? "–" : n>=1e6 ? (n/1e6).toFixed(1)+"M" : n>=1e3 ? (n/1e3).toFixed(1)+"k" : String(n);
+const pct = x => x==null ? "–" : (x*100).toFixed(1)+"%";
+const secs = s => s==null ? "–" : s>=60 ? Math.floor(s/60)+"m "+Math.round(s%60)+"s" : Math.round(s)+"s";
+function toast(t){ const e=$("toast"); e.textContent=t; e.classList.add("show"); clearTimeout(e._t); e._t=setTimeout(()=>e.classList.remove("show"),2600); }
+function scoreColor(s){ return s>=70?"var(--ok)":s>=45?"var(--warn)":"var(--bad)"; }
+function esc(s){ return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function svgThumb(emoji,h1,h2,label){
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='180' height='270'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${h1}'/><stop offset='1' stop-color='${h2}'/></linearGradient></defs><rect width='180' height='270' fill='url(%23g)'/><text x='90' y='125' font-size='64' text-anchor='middle'>${emoji}</text><text x='90' y='210' font-size='15' font-weight='700' fill='rgba(255,255,255,.92)' text-anchor='middle' font-family='sans-serif'>${label}</text></svg>`;
+  return "data:image/svg+xml;utf8,"+svg.replace(/#/g,"%23");
+}
+
+/* ---------------- datos demo ---------------- */
+function demoReels(){
+  const day = 864e5, now = Date.now();
+  const mk = (o,i) => {
+    const t = new Date(now - o.d*day); t.setHours(o.hour ?? 12, 0, 0, 0);
+    return Object.assign({ id:"demo"+i, media_product_type:"REELS", permalink:"#", timestamp:t.toISOString() },o);
+  };
+  return [
+    mk({d:2,  cap:"POV: descubres el truco de edición que usan los que SÍ tienen alcance 🤯 Guárdalo para tu próximo reel. #reels #edicion #creadores", emoji:"🎬", h1:"#7c3aed",h2:"#ec4899", lbl:"Truco edición", views:48200, reach:31400, likes:2210, comments:187, saved:1490, shares:830, avg:11.2, dur:14, hour:19, dow:2 },1),
+    mk({d:5,  cap:"Mi rutina de mañana completa ☀️ #morningroutine #lifestyle #fyp #viral #parati #instagood #love #follow #like4like #reels2026 #trend #explore", emoji:"☀️", h1:"#f59e0b",h2:"#ef4444", lbl:"Rutina mañana", views:1830, reach:1520, likes:74, comments:3, saved:6, shares:2, avg:4.1, dur:52, hour:3, dow:4 },2),
+    mk({d:8,  cap:"3 errores que matan el alcance de tus reels (el 2º lo hace todo el mundo) ⬇️ Comenta \"GUÍA\" y te mando la lista completa por DM.", emoji:"🚫", h1:"#0ea5e9",h2:"#6366f1", lbl:"3 errores", views:22600, reach:16800, likes:1130, comments:342, saved:760, shares:410, avg:16.8, dur:22, hour:20, dow:0 },3),
+    mk({d:11, cap:"vlog del finde 🌿", emoji:"🌿", h1:"#10b981",h2:"#065f46", lbl:"Vlog finde", views:2400, reach:2100, likes:96, comments:5, saved:11, shares:4, avg:6.5, dur:38, hour:14, dow:6 },4),
+    mk({d:14, cap:"La receta de pasta en 20 segundos que rompió mi cocina 🍝 Ingredientes en pantalla. Guárdala 🔖 #recetasfaciles #pasta #cocina", emoji:"🍝", h1:"#f97316",h2:"#dc2626", lbl:"Pasta 20s", views:31500, reach:22300, likes:1680, comments:98, saved:2110, shares:530, avg:17.5, dur:20, hour:13, dow:0 },5),
+    mk({d:17, cap:"Nuevo video!! link en bio 👆👆 #video #new #followme #instadaily #likeforlike #comment #share #viralvideos #trending #explorepage #reelsinstagram #fypシ", emoji:"📢", h1:"#64748b",h2:"#334155", lbl:"Link en bio", views:980, reach:870, likes:31, comments:1, saved:2, shares:1, avg:2.9, dur:41, hour:23, dow:3 },6),
+    mk({d:21, cap:"Antes y después de ordenar mi estudio en 15 min ⏱️ ¿Cuál prefieres? Comenta 1 o 2 👇 #antesydespues #organizacion #deco", emoji:"🛋️", h1:"#a855f7",h2:"#312e81", lbl:"Antes/después", views:12800, reach:9900, likes:720, comments:214, saved:390, shares:150, avg:12.3, dur:18, hour:18, dow:1 },7),
+    mk({d:25, cap:"Probando la tendencia de audio del momento 💃 #dance #trend", emoji:"💃", h1:"#ec4899",h2:"#8b5cf6", lbl:"Trend audio", views:5600, reach:4700, likes:310, comments:12, saved:25, shares:38, avg:7.8, dur:12, hour:21, dow:5 },8),
+  ].map(r => normalize({
+    id:r.id, caption:r.cap, media_product_type:"REELS", media_type:"VIDEO",
+    permalink:r.permalink, timestamp:r.timestamp,
+    thumbnail_url:svgThumb(r.emoji,r.h1,r.h2,r.lbl),
+    like_count:r.likes, comments_count:r.comments,
+  },{ views:r.views, reach:r.reach, saved:r.saved, shares:r.shares, avgWatch:r.avg, likes:r.likes, comments:r.comments }, r.dur));
+}
+
+/* ---------------- normalización + scoring ---------------- */
+function normalize(media, ins, duration){
+  const r = {
+    id: media.id,
+    caption: media.caption || "",
+    thumb: media.thumbnail_url || media.media_url || "",
+    permalink: media.permalink,
+    ts: new Date(media.timestamp),
+    likes: ins.likes ?? media.like_count ?? 0,
+    comments: ins.comments ?? media.comments_count ?? 0,
+    views: ins.views ?? null,
+    reach: ins.reach ?? null,
+    saved: ins.saved ?? null,
+    shares: ins.shares ?? null,
+    avgWatch: ins.avgWatch ?? null,   // segundos
+    duration: duration ?? null,       // segundos
+  };
+  computeScore(r);
+  return r;
+}
+
+/* Benchmarks (por alcance) basados en medias del sector 2025-26 */
+const BM = {
+  shares: {good:.010, ok:.004},   // envíos/alcance
+  saves:  {good:.020, ok:.008},
+  comments:{good:.005, ok:.002},
+  likes:  {good:.06,  ok:.03},
+  watchRatio:{good:.85, ok:.55},  // vistoMedio/duración
+  avgWatch:{good:12, ok:6},       // fallback sin duración
+};
+const MIN_REACH_FOR_RATE = 50; // por debajo de esto, 1 sola interacción distorsiona el % — mejor no fiarse
+function rate(v, reach){ return (v!=null && reach>=MIN_REACH_FOR_RATE) ? v/reach : null; }
+function band(x, bm){ return x==null ? null : x>=bm.good ? 1 : x>=bm.ok ? (x-bm.ok)/(bm.good-bm.ok)*0.5+0.5 : x/bm.ok*0.5; }
+
+function analyzeCaption(cap){
+  const lines = cap.split("\n").filter(Boolean);
+  const hook = (lines[0]||"").replace(/#\S+/g,"").trim();
+  const hashtags = (cap.match(/#[\p{L}\p{N}_]+/gu)||[]);
+  const lower = cap.toLowerCase();
+  const cta = /(comenta|comparte|compárte|guarda|guárda|envía|enviá|mándase|manda(le)? |sígueme|sigue(me)?|dime|cuéntame|responde|etiqueta|tag |dm)/i.test(lower);
+  const banned = /(link en (la )?bio|like4like|likeforlike|follow ?4 ?follow|followme|sígueme y te sigo)/i.test(lower);
+  return {
+    hookLen: hook.length, hook,
+    nTags: hashtags.length, tags: hashtags,
+    cta, banned,
+    keywords: cap.replace(/#\S+/g,"").trim().split(/\s+/).length >= 8, // caption con texto real buscable
+    question: /\?/.test(cap),
+  };
+}
+
+function computeScore(r){
+  const c = analyzeCaption(r.caption);
+  r.capA = c;
+  r.lowSample = r.reach!=null && r.reach < MIN_REACH_FOR_RATE;
+  r.rShares = rate(r.shares, r.reach);
+  r.rSaves  = rate(r.saved, r.reach);
+  r.rComments = rate(r.comments, r.reach);
+  r.rLikes  = rate(r.likes, r.reach);
+  r.watchRatio = (r.avgWatch!=null && r.duration) ? Math.min(r.avgWatch/r.duration,1.3) : null;
+
+  // sub-puntuaciones 0..1 (null = sin dato)
+  const s = {};
+  s.retention = r.watchRatio!=null ? band(r.watchRatio,BM.watchRatio) : band(r.avgWatch,BM.avgWatch);
+  s.shares = band(r.rShares,BM.shares);
+  s.saves = band(r.rSaves,BM.saves);
+  s.comments = band(r.rComments,BM.comments);
+  s.likes = band(r.rLikes,BM.likes);
+  let cap = 0.35;
+  if (c.hookLen>0 && c.hookLen<=70) cap+=0.2;
+  if (c.cta) cap+=0.15;
+  if (c.nTags>=2 && c.nTags<=6) cap+=0.15; else if (c.nTags>10) cap-=0.15;
+  if (c.keywords) cap+=0.15;
+  if (c.banned) cap-=0.25;
+  s.caption = Math.max(0,Math.min(1,cap));
+  r.subs = s;
+
+  // pesos alineados con el algoritmo: retención > envíos > guardados > comentarios > caption > likes
+  const W = { retention:.34, shares:.22, saves:.15, comments:.10, caption:.12, likes:.07 };
+  let tot=0, wtot=0;
+  for (const k in W){ if (s[k]!=null){ tot += s[k]*W[k]; wtot += W[k]; } }
+  r.score = wtot ? Math.round(tot/wtot*100) : 50;
+  r.recs = buildRecs(r);
+}
+
+/* -------- motor de recomendaciones -------- */
+function buildRecs(r){
+  const recs = [];
+  const c = r.capA, s = r.subs;
+  const add = (p,ic,t,d)=>recs.push({p,ic,t,d});
+
+  if (r.lowSample)
+    add(2,"👀","Alcance aún muy bajo para fiar el detalle","Con solo "+fmt(r.reach)+" personas alcanzadas, los porcentajes de guardados/comentarios/envíos no son fiables (1 interacción cambia el % entero). La señal que sí vale ahora mismo: revisa el hook y el horario de publicación — con tan poco alcance, Instagram probablemente ya decidió no ampliar la difusión en la primera ola.");
+
+  // retención / hook
+  const durKnown = r.watchRatio!=null;
+  if (s.retention!=null && s.retention<0.5){
+    if (durKnown && r.duration>30)
+      add(1,"⏱️","Acorta el reel o sube el ritmo","La gente ve de media <b>"+secs(r.avgWatch)+"</b> de "+secs(r.duration)+" ("+pct(r.watchRatio)+"). El watch time es la señal nº 1. Prueba versiones de <b>7–20 s</b>, corta cada 1,5–2 s y elimina intros.");
+    else
+      add(1,"🪝","Tu hook no retiene","Los espectadores se van pronto (media "+secs(r.avgWatch)+")."+(durKnown?"":" <i>(No pude leer la duración exacta del vídeo — compara tú este dato con lo largo que es realmente.)</i>")+" Los <b>primeros 1,5–3 s</b> deciden el alcance: empieza con el resultado final, una pregunta polémica o movimiento, y pon un texto-gancho en pantalla.");
+  } else if (s.retention!=null && s.retention>=0.85){
+    add(3,"🔁","Retención excelente — busca el bucle","Ya retienes muy bien. Haz que el final conecte con el principio (loop) para sumar re-visualizaciones, que cuentan como watch time extra.");
+  }
+
+  // shares
+  if (s.shares!=null && s.shares<0.5)
+    add(1,"📤","Nadie lo comparte (y es la señal que más alcance da)","Solo "+pct(r.rShares)+" de quienes lo vieron lo enviaron. Un envío por DM pesa <b>3–5× más que un like</b>. Crea contenido \"para alguien\": «mándaselo a ese amigo que…», listas útiles, humor identificable. Añade el CTA <b>«Compártelo»</b> hablado o en pantalla.");
+  else if (s.shares!=null && s.shares>=0.9)
+    add(3,"🚀","Muy compartido — replica la fórmula","Con "+pct(r.rShares)+" de envíos/alcance este formato es oro. Haz una serie con el mismo enfoque.");
+
+  // saves
+  if (s.saves!=null && s.saves<0.5)
+    add(2,"🔖","Poca razón para guardarlo","Guardados: "+pct(r.rSaves)+" del alcance. Da valor \"consultable\": pasos, recetas, plantillas, datos en pantalla, y termina con «Guárdalo para cuando lo necesites».");
+
+  // comentarios
+  if (s.comments!=null && s.comments<0.5)
+    add(2,"💬","Provoca conversación","Muy pocos comentarios ("+fmt(r.comments)+"). Haz una pregunta concreta en el caption o pide elegir entre 2 opciones. Responde a todos en la primera hora: los hilos con respuesta pesan más.");
+
+  // caption / SEO
+  if (c.hookLen>70) add(2,"✂️","Primera línea demasiado larga","En el feed solo se ven ~60–70 caracteres. Mete el gancho al principio: «"+esc(c.hook.slice(0,40))+"…» podría condensarse en una frase corta y potente.");
+  if (!c.cta) add(2,"🗣️","Falta llamada a la acción","El caption no pide nada. Un CTA claro (comparte / guarda / comenta X) multiplica las señales que el algoritmo premia.");
+  if (c.nTags>10) add(2,"#️⃣","Demasiados hashtags ("+c.nTags+")","Instagram recomienda pocos y específicos. Deja <b>3–5</b> de nicho; los genéricos (#fyp #viral) ya no aportan y parecen spam.");
+  if (c.nTags===0) add(3,"#️⃣","Añade 3–5 hashtags de nicho","No sustituyen al SEO, pero ayudan a clasificar el tema del reel.");
+  if (!c.keywords) add(2,"🔎","Caption sin palabras clave","Instagram es ya un buscador: describe QUÉ es el reel con palabras que tu audiencia buscaría (mín. 1–2 frases descriptivas). Eso te mete en resultados de búsqueda y en el feed de interés.");
+  if (c.banned) add(1,"🚫","Frases que penalizan","Detecté «link en bio» / «follow4follow»-style. El algoritmo trata el engagement-bait y sacar a la gente de la app como señal negativa. Sustitúyelo por «Comenta X y te lo mando por DM».");
+
+  // horario
+  if (r.ts && (r.ts.getHours()<7 || r.ts.getHours()>=23))
+    add(2,"🕐","Publicado a las "+r.ts.getHours()+":00","La primera hora define la primera ola de alcance. Publica cuando tu audiencia está activa (mira la pestaña Inicio → mejor momento).");
+
+  if (!recs.length) add(3,"🏆","Reel ejemplar","Este reel cumple todas las señales. Analiza qué hiciste (tema, hook, duración, CTA) y conviértelo en tu plantilla.");
+  return recs.sort((a,b)=>a.p-b.p);
+}
+
+/* -------- optimizador de caption -------- */
+function optimizeCaption(r){
+  const c = r.capA;
+  const clean = r.caption.replace(/#[\p{L}\p{N}_]+/gu,"").replace(/\n{2,}/g,"\n").trim();
+  const topic = (clean.split("\n")[0]||"tu tema").replace(/[.!?].*$/,"").slice(0,50).trim() || "tu tema";
+  const hooks = [
+    "El error nº1 que comete todo el mundo con "+topic.toLowerCase(),
+    topic.charAt(0).toUpperCase()+topic.slice(1)+" — en 15 segundos",
+    "Nadie te cuenta esto sobre "+topic.toLowerCase(),
+    "Guarda esto antes de que lo necesites 🔖",
+  ];
+  const keepTags = c.tags.filter(t=>!/^#(fyp|viral|parati|foryou|love|follow|like4like|likeforlike|instagood|explore|trending)/i.test(t)).slice(0,4);
+  const cta = c.question ? "Compártelo con alguien que lo necesite 📤" : "¿Tú también? Cuéntamelo abajo 👇 y compártelo con alguien que lo necesite 📤";
+  return {
+    hook: hooks[r.id.length % hooks.length],
+    caption: hooks[r.id.length % hooks.length] + "\n\n" + (clean ? clean+"\n\n" : "") + cta + "\n\n" + (keepTags.length?keepTags.join(" "):"#"+topic.toLowerCase().split(/\s+/).slice(0,2).join("")),
+    tips: [
+      c.hookLen>70 ? "Primera línea nueva: corta y con intriga." : "Mantengo tu gancho pero al frente.",
+      "CTA doble: comentario + compartir (las 2 señales más fuertes).",
+      keepTags.length ? "Hashtags filtrados: quité los genéricos, quedan "+keepTags.length+" de nicho." : "Añade 3–5 hashtags específicos de tu nicho.",
+    ],
+  };
+}
+
+/* ---------------- API Instagram ----------------
+   Dos superficies posibles:
+   - graph.instagram.com  → token de "API de Instagram con inicio de sesión de Instagram" (recomendado por Meta, sin Página de Facebook)
+   - graph.facebook.com   → token clásico vía Página de Facebook vinculada
+*/
+async function api(path, params={}, base=null, token=null){
+  const u = new URL((base||state.apiBase) + path);
+  for (const k in params) u.searchParams.set(k, params[k]);
+  u.searchParams.set("access_token", token||state.token);
+  apiCalls++;
+  const res = await fetch(u);
+  const j = await res.json();
+  if (j.error){
+    if (j.error.code===4 || j.error.code===17) throw new Error("Límite temporal de peticiones de Meta alcanzado. No pasa nada con tu cuenta: espera ~1 hora y reintenta (la app usa caché para que esto casi nunca ocurra).");
+    throw Object.assign(new Error(j.error.message), {code:j.error.code, sub:j.error.error_subcode});
+  }
+  return j;
+}
+
+/* ejecuta como máximo n peticiones a la vez (respeto de rate limits) */
+async function pool(items, n, fn){
+  const res = new Array(items.length); let i = 0;
+  await Promise.all(Array.from({length:Math.min(n,items.length)}, async ()=>{
+    while (i < items.length){ const idx = i++; res[idx] = await fn(items[idx], idx); }
+  }));
+  return res;
+}
+const insCache = {
+  read(id){ try{ const c=JSON.parse(localStorage.getItem(LS.cache)||"{}")[id]; return (c && Date.now()-c.t<CACHE_TTL)? c.ins : null; }catch(e){ return null; } },
+  write(id, ins){ try{ const all=JSON.parse(localStorage.getItem(LS.cache)||"{}"); all[id]={t:Date.now(), ins}; localStorage.setItem(LS.cache, JSON.stringify(all)); }catch(e){} },
+};
+
+async function connect(){
+  // limpia espacios/saltos de línea que a veces se cuelan al copiar desde Word/Notas
+  const tok = $("tokenIn").value.replace(/\s+/g, "");
+  if (!tok) return toast("Pega primero tu token");
+  state.token = tok;
+  const msg = $("connMsg"); msg.innerHTML = '<div class="spin"></div>';
+  try{
+    let igid = $("igidIn").value.trim();
+
+    // 1) Probar el flujo moderno: "API de Instagram con inicio de sesión de Instagram" (graph.instagram.com)
+    if (!igid){
+      try{
+        const me = await api("/me", {fields:"id,username,account_type"}, GRAPH_IG);
+        state.apiBase = GRAPH_IG;
+        igid = me.id;
+        state.username = me.username;
+      }catch(e){ /* no es ese tipo de token: probamos el flujo clásico */ }
+    }
+
+    // 2) Flujo clásico: token vía Página de Facebook vinculada
+    if (!igid){
+      state.apiBase = GRAPH_FB;
+      const me = await api("/me/accounts", {fields:"name,instagram_business_account{id,username,profile_picture_url,followers_count}"});
+      const accs = (me.data||[]).filter(p=>p.instagram_business_account);
+      if (!accs.length) throw new Error("No encontré ninguna cuenta de Instagram vinculada. Si generaste el token con la API de Instagram (inicio de sesión de Instagram) revisa que incluya instagram_business_basic e instagram_business_manage_insights. Si usaste el flujo clásico, vincula tu IG a una página de Facebook y revisa los permisos (instagram_basic, instagram_manage_insights, pages_show_list).");
+      if (accs.length>1){
+        $("discCard").hidden = false;
+        $("discList").innerHTML = accs.map(p=>`<div class="comp" style="margin-top:10px" onclick="pickAcc('${p.instagram_business_account.id}','${esc(p.instagram_business_account.username)}')"><div class="av">${esc((p.instagram_business_account.username||"?")[0].toUpperCase())}</div><div><div class="u">@${esc(p.instagram_business_account.username)}</div><div class="s">${fmt(p.instagram_business_account.followers_count)} seguidores</div></div></div>`).join("");
+        msg.innerHTML = '<span class="pill warn">Elige una cuenta ⬇️</span>';
+        return;
+      }
+      igid = accs[0].instagram_business_account.id;
+      state.username = accs[0].instagram_business_account.username;
+    }
+    await finishConnect(igid);
+  }catch(e){
+    msg.innerHTML = `<span class="pill bad" style="white-space:normal;line-height:1.5">⚠️ ${esc(e.message)}</span>`;
+  }
+}
+async function pickAcc(id, user){ state.username=user; await finishConnect(id); }
+
+async function finishConnect(igid){
+  state.igid = igid;
+  const msg = $("connMsg"); msg.innerHTML = '<div class="spin"></div>';
+  await fetchReels();
+  state.mode = "live";
+  localStorage.setItem(LS.token, state.token);
+  localStorage.setItem(LS.igid, state.igid);
+  localStorage.setItem(LS.user, state.username||"");
+  localStorage.setItem(LS.mode, "live");
+  localStorage.setItem(LS.base, state.apiBase);
+  msg.innerHTML = '<span class="pill ok">✅ Conectado como @'+esc(state.username||igid)+'</span>';
+  $("discBtn").hidden = false;
+  refreshAll();
+  toast("✅ "+state.reels.length+" reels analizados");
+  go("inicio");
+}
+
+async function fetchReels(){
+  const fields = "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count";
+  const m = await api(`/${state.igid}/media`, {fields, limit:50});
+  const reels = (m.data||[]).filter(x=>x.media_product_type==="REELS");
+  if (!reels.length) throw new Error("La cuenta no tiene reels públicos recientes.");
+  // insights en paralelo. Métricas núcleo con degradación (nunca usar "plays": retirada en v22+),
+  // y el tiempo de visualización en una llamada aparte para que su fallo no arrastre al resto.
+  const coreSets = ["views,reach,saved,shares", "reach,saved,shares", "reach"];
+  apiCalls = 1; // la llamada a /media
+  const out = await pool(reels, 3, async media=>{
+    const cached = insCache.read(media.id);
+    if (cached) return normalize(media, cached, null);
+    let ins = {};
+    for (const set of coreSets){
+      try{
+        const r = await api(`/${media.id}/insights`, {metric:set});
+        for (const d of (r.data||[])){
+          const v = d.values?.[0]?.value;
+          if (d.name==="views") ins.views=v;
+          if (d.name==="reach") ins.reach=v;
+          if (d.name==="saved") ins.saved=v;
+          if (d.name==="shares") ins.shares=v;
+        }
+        break;
+      }catch(e){ /* prueba el siguiente set */ }
+    }
+    try{
+      const r = await api(`/${media.id}/insights`, {metric:"ig_reels_avg_watch_time"});
+      const v = r.data?.[0]?.values?.[0]?.value;
+      if (v!=null) ins.avgWatch = v/1000; // ms → s
+    }catch(e){ /* no disponible para este reel: seguimos sin esa señal */ }
+    // solo cachear resultados con datos reales: un fallo temporal no debe quedarse pegado horas
+    if (ins.reach!=null || ins.views!=null) insCache.write(media.id, ins);
+    return normalize(media, ins, null);
+  });
+  state.reels = out;
+  state.lastFetch = new Date();
+  saveSnapshot();
+  // duración real: la API no la da; la leemos de los metadatos del vídeo
+  reels.forEach((media,i)=>{
+    if (!media.media_url) return;
+    const v = document.createElement("video");
+    v.preload = "metadata"; v.src = media.media_url;
+    v.onloadedmetadata = ()=>{ if (v.duration && isFinite(v.duration)){ out[i].duration = v.duration; computeScore(out[i]); if($("v-reels").classList.contains("active")) renderReels(); } };
+  });
+}
+
+function disconnect(){
+  Object.values(LS).forEach(k=>localStorage.removeItem(k));
+  location.reload();
+}
+
+/* ---------------- render ---------------- */
+function go(v){
+  document.querySelectorAll(".view").forEach(e=>e.classList.remove("active"));
+  $("v-"+v).classList.add("active");
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
+  window.scrollTo({top:0});
+}
+function setSort(btn){
+  document.querySelectorAll(".fch").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on"); state.sort = btn.dataset.s; renderReels();
+}
+function sorted(){
+  const r=[...state.reels];
+  if (state.sort==="score_asc") r.sort((a,b)=>a.score-b.score);
+  if (state.sort==="score_desc") r.sort((a,b)=>b.score-a.score);
+  if (state.sort==="date") r.sort((a,b)=>b.ts-a.ts);
+  if (state.sort==="reach") r.sort((a,b)=>(b.reach||0)-(a.reach||0));
+  return r;
+}
+
+function ringHTML(score, id){
+  const col = scoreColor(score);
+  return `<div class="ring" ${id?`id="${id}"`:""} style="background:conic-gradient(${col} ${score*3.6}deg, var(--card2) 0)"><div class="in"><span style="color:${col}">${score}</span><small>ReelScore</small></div></div>`;
+}
+
+function renderReels(){
+  if (!state.reels.length) return;
+  $("reelList").innerHTML = sorted().map(r=>{
+    const col = scoreColor(r.score);
+    const worst = r.recs[0];
+    return `<div class="reel" onclick="openSheet('${r.id}')">
+      <div class="thumbwrap">
+        <img class="thumb" src="${r.thumb}" loading="lazy" alt="">
+        ${r.views!=null?`<span class="ply">▶ ${fmt(r.views)}</span>`:""}
+        ${r.duration?`<span class="dur">${secs(r.duration)}</span>`:""}
+      </div>
+      <div class="body">
+        <div class="cap">${esc(r.caption)||"<i>Sin caption</i>"}</div>
+        <div class="date">${r.ts.toLocaleDateString("es",{day:"numeric",month:"short"})} · ${String(r.ts.getHours()).padStart(2,"0")}:00${r.lowSample?' · <span class="pill warn" style="padding:1px 7px;font-size:9.5px">muestra pequeña</span>':""}</div>
+        <div class="mrow">
+          <span class="m">👁️ ${fmt(r.reach)}</span>
+          <span class="m">📤 ${fmt(r.shares)}</span>
+          <span class="m">🔖 ${fmt(r.saved)}</span>
+          <span class="m">💬 ${fmt(r.comments)}</span>
+        </div>
+        <div class="foot">
+          <div class="bar"><i style="width:${r.score}%;background:${col}"></i></div>
+          <div class="scoreN" style="color:${col}">${r.score}/100</div>
+        </div>
+        ${worst && worst.p===1 ? `<div class="tiny" style="margin-top:6px;color:${col}">⚠️ ${worst.t}</div>`:""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function renderDash(){
+  if (!state.reels.length) return;
+  $("dashEmpty").style.display="none";
+  $("dashFull").style.display="block";
+  const rs = state.reels;
+  const avg = a=>{ const v=a.filter(x=>x!=null); return v.length? v.reduce((x,y)=>x+y,0)/v.length : null; };
+  const score = Math.round(avg(rs.map(r=>r.score)));
+  const col = scoreColor(score);
+  $("dashRing").style.background = `conic-gradient(${col} ${score*3.6}deg, var(--card2) 0)`;
+  $("dashScore").textContent = score; $("dashScore").style.color = col;
+  $("dashTitle").textContent = (state.username?"@"+state.username+" — ":"")+(score>=70?"Cuenta sana 🎉":score>=45?"Hay margen de mejora":"Alcance frenado: hay que actuar");
+  const worstSub = Object.entries({retention:"el tiempo de visualización",shares:"los envíos por DM",saves:"los guardados",comments:"los comentarios",caption:"los captions (SEO)"}).map(([k,l])=>[avg(rs.map(r=>r.subs[k])),l]).filter(x=>x[0]!=null).sort((a,b)=>a[0]-b[0])[0];
+  $("dashMsg").textContent = "Analicé "+rs.length+" reels. Tu punto más débil ahora mismo: "+(worstSub?worstSub[1]:"")+ ". Abajo tienes el plan.";
+  const reachAvg=avg(rs.map(r=>r.reach)), shr=avg(rs.map(r=>r.rShares)), sav=avg(rs.map(r=>r.rSaves)), wt=avg(rs.map(r=>r.avgWatch));
+  const half=Math.ceil(rs.length/2), recent=rs.slice().sort((a,b)=>b.ts-a.ts);
+  const rNew=avg(recent.slice(0,half).map(r=>r.reach)), rOld=avg(recent.slice(half).map(r=>r.reach));
+  const trend = (rNew&&rOld)? (rNew-rOld)/rOld : null;
+  $("statGrid").innerHTML = [
+    ["👁️ Alcance medio", fmt(Math.round(reachAvg||0)), trend!=null?`<span class="${trend>=0?"up":"down"}">${trend>=0?"▲":"▼"} ${Math.abs(trend*100).toFixed(0)}% vs anteriores</span>`:""],
+    ["📤 Envíos / alcance", pct(shr), shr>=BM.shares.good?'<span class="up">Excelente</span>':shr>=BM.shares.ok?'<span style="color:var(--warn)">Mejorable</span>':'<span class="down">Bajo — prioridad</span>'],
+    ["🔖 Guardados / alcance", pct(sav), sav>=BM.saves.good?'<span class="up">Excelente</span>':sav>=BM.saves.ok?'<span style="color:var(--warn)">Mejorable</span>':'<span class="down">Bajo</span>'],
+    ["⏱️ Visualización media", secs(wt), wt>=BM.avgWatch.good?'<span class="up">Muy buena</span>':wt>=BM.avgWatch.ok?'<span style="color:var(--warn)">Media</span>':'<span class="down">Corta — hook débil</span>'],
+  ].map(([k,v,d])=>`<div class="stat"><div class="v">${v}</div><div class="k">${k}</div><div class="d">${d}</div></div>`).join("");
+
+  // top 3 recomendaciones globales (las prioridad 1 más repetidas)
+  const count={};
+  rs.forEach(r=>r.recs.filter(x=>x.p<3).forEach(x=>{ count[x.t]=count[x.t]||{n:0,x}; count[x.t].n++; }));
+  const top = Object.values(count).sort((a,b)=>b.n-a.n || a.x.p-b.x.p).slice(0,3);
+  $("dashRecs").innerHTML = top.length? top.map(({n,x})=>`<div class="rec p${x.p}"><div class="ic">${x.ic}</div><div><div class="t">${x.t} <span class="pill" style="margin-left:4px">${n} reel${n>1?"s":""}</span></div><div class="d">${x.d}</div></div></div>`).join("") : '<div class="rec p3"><div class="ic">🏆</div><div><div class="t">Sin problemas graves</div><div class="d">Tus reels cumplen las señales clave. Sigue la checklist para mantenerlo.</div></div></div>';
+
+  // mejor momento: engagement por franja
+  const slots={};
+  rs.forEach(r=>{ const k=r.ts.getDay()+"-"+(r.ts.getHours()<12?"mañana":r.ts.getHours()<18?"tarde":"noche"); const er=(r.rShares||0)*3+(r.rSaves||0)*2+(r.rLikes||0); slots[k]=slots[k]||[]; slots[k].push(er); });
+  const days=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  const best=Object.entries(slots).map(([k,v])=>[k,v.reduce((a,b)=>a+b,0)/v.length]).sort((a,b)=>b[1]-a[1]).slice(0,2);
+  renderTrend();
+  renderPatterns();
+  $("timeCard").innerHTML = best.length? best.map(([k],i)=>{ const [d,f]=k.split("-"); return `<div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">${i===0?"🥇":"🥈"} ${days[+d].charAt(0).toUpperCase()+days[+d].slice(1)} por la ${f}</div><span class="pill ok">mejor engagement</span></div>`;}).join("")+`<p class="tiny" style="margin-top:8px">Basado en el rendimiento de tus propios reels. Publica en la franja en que tu audiencia responde y estarás online la primera hora para contestar comentarios.</p>` : '<p class="muted">Aún no hay datos suficientes.</p>';
+}
+
+/* -------- histórico + gráficas -------- */
+function saveSnapshot(){
+  if (!state.reels.length) return;
+  try{
+    const avg = a=>{ const v=a.filter(x=>x!=null); return v.length? v.reduce((x,y)=>x+y,0)/v.length : null; };
+    const snap = { t: new Date().toISOString().slice(0,10),
+      score: Math.round(avg(state.reels.map(r=>r.score))),
+      reach: Math.round(avg(state.reels.map(r=>r.reach))||0) };
+    let h = JSON.parse(localStorage.getItem(LS.hist)||"[]").filter(x=>x.t!==snap.t);
+    h.push(snap); h = h.slice(-90);
+    localStorage.setItem(LS.hist, JSON.stringify(h));
+  }catch(e){}
+}
+function getHistory(){
+  if (state.mode==="demo"){
+    const s = Math.round(state.reels.reduce((a,r)=>a+r.score,0)/state.reels.length);
+    const deltas=[-16,-13,-17,-9,-11,-5,-7,0];
+    return deltas.map((d,i)=>({ t:new Date(Date.now()-(deltas.length-1-i)*7*864e5).toISOString().slice(0,10),
+      score: Math.max(5,Math.min(95,s+d)), reach: null }));
+  }
+  try{ return JSON.parse(localStorage.getItem(LS.hist)||"[]"); }catch(e){ return []; }
+}
+function renderTrend(){
+  const card=$("trendCard"), hist=getHistory();
+  $("trendHint").textContent = state.mode==="live"
+    ? "Actualizado "+(state.lastFetch?state.lastFetch.toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit"}):"–")+" · "+apiCalls+" llamadas API"
+    : "";
+  let html = "";
+  if (hist.length>=2){
+    const W=320,H=64,P=4, xs=hist.map((_,i)=>P+i*(W-2*P)/(hist.length-1));
+    const min=Math.min(...hist.map(h=>h.score)), max=Math.max(...hist.map(h=>h.score));
+    const y=v=>H-P-(v-min)/Math.max(max-min,1)*(H-2*P);
+    const pts=hist.map((h,i)=>xs[i].toFixed(1)+","+y(h.score).toFixed(1)).join(" ");
+    const last=hist[hist.length-1], first=hist[0];
+    const up=last.score>=first.score;
+    html += `<div style="font-size:12px;font-weight:800;color:var(--tx2)">ReelScore medio por análisis</div>
+    <svg viewBox="0 0 ${W} ${H+14}" style="width:100%;display:block;margin-top:6px" id="sparkSvg">
+      <polygon points="${xs[0]},${H-P} ${pts} ${xs[xs.length-1]},${H-P}" fill="rgba(139,92,246,.15)"/>
+      <polyline points="${pts}" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${hist.map((h,i)=>`<circle cx="${xs[i]}" cy="${y(h.score)}" r="7" fill="transparent" data-i="${i}"/>`).join("")}
+      <circle cx="${xs[xs.length-1]}" cy="${y(last.score)}" r="4" fill="var(--violet)" stroke="var(--bg2)" stroke-width="2"/>
+      <text x="${xs[xs.length-1]}" y="${H+10}" text-anchor="end" font-size="11" font-weight="800" fill="${up?"var(--ok)":"var(--bad)"}">${last.score} ${up?"▲":"▼"}</text>
+      <text x="${xs[0]}" y="${H+10}" font-size="10" fill="var(--tx3)">${first.t.slice(5)}</text>
+    </svg>
+    <div class="tiny" id="sparkOut" style="min-height:14px;margin-top:2px">Toca la línea para ver cada punto · ${up?"tendencia al alza 🎉":"tendencia a la baja — aplica el plan de abajo"}</div>`;
+  } else {
+    html += `<div class="tiny">📈 Aún no hay histórico: cada vez que analices tu cuenta guardo una foto del ReelScore y el alcance (solo en tu dispositivo) para dibujar aquí tu evolución.</div>`;
+  }
+  // alcance por reel (cronológico)
+  const rs = state.reels.slice().sort((a,b)=>a.ts-b.ts).filter(r=>r.reach!=null);
+  if (rs.length>=2){
+    const mx = Math.max(...rs.map(r=>r.reach));
+    html += `<div style="font-size:12px;font-weight:800;color:var(--tx2);margin-top:14px">Alcance por reel (antiguo → reciente)</div>
+    <div style="display:flex;align-items:flex-end;gap:2px;height:64px;margin-top:8px">
+      ${rs.map(r=>`<div data-id="${r.id}" class="tbar" style="flex:1;height:${Math.max(6,Math.round(r.reach/mx*100))}%;background:var(--pink);opacity:.85;border-radius:4px 4px 0 0;min-width:8px"></div>`).join("")}
+    </div>
+    <div class="tiny" id="barOut" style="min-height:14px;margin-top:4px">Toca una barra para ver el reel</div>`;
+  }
+  card.innerHTML = html;
+  card.querySelectorAll("#sparkSvg circle[data-i]").forEach(c=>c.addEventListener("click",()=>{
+    const h=hist[+c.dataset.i];
+    $("sparkOut").innerHTML = `<b style="color:var(--tx)">${h.t}</b> · ReelScore ${h.score}${h.reach?` · alcance medio ${fmt(h.reach)}`:""}`;
+  }));
+  card.querySelectorAll(".tbar").forEach(b=>b.addEventListener("click",()=>{
+    const r=state.reels.find(x=>x.id===b.dataset.id);
+    $("barOut").innerHTML = `<b style="color:var(--tx)">${fmt(r.reach)} de alcance</b> · ${esc(r.caption.slice(0,40))}… <span style="color:var(--violet);font-weight:700" onclick="openSheet('${r.id}')">abrir →</span>`;
+  }));
+}
+
+/* -------- patrones (correlaciones simples sobre tus propios reels) -------- */
+function cmpScore(yes, no, minEach=2){
+  const ys=yes.map(r=>r.score), ns=no.map(r=>r.score);
+  if (ys.length<minEach || ns.length<minEach) return null;
+  const ay=Math.round(ys.reduce((a,b)=>a+b,0)/ys.length), an=Math.round(ns.reduce((a,b)=>a+b,0)/ns.length);
+  if (Math.abs(ay-an)<8) return null; // diferencia mínima para no reportar ruido
+  return {ay, an, diff:ay-an, nYes:ys.length, nNo:ns.length};
+}
+function detectPatterns(reels){
+  if (reels.length<4) return [];
+  const out = [];
+  const withDur = reels.filter(r=>r.duration!=null);
+  if (withDur.length>=4){
+    const c = cmpScore(withDur.filter(r=>r.duration<=20), withDur.filter(r=>r.duration>20));
+    if (c) out.push({strength:Math.abs(c.diff), html: c.diff>0
+      ? `⏱️ Tus reels de <b>≤20 s</b> puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> los más largos (${c.nYes} vs ${c.nNo} reels) — corto te está funcionando mejor.`
+      : `⏱️ Tus reels de <b>más de 20 s</b> puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> los cortos (${c.nYes} vs ${c.nNo} reels) — no tengas miedo de alargar si el contenido lo pide.`});
+  }
+  let c = cmpScore(reels.filter(r=>r.capA?.cta), reels.filter(r=>r.capA && !r.capA.cta));
+  if (c && c.diff>0) out.push({strength:c.diff, html:`🗣️ Con <b>llamada a la acción</b> en el caption, tus reels puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> sin ella (${c.nYes} vs ${c.nNo} reels).`});
+  c = cmpScore(reels.filter(r=>r.capA && r.capA.nTags>=2 && r.capA.nTags<=6), reels.filter(r=>r.capA && (r.capA.nTags===0 || r.capA.nTags>6)));
+  if (c && c.diff>0) out.push({strength:c.diff, html:`#️⃣ Con <b>3–6 hashtags de nicho</b>, tus reels puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> con 0 o demasiados (${c.nYes} vs ${c.nNo} reels).`});
+  c = cmpScore(reels.filter(r=>r.capA?.question), reels.filter(r=>r.capA && !r.capA.question));
+  if (c && c.diff>0) out.push({strength:c.diff, html:`❓ Cuando haces una <b>pregunta</b> en el caption, tus reels puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> sin ella (${c.nYes} vs ${c.nNo} reels).`});
+  return out.sort((a,b)=>b.strength-a.strength).slice(0,4);
+}
+function renderPatterns(){
+  const patterns = detectPatterns(state.reels);
+  $("patternsWrap").style.display = patterns.length ? "" : "none";
+  if (!patterns.length) return;
+  $("patternsCard").innerHTML = patterns.map((p,i)=>`<div class="diagrow" style="align-items:flex-start;${i?"":"padding-top:0"}"><p style="font-size:12.5px;line-height:1.55">${p.html}</p></div>`).join("");
+}
+
+/* -------- sheet detalle -------- */
+function openSheet(id){
+  const r = state.reels.find(x=>x.id===id); if(!r) return;
+  const col = scoreColor(r.score);
+  const diagRow=(name,val,sc)=>{ const c=sc==null?"var(--tx3)":sc>=0.75?"var(--ok)":sc>=0.45?"var(--warn)":"var(--bad)";
+    return `<div class="diagrow"><div class="n">${name}</div><div class="bar"><i style="width:${sc==null?0:Math.round(sc*100)}%;background:${c}"></i></div><div class="val" style="color:${c}">${val}</div></div>`; };
+  const bmB=(x,bm)=>x==null?"":x>=bm.good?'<div class="b" style="color:var(--ok)">↑ sobre media</div>':x>=bm.ok?'<div class="b" style="color:var(--warn)">≈ media</div>':'<div class="b" style="color:var(--bad)">↓ bajo media</div>';
+  const opt = optimizeCaption(r);
+  $("sheet").innerHTML = `
+    <div class="sheetTop"><div class="grab"></div><button class="xbtn" onclick="closeSheet()" aria-label="Cerrar">✕</button></div>
+    <div class="dhead">
+      <div class="thumbwrap"><img class="thumb" src="${r.thumb}" alt="">${r.duration?`<span class="dur">${secs(r.duration)}</span>`:""}</div>
+      <div class="info">
+        ${ringHTML(r.score)}
+        <div class="cap" style="margin-top:8px">${esc(r.caption)||"<i>Sin caption</i>"}</div>
+        <div class="date" style="font-size:11px;color:var(--tx3);margin-top:5px">${r.ts.toLocaleDateString("es",{weekday:"long",day:"numeric",month:"long"})} · ${String(r.ts.getHours()).padStart(2,"0")}:00</div>
+        ${r.permalink&&r.permalink!=="#"?`<a href="${r.permalink}" target="_blank" rel="noopener" style="font-size:12px;color:var(--violet);font-weight:700">Abrir en Instagram ↗</a>`:""}
+      </div>
+    </div>
+    <div class="metgrid">
+      <div class="met"><div class="v">${fmt(r.views)}</div><div class="k">Visualiz.</div></div>
+      <div class="met"><div class="v">${fmt(r.reach)}</div><div class="k">Alcance</div></div>
+      <div class="met"><div class="v">${secs(r.avgWatch)}</div><div class="k">Ver medio</div>${r.watchRatio!=null?bmB(r.watchRatio,BM.watchRatio):""}</div>
+      <div class="met"><div class="v">${fmt(r.shares)}</div><div class="k">Envíos</div>${bmB(r.rShares,BM.shares)}</div>
+      <div class="met"><div class="v">${fmt(r.saved)}</div><div class="k">Guardados</div>${bmB(r.rSaves,BM.saves)}</div>
+      <div class="met"><div class="v">${fmt(r.comments)}</div><div class="k">Coment.</div>${bmB(r.rComments,BM.comments)}</div>
+    </div>
+    <p class="tiny" style="margin:8px 2px 0">ℹ️ Estos datos son <b>solo alcance orgánico</b> (el que consigue el algoritmo gratis) — es intencional, es lo que esta app mide. Si un número de Instagram no coincide, la causa suele ser una de estas dos: (1) compartiste el reel también en <b>Facebook</b> — la cuadrícula de Reels suma ambas plataformas, la API solo lee Instagram; o (2) <b>promocionaste el reel con un anuncio</b> — en Instagram → ⋯ → Insights, si ves una pestaña "Anuncio" junto a "Reel", esa pantalla mezcla alcance pagado con el orgánico. Ninguno de los dos es accesible desde la API pública, así que ReelPulse no puede sumarlos — y no debería: lo que compraste no dice nada sobre si tu contenido funciona solo.${r.lowSample?' Además, con este alcance ('+fmt(r.reach)+' personas), trata los <b>porcentajes</b> de abajo como orientativos, no como diagnóstico fino.':""}</p>
+    <h2 class="sec">🩺 Diagnóstico por señal</h2>
+    <div class="card diag" style="padding:6px 16px">
+      ${diagRow("⏱️ Retención", r.watchRatio!=null?pct(r.watchRatio):secs(r.avgWatch), r.subs.retention)}
+      ${diagRow("📤 Envíos", pct(r.rShares), r.subs.shares)}
+      ${diagRow("🔖 Guardados", pct(r.rSaves), r.subs.saves)}
+      ${diagRow("💬 Comentarios", pct(r.rComments), r.subs.comments)}
+      ${diagRow("❤️ Likes", pct(r.rLikes), r.subs.likes)}
+      ${diagRow("📝 Caption/SEO", Math.round(r.subs.caption*100)+"%", r.subs.caption)}
+    </div>
+    <h2 class="sec">🛠️ Qué cambiar en este reel</h2>
+    ${r.recs.map(x=>`<div class="rec p${x.p}"><div class="ic">${x.ic}</div><div><div class="t">${x.t}</div><div class="d">${x.d}</div></div></div>`).join("")}
+    <h2 class="sec">✨ Optimizador: caption reescrito</h2>
+    <div class="optbox">
+      <h4>🪝 Hook sugerido para el próximo intento</h4>
+      <pre id="optHook">${esc(opt.hook)}</pre>
+      <button class="copybtn" onclick="copyTxt('optHook')">📋 Copiar hook</button>
+    </div>
+    <div class="optbox">
+      <h4>📝 Caption optimizado (SEO + CTA + hashtags filtrados)</h4>
+      <pre id="optCap">${esc(opt.caption)}</pre>
+      <button class="copybtn" onclick="copyTxt('optCap')">📋 Copiar caption</button>
+      <div class="tiny" style="margin-top:8px">${opt.tips.map(t=>"• "+esc(t)).join("<br>")}</div>
+    </div>
+    <div class="optbox">
+      <h4>🤖 Reescritura con Claude (IA)</h4>
+      ${localStorage.getItem(LS.aikey)
+        ? `<p class="muted">La IA usará las métricas y debilidades reales de este reel para proponer 3 hooks y un caption a medida.</p><button class="btn primary" style="margin-top:10px" onclick="aiRewrite('${r.id}')">✨ Generar con IA</button>`
+        : `<p class="muted">Guarda tu clave de la API de Claude en <b>Conectar</b> y este botón reescribirá hooks y captions con IA usando las métricas reales del reel.</p><button class="btn ghost" style="margin-top:10px" onclick="closeSheet();go('conectar')">Configurar IA →</button>`}
+      <div id="aiOut" style="margin-top:10px"></div>
+    </div>
+    <p class="tiny" style="margin:6px 2px 0">💡 Instagram permite <b>editar el caption</b> de un reel ya publicado (⋯ → Editar) sin perder métricas. El hook de vídeo aplícalo al re-grabar o en tu próximo reel del mismo tema.</p>
+    <button class="btn ghost" style="margin-top:14px" onclick="closeSheet()">Cerrar</button>`;
+  $("sheetWrap").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function closeSheet(){ $("sheetWrap").classList.remove("open"); document.body.style.overflow=""; }
+function copyTxt(id){ navigator.clipboard.writeText($(id).textContent).then(()=>toast("📋 Copiado")); }
+
+/* -------- optimizador con Claude (IA) -------- */
+function saveAiKey(){
+  const k = $("aiKeyIn").value.trim();
+  if (!k){ localStorage.removeItem(LS.aikey); $("aiKeyMsg").innerHTML='<span class="pill">Clave borrada</span>'; return; }
+  if (!k.startsWith("sk-ant-")){ $("aiKeyMsg").innerHTML='<span class="pill bad">La clave debe empezar por sk-ant-</span>'; return; }
+  localStorage.setItem(LS.aikey, k);
+  $("aiKeyMsg").innerHTML='<span class="pill ok">✅ Guardada en este dispositivo</span>';
+}
+async function claudeCall(prompt){
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key": localStorage.getItem(LS.aikey),
+      "anthropic-version":"2023-06-01",
+      "anthropic-beta":"server-side-fallback-2026-07-01",
+      "anthropic-dangerous-direct-browser-access":"true",
+    },
+    body: JSON.stringify({ model:"claude-opus-5", max_tokens:2000, fallbacks:"default",
+      messages:[{role:"user", content:prompt}] }),
+  });
+  const j = await res.json();
+  if (j.error) throw new Error(j.error.message||"Error de la API de Claude");
+  if (j.stop_reason==="refusal") throw new Error("Claude declinó esta petición.");
+  return (j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+}
+async function aiRewrite(id){
+  const r = state.reels.find(x=>x.id===id); if(!r) return;
+  const out = $("aiOut"); out.innerHTML = '<div class="spin"></div>';
+  const debil = r.recs.filter(x=>x.p<3).map(x=>x.t).join("; ") || "ninguna grave";
+  const prompt = `Eres experto en el algoritmo de Instagram Reels 2026 (señales por peso: watch time, envíos por DM, guardados, comentarios; likes es la más débil; el caption funciona como SEO interno).
+Reescribe el contenido de este reel para maximizar su alcance.
+
+Caption actual: """${r.caption||"(sin caption)"}"""
+Métricas: alcance ${r.reach??"?"}, envíos/alcance ${pct(r.rShares)}, guardados/alcance ${pct(r.rSaves)}, comentarios ${r.comments}, tiempo medio visto ${secs(r.avgWatch)}${r.duration?` de ${secs(r.duration)}`:""}.
+Debilidades detectadas: ${debil}.
+
+Responde SOLO con JSON válido, en español, con esta forma exacta:
+{"hooks":["hook 1 (texto en pantalla para los primeros 2s)","hook 2","hook 3"],"caption":"caption completo optimizado con primera línea gancho, 1-2 frases con palabras clave buscables, CTA de compartir/guardar y 3-5 hashtags de nicho","consejos":["consejo accionable 1","consejo 2"]}`;
+  try{
+    const txt = await claudeCall(prompt);
+    const m = txt.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error("Respuesta inesperada de la IA");
+    const d = JSON.parse(m[0]);
+    out.innerHTML = `
+      ${(d.hooks||[]).map((h,i)=>`<pre id="aih${i}" style="margin-top:${i?8:0}px">${esc(h)}</pre><button class="copybtn" onclick="copyTxt('aih${i}')">📋 Copiar hook ${i+1}</button>`).join("")}
+      <pre id="aicap" style="margin-top:10px">${esc(d.caption||"")}</pre><button class="copybtn" onclick="copyTxt('aicap')">📋 Copiar caption</button>
+      ${(d.consejos||[]).length?`<div class="tiny" style="margin-top:8px">${d.consejos.map(c=>"• "+esc(c)).join("<br>")}</div>`:""}`;
+  }catch(e){
+    out.innerHTML = `<span class="pill bad" style="white-space:normal;line-height:1.5">⚠️ ${esc(e.message)}</span><p class="tiny" style="margin-top:6px">Comprueba la clave en Conectar y tu saldo en console.anthropic.com.</p>`;
+  }
+}
+
+/* -------- competencia -------- */
+async function saveFbToken(){
+  const t = $("fbTokIn").value.replace(/\s+/g, "");
+  const msg = $("fbTokMsg");
+  if (!t){
+    localStorage.removeItem(LS.fbtok); localStorage.removeItem(LS.fbigid);
+    msg.innerHTML = '<span class="pill">Token clásico borrado</span>'; return;
+  }
+  msg.innerHTML = '<div class="spin"></div>';
+  try{
+    const me = await api("/me/accounts", {fields:"instagram_business_account{id,username}"}, GRAPH_FB, t);
+    const acc = (me.data||[]).find(p=>p.instagram_business_account);
+    if (!acc) throw new Error("Este token no tiene ninguna Página de Facebook con Instagram vinculado. Necesita los permisos pages_show_list e instagram_basic.");
+    localStorage.setItem(LS.fbtok, t);
+    localStorage.setItem(LS.fbigid, acc.instagram_business_account.id);
+    msg.innerHTML = '<span class="pill ok">✅ Competencia activada vía @'+esc(acc.instagram_business_account.username||"")+'</span>';
+    toast("🔍 Análisis de competencia activado");
+  }catch(e){
+    msg.innerHTML = '<span class="pill bad" style="white-space:normal;line-height:1.5">⚠️ '+esc(e.message)+'</span>';
+  }
+}
+async function myFollowers(){
+  if (state.mode!=="live") return 15000+Math.floor(Math.random()*5000); // demo
+  if (state._followers!=null) return state._followers;
+  try{
+    const r = await api(`/${state.igid}`, {fields:"followers_count"}, state.apiBase);
+    state._followers = r.followers_count ?? null;
+  }catch(e){ state._followers = null; }
+  return state._followers;
+}
+async function analyzeComp(){
+  const u = $("compUser").value.trim().replace(/^@/,"");
+  if(!u) return toast("Escribe un @usuario");
+  const box=$("compResults"); box.innerHTML='<div class="spin"></div>';
+  // misma base que usaremos para la competencia: interacción / seguidores (NO alcance — comparar
+  // alcance propio contra seguidores ajenos siempre te haría "ganar" a ti, sin significar nada)
+  const myFollow = await myFollowers();
+  const mine = (state.reels.length && myFollow) ? {
+    er: avgOf(state.reels.map(r=> (r.likes+r.comments)/myFollow)),
+    followers: myFollow,
+    user: state.username||"tú",
+  } : null;
+  try{
+    let prof;
+    if (state.mode==="live"){
+      const mediaFields = "like_count,comments_count,media_product_type,timestamp,caption,permalink";
+      const visualFields = mediaFields+",media_type,media_url,thumbnail_url";
+      const fbTok = localStorage.getItem(LS.fbtok), fbIgid = localStorage.getItem(LS.fbigid);
+      let q;
+      try{
+        // intenta pedir también miniatura/vídeo — si el campo no existe para esta versión, degradamos
+        q = await api(`/${fbTok&&fbIgid?fbIgid:state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){${visualFields}}}`}, fbTok&&fbIgid?GRAPH_FB:state.apiBase, fbTok&&fbIgid?fbTok:null);
+      }catch(eVisual){
+        try{
+          q = await api(`/${fbTok&&fbIgid?fbIgid:state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){${mediaFields}}}`}, fbTok&&fbIgid?GRAPH_FB:state.apiBase, fbTok&&fbIgid?fbTok:null);
+        }catch(e1){
+          if (!fbTok && state.apiBase===GRAPH_IG) throw new Error("Confirmado por Meta: los tokens de \"Instagram Login\" no incluyen business_discovery. Para activar esta pestaña, añade el \"token clásico\" opcional en Conectar → Competencia.");
+          throw new Error("Meta responde: "+e1.message+". Revisa que el token incluya instagram_manage_insights.");
+        }
+      }
+      prof = q.business_discovery;
+    } else {
+      await new Promise(r=>setTimeout(r,700));
+      const capsDemo = ["3 trucos para que tu casa parezca de revista en 5 min 🏡 Guárdalo","Antes/después de este rincón — ¿cuál prefieres, 1 o 2?","POV: encuentras la lámina perfecta para ese hueco vacío","Vídeo random del finde","Cómo combino texturas sin que quede sobrecargado"];
+      prof = { username:u, name:u, followers_count: 15400+Math.floor(Math.random()*90000), media_count: 240,
+        media:{data:Array.from({length:12},(_,i)=>({like_count:200+Math.floor(Math.random()*3800), comments_count:5+Math.floor(Math.random()*220), media_product_type: i%3?"REELS":"FEED", timestamp:new Date(Date.now()-i*3*864e5).toISOString(), caption:capsDemo[i%capsDemo.length], thumbnail_url:svgThumb(["🏡","🛋️","✨","🎨","🖼️"][i%5],["#6366f1","#ec4899","#f59e0b","#10b981","#8b5cf6"][i%5],["#312e81","#831843","#7c2d12","#065f46","#4c1d95"][i%5],"Demo "+(i+1))}))} };
+    }
+    const posts = prof.media?.data||[];
+    const erOf = p => (p.like_count+p.comments_count)/Math.max(prof.followers_count,1);
+    const erPosts = posts.map(erOf);
+    const er = erPosts.length? erPosts.reduce((a,b)=>a+b,0)/erPosts.length : null;
+    const reelPosts = posts.filter(p=>p.media_product_type==="REELS");
+    const feedPosts = posts.filter(p=>p.media_product_type!=="REELS");
+    const erReels = reelPosts.length? avgOf(reelPosts.map(erOf)) : null;
+    const erFeed = feedPosts.length? avgOf(feedPosts.map(erOf)) : null;
+    const perWeek = posts.length>=2 ? (posts.length-1)/Math.max((new Date(posts[0].timestamp)-new Date(posts[posts.length-1].timestamp))/(7*864e5),0.1) : null;
+    const reelsPct = posts.length? reelPosts.length/posts.length : null;
+    const topPosts = posts.slice().sort((a,b)=>(b.like_count+b.comments_count)-(a.like_count+a.comments_count)).slice(0,3);
+    const top = topPosts[0];
+    const myEr = mine?.er;
+
+    // veredicto en una frase, generado de los propios datos
+    let verdict;
+    if (myEr==null) verdict = "Conecta tu cuenta con datos reales para ver la comparativa directa.";
+    else if (er==null) verdict = "No hay suficientes posts públicos de @"+esc(u)+" para comparar con fiabilidad.";
+    else {
+      const ratio = myEr/er;
+      if (ratio>=1.15) verdict = "Tu interacción por seguidor es <b>"+ratio.toFixed(1)+"× mejor</b> que @"+esc(u)+". Su ventaja está en otro sitio (alcance, volumen de seguidores, frecuencia) — no copies su contenido, solo su cadencia.";
+      else if (ratio<=0.85) verdict = "@"+esc(u)+" saca <b>"+(1/ratio).toFixed(1)+"× más interacción por seguidor</b> que tú. Con audiencias de tamaño similar, eso indica que su contenido conecta mejor — mira qué formato repite abajo.";
+      else verdict = "Estáis en un nivel de interacción por seguidor muy parecido (diferencia menor al 15%). La diferencia de resultados vendrá de frecuencia o alcance, no de calidad del contenido.";
+    }
+    box.innerHTML = `
+      <div class="comp"><div class="av">${esc(u[0].toUpperCase())}</div>
+        <div><div class="u">@${esc(prof.username)}</div><div class="s">${fmt(prof.followers_count)} seguidores · ${fmt(prof.media_count)} posts</div></div>
+        <div class="er"><div class="v" style="color:${er>=.03?"var(--ok)":er>=.01?"var(--warn)":"var(--bad)"}">${pct(er)}</div><div class="k">ENG/SEGUIDOR</div></div>
+      </div>
+      <div class="card">
+        <p style="font-size:13px;line-height:1.55">🧭 ${verdict}</p>
+        ${myEr!=null?`<div class="vsbar" style="margin-top:12px"><i style="width:${Math.round(myEr/(myEr+er)*100)}%;background:var(--grad)"></i><i style="flex:1;background:var(--card2)"></i></div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px"><span class="tiny" style="color:var(--pink);font-weight:700">@${esc(mine.user)} ${pct(myEr)}</span><span class="tiny">@${esc(u)} ${pct(er)}</span></div>
+        <div class="tiny" style="margin-top:4px;color:var(--tx3)">Misma base para los dos: (likes+comentarios) ÷ seguidores, promedio de sus últimos posts.</div>`:""}
+      </div>
+      <div class="card" style="margin-top:10px">
+        <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">📅 Frecuencia</div><span class="pill">${perWeek?perWeek.toFixed(1)+" posts/semana":"–"}</span></div>
+        <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">🎬 % de reels</div><span class="pill">${reelsPct!=null?Math.round(reelsPct*100)+"%":"–"}</span></div>
+        ${erReels!=null&&erFeed!=null?`<div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">⚔️ Reels vs feed (su cuenta)</div><span class="pill ${erReels>=erFeed?'ok':''}">${pct(erReels)} reels · ${pct(erFeed)} feed</span></div>`:""}
+        <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">🏆 Mejor post</div><span class="pill ok">${top?fmt(top.like_count)+" ❤️ · "+fmt(top.comments_count)+" 💬":"–"}</span></div>
+      </div>
+      ${topPosts.length?`<div class="card" style="margin-top:10px">
+        <div style="font-size:12px;font-weight:800;color:var(--tx2);margin-bottom:10px">SUS 3 POSTS MÁS FUERTES — busca el patrón</div>
+        ${topPosts.map((p,i)=>{
+          const reasons = explainStrength(p.caption);
+          const img = p.thumbnail_url || p.media_url;
+          const fallback = svgThumb(p.media_product_type==="REELS"?"🎬":"🖼️","#4c1d95","#831843",p.media_product_type==="REELS"?"Reel":"Post");
+          return `<div style="display:flex;gap:11px;padding:${i?"11px 0 0":"0"};${i?"border-top:1px solid var(--line);margin-top:11px":""}">
+          <img src="${img||fallback}" onerror="this.onerror=null;this.src='${fallback}'" style="width:58px;height:86px;border-radius:9px;object-fit:cover;flex:none;background:var(--card2)" loading="lazy" alt="">
+          <div style="min-width:0;flex:1">
+            <div style="display:flex;gap:8px;align-items:center;font-size:11.5px;color:var(--tx2);font-weight:700">${p.media_product_type==="REELS"?"🎬 Reel":"🖼️ Feed"} · ${fmt(p.like_count)} ❤️ · ${fmt(p.comments_count)} 💬</div>
+            ${p.caption?`<p class="muted" style="margin-top:3px;font-size:12px;line-height:1.4">"${esc(p.caption.slice(0,110))}${p.caption.length>110?"…":""}"</p>`:'<p class="tiny" style="margin-top:3px">Sin caption</p>'}
+            <div style="margin-top:4px;font-size:11px;line-height:1.4;color:${reasons.length?"var(--ok)":"var(--tx3)"}">${reasons.length?"✅ "+reasons.join(" · "):"Sin patrón claro en el texto — el gancho probablemente está en el vídeo"}</div>
+            ${p.permalink?`<a href="${p.permalink}" target="_blank" rel="noopener" style="font-size:10.5px;color:var(--violet);font-weight:700">Ver en Instagram ↗</a>`:""}
+          </div>
+        </div>`;}).join("")}
+      </div>`:""}
+      <p class="tiny" style="margin-top:10px">💡 Copia la <b>estrategia</b>, no el contenido: fíjate en su frecuencia, qué formato repite cuando algo le funciona, y el gancho de sus 3 mejores posts.${state.mode!=="live"?" <b>(datos de ejemplo — conecta tu cuenta para datos reales)</b>":""}</p>`;
+  }catch(e){
+    box.innerHTML = `<div class="card"><span class="pill bad" style="white-space:normal;line-height:1.5">⚠️ ${esc(e.message)}</span><p class="tiny" style="margin-top:8px">business_discovery solo funciona con cuentas Business/Creator públicas y con el permiso <i>instagram_manage_insights</i> en el token.</p></div>`;
+  }
+}
+function avgOf(a){ const v=a.filter(x=>x!=null); return v.length? v.reduce((x,y)=>x+y,0)/v.length : null; }
+function explainStrength(caption){
+  const c = analyzeCaption(caption||"");
+  const reasons = [];
+  if (c.hookLen>0 && c.hookLen<=70) reasons.push("gancho corto y directo");
+  if (c.question) reasons.push("pregunta que invita a responder");
+  if (c.cta) reasons.push("llamada a la acción clara");
+  if (c.nTags>=2 && c.nTags<=6) reasons.push("hashtags de nicho");
+  if (c.keywords) reasons.push("texto descriptivo (SEO)");
+  return reasons;
+}
+
+/* -------- checklist -------- */
+const CHK = [
+  ["🪝 Hook en los primeros 1,5–3 s","Resultado final primero, pregunta o movimiento. Nada de intros ni logos."],
+  ["⏱️ Duración con ritmo","7–30 s si aún no retienes bien; corte o cambio visual cada 1,5–2 s."],
+  ["🔁 Final que invita a repetir","Cierra conectando con el inicio (loop) o con un remate inesperado."],
+  ["📤 Motivo para compartir","¿Alguien se lo mandaría a un amigo? Añade «compártelo con…»."],
+  ["🔖 Motivo para guardar","Valor consultable: pasos, lista, receta, plantilla, datos."],
+  ["💬 Pregunta concreta","Pide elegir (¿1 o 2?) o comentar una palabra clave."],
+  ["🔎 Caption con palabras clave","1–2 frases describiendo el tema con términos buscables."],
+  ["#️⃣ 3–5 hashtags de nicho","Específicos del tema; fuera #fyp #viral y similares."],
+  ["🎞️ Calidad 9:16 y sin marcas de agua","1080×1920, sin logo de TikTok/CapCut (penaliza el alcance)."],
+  ["📝 Subtítulos en pantalla","El 80 % ve reels sin sonido. Usa los subtítulos automáticos."],
+  ["🎵 Audio en tendencia (si encaja)","Flecha ↗ en el audio = en tendencia. Súbete pronto, no al final."],
+  ["🕐 Publicar en tu mejor franja","Mira Inicio → mejor momento, y responde comentarios la 1ª hora."],
+];
+function renderChk(){
+  const done = JSON.parse(localStorage.getItem(LS.chk)||"[]");
+  $("chkList").innerHTML = CHK.map(([t,d],i)=>`<div class="chk ${done.includes(i)?"done":""}" onclick="tglChk(${i})"><div class="box">${done.includes(i)?"✓":""}</div><div><div class="t">${t}</div><div class="d">${d}</div></div></div>`).join("");
+  $("chkBar").style.width = Math.round(done.length/CHK.length*100)+"%";
+  $("chkTxt").textContent = done.length+" de "+CHK.length+" completados"+(done.length===CHK.length?" — ¡a publicar! 🚀":"");
+}
+function tglChk(i){
+  let done = JSON.parse(localStorage.getItem(LS.chk)||"[]");
+  done = done.includes(i) ? done.filter(x=>x!==i) : [...done,i];
+  localStorage.setItem(LS.chk, JSON.stringify(done)); renderChk();
+}
+function resetChk(){ localStorage.setItem(LS.chk,"[]"); renderChk(); }
+
+/* -------- demo + init -------- */
+function loadDemo(){
+  state.mode="demo"; state.username="tu_cuenta_demo";
+  state.reels = demoReels();
+  localStorage.setItem(LS.mode,"demo");
+  refreshAll(); toast("✨ Modo demo: 8 reels de ejemplo"); go("inicio");
+}
+function refreshAll(){
+  renderDash(); renderReels(); renderChk();
+  const b=$("connBadge");
+  if (state.mode==="live"){ b.textContent="● @"+(state.username||"conectado"); b.className="on"; }
+  else if (state.mode==="demo"){ b.textContent="✨ Demo"; b.className="demo"; }
+  $("refreshChip").style.display = state.mode==="live" ? "" : "none";
+}
+async function refreshData(){
+  if (state.mode!=="live") return;
+  const chip = $("refreshChip"); const prevTxt = chip.textContent;
+  chip.textContent = "↻ Actualizando…"; chip.disabled = true;
+  try{
+    localStorage.removeItem(LS.cache); // fuerza descarga fresca, ignora la caché de 3h
+    await fetchReels();
+    refreshAll();
+    toast("✅ Datos actualizados desde Instagram");
+  }catch(e){
+    toast("⚠️ "+e.message);
+  }
+  chip.textContent = prevTxt; chip.disabled = false;
+}
+(async function init(){
+  renderChk();
+  if (localStorage.getItem(LS.aikey)) $("aiKeyIn").value = localStorage.getItem(LS.aikey);
+  if (localStorage.getItem(LS.fbtok)) $("fbTokIn").value = localStorage.getItem(LS.fbtok);
+  const savedMode = localStorage.getItem(LS.mode);
+  if (savedMode==="live" && localStorage.getItem(LS.token)){
+    state.token = localStorage.getItem(LS.token);
+    state.igid = localStorage.getItem(LS.igid);
+    state.username = localStorage.getItem(LS.user);
+    state.apiBase = localStorage.getItem(LS.base) || GRAPH_IG;
+    $("tokenIn").value = state.token; $("igidIn").value = state.igid; $("discBtn").hidden=false;
+    try{ await fetchReels(); state.mode="live"; refreshAll(); }
+    catch(e){ toast("⚠️ Token caducado: reconecta"); go("conectar"); }
+  } else if (savedMode==="demo"){ loadDemo(); }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "ReelPulse — Analizador de Reels",
+  "short_name": "ReelPulse",
+  "description": "Analiza tus Instagram Reels y descubre qué cambiar para ganar alcance.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0b12",
+  "theme_color": "#0b0b12",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23f9ce34'/><stop offset='.5' stop-color='%23ee2a7b'/><stop offset='1' stop-color='%236228d7'/></linearGradient></defs><rect width='192' height='192' rx='42' fill='url(%23g)'/><text x='96' y='124' font-size='88' text-anchor='middle'>📊</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
