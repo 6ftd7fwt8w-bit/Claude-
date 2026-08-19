@@ -446,6 +446,25 @@ nav button.on .i{filter:none}
    ReelPulse — analizador de alcance para Instagram Reels
    Todo corre en el navegador: el token nunca sale de tu dispositivo.
 ===================================================================== */
+const RP_VERSION = "2026-08-19.1"; // súbelo en cada cambio para que el auto-check detecte la novedad
+
+/* Auto-actualización: los iconos guardados en pantalla de inicio de iOS cachean
+   el HTML de forma muy persistente (más allá de la caché HTTP normal). En cada
+   apertura, comprobamos en segundo plano si hay una versión más nueva publicada
+   y recargamos una sola vez si la hay, sin que el usuario tenga que borrar el
+   icono manualmente. */
+(async function checkForUpdate(){
+  if (sessionStorage.getItem("rp_justUpdated")) return; // evita bucles si algo va mal
+  try{
+    const res = await fetch(location.pathname + "?_v=" + Date.now(), {cache:"no-store"});
+    const html = await res.text();
+    const m = html.match(/const RP_VERSION\s*=\s*"([^"]+)"/);
+    if (m && m[1] && m[1] !== RP_VERSION){
+      sessionStorage.setItem("rp_justUpdated", "1");
+      location.href = location.pathname + "?_v=" + Date.now();
+    }
+  }catch(e){ /* sin red o fallo puntual: seguimos con la versión actual */ }
+})();
 
 const GRAPH_FB = "https://graph.facebook.com/v23.0";
 const GRAPH_IG = "https://graph.instagram.com/v23.0";
