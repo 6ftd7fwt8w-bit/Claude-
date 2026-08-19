@@ -251,6 +251,10 @@ nav button.on .i{filter:none}
         <div class="card" id="trendCard"></div>
         <h2 class="sec">🚨 Diagnóstico principal <span class="hint" onclick="go('reels')">ver reels →</span></h2>
         <div id="dashRecs"></div>
+        <div id="patternsWrap" style="display:none">
+          <h2 class="sec">📊 Patrones en tus reels</h2>
+          <div class="card" id="patternsCard"></div>
+        </div>
         <h2 class="sec">🗓️ Tu mejor momento para publicar</h2>
         <div class="card" id="timeCard"></div>
       </div>
@@ -880,6 +884,7 @@ function renderDash(){
   const days=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
   const best=Object.entries(slots).map(([k,v])=>[k,v.reduce((a,b)=>a+b,0)/v.length]).sort((a,b)=>b[1]-a[1]).slice(0,2);
   renderTrend();
+  renderPatterns();
   $("timeCard").innerHTML = best.length? best.map(([k],i)=>{ const [d,f]=k.split("-"); return `<div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">${i===0?"🥇":"🥈"} ${days[+d].charAt(0).toUpperCase()+days[+d].slice(1)} por la ${f}</div><span class="pill ok">mejor engagement</span></div>`;}).join("")+`<p class="tiny" style="margin-top:8px">Basado en el rendimiento de tus propios reels. Publica en la franja en que tu audiencia responde y estarás online la primera hora para contestar comentarios.</p>` : '<p class="muted">Aún no hay datos suficientes.</p>';
 }
 
@@ -950,6 +955,39 @@ function renderTrend(){
     const r=state.reels.find(x=>x.id===b.dataset.id);
     $("barOut").innerHTML = `<b style="color:var(--tx)">${fmt(r.reach)} de alcance</b> · ${esc(r.caption.slice(0,40))}… <span style="color:var(--violet);font-weight:700" onclick="openSheet('${r.id}')">abrir →</span>`;
   }));
+}
+
+/* -------- patrones (correlaciones simples sobre tus propios reels) -------- */
+function cmpScore(yes, no, minEach=2){
+  const ys=yes.map(r=>r.score), ns=no.map(r=>r.score);
+  if (ys.length<minEach || ns.length<minEach) return null;
+  const ay=Math.round(ys.reduce((a,b)=>a+b,0)/ys.length), an=Math.round(ns.reduce((a,b)=>a+b,0)/ns.length);
+  if (Math.abs(ay-an)<8) return null; // diferencia mínima para no reportar ruido
+  return {ay, an, diff:ay-an, nYes:ys.length, nNo:ns.length};
+}
+function detectPatterns(reels){
+  if (reels.length<4) return [];
+  const out = [];
+  const withDur = reels.filter(r=>r.duration!=null);
+  if (withDur.length>=4){
+    const c = cmpScore(withDur.filter(r=>r.duration<=20), withDur.filter(r=>r.duration>20));
+    if (c) out.push({strength:Math.abs(c.diff), html: c.diff>0
+      ? `⏱️ Tus reels de <b>≤20 s</b> puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> los más largos (${c.nYes} vs ${c.nNo} reels) — corto te está funcionando mejor.`
+      : `⏱️ Tus reels de <b>más de 20 s</b> puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> los cortos (${c.nYes} vs ${c.nNo} reels) — no tengas miedo de alargar si el contenido lo pide.`});
+  }
+  let c = cmpScore(reels.filter(r=>r.capA?.cta), reels.filter(r=>r.capA && !r.capA.cta));
+  if (c && c.diff>0) out.push({strength:c.diff, html:`🗣️ Con <b>llamada a la acción</b> en el caption, tus reels puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> sin ella (${c.nYes} vs ${c.nNo} reels).`});
+  c = cmpScore(reels.filter(r=>r.capA && r.capA.nTags>=2 && r.capA.nTags<=6), reels.filter(r=>r.capA && (r.capA.nTags===0 || r.capA.nTags>6)));
+  if (c && c.diff>0) out.push({strength:c.diff, html:`#️⃣ Con <b>3–6 hashtags de nicho</b>, tus reels puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> con 0 o demasiados (${c.nYes} vs ${c.nNo} reels).`});
+  c = cmpScore(reels.filter(r=>r.capA?.question), reels.filter(r=>r.capA && !r.capA.question));
+  if (c && c.diff>0) out.push({strength:c.diff, html:`❓ Cuando haces una <b>pregunta</b> en el caption, tus reels puntúan de media <b>${c.ay}</b> vs <b>${c.an}</b> sin ella (${c.nYes} vs ${c.nNo} reels).`});
+  return out.sort((a,b)=>b.strength-a.strength).slice(0,4);
+}
+function renderPatterns(){
+  const patterns = detectPatterns(state.reels);
+  $("patternsWrap").style.display = patterns.length ? "" : "none";
+  if (!patterns.length) return;
+  $("patternsCard").innerHTML = patterns.map((p,i)=>`<div class="diagrow" style="align-items:flex-start;${i?"":"padding-top:0"}"><p style="font-size:12.5px;line-height:1.55">${p.html}</p></div>`).join("");
 }
 
 /* -------- sheet detalle -------- */
@@ -1116,25 +1154,27 @@ async function analyzeComp(){
   try{
     let prof;
     if (state.mode==="live"){
-      const fields = `business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){like_count,comments_count,media_product_type,timestamp,caption}}`;
+      const mediaFields = "like_count,comments_count,media_product_type,timestamp,caption,permalink";
+      const visualFields = mediaFields+",media_type,media_url,thumbnail_url";
       const fbTok = localStorage.getItem(LS.fbtok), fbIgid = localStorage.getItem(LS.fbigid);
       let q;
-      if (fbTok && fbIgid){
-        // token clásico dedicado a Competencia (business_discovery solo existe en graph.facebook.com)
-        q = await api(`/${fbIgid}`, {fields}, GRAPH_FB, fbTok);
-      } else {
+      try{
+        // intenta pedir también miniatura/vídeo — si el campo no existe para esta versión, degradamos
+        q = await api(`/${fbTok&&fbIgid?fbIgid:state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){${visualFields}}}`}, fbTok&&fbIgid?GRAPH_FB:state.apiBase, fbTok&&fbIgid?fbTok:null);
+      }catch(eVisual){
         try{
-          q = await api(`/${state.igid}`, {fields}, state.apiBase);
+          q = await api(`/${fbTok&&fbIgid?fbIgid:state.igid}`, {fields:`business_discovery.username(${u}){username,name,followers_count,media_count,biography,media.limit(12){${mediaFields}}}`}, fbTok&&fbIgid?GRAPH_FB:state.apiBase, fbTok&&fbIgid?fbTok:null);
         }catch(e1){
-          if (state.apiBase===GRAPH_IG) throw new Error("Confirmado por Meta: los tokens de \"Instagram Login\" no incluyen business_discovery. Para activar esta pestaña, añade el \"token clásico\" opcional en Conectar → Competencia.");
+          if (!fbTok && state.apiBase===GRAPH_IG) throw new Error("Confirmado por Meta: los tokens de \"Instagram Login\" no incluyen business_discovery. Para activar esta pestaña, añade el \"token clásico\" opcional en Conectar → Competencia.");
           throw new Error("Meta responde: "+e1.message+". Revisa que el token incluya instagram_manage_insights.");
         }
       }
       prof = q.business_discovery;
     } else {
       await new Promise(r=>setTimeout(r,700));
+      const capsDemo = ["3 trucos para que tu casa parezca de revista en 5 min 🏡 Guárdalo","Antes/después de este rincón — ¿cuál prefieres, 1 o 2?","POV: encuentras la lámina perfecta para ese hueco vacío","Vídeo random del finde","Cómo combino texturas sin que quede sobrecargado"];
       prof = { username:u, name:u, followers_count: 15400+Math.floor(Math.random()*90000), media_count: 240,
-        media:{data:Array.from({length:12},(_,i)=>({like_count:200+Math.floor(Math.random()*3800), comments_count:5+Math.floor(Math.random()*220), media_product_type: i%3?"REELS":"FEED", timestamp:new Date(Date.now()-i*3*864e5).toISOString(), caption:"Ejemplo de post "+(i+1)}))} };
+        media:{data:Array.from({length:12},(_,i)=>({like_count:200+Math.floor(Math.random()*3800), comments_count:5+Math.floor(Math.random()*220), media_product_type: i%3?"REELS":"FEED", timestamp:new Date(Date.now()-i*3*864e5).toISOString(), caption:capsDemo[i%capsDemo.length], thumbnail_url:svgThumb(["🏡","🛋️","✨","🎨","🖼️"][i%5],["#6366f1","#ec4899","#f59e0b","#10b981","#8b5cf6"][i%5],["#312e81","#831843","#7c2d12","#065f46","#4c1d95"][i%5],"Demo "+(i+1))}))} };
     }
     const posts = prof.media?.data||[];
     const erOf = p => (p.like_count+p.comments_count)/Math.max(prof.followers_count,1);
@@ -1178,11 +1218,20 @@ async function analyzeComp(){
         <div class="diagrow"><div class="n" style="width:auto;flex:1;color:var(--tx)">🏆 Mejor post</div><span class="pill ok">${top?fmt(top.like_count)+" ❤️ · "+fmt(top.comments_count)+" 💬":"–"}</span></div>
       </div>
       ${topPosts.length?`<div class="card" style="margin-top:10px">
-        <div style="font-size:12px;font-weight:800;color:var(--tx2);margin-bottom:8px">SUS 3 POSTS MÁS FUERTES — busca el patrón</div>
-        ${topPosts.map((p,i)=>`<div style="padding:${i?"9px 0 0":"0"};${i?"border-top:1px solid var(--line);margin-top:9px":""}">
-          <div style="display:flex;gap:8px;align-items:center;font-size:11.5px;color:var(--tx2);font-weight:700">${p.media_product_type==="REELS"?"🎬 Reel":"🖼️ Feed"} · ${fmt(p.like_count)} ❤️ · ${fmt(p.comments_count)} 💬</div>
-          ${p.caption?`<p class="muted" style="margin-top:3px;font-size:12.5px">"${esc(p.caption.slice(0,160))}${p.caption.length>160?"…":""}"</p>`:'<p class="tiny" style="margin-top:3px">Sin caption</p>'}
-        </div>`).join("")}
+        <div style="font-size:12px;font-weight:800;color:var(--tx2);margin-bottom:10px">SUS 3 POSTS MÁS FUERTES — busca el patrón</div>
+        ${topPosts.map((p,i)=>{
+          const reasons = explainStrength(p.caption);
+          const img = p.thumbnail_url || p.media_url;
+          const fallback = svgThumb(p.media_product_type==="REELS"?"🎬":"🖼️","#4c1d95","#831843",p.media_product_type==="REELS"?"Reel":"Post");
+          return `<div style="display:flex;gap:11px;padding:${i?"11px 0 0":"0"};${i?"border-top:1px solid var(--line);margin-top:11px":""}">
+          <img src="${img||fallback}" onerror="this.onerror=null;this.src='${fallback}'" style="width:58px;height:86px;border-radius:9px;object-fit:cover;flex:none;background:var(--card2)" loading="lazy" alt="">
+          <div style="min-width:0;flex:1">
+            <div style="display:flex;gap:8px;align-items:center;font-size:11.5px;color:var(--tx2);font-weight:700">${p.media_product_type==="REELS"?"🎬 Reel":"🖼️ Feed"} · ${fmt(p.like_count)} ❤️ · ${fmt(p.comments_count)} 💬</div>
+            ${p.caption?`<p class="muted" style="margin-top:3px;font-size:12px;line-height:1.4">"${esc(p.caption.slice(0,110))}${p.caption.length>110?"…":""}"</p>`:'<p class="tiny" style="margin-top:3px">Sin caption</p>'}
+            <div style="margin-top:4px;font-size:11px;line-height:1.4;color:${reasons.length?"var(--ok)":"var(--tx3)"}">${reasons.length?"✅ "+reasons.join(" · "):"Sin patrón claro en el texto — el gancho probablemente está en el vídeo"}</div>
+            ${p.permalink?`<a href="${p.permalink}" target="_blank" rel="noopener" style="font-size:10.5px;color:var(--violet);font-weight:700">Ver en Instagram ↗</a>`:""}
+          </div>
+        </div>`;}).join("")}
       </div>`:""}
       <p class="tiny" style="margin-top:10px">💡 Copia la <b>estrategia</b>, no el contenido: fíjate en su frecuencia, qué formato repite cuando algo le funciona, y el gancho de sus 3 mejores posts.${state.mode!=="live"?" <b>(datos de ejemplo — conecta tu cuenta para datos reales)</b>":""}</p>`;
   }catch(e){
@@ -1190,6 +1239,16 @@ async function analyzeComp(){
   }
 }
 function avgOf(a){ const v=a.filter(x=>x!=null); return v.length? v.reduce((x,y)=>x+y,0)/v.length : null; }
+function explainStrength(caption){
+  const c = analyzeCaption(caption||"");
+  const reasons = [];
+  if (c.hookLen>0 && c.hookLen<=70) reasons.push("gancho corto y directo");
+  if (c.question) reasons.push("pregunta que invita a responder");
+  if (c.cta) reasons.push("llamada a la acción clara");
+  if (c.nTags>=2 && c.nTags<=6) reasons.push("hashtags de nicho");
+  if (c.keywords) reasons.push("texto descriptivo (SEO)");
+  return reasons;
+}
 
 /* -------- checklist -------- */
 const CHK = [
