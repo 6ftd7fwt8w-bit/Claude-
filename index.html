@@ -116,7 +116,9 @@ label{font-size:12px;font-weight:700;color:var(--tx2);display:block;margin:14px 
   animation:up .28s cubic-bezier(.2,.9,.3,1);
 }
 @keyframes up{from{transform:translateY(60%)}to{transform:none}}
-.grab{width:42px;height:5px;border-radius:99px;background:var(--line);margin:6px auto 14px}
+.grab{width:42px;height:5px;border-radius:99px;background:var(--line);margin:0 auto}
+.sheetTop{position:sticky;top:0;z-index:6;background:var(--bg2);margin:0 -18px;padding:10px 18px 14px;display:flex;align-items:center;justify-content:center}
+.sheetTop .xbtn{position:absolute;right:18px;top:8px;width:32px;height:32px;border-radius:50%;background:var(--card2);border:1px solid var(--line);color:var(--tx2);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
 .dhead{display:flex;gap:14px}
 .dhead .thumb{width:100px;height:148px}
 .dhead .info{flex:1;min-width:0}
@@ -1005,7 +1007,7 @@ function openSheet(id){
   const bmB=(x,bm)=>x==null?"":x>=bm.good?'<div class="b" style="color:var(--ok)">↑ sobre media</div>':x>=bm.ok?'<div class="b" style="color:var(--warn)">≈ media</div>':'<div class="b" style="color:var(--bad)">↓ bajo media</div>';
   const opt = optimizeCaption(r);
   $("sheet").innerHTML = `
-    <div class="grab"></div>
+    <div class="sheetTop"><div class="grab"></div><button class="xbtn" onclick="closeSheet()" aria-label="Cerrar">✕</button></div>
     <div class="dhead">
       <div class="thumbwrap"><img class="thumb" src="${r.thumb}" alt="">${r.duration?`<span class="dur">${secs(r.duration)}</span>`:""}</div>
       <div class="info">
