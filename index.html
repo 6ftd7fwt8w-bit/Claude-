@@ -263,6 +263,7 @@ nav button.on .i{filter:none}
         <button class="fch" data-s="score_desc" onclick="setSort(this)">🏆 Mejor score</button>
         <button class="fch" data-s="date" onclick="setSort(this)">🕐 Recientes</button>
         <button class="fch" data-s="reach" onclick="setSort(this)">👁️ Más alcance</button>
+        <button class="fch" id="refreshChip" onclick="refreshData()" style="display:none">↻ Actualizar datos</button>
       </div>
       <div id="reelList"><div class="empty"><div class="e">🎬</div>Conecta tu cuenta o carga el modo demo<br>para analizar tus reels.<br><br><button class="btn primary" style="width:auto;padding:11px 22px" onclick="loadDemo()">✨ Cargar demo</button></div></div>
     </section>
@@ -437,7 +438,7 @@ nav button.on .i{filter:none}
 const GRAPH_FB = "https://graph.facebook.com/v23.0";
 const GRAPH_IG = "https://graph.instagram.com/v23.0";
 const LS = { token:"rp_token", igid:"rp_igid", user:"rp_user", chk:"rp_chk", mode:"rp_mode", cache:"rp_insCache", hist:"rp_history", aikey:"rp_aikey", base:"rp_base", fbtok:"rp_fbtoken", fbigid:"rp_fbigid" };
-const CACHE_TTL = 12*3600e3; // 12 h: minimiza llamadas a la API de Meta
+const CACHE_TTL = 3*3600e3; // 3 h: equilibrio entre datos frescos y respeto a los límites de Meta
 let apiCalls = 0;
 
 const state = {
@@ -446,6 +447,7 @@ const state = {
   apiBase: GRAPH_IG,      // graph.instagram.com (Instagram Login) o graph.facebook.com (clásico, vía Página)
   reels: [],             // normalizados
   sort: "score_asc",
+  lastFetch: null,
 };
 
 /* ---------------- utilidades ---------------- */
@@ -516,7 +518,8 @@ const BM = {
   watchRatio:{good:.85, ok:.55},  // vistoMedio/duración
   avgWatch:{good:12, ok:6},       // fallback sin duración
 };
-function rate(v, reach){ return (v!=null && reach) ? v/reach : null; }
+const MIN_REACH_FOR_RATE = 50; // por debajo de esto, 1 sola interacción distorsiona el % — mejor no fiarse
+function rate(v, reach){ return (v!=null && reach>=MIN_REACH_FOR_RATE) ? v/reach : null; }
 function band(x, bm){ return x==null ? null : x>=bm.good ? 1 : x>=bm.ok ? (x-bm.ok)/(bm.good-bm.ok)*0.5+0.5 : x/bm.ok*0.5; }
 
 function analyzeCaption(cap){
@@ -538,6 +541,7 @@ function analyzeCaption(cap){
 function computeScore(r){
   const c = analyzeCaption(r.caption);
   r.capA = c;
+  r.lowSample = r.reach!=null && r.reach < MIN_REACH_FOR_RATE;
   r.rShares = rate(r.shares, r.reach);
   r.rSaves  = rate(r.saved, r.reach);
   r.rComments = rate(r.comments, r.reach);
@@ -574,12 +578,16 @@ function buildRecs(r){
   const c = r.capA, s = r.subs;
   const add = (p,ic,t,d)=>recs.push({p,ic,t,d});
 
+  if (r.lowSample)
+    add(2,"👀","Alcance aún muy bajo para fiar el detalle","Con solo "+fmt(r.reach)+" personas alcanzadas, los porcentajes de guardados/comentarios/envíos no son fiables (1 interacción cambia el % entero). La señal que sí vale ahora mismo: revisa el hook y el horario de publicación — con tan poco alcance, Instagram probablemente ya decidió no ampliar la difusión en la primera ola.");
+
   // retención / hook
+  const durKnown = r.watchRatio!=null;
   if (s.retention!=null && s.retention<0.5){
-    if (r.watchRatio!=null && r.duration>30)
-      add(1,"⏱️","Acorta el reel o sube el ritmo","La gente ve de media <b>"+secs(r.avgWatch)+"</b> de "+secs(r.duration)+". El watch time es la señal nº 1. Prueba versiones de <b>7–20 s</b>, corta cada 1,5–2 s y elimina intros.");
+    if (durKnown && r.duration>30)
+      add(1,"⏱️","Acorta el reel o sube el ritmo","La gente ve de media <b>"+secs(r.avgWatch)+"</b> de "+secs(r.duration)+" ("+pct(r.watchRatio)+"). El watch time es la señal nº 1. Prueba versiones de <b>7–20 s</b>, corta cada 1,5–2 s y elimina intros.");
     else
-      add(1,"🪝","Tu hook no retiene","Los espectadores se van pronto (media "+secs(r.avgWatch)+"). Los <b>primeros 1,5–3 s</b> deciden el alcance: empieza con el resultado final, una pregunta polémica o movimiento, y pon un texto-gancho en pantalla.");
+      add(1,"🪝","Tu hook no retiene","Los espectadores se van pronto (media "+secs(r.avgWatch)+")."+(durKnown?"":" <i>(No pude leer la duración exacta del vídeo — compara tú este dato con lo largo que es realmente.)</i>")+" Los <b>primeros 1,5–3 s</b> deciden el alcance: empieza con el resultado final, una pregunta polémica o movimiento, y pon un texto-gancho en pantalla.");
   } else if (s.retention!=null && s.retention>=0.85){
     add(3,"🔁","Retención excelente — busca el bucle","Ya retienes muy bien. Haz que el final conecte con el principio (loop) para sumar re-visualizaciones, que cuentan como watch time extra.");
   }
@@ -733,35 +741,38 @@ async function fetchReels(){
   const m = await api(`/${state.igid}/media`, {fields, limit:50});
   const reels = (m.data||[]).filter(x=>x.media_product_type==="REELS");
   if (!reels.length) throw new Error("La cuenta no tiene reels públicos recientes.");
-  // insights en paralelo con degradación de métricas según versión/permiso
-  const metricSets = [
-    "views,reach,saved,shares,total_interactions,ig_reels_avg_watch_time",
-    "plays,reach,saved,shares,ig_reels_avg_watch_time",
-    "reach,saved,shares",
-  ];
+  // insights en paralelo. Métricas núcleo con degradación (nunca usar "plays": retirada en v22+),
+  // y el tiempo de visualización en una llamada aparte para que su fallo no arrastre al resto.
+  const coreSets = ["views,reach,saved,shares", "reach,saved,shares", "reach"];
   apiCalls = 1; // la llamada a /media
   const out = await pool(reels, 3, async media=>{
     const cached = insCache.read(media.id);
     if (cached) return normalize(media, cached, null);
     let ins = {};
-    for (const set of metricSets){
+    for (const set of coreSets){
       try{
         const r = await api(`/${media.id}/insights`, {metric:set});
         for (const d of (r.data||[])){
           const v = d.values?.[0]?.value;
-          if (d.name==="views"||d.name==="plays") ins.views=v;
+          if (d.name==="views") ins.views=v;
           if (d.name==="reach") ins.reach=v;
           if (d.name==="saved") ins.saved=v;
           if (d.name==="shares") ins.shares=v;
-          if (d.name==="ig_reels_avg_watch_time") ins.avgWatch=v/1000; // ms → s
         }
         break;
       }catch(e){ /* prueba el siguiente set */ }
     }
-    insCache.write(media.id, ins);
+    try{
+      const r = await api(`/${media.id}/insights`, {metric:"ig_reels_avg_watch_time"});
+      const v = r.data?.[0]?.values?.[0]?.value;
+      if (v!=null) ins.avgWatch = v/1000; // ms → s
+    }catch(e){ /* no disponible para este reel: seguimos sin esa señal */ }
+    // solo cachear resultados con datos reales: un fallo temporal no debe quedarse pegado horas
+    if (ins.reach!=null || ins.views!=null) insCache.write(media.id, ins);
     return normalize(media, ins, null);
   });
   state.reels = out;
+  state.lastFetch = new Date();
   saveSnapshot();
   // duración real: la API no la da; la leemos de los metadatos del vídeo
   reels.forEach((media,i)=>{
@@ -815,7 +826,7 @@ function renderReels(){
       </div>
       <div class="body">
         <div class="cap">${esc(r.caption)||"<i>Sin caption</i>"}</div>
-        <div class="date">${r.ts.toLocaleDateString("es",{day:"numeric",month:"short"})} · ${String(r.ts.getHours()).padStart(2,"0")}:00</div>
+        <div class="date">${r.ts.toLocaleDateString("es",{day:"numeric",month:"short"})} · ${String(r.ts.getHours()).padStart(2,"0")}:00${r.lowSample?' · <span class="pill warn" style="padding:1px 7px;font-size:9.5px">muestra pequeña</span>':""}</div>
         <div class="mrow">
           <span class="m">👁️ ${fmt(r.reach)}</span>
           <span class="m">📤 ${fmt(r.shares)}</span>
@@ -895,7 +906,9 @@ function getHistory(){
 }
 function renderTrend(){
   const card=$("trendCard"), hist=getHistory();
-  $("trendHint").textContent = state.mode==="live" ? (apiCalls+" llamadas API esta sesión") : "";
+  $("trendHint").textContent = state.mode==="live"
+    ? "Actualizado "+(state.lastFetch?state.lastFetch.toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit"}):"–")+" · "+apiCalls+" llamadas API"
+    : "";
   let html = "";
   if (hist.length>=2){
     const W=320,H=64,P=4, xs=hist.map((_,i)=>P+i*(W-2*P)/(hist.length-1));
@@ -965,6 +978,7 @@ function openSheet(id){
       <div class="met"><div class="v">${fmt(r.saved)}</div><div class="k">Guardados</div>${bmB(r.rSaves,BM.saves)}</div>
       <div class="met"><div class="v">${fmt(r.comments)}</div><div class="k">Coment.</div>${bmB(r.rComments,BM.comments)}</div>
     </div>
+    <p class="tiny" style="margin:8px 2px 0">ℹ️ "Visualizaciones" es la métrica <code>views</code> de la API de Meta — puede diferir un poco del contador que ves en la app de Instagram, ya que Meta a veces usa ventanas de recuento o definiciones distintas entre su app y su API.${r.lowSample?' Con este alcance ('+fmt(r.reach)+' personas), trata los <b>porcentajes</b> de abajo como orientativos, no como diagnóstico fino.':""}</p>
     <h2 class="sec">🩺 Diagnóstico por señal</h2>
     <div class="card diag" style="padding:6px 16px">
       ${diagRow("⏱️ Retención", r.watchRatio!=null?pct(r.watchRatio):secs(r.avgWatch), r.subs.retention)}
@@ -1178,6 +1192,21 @@ function refreshAll(){
   const b=$("connBadge");
   if (state.mode==="live"){ b.textContent="● @"+(state.username||"conectado"); b.className="on"; }
   else if (state.mode==="demo"){ b.textContent="✨ Demo"; b.className="demo"; }
+  $("refreshChip").style.display = state.mode==="live" ? "" : "none";
+}
+async function refreshData(){
+  if (state.mode!=="live") return;
+  const chip = $("refreshChip"); const prevTxt = chip.textContent;
+  chip.textContent = "↻ Actualizando…"; chip.disabled = true;
+  try{
+    localStorage.removeItem(LS.cache); // fuerza descarga fresca, ignora la caché de 3h
+    await fetchReels();
+    refreshAll();
+    toast("✅ Datos actualizados desde Instagram");
+  }catch(e){
+    toast("⚠️ "+e.message);
+  }
+  chip.textContent = prevTxt; chip.disabled = false;
 }
 (async function init(){
   renderChk();
