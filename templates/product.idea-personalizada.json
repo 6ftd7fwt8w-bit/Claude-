@@ -34,10 +34,144 @@
         "limit": 8,
         "background": "alt"
       }
+    },
+    "instagram": {
+      "type": "instagram-gallery",
+      "settings": {
+        "title": "Visto en Instagram",
+        "instagram_url": "https://www.instagram.com/vivalahome.store",
+        "columns": 6,
+        "background": "default"
+      },
+      "blocks": {
+        "foto_1": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/ECC08481-A155-4C38-A50E-1141BC671330.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3850372147470668852&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_2": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/094123fe66084a249edf742f5ce787af.mov",
+            "enlace": "https://www.instagram.com/reel/DWofTakDKy5/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_3": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/0cbc20e0-5b71-4707-bb77-adedcb1732ac.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3954772933400993938&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_4": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/c1295c5b56644f4283209856fd3099ab.mov",
+            "enlace": "https://www.instagram.com/reel/Dau__OURJk4/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_5": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/065453a5-68b1-4725-aa49-d760712f6c4a.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3953335224192736842&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_6": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/c90e1b7ef1814b45b304f81d42446219.mov",
+            "enlace": "https://www.instagram.com/reel/DcEPTv1AcD9/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_7": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/E8722423-0E60-4CD8-924B-B20D3A122948.jpg",
+            "enlace": "https://www.instagram.com/p/DZPvz9QjF9v/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_8": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/copy_7B5855E7-03B1-476E-A488-B95310A0410B.mov",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3854125653239287334&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_9": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/855F268F-0713-41B5-B8E6-A871AFE879AD.jpg",
+            "enlace": "https://www.instagram.com/p/DaFyMQpjGQk/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_10": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/B88930C7-F90A-4842-B898-5E1F8E3CFC89.mov",
+            "enlace": "https://www.instagram.com/reel/DbL_t0SxD3B/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_11": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/297A8ADB-988A-40B9-8628-12A70FB21197.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3849845511910346280&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_12": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/8a926983dd1048d8841c62d2e520031e.mov",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3909863916348153291&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_13": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/F95434CA-0879-4787-99D9-8231E6A18040.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3909867111680528825&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_14": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/lv_0_20260214101144.mov",
+            "enlace": "https://www.instagram.com/reel/DU6TtrkCNR6/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_15": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/431da1f7-d3e7-43d8-8d8d-6f2262f6fecb.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3982493473076688679&stkn=enVzZWdqbnR2ZnF6"
+          }
+        }
+      },
+      "block_order": [
+        "foto_1",
+        "foto_2",
+        "foto_3",
+        "foto_4",
+        "foto_5",
+        "foto_6",
+        "foto_7",
+        "foto_8",
+        "foto_9",
+        "foto_10",
+        "foto_11",
+        "foto_12",
+        "foto_13",
+        "foto_14",
+        "foto_15"
+      ]
     }
   },
   "order": [
     "main",
-    "recommendations"
+    "recommendations",
+    "instagram"
   ]
 }
