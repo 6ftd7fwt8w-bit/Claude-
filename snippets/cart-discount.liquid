@@ -24,9 +24,14 @@
   endfor
   assign codes_list = codes_applied | split: '|'
   assign w_code = settings.welcome_code | strip | upcase
+  assign saving_cents = cart.original_total_price | minus: cart.total_price
+  if saving_cents < cart.total_discount
+    assign saving_cents = cart.total_discount
+  endif
+  assign saving_formatted = saving_cents | money
 -%}
 <div class="cart-discount" data-cart-discount>
-  {%- if cart.total_discount > 0 -%}
+  {%- if saving_cents > 0 -%}
     <div class="deal-card">
       <span class="deal-card__shine" aria-hidden="true"></span>
       <span class="deal-card__icon" aria-hidden="true">{% render 'icon', name: 'gift' %}</span>
@@ -39,7 +44,7 @@
             {{ 'cart.deal_title' | t }}
           {%- endif -%}
         </strong>
-        <span class="deal-card__text">{{ 'cart.deal_saving_html' | t: amount: cart.total_discount | money }}</span>
+        <span class="deal-card__text">{{ 'cart.deal_saving_html' | t: amount: saving_formatted }}</span>
         <span class="deal-card__codes">
           {%- for c in codes_list -%}
             <span class="deal-card__code">{{ c }} <button type="button" data-discount-remove aria-label="{{ 'cart.discount_remove' | t }}">&times;</button></span>
