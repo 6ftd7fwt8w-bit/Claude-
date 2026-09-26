@@ -1,5 +1,5 @@
-<section class="slideshow" data-slideshow data-autoplay="{{ section.settings.autoplay }}" data-speed="{{ section.settings.speed }}"
-  style="--hero-height: {{ section.settings.height }}px; --hero-height-mobile: {{ section.settings.height_mobile }}px;">
+<section class="slideshow{% if section.settings.mobile_layout == 'stacked' %} slideshow--stack{% endif %}" data-slideshow data-autoplay="{{ section.settings.autoplay }}" data-speed="{{ section.settings.speed }}"
+  style="--hero-height: {{ section.settings.height }}px; --hero-height-mobile: {{ section.settings.height_mobile }}px; --mobile-h: {{ section.settings.mobile_ratio }};">
   <div class="slideshow__track" data-slideshow-track>
     {%- for block in section.blocks -%}
       <div class="slide{% if block.settings.light_text %} slide--light{% endif %}" {{ block.shopify_attributes }} data-slide
@@ -10,7 +10,8 @@
             {%- assign focal_style = 'object-position: ' | append: block.settings.focal -%}
             <picture>
               {%- if block.settings.image_mobile != blank -%}
-                <source media="(max-width: 749px)" srcset="{{ block.settings.image_mobile | image_url: width: 900 }}">
+                <source media="(max-width: 749px)" sizes="100vw"
+                  srcset="{{ block.settings.image_mobile | image_url: width: 600 }} 600w, {{ block.settings.image_mobile | image_url: width: 900 }} 900w, {{ block.settings.image_mobile | image_url: width: 1200 }} 1200w">
               {%- endif -%}
               {{ block.settings.image | image_url: width: 2400 | image_tag:
                 loading: loading, fetchpriority: 'high', widths: '750, 1100, 1500, 1920, 2400', sizes: '100vw',
@@ -50,6 +51,25 @@
   "settings": [
     { "type": "range", "id": "height", "label": "Altura escritorio", "min": 380, "max": 900, "step": 20, "unit": "px", "default": 640 },
     { "type": "range", "id": "height_mobile", "label": "Altura móvil", "min": 360, "max": 800, "step": 20, "unit": "px", "default": 560 },
+    {
+      "type": "select", "id": "mobile_layout", "label": "Diseño en móvil",
+      "options": [
+        { "value": "stacked", "label": "Imagen arriba, texto debajo" },
+        { "value": "overlay", "label": "Texto sobre la imagen" }
+      ],
+      "default": "stacked"
+    },
+    {
+      "type": "select", "id": "mobile_ratio", "label": "Proporción de imagen en móvil",
+      "info": "Solo con 'Imagen arriba, texto debajo'",
+      "options": [
+        { "value": "1.25", "label": "Vertical (4:5)" },
+        { "value": "1.333", "label": "Vertical alta (3:4)" },
+        { "value": "1", "label": "Cuadrada" },
+        { "value": "0.75", "label": "Horizontal (4:3)" }
+      ],
+      "default": "1.25"
+    },
     { "type": "checkbox", "id": "autoplay", "label": "Cambio automático", "default": true },
     { "type": "range", "id": "speed", "label": "Segundos por diapositiva", "min": 3, "max": 10, "step": 1, "unit": "s", "default": 6 }
   ],

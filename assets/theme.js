@@ -48,6 +48,19 @@
     if (e.key === 'Escape') $$('.drawer.is-open').forEach(closeDrawer);
   });
 
+  /* Announcement rotation (móvil) -------------------------------------- */
+  $$('[data-announcement]').forEach(function (bar) {
+    var items = $$('.announcement__item', bar);
+    if (items.length < 2) return;
+    var i = 0;
+    setInterval(function () {
+      if (!window.matchMedia('(max-width: 749px)').matches) return;
+      items[i].classList.remove('is-active');
+      i = (i + 1) % items.length;
+      items[i].classList.add('is-active');
+    }, 4000);
+  });
+
   /* Header shadow -------------------------------------------------------- */
   var header = $('[data-header]');
   if (header) {

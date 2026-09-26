@@ -2,16 +2,22 @@
   <div class="page-width strip__inner">
     {%- if section.settings.label != blank -%}<span class="strip__label">{{ section.settings.label }}</span>{%- endif -%}
     <div class="strip__items">
-      {%- for block in section.blocks -%}
-        <div class="strip__item" {{ block.shopify_attributes }}>
-          {%- if block.settings.logo != blank -%}
-            {{ block.settings.logo | image_url: height: 60 | image_tag: alt: block.settings.text }}
-          {%- else -%}
-            {%- if block.settings.icon != 'none' -%}{% render 'icon', name: block.settings.icon %}{%- endif -%}
-            <span>{{ block.settings.text }}</span>
-          {%- endif -%}
-        </div>
-      {%- endfor -%}
+      <div class="strip__rail">
+        {%- for i in (1..2) -%}
+          <div class="strip__set{% if i == 2 %} strip__set--clone{% endif %}"{% if i == 2 %} aria-hidden="true"{% endif %}>
+            {%- for block in section.blocks -%}
+              <div class="strip__item" {% if i == 1 %}{{ block.shopify_attributes }}{% endif %}>
+                {%- if block.settings.logo != blank -%}
+                  {{ block.settings.logo | image_url: height: 60 | image_tag: alt: block.settings.text }}
+                {%- else -%}
+                  {%- if block.settings.icon != 'none' -%}{% render 'icon', name: block.settings.icon %}{%- endif -%}
+                  <span>{{ block.settings.text }}</span>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endfor -%}
+      </div>
     </div>
   </div>
 </div>

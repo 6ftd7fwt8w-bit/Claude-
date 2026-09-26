@@ -3,7 +3,7 @@
   assign encoded_msg = s.whatsapp_mensaje | url_encode
   assign wa_url = 'https://wa.me/' | append: s.whatsapp_numero | append: '?text=' | append: encoded_msg
 -%}
-<section class="section section--tight bg-alt">
+<section class="section section--tight bg-alt whatsapp-contact">
   <div class="page-width" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
     <div>
       <h2 class="h3" style="margin-bottom:6px">{{ s.titulo }}</h2>

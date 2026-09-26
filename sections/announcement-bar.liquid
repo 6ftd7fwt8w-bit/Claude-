@@ -1,7 +1,7 @@
 <div class="announcement" style="--announcement-bg: {{ section.settings.bg }}; --announcement-fg: {{ section.settings.fg }};">
-  <div class="announcement__track">
+  <div class="announcement__track" data-announcement>
     {%- for block in section.blocks -%}
-      <p {{ block.shopify_attributes }}>
+      <p class="announcement__item{% if forloop.first %} is-active{% endif %}" {{ block.shopify_attributes }}>
         {%- if block.settings.link != blank -%}
           <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
         {%- else -%}

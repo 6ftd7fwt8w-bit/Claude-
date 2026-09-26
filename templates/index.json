@@ -5,6 +5,8 @@
       "settings": {
         "height": 620,
         "height_mobile": 560,
+        "mobile_layout": "stacked",
+        "mobile_ratio": "1.25",
         "autoplay": true,
         "speed": 6
       },
@@ -13,6 +15,7 @@
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/vlh-hero-infantil.png",
+            "image_mobile": "shopify://shop_images/vlh-hero-infantil-movil.png",
             "focal": "30% center",
             "overlay": 0,
             "tag": "Colección infantil",
@@ -30,6 +33,7 @@
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/vlh-hero-salon-pareja.png",
+            "image_mobile": "shopify://shop_images/vlh-hero-salon-pareja-movil.png",
             "focal": "25% center",
             "overlay": 0,
             "tag": "Dibujada por nosotras",
