@@ -830,7 +830,14 @@
         }
       }
 
-      window.location.href = '/cart';
+      // Abre el carrito lateral (si el tema lo tiene) en lugar de ir a la página del carrito
+      if (window.vivaCartAdded) {
+        window.vivaCartAdded();
+        els.submitBtn.disabled = false;
+        els.submitBtn.querySelector('.vlh-submit__text').textContent = 'Añadir al carrito';
+      } else {
+        window.location.href = '/cart';
+      }
     } catch (err) {
       showError(err.message || 'Ha ocurrido un error. Inténtalo de nuevo.');
       els.submitBtn.disabled = false;

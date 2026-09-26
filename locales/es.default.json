@@ -54,7 +54,9 @@
     "discount_waiting_html": "Tu código {{ code }} te está esperando: te descuenta un {{ percent }} % en láminas personalizadas.",
     "discount_waiting_link": "Elegir mi lámina",
     "discount_invalid": "Este código no existe o no se aplica a los productos de tu carrito.",
-    "discount_pending": "Código guardado. Se aplicará en cuanto añadas un producto válido."
+    "discount_pending": "Código guardado. Se aplicará en cuanto añadas un producto válido.",
+    "added_note": "¡Añadido a tu carrito!",
+    "deal_more": "Tu {{ percent }} % se aplica a cada lámina personalizada: cuantas más añadas, más ahorras. Añadir otra"
   },
   "collections": {
     "apply": "Aplicar",

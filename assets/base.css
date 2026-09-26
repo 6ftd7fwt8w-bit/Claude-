@@ -683,3 +683,14 @@ body.overflow-hidden { overflow: hidden; }
 }
 
 .welcome-badge__amount { color: #f7dd8a; font-weight: 600; font-size: 14px; }
+
+/* Carrito lateral: aviso de añadido y seguir comprando ----------------- */
+.drawer__added { display: flex; align-items: center; justify-content: center; gap: 8px; max-height: 0; overflow: hidden; padding: 0 24px;
+  background: var(--color-text); color: var(--color-bg); font-size: 13px; letter-spacing: .06em; transition: max-height .4s ease, padding .4s ease; }
+.drawer__added svg { width: 16px; height: 16px; color: var(--color-highlight); }
+.drawer.is-just-added .drawer__added { max-height: 60px; padding: 12px 24px; }
+.cart-continue { margin-top: 10px; min-height: 42px; }
+.cart-page__back { text-align: center; margin: -18px 0 28px; font-size: 13px; }
+.cart-page__back a { text-decoration: underline; text-underline-offset: 4px; }
+.deal-card__more { font-size: 12px; line-height: 1.45; margin-top: 4px; color: #6b4f10; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.deal-card__more:hover { color: var(--color-text); }

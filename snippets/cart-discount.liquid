@@ -45,6 +45,9 @@
           {%- endif -%}
         </strong>
         <span class="deal-card__text">{{ 'cart.deal_saving_html' | t: amount: saving_formatted }}</span>
+        {%- if first_code == w_code and settings.welcome_collection != blank -%}
+          <a class="deal-card__more" href="{{ settings.welcome_collection.url }}">{{ 'cart.deal_more' | t: percent: settings.welcome_percent }} <span aria-hidden="true">&rarr;</span></a>
+        {%- endif -%}
         <span class="deal-card__codes">
           {%- for c in codes_list -%}
             <span class="deal-card__code">{{ c }} <button type="button" data-discount-remove aria-label="{{ 'cart.discount_remove' | t }}">&times;</button></span>

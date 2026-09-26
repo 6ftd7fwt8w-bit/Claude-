@@ -2,6 +2,9 @@
   <div class="page-width">
     <h1 class="section-title" style="font-size:15px">{{ 'cart.title' | t }}</h1>
     {%- if cart.item_count > 0 -%}
+      <p class="cart-page__back"><a href="{{ settings.welcome_collection.url | default: routes.all_products_collection_url }}">&larr; {{ 'cart.continue' | t }}</a></p>
+    {%- endif -%}
+    {%- if cart.item_count > 0 -%}
       <div class="cart-page">
         <div data-cart-page-items>{% render 'cart-items' %}</div>
         <div class="cart-page__summary">

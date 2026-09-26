@@ -6,7 +6,8 @@
     <form action="{{ routes.cart_url }}" method="post">
       <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
     </form>
-    <a href="{{ routes.cart_url }}" class="link-underline" style="display:block;text-align:center;margin-top:12px;font-size:13px">{{ 'cart.view_cart' | t }}</a>
+    <button type="button" class="button button--outline button--full cart-continue" data-drawer-close>{{ 'cart.continue' | t }}</button>
+    <a href="{{ routes.cart_url }}" class="link-underline" style="display:block;text-align:center;margin-top:12px;font-size:12px">{{ 'cart.view_cart' | t }}</a>
   </div>
 {%- else -%}
   <div class="drawer__body cart-empty">

@@ -131,7 +131,7 @@
         .then(function (res) {
           btn.disabled = false;
           if (!res.ok) { if (err) { err.textContent = res.body.description || res.body.message; err.hidden = false; } return; }
-          refreshDrawer().then(function () { openDrawer('CartDrawer'); refreshDiscount(); });
+          window.vivaCartAdded();
         })
         .catch(function () { btn.disabled = false; form.submit(); });
     });
@@ -339,6 +339,19 @@
       }).catch(function () {});
   };
   window.vivaRefreshDiscount = refreshDiscount;
+
+  // Tras añadir al carrito: abre el panel lateral con un aviso breve (o va al carrito si no hay panel)
+  window.vivaCartAdded = function () {
+    var drawer = document.getElementById('CartDrawer');
+    if (!drawer || theme.cartType !== 'drawer') { window.location.href = theme.routes.cart || '/cart'; return; }
+    refreshDrawer().then(function () {
+      openDrawer('CartDrawer');
+      drawer.classList.remove('is-just-added'); void drawer.offsetWidth; drawer.classList.add('is-just-added');
+      clearTimeout(drawer._addedTimer);
+      drawer._addedTimer = setTimeout(function () { drawer.classList.remove('is-just-added'); }, 5000);
+      refreshDiscount();
+    });
+  };
   var cartUpdateDiscount = function (code) {
     return fetch((theme.routes.root || '/').replace(/\/?$/, '/') + 'cart/update.js', {
       method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
