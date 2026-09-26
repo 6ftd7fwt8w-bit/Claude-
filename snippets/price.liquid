@@ -4,10 +4,10 @@
 {%- liquid
   assign target = variant | default: product.selected_or_first_available_variant
   assign price = target.price
-  assign compare = target.compare_at_price
+  assign compare = target.compare_at_price | default: 0
   if show_from and product.price_varies and variant == blank
     assign price = product.price_min
-    assign compare = blank
+    assign compare = 0
   endif
 -%}
 <span class="price{% if compare > price %} price--sale{% endif %}" data-price>

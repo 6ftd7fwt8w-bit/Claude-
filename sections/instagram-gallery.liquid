@@ -10,23 +10,34 @@
       {{ section.settings.title }}
     {%- endif -%}
   </h2>
-  <div class="carousel" data-carousel>
-    <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="{{ 'general.previous' | t }}" style="left:12px;background:var(--color-bg);border-radius:50%">{% render 'icon', name: 'chevron-left' %}</button>
-    <div class="carousel__track" data-carousel-track style="--cols: {{ section.settings.columns }}; --gap: 4px;">
-      {%- for block in section.blocks -%}
-        <a class="gallery__item" href="{{ block.settings.enlace | default: section.settings.instagram_url | default: '#' }}" target="_blank" rel="noopener" {{ block.shopify_attributes }}>
-          {%- if block.settings.video != blank -%}
-            {{ block.settings.video | video_tag: image_size: '600x800', autoplay: true, loop: true, muted: true, controls: false, playsinline: true }}
-          {%- elsif block.settings.imagen != blank -%}
-            {{ block.settings.imagen | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 990px) 17vw, 40vw', alt: block.settings.alt | default: section.settings.title }}
-          {%- else -%}
-            {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
-          {%- endif -%}
-        </a>
-      {%- endfor -%}
+  {%- capture ig_items -%}
+    {%- for block in section.blocks -%}
+      <a class="gallery__item" href="{{ block.settings.enlace | default: section.settings.instagram_url | default: '#' }}" target="_blank" rel="noopener" {{ block.shopify_attributes }}>
+        {%- if block.settings.video != blank -%}
+          {{ block.settings.video | video_tag: image_size: '600x800', autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'metadata' }}
+        {%- elsif block.settings.imagen != blank -%}
+          {{ block.settings.imagen | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 990px) 17vw, 40vw', alt: block.settings.alt | default: section.settings.title }}
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+      </a>
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {%- if section.settings.autoscroll -%}
+    <div class="ig-marquee" style="--ig-duration: {{ section.blocks.size | times: section.settings.speed }}s; --ig-width: {{ section.settings.item_width }}px;">
+      <div class="ig-marquee__track">
+        <div class="ig-marquee__set">{{ ig_items }}</div>
+        <div class="ig-marquee__set" aria-hidden="true">{{ ig_items | replace: 'target="_blank"', 'target="_blank" tabindex="-1"' }}</div>
+      </div>
     </div>
-    <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="{{ 'general.next' | t }}" style="right:12px;background:var(--color-bg);border-radius:50%">{% render 'icon', name: 'chevron-right' %}</button>
-  </div>
+  {%- else -%}
+    <div class="carousel" data-carousel>
+      <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="{{ 'general.previous' | t }}" style="left:12px;background:var(--color-bg);border-radius:50%">{% render 'icon', name: 'chevron-left' %}</button>
+      <div class="carousel__track" data-carousel-track style="--cols: {{ section.settings.columns }}; --gap: 4px;">{{ ig_items }}</div>
+      <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="{{ 'general.next' | t }}" style="right:12px;background:var(--color-bg);border-radius:50%">{% render 'icon', name: 'chevron-right' %}</button>
+    </div>
+  {%- endif -%}
 </section>
 
 {% schema %}
@@ -35,7 +46,10 @@
   "settings": [
     { "type": "text", "id": "title", "label": "Título", "default": "Visto en Instagram" },
     { "type": "url", "id": "instagram_url", "label": "Enlace a tu perfil" },
-    { "type": "range", "id": "columns", "label": "Columnas visibles (escritorio)", "min": 3, "max": 8, "step": 1, "default": 6 },
+    { "type": "checkbox", "id": "autoscroll", "label": "Movimiento automático", "default": true },
+    { "type": "range", "id": "speed", "label": "Lentitud del movimiento (segundos por foto)", "min": 2, "max": 8, "step": 1, "unit": "s", "default": 4 },
+    { "type": "range", "id": "item_width", "label": "Ancho de cada foto (movimiento automático)", "min": 160, "max": 360, "step": 10, "unit": "px", "default": 240 },
+    { "type": "range", "id": "columns", "label": "Columnas visibles (sin movimiento)", "min": 3, "max": 8, "step": 1, "default": 6 },
     {
       "type": "select", "id": "background", "label": "Fondo",
       "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],

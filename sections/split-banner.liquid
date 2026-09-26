@@ -18,8 +18,37 @@
           <div><a href="{{ s.button_link | default: routes.all_products_collection_url }}" class="button" style="min-height:38px;padding:0 20px;font-size:11px">{{ s.button_label }}</a></div>
         {%- endif -%}
       </div>
-      <div class="split__media media">
-        {%- if s.image != blank -%}
+      <div class="split__media media{% if s.video != blank %} split__media--video{% endif %}">
+        {%- if s.video != blank -%}
+          {%- liquid
+            assign v_small = ''
+            assign v_small_h = 99999
+            assign v_large = ''
+            for src in s.video.sources
+              if src.format == 'mp4'
+                if src.height < v_small_h
+                  assign v_small = src.url
+                  assign v_small_h = src.height
+                endif
+                if src.height == 720
+                  assign v_large = src.url
+                endif
+              endif
+            endfor
+            if v_large == ''
+              assign v_large = v_small
+            endif
+            assign v_end = s.video_start | plus: s.video_duration
+            assign poster = s.video.preview_image | image_url: width: 1200
+            if s.image != blank
+              assign poster = s.image | image_url: width: 1200
+            endif
+          -%}
+          <video class="split__video" muted playsinline preload="none" poster="{{ poster }}"
+            data-clip-video data-src-small="{{ v_small }}" data-src-large="{{ v_large }}"
+            data-start="{{ s.video_start }}" data-end="{{ v_end }}"
+            aria-label="{{ s.video.alt | default: s.heading | escape }}"></video>
+        {%- elsif s.image != blank -%}
           {{ s.image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '600, 900, 1200, 1500, 1800', sizes: '(min-width: 750px) 60vw, 100vw' }}
         {%- else -%}
           {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
@@ -34,6 +63,9 @@
   "name": "Banner partido",
   "settings": [
     { "type": "image_picker", "id": "image", "label": "Imagen" },
+    { "type": "video", "id": "video", "label": "Vídeo (sustituye a la imagen)", "info": "Se reproduce en bucle, sin sonido, solo el fragmento indicado" },
+    { "type": "number", "id": "video_start", "label": "Empezar en el segundo", "default": 0 },
+    { "type": "range", "id": "video_duration", "label": "Duración del fragmento", "min": 3, "max": 20, "step": 1, "unit": "s", "default": 8 },
     { "type": "checkbox", "id": "image_first", "label": "Imagen a la izquierda", "default": false },
     {
       "type": "select", "id": "image_width", "label": "Ancho de imagen",

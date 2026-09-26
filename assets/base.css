@@ -379,7 +379,7 @@ body.overflow-hidden { overflow: hidden; }
 /* Gallery / instagram --------------------------------------------------- */
 .gallery { display: grid; grid-template-columns: repeat(var(--cols, 6), 1fr); gap: 4px; }
 .gallery__item { position: relative; aspect-ratio: 3 / 4; overflow: hidden; display: block; background: var(--color-bg-alt); }
-.gallery__item img, .gallery__item svg { width: 100%; height: 100%; object-fit: cover; transition: transform .8s ease; }
+.gallery__item img, .gallery__item svg, .gallery__item video { width: 100%; height: 100%; object-fit: cover; transition: transform .8s ease; }
 .gallery__item:hover img { transform: scale(1.05); }
 .gallery__item::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background .3s ease; }
 .gallery__item:hover::after { background: rgba(0,0,0,.12); }
@@ -537,3 +537,19 @@ body.overflow-hidden { overflow: hidden; }
   .footer__main { gap: 28px; padding: 36px 0; }
   .collection-hero { min-height: 200px; }
 }
+
+/* Instagram en movimiento --------------------------------------------- */
+.ig-marquee { overflow: hidden; }
+.ig-marquee__track { display: flex; width: max-content; animation: ig-marquee var(--ig-duration, 60s) linear infinite; }
+.ig-marquee:hover .ig-marquee__track, .ig-marquee:focus-within .ig-marquee__track { animation-play-state: paused; }
+.ig-marquee__set { display: flex; gap: 4px; padding-right: 4px; }
+.ig-marquee .gallery__item { width: var(--ig-width, 240px); flex: none; }
+.ig-marquee .gallery__item video { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 749px) { .ig-marquee .gallery__item { width: calc(var(--ig-width, 240px) * .66); } }
+@keyframes ig-marquee { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .ig-marquee { overflow-x: auto; } .ig-marquee__track { animation: none; } }
+
+/* Vídeo en banner partido --------------------------------------------- */
+.split__media--video { background: var(--color-bg-alt); }
+.split__video { width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (max-width: 749px) { .split .split__media--video { aspect-ratio: 1 / 1; } }
