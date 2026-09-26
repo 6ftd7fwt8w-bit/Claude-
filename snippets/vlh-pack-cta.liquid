@@ -1,0 +1,55 @@
+{% comment %}
+  ============================================================
+  VIVA LA HOME — CTA para páginas públicas de "Packs regalo"
+  ============================================================
+  Se pega como bloque "Liquid personalizado" en la plantilla de
+  producto de vlh-extra-pack-regalo y vlh-extra-pack-valentina,
+  en el sitio donde antes estaba el botón nativo de compra.
+
+  Cambia el enlace de abajo (href) por la colección o página a la
+  que quieras mandar a la clienta para elegir su lámina.
+  ============================================================
+{% endcomment %}
+
+<div class="vlh-pack-cta">
+  <a href="{{ shop.url }}/collections/laminas-personalizadas" class="vlh-pack-cta__boton">
+    Elige tu lámina y selecciona este pack
+  </a>
+  <p class="vlh-pack-cta__nota">
+    Este pack se añade como complemento al personalizar tu lámina — no se compra por separado. Podrás seleccionarlo dentro de las opciones de compra de cualquier lámina.
+  </p>
+</div>
+
+<style>
+  .vlh-pack-cta {
+    --vlh-crema: var(--color-bg, #F7F3EE);
+    --vlh-tinta: var(--color-text, #2C2218);
+    --vlh-mist: var(--color-border, #E8E0D5);
+    margin: 20px 0;
+  }
+  .vlh-pack-cta__boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px 20px;
+    background: var(--vlh-tinta);
+    color: var(--vlh-crema);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 0;
+    transition: opacity .15s ease;
+  }
+  .vlh-pack-cta__boton:hover { opacity: .85; }
+  .vlh-pack-cta__nota {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: #6b6055;
+    margin: 10px 0 0;
+  }
+</style>

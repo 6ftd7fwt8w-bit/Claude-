@@ -1,0 +1,106 @@
+{
+  "accessibility": {
+    "skip_to_content": "Saltar al contenido"
+  },
+  "general": {
+    "page": "Página {{ page }}",
+    "menu": "Menú",
+    "search": "Buscar",
+    "close": "Cerrar",
+    "view_all": "Ver todo",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "home": "Inicio",
+    "404_title": "Esta página no existe",
+    "search_results": {
+      "one": "{{ count }} resultado para «{{ terms }}»",
+      "other": "{{ count }} resultados para «{{ terms }}»"
+    },
+    "back_to_blog": "Volver al blog",
+    "password": "Contraseña",
+    "enter": "Entrar"
+  },
+  "products": {
+    "add_to_cart": "Añadir al carrito",
+    "added": "Añadido al carrito",
+    "sold_out": "Agotado",
+    "unavailable": "No disponible",
+    "from_price_html": "Desde {{ price }}",
+    "sale": "Oferta",
+    "placeholder_title": "Nombre de la lámina",
+    "tax_included": "Impuestos incluidos.",
+    "quantity": "Cantidad"
+  },
+  "cart": {
+    "title": "Tu carrito",
+    "checkout": "Tramitar pedido",
+    "continue": "Seguir comprando",
+    "empty": "Tu carrito está vacío",
+    "free_shipping_remaining_html": "Te faltan <strong>{{ amount }}</strong> para el envío gratis",
+    "free_shipping_reached": "¡Tienes envío gratis!",
+    "note": "Nota para tu pedido",
+    "remove": "Eliminar",
+    "subtotal": "Subtotal",
+    "taxes_shipping": "Impuestos incluidos. Gastos de envío calculados al finalizar la compra.",
+    "view_cart": "Ver carrito"
+  },
+  "collections": {
+    "apply": "Aplicar",
+    "clear_all": "Quitar filtros",
+    "empty": "No hay productos que coincidan.",
+    "product_count": {
+      "one": "{{ count }} producto",
+      "other": "{{ count }} productos"
+    },
+    "sort_by": "Ordenar por"
+  },
+  "contact": {
+    "email": "Email",
+    "message": "Mensaje",
+    "name": "Nombre",
+    "phone": "Teléfono",
+    "send": "Enviar",
+    "success": "¡Gracias! Te responderemos lo antes posible."
+  },
+  "customer": {
+    "account": "Mi cuenta",
+    "activate": "Activar cuenta",
+    "add_address": "Añadir dirección",
+    "address1": "Dirección",
+    "addresses": "Direcciones",
+    "billing_address": "Dirección de facturación",
+    "city": "Ciudad",
+    "confirm_password": "Confirmar contraseña",
+    "country": "País",
+    "create_account": "Crear cuenta",
+    "date": "Fecha",
+    "first_name": "Nombre",
+    "forgot_password": "¿Olvidaste tu contraseña?",
+    "guest": "Continuar como invitado",
+    "last_name": "Apellidos",
+    "log_out": "Cerrar sesión",
+    "login": "Iniciar sesión",
+    "no_orders": "Todavía no has hecho ningún pedido.",
+    "orders": "Pedidos",
+    "product": "Producto",
+    "province": "Provincia",
+    "recover_success": "Te hemos enviado un email para restablecer tu contraseña.",
+    "reset_password": "Restablecer contraseña",
+    "set_default": "Usar como dirección principal",
+    "shipping": "Envío",
+    "shipping_address": "Dirección de envío",
+    "sign_in": "Entrar",
+    "status": "Estado",
+    "view_addresses": "Ver direcciones",
+    "zip": "Código postal"
+  },
+  "newsletter": {
+    "email": "Tu email",
+    "success": "¡Gracias por suscribirte!"
+  },
+  "gift_card": {
+    "title": "Tarjeta regalo",
+    "expired": "Esta tarjeta regalo ha caducado o está desactivada.",
+    "print": "Imprimir"
+  }
+}

@@ -1,0 +1,21 @@
+{%- comment -%} Renderizado por la Section Rendering API para refrescar el panel del carrito {%- endcomment -%}
+{%- if cart.item_count > 0 -%}
+  <div class="drawer__body">{% render 'cart-items' %}</div>
+  <div class="drawer__footer">
+    {% render 'cart-summary' %}
+    <form action="{{ routes.cart_url }}" method="post">
+      <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
+    </form>
+    <a href="{{ routes.cart_url }}" class="link-underline" style="display:block;text-align:center;margin-top:12px;font-size:13px">{{ 'cart.view_cart' | t }}</a>
+  </div>
+{%- else -%}
+  <div class="drawer__body cart-empty">
+    <p>{{ 'cart.empty' | t }}</p>
+    <a href="{{ routes.all_products_collection_url }}" class="button" style="margin-top:12px">{{ 'cart.continue' | t }}</a>
+  </div>
+{%- endif -%}
+<span hidden data-cart-count-value>{{ cart.item_count }}</span>
+
+{% schema %}
+{ "name": "Contenido del carrito" }
+{% endschema %}

@@ -1,0 +1,23 @@
+{%- comment -%}
+  Precio. Parámetros: product (obligatorio), variant (opcional), show_from (bool)
+{%- endcomment -%}
+{%- liquid
+  assign target = variant | default: product.selected_or_first_available_variant
+  assign price = target.price
+  assign compare = target.compare_at_price
+  if show_from and product.price_varies and variant == blank
+    assign price = product.price_min
+    assign compare = blank
+  endif
+-%}
+<span class="price{% if compare > price %} price--sale{% endif %}" data-price>
+  {%- if show_from and product.price_varies and variant == blank -%}
+    {%- assign price_formatted = price | money -%}
+    {{ 'products.from_price_html' | t: price: price_formatted }}
+  {%- else -%}
+    {{ price | money }}
+  {%- endif -%}
+  {%- if compare > price -%}
+    <s class="price__compare">{{ compare | money }}</s>
+  {%- endif -%}
+</span>

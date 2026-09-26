@@ -1,0 +1,50 @@
+<section class="section section--tight" style="background: {{ section.settings.bg }}; color: {{ section.settings.fg }};">
+  <div class="page-width">
+    {%- if section.settings.label != blank -%}<p class="icon-bar__label">{{ section.settings.label }}</p>{%- endif -%}
+    <div class="icon-bar__grid" style="--cols: {{ section.blocks.size | at_most: 6 | at_least: 1 }}">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}" class="icon-bar__item" {{ block.shopify_attributes }}>{%- else -%}<div class="icon-bar__item" {{ block.shopify_attributes }}>{%- endif -%}
+          {%- if block.settings.image != blank -%}
+            {{ block.settings.image | image_url: width: 120 | image_tag: alt: block.settings.text }}
+          {%- else -%}
+            {% render 'icon', name: block.settings.icon %}
+          {%- endif -%}
+          <span>{{ block.settings.text }}</span>
+        {%- if block.settings.link != blank -%}</a>{%- else -%}</div>{%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Barra de iconos",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Etiqueta", "default": "Nuestra promesa" },
+    { "type": "color", "id": "bg", "label": "Fondo", "default": "#A89478" },
+    { "type": "color", "id": "fg", "label": "Texto", "default": "#FFFFFF" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Icono",
+      "settings": [
+        {
+          "type": "select", "id": "icon", "label": "Icono",
+          "options": [
+            { "value": "brush", "label": "Pincel" }, { "value": "frame", "label": "Cuadro" }, { "value": "truck", "label": "Envío" },
+            { "value": "gift", "label": "Regalo" }, { "value": "heart", "label": "Corazón" }, { "value": "lock", "label": "Candado" },
+            { "value": "chat", "label": "Mensaje" }, { "value": "star", "label": "Estrella" }, { "value": "leaf", "label": "Hoja" },
+            { "value": "box", "label": "Caja" }, { "value": "camera", "label": "Cámara" }
+          ],
+          "default": "brush"
+        },
+        { "type": "image_picker", "id": "image", "label": "Icono propio (opcional)" },
+        { "type": "text", "id": "text", "label": "Texto", "default": "Ilustrado a mano" },
+        { "type": "url", "id": "link", "label": "Enlace" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Barra de iconos", "blocks": [{ "type": "item" }, { "type": "item" }, { "type": "item" }, { "type": "item" }] }]
+}
+{% endschema %}

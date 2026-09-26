@@ -1,0 +1,104 @@
+{%- liquid
+  assign ratio = section.settings.ratio
+  assign cols = section.settings.columns
+  assign layout = section.settings.layout
+-%}
+<section class="section bg-{{ section.settings.background }} reveal" data-reveal>
+  <div class="page-width">
+    {%- if section.settings.title != blank -%}<h2 class="section-title">{{ section.settings.title }}</h2>{%- endif -%}
+    {%- if section.settings.subtitle != blank -%}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{%- endif -%}
+
+    {%- capture tiles -%}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign c = block.settings.collection
+          assign img = block.settings.image
+          if img == blank and c != blank
+            assign img = c.featured_image
+          endif
+          assign title = block.settings.title
+          if title == blank and c != blank
+            assign title = c.title
+          endif
+          assign url = block.settings.link
+          if url == blank and c != blank
+            assign url = c.url
+          endif
+        -%}
+        <a href="{{ url | default: '#' }}" class="tile" {{ block.shopify_attributes }}>
+          <div class="media">
+            {%- if img != blank -%}
+              {{ img | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1000, 1200', sizes: '(min-width: 990px) 33vw, 70vw', alt: title }}
+            {%- else -%}
+              {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+          </div>
+          {%- if title != blank -%}<span class="tile__title">{{ title }}</span>{%- endif -%}
+          {%- if block.settings.subtitle != blank -%}<span class="tile__subtitle">{{ block.settings.subtitle }}</span>{%- endif -%}
+        </a>
+      {%- endfor -%}
+    {%- endcapture -%}
+
+    {%- if layout == 'carousel' -%}
+      <div class="carousel" data-carousel>
+        <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'chevron-left' %}</button>
+        <div class="carousel__track" data-carousel-track style="--cols: {{ cols }}; --tile-ratio: {{ ratio }};">
+          {{ tiles }}
+        </div>
+        <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'chevron-right' %}</button>
+      </div>
+    {%- else -%}
+      <div class="tile-grid" style="--cols: {{ cols }}; --tile-ratio: {{ ratio }};">
+        {{ tiles }}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Mosaico de colecciones",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Título", "default": "Tendencias" },
+    { "type": "text", "id": "subtitle", "label": "Subtítulo" },
+    {
+      "type": "select", "id": "layout", "label": "Diseño",
+      "options": [{ "value": "carousel", "label": "Carrusel con flechas" }, { "value": "grid", "label": "Cuadrícula" }],
+      "default": "carousel"
+    },
+    { "type": "range", "id": "columns", "label": "Columnas (escritorio)", "min": 2, "max": 5, "step": 1, "default": 4 },
+    {
+      "type": "select", "id": "ratio", "label": "Proporción de imagen",
+      "options": [
+        { "value": "3 / 4", "label": "Vertical (3:4)" },
+        { "value": "2 / 3", "label": "Vertical alta (2:3)" },
+        { "value": "1 / 1", "label": "Cuadrada" },
+        { "value": "4 / 3", "label": "Horizontal (4:3)" },
+        { "value": "3 / 2", "label": "Horizontal (3:2)" }
+      ],
+      "default": "3 / 4"
+    },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Tarjeta",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Colección (opcional)" },
+        { "type": "image_picker", "id": "image", "label": "Imagen", "info": "Si está vacía se usa la imagen de la colección" },
+        { "type": "text", "id": "title", "label": "Título" },
+        { "type": "text", "id": "subtitle", "label": "Texto pequeño" },
+        { "type": "url", "id": "link", "label": "Enlace (opcional)" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Mosaico de colecciones", "blocks": [{ "type": "tile" }, { "type": "tile" }, { "type": "tile" }, { "type": "tile" }] }
+  ]
+}
+{% endschema %}

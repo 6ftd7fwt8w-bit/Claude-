@@ -1,0 +1,43 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {},
+      "blocks": {
+        "block_1": {
+          "type": "title",
+          "settings": {}
+        },
+        "block_2": {
+          "type": "description",
+          "settings": {
+            "collapsible": false,
+            "heading": "Descripción",
+            "open": true
+          }
+        },
+        "block_3": {
+          "type": "idea_cta",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3"
+      ]
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "title": "También te puede gustar",
+        "limit": 8,
+        "background": "alt"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "recommendations"
+  ]
+}

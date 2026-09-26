@@ -1,0 +1,38 @@
+{%- layout none -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ 'gift_card.title' | t }} – {{ shop.name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet">
+    <script src="{{ 'vendor/qrcode.js' | shopify_asset_url }}" defer></script>
+    {{ content_for_header }}
+    <style>
+      body { margin:0; font-family:'Jost',sans-serif; background:{{ settings.color_background }}; color:{{ settings.color_text }}; text-align:center; }
+      .gc { max-width:480px; margin:60px auto; padding:40px 24px; background:{{ settings.color_background_alt }}; }
+      .gc h1 { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:400; font-size:36px; margin:0 0 12px; }
+      .gc__code { font-size:22px; letter-spacing:.18em; padding:14px; border:1px dashed currentColor; margin:22px 0; }
+      .gc a, .gc button { display:inline-block; margin-top:10px; padding:12px 24px; background:{{ settings.color_button }}; color:{{ settings.color_button_text }}; text-decoration:none; border:0; font:inherit; letter-spacing:.14em; text-transform:uppercase; font-size:12px; cursor:pointer; }
+      #QrCode { display:flex; justify-content:center; margin:18px 0; }
+    </style>
+  </head>
+  <body>
+    <div class="gc">
+      <p>{{ shop.name }}</p>
+      <h1>{{ 'gift_card.title' | t }}</h1>
+      <p style="font-size:28px">{{ gift_card.balance | money }}</p>
+      {%- if gift_card.enabled == false or gift_card.expired -%}<p>{{ 'gift_card.expired' | t }}</p>{%- endif -%}
+      <div class="gc__code">{{ gift_card.code | format_code }}</div>
+      <div id="QrCode" data-identifier="{{ gift_card.qr_identifier }}"></div>
+      <script>
+        window.addEventListener('load', function () {
+          var el = document.getElementById('QrCode');
+          if (window.QRCode) new QRCode(el, { text: el.dataset.identifier, width: 120, height: 120 });
+        });
+      </script>
+      <a href="{{ shop.url }}">{{ 'cart.continue' | t }}</a>
+      <br><button type="button" onclick="window.print()">{{ 'gift_card.print' | t }}</button>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<section class="section" data-cart-page>
+  <div class="page-width">
+    <h1 class="section-title" style="font-size:15px">{{ 'cart.title' | t }}</h1>
+    {%- if cart.item_count > 0 -%}
+      <div class="cart-page">
+        <div data-cart-page-items>{% render 'cart-items' %}</div>
+        <div class="cart-page__summary">
+          <form action="{{ routes.cart_url }}" method="post" id="CartForm">
+            {% render 'cart-summary' %}
+            {%- if settings.cart_show_note -%}
+              <div class="cart-note">
+                <label for="CartNote" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase">{{ 'cart.note' | t }}</label>
+                <textarea name="note" id="CartNote">{{ cart.note }}</textarea>
+              </div>
+            {%- endif -%}
+            <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
+          </form>
+          <a href="{{ routes.all_products_collection_url }}" class="link-underline" style="display:block;text-align:center;margin-top:14px;font-size:13px">{{ 'cart.continue' | t }}</a>
+        </div>
+      </div>
+    {%- else -%}
+      <div class="cart-empty">
+        <p>{{ 'cart.empty' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="button" style="margin-top:16px">{{ 'cart.continue' | t }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Carrito" }
+{% endschema %}

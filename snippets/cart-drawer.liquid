@@ -1,0 +1,26 @@
+<div class="drawer drawer--right" id="CartDrawer" aria-hidden="true" data-cart-drawer>
+  <div class="drawer__overlay" data-drawer-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="{{ 'cart.title' | t }}">
+    <div class="drawer__header">
+      <span class="drawer__title">{{ 'cart.title' | t }} (<span data-cart-count-text>{{ cart.item_count }}</span>)</span>
+      <button type="button" class="drawer__close" data-drawer-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+    </div>
+    <div data-cart-drawer-content style="display:contents">
+      {%- if cart.item_count > 0 -%}
+        <div class="drawer__body">{% render 'cart-items' %}</div>
+        <div class="drawer__footer">
+          {% render 'cart-summary' %}
+          <form action="{{ routes.cart_url }}" method="post">
+            <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
+          </form>
+          <a href="{{ routes.cart_url }}" class="link-underline" style="display:block;text-align:center;margin-top:12px;font-size:13px">{{ 'cart.view_cart' | t }}</a>
+        </div>
+      {%- else -%}
+        <div class="drawer__body cart-empty">
+          <p>{{ 'cart.empty' | t }}</p>
+          <a href="{{ routes.all_products_collection_url }}" class="button" style="margin-top:12px">{{ 'cart.continue' | t }}</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>

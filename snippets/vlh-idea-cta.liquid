@@ -1,0 +1,56 @@
+{% comment %}
+  ============================================================
+  VIVA LA HOME — CTA de WhatsApp para productos sin formulario
+  ============================================================
+  Pensado para productos tipo "Ilustración personalizada" (idea
+  a medida) donde no quieres mostrar el formulario de compra,
+  solo la descripción + un botón directo a WhatsApp.
+  ============================================================
+{% endcomment %}
+
+<div class="vlh-idea-cta">
+  <a
+    href="https://wa.me/34604524295?text={{ 'Hola! Quiero contaros una idea para una ilustración personalizada' | url_encode }}"
+    class="vlh-idea-cta__boton"
+    target="_blank"
+    rel="noopener"
+  >
+    Escríbenos por WhatsApp con tu idea
+  </a>
+  <p class="vlh-idea-cta__nota">
+    Sin compromiso — cuéntanos qué tienes en mente y te preparamos un presupuesto a medida.
+  </p>
+</div>
+
+<style>
+  .vlh-idea-cta {
+    --vlh-crema: var(--color-bg, #F7F3EE);
+    --vlh-tinta: var(--color-text, #2C2218);
+    margin: 20px 0;
+  }
+  .vlh-idea-cta__boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px 20px;
+    background: var(--vlh-tinta);
+    color: var(--vlh-crema);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 0;
+    transition: opacity .15s ease;
+  }
+  .vlh-idea-cta__boton:hover { opacity: .85; }
+  .vlh-idea-cta__nota {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: #6b6055;
+    margin: 10px 0 0;
+  }
+</style>

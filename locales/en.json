@@ -1,0 +1,106 @@
+{
+  "accessibility": {
+    "skip_to_content": "Skip to content"
+  },
+  "general": {
+    "page": "Page {{ page }}",
+    "menu": "Menu",
+    "search": "Search",
+    "close": "Close",
+    "view_all": "View all",
+    "previous": "Previous",
+    "next": "Next",
+    "home": "Home",
+    "404_title": "Page not found",
+    "search_results": {
+      "one": "{{ count }} result for “{{ terms }}”",
+      "other": "{{ count }} results for “{{ terms }}”"
+    },
+    "back_to_blog": "Back to blog",
+    "password": "Password",
+    "enter": "Enter"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "added": "Added to cart",
+    "sold_out": "Sold out",
+    "unavailable": "Unavailable",
+    "from_price_html": "From {{ price }}",
+    "sale": "Sale",
+    "placeholder_title": "Print name",
+    "tax_included": "Tax included.",
+    "quantity": "Quantity"
+  },
+  "cart": {
+    "title": "Your cart",
+    "checkout": "Check out",
+    "continue": "Continue shopping",
+    "empty": "Your cart is empty",
+    "free_shipping_remaining_html": "You're <strong>{{ amount }}</strong> away from free shipping",
+    "free_shipping_reached": "You've got free shipping!",
+    "note": "Order note",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "taxes_shipping": "Taxes included. Shipping calculated at checkout.",
+    "view_cart": "View cart"
+  },
+  "collections": {
+    "apply": "Apply",
+    "clear_all": "Clear filters",
+    "empty": "No products match.",
+    "product_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "sort_by": "Sort by"
+  },
+  "contact": {
+    "email": "Email",
+    "message": "Message",
+    "name": "Name",
+    "phone": "Phone",
+    "send": "Send",
+    "success": "Thanks! We'll get back to you soon."
+  },
+  "customer": {
+    "account": "Account",
+    "activate": "Activate account",
+    "add_address": "Add address",
+    "address1": "Address",
+    "addresses": "Addresses",
+    "billing_address": "Billing address",
+    "city": "City",
+    "confirm_password": "Confirm password",
+    "country": "Country",
+    "create_account": "Create account",
+    "date": "Date",
+    "first_name": "First name",
+    "forgot_password": "Forgot your password?",
+    "guest": "Continue as guest",
+    "last_name": "Last name",
+    "log_out": "Log out",
+    "login": "Log in",
+    "no_orders": "You haven't placed any orders yet.",
+    "orders": "Orders",
+    "product": "Product",
+    "province": "Province",
+    "recover_success": "We've sent you an email to reset your password.",
+    "reset_password": "Reset password",
+    "set_default": "Set as default address",
+    "shipping": "Shipping",
+    "shipping_address": "Shipping address",
+    "sign_in": "Sign in",
+    "status": "Status",
+    "view_addresses": "View addresses",
+    "zip": "Postal code"
+  },
+  "newsletter": {
+    "email": "Your email",
+    "success": "Thanks for subscribing!"
+  },
+  "gift_card": {
+    "title": "Gift card",
+    "expired": "This gift card has expired or is disabled.",
+    "print": "Print"
+  }
+}

@@ -1,0 +1,692 @@
+{
+  "sections": {
+    "hero": {
+      "type": "slideshow",
+      "settings": {
+        "height": 620,
+        "height_mobile": 560,
+        "autoplay": true,
+        "speed": 6
+      },
+      "blocks": {
+        "slide_1": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/vlh-hero-infantil.png",
+            "focal": "30% center",
+            "overlay": 0,
+            "tag": "Colección infantil",
+            "heading": "Láminas que hacen soñar",
+            "text": "Ilustraciones para las habitaciones más especiales.",
+            "button_label": "Ver colección infantil",
+            "button_link": "shopify://collections/infantil",
+            "align": "right",
+            "valign": "middle",
+            "panel": false,
+            "light_text": false
+          }
+        },
+        "slide_2": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/vlh-hero-salon-pareja.png",
+            "focal": "25% center",
+            "overlay": 0,
+            "tag": "Hecho a mano para ti",
+            "heading": "Tu historia, ilustrada",
+            "text": "Ilustraciones personalizadas a partir de tu foto.",
+            "button_label": "Crear mi ilustración",
+            "button_link": "shopify://collections/laminas-personalizadas",
+            "align": "right",
+            "valign": "middle",
+            "panel": false,
+            "light_text": false
+          }
+        }
+      },
+      "block_order": [
+        "slide_1",
+        "slide_2"
+      ]
+    },
+    "strip": {
+      "type": "text-strip",
+      "settings": {
+        "label": "Hecho con amor",
+        "bg": "#A89478",
+        "fg": "#FFFFFF"
+      },
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "text": "Ilustrado a mano",
+            "icon": "none"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "text": "Diseño original",
+            "icon": "none"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "text": "Papel de calidad",
+            "icon": "none"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "text": "Regalos únicos",
+            "icon": "none"
+          }
+        },
+        "item_5": {
+          "type": "item",
+          "settings": {
+            "text": "Atención cercana",
+            "icon": "none"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4",
+        "item_5"
+      ]
+    },
+    "trending": {
+      "type": "collection-tiles",
+      "settings": {
+        "title": "Tendencias",
+        "layout": "carousel",
+        "columns": 4,
+        "ratio": "3 / 4",
+        "background": "alt"
+      },
+      "blocks": {
+        "tile_1": {
+          "type": "tile",
+          "settings": {
+            "title": "Bosque encantado",
+            "subtitle": "",
+            "link": "https://www.vivalahome.store/search?q=bosque&type=product",
+            "image": "shopify://shop_images/vlh-tendencia-bosque.png"
+          }
+        },
+        "tile_2": {
+          "type": "tile",
+          "settings": {
+            "title": "Aventuras en el mar",
+            "subtitle": "",
+            "link": "https://www.vivalahome.store/search?q=mar&type=product",
+            "image": "shopify://shop_images/vlh-tendencia-mar.png"
+          }
+        },
+        "tile_3": {
+          "type": "tile",
+          "settings": {
+            "title": "Estrellas y sueños",
+            "subtitle": "",
+            "link": "https://www.vivalahome.store/search?q=estrella&type=product",
+            "image": "shopify://shop_images/vlh-tendencia-estrellas.png"
+          }
+        },
+        "tile_4": {
+          "type": "tile",
+          "settings": {
+            "title": "Retratos de mascotas",
+            "subtitle": "",
+            "link": "shopify://products/ilustracion-mascota",
+            "image": "shopify://shop_images/vlh-tendencia-mascotas.png"
+          }
+        },
+        "tile_5": {
+          "type": "tile",
+          "settings": {
+            "title": "Bodas",
+            "subtitle": "",
+            "link": "shopify://products/ilustracion-boda",
+            "image": "shopify://shop_images/vlh-estancia-dormitorio.png"
+          }
+        }
+      },
+      "block_order": [
+        "tile_1",
+        "tile_2",
+        "tile_3",
+        "tile_4",
+        "tile_5"
+      ]
+    },
+    "icons": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "Las más queridas",
+        "collection": "los-mas-vendidos",
+        "limit": 12,
+        "columns": 4,
+        "layout": "carousel",
+        "background": "default",
+        "show_view_all": true,
+        "view_all_label": "Ver todas"
+      }
+    },
+    "new_arrivals": {
+      "type": "collection-tiles",
+      "settings": {
+        "title": "Novedades y colecciones",
+        "layout": "grid",
+        "columns": 3,
+        "ratio": "4 / 3",
+        "background": "default"
+      },
+      "blocks": {
+        "tile_1": {
+          "type": "tile",
+          "settings": {
+            "title": "Láminas personalizadas",
+            "subtitle": "",
+            "image": "shopify://shop_images/vlh-novedades-personalizadas.png",
+            "collection": "laminas-personalizadas"
+          }
+        },
+        "tile_2": {
+          "type": "tile",
+          "settings": {
+            "title": "Colección infantil",
+            "subtitle": "",
+            "image": "shopify://shop_images/vlh-novedades-infantil.png",
+            "collection": "infantil"
+          }
+        },
+        "tile_3": {
+          "type": "tile",
+          "settings": {
+            "title": "Packs regalo",
+            "subtitle": "",
+            "image": "shopify://shop_images/vlh-novedades-packs-regalo.png",
+            "collection": "packs-regalo"
+          }
+        }
+      },
+      "block_order": [
+        "tile_1",
+        "tile_2",
+        "tile_3"
+      ]
+    },
+    "worth": {
+      "type": "split-banner",
+      "settings": {
+        "image": "shopify://shop_images/vlh-banner-mascota.png",
+        "image_first": false,
+        "image_width": "wide",
+        "tag": "Ilustración personalizada",
+        "eyebrow": "",
+        "heading": "Tu historia, ilustrada",
+        "heading_size": "large",
+        "text": "<p>Parejas, familias, mascotas, bodas o ese lugar especial: lo dibujamos a partir de tu foto.</p>",
+        "button_label": "Crear mi ilustración",
+        "button_link": "shopify://collections/laminas-personalizadas",
+        "text_center": false,
+        "panel_bg": "#EFE8DE",
+        "contained": true,
+        "outer_background": "default"
+      }
+    },
+    "rooms": {
+      "type": "collection-tiles",
+      "settings": {
+        "title": "Un rincón para cada lámina",
+        "layout": "carousel",
+        "columns": 4,
+        "ratio": "3 / 4",
+        "background": "alt"
+      },
+      "blocks": {
+        "tile_1": {
+          "type": "tile",
+          "settings": {
+            "title": "Habitación infantil",
+            "subtitle": "",
+            "link": "shopify://collections/infantil",
+            "image": "shopify://shop_images/vlh-estancia-habitacion-infantil.png"
+          }
+        },
+        "tile_2": {
+          "type": "tile",
+          "settings": {
+            "title": "Cuarto del bebé",
+            "subtitle": "",
+            "link": "shopify://collections/infantil",
+            "image": "shopify://shop_images/vlh-estancia-bebe.png"
+          }
+        },
+        "tile_3": {
+          "type": "tile",
+          "settings": {
+            "title": "Salón",
+            "subtitle": "",
+            "link": "shopify://collections/laminas-personalizadas",
+            "image": "shopify://shop_images/vlh-estancia-salon.png"
+          }
+        },
+        "tile_4": {
+          "type": "tile",
+          "settings": {
+            "title": "Dormitorio",
+            "subtitle": "",
+            "link": "shopify://collections/laminas-personalizadas",
+            "image": "shopify://shop_images/vlh-estancia-dormitorio.png"
+          }
+        }
+      },
+      "block_order": [
+        "tile_1",
+        "tile_2",
+        "tile_3",
+        "tile_4"
+      ]
+    },
+    "moments": {
+      "type": "collection-tiles",
+      "settings": {
+        "title": "Ilustraciones para cada momento",
+        "layout": "carousel",
+        "columns": 4,
+        "ratio": "3 / 4",
+        "background": "default"
+      },
+      "blocks": {
+        "tile_1": {
+          "type": "tile",
+          "settings": {
+            "title": "Parejas",
+            "subtitle": "",
+            "link": "shopify://products/ilustracion-pareja",
+            "image": "shopify://shop_images/641E1CC9-4DC1-42A6-8406-AB82ED858ECA.jpg"
+          }
+        },
+        "tile_2": {
+          "type": "tile",
+          "settings": {
+            "title": "Mascotas",
+            "subtitle": "",
+            "link": "shopify://products/ilustracion-mascota",
+            "image": "shopify://shop_images/43E84B86-4D1E-441C-8E05-0B5BF8E29BB1.jpg"
+          }
+        },
+        "tile_3": {
+          "type": "tile",
+          "settings": {
+            "title": "Bodas",
+            "subtitle": "",
+            "link": "shopify://products/ilustracion-boda",
+            "image": "shopify://shop_images/IMG-5107.jpg"
+          }
+        },
+        "tile_4": {
+          "type": "tile",
+          "settings": {
+            "title": "Familias",
+            "subtitle": "",
+            "link": "shopify://products/sin-titulo-28ago_16-34-27",
+            "image": "shopify://shop_images/979E0D82-2A97-4187-9348-504A6BA432D6.jpg"
+          }
+        },
+        "tile_5": {
+          "type": "tile",
+          "settings": {
+            "title": "Bebés",
+            "subtitle": "",
+            "link": "shopify://products/sin-titulo-3sept_14-00-21",
+            "image": "shopify://shop_images/CEAB9B58-A00B-48D5-9E3A-193CB4D4B60B.jpg"
+          }
+        },
+        "tile_6": {
+          "type": "tile",
+          "settings": {
+            "title": "Comuniones",
+            "subtitle": "",
+            "link": "shopify://products/ilustracion-comunion",
+            "image": "shopify://shop_images/D0E189DC-BBD1-48D2-B60D-76BC54F85C8D.jpg"
+          }
+        },
+        "tile_7": {
+          "type": "tile",
+          "settings": {
+            "title": "Tradiciones",
+            "subtitle": "",
+            "link": "shopify://products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales",
+            "image": "shopify://shop_images/IMG-5108.jpg"
+          }
+        },
+        "tile_8": {
+          "type": "tile",
+          "settings": {
+            "title": "Lugares especiales",
+            "subtitle": "",
+            "link": "shopify://products/ilustracion-paisaje-lugar-especial",
+            "image": "shopify://shop_images/F0315B13-66CF-4958-AC24-55DC56983F0C.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "tile_1",
+        "tile_2",
+        "tile_3",
+        "tile_4",
+        "tile_5",
+        "tile_6",
+        "tile_7",
+        "tile_8"
+      ]
+    },
+    "kids": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "Colección infantil",
+        "collection": "infantil",
+        "limit": 12,
+        "columns": 4,
+        "layout": "carousel",
+        "background": "alt",
+        "show_view_all": true,
+        "view_all_label": "Ver las 68 láminas"
+      }
+    },
+    "about": {
+      "type": "split-banner",
+      "settings": {
+        "image": "shopify://shop_images/vlh-sobre-nosotras-estudio.png",
+        "image_first": true,
+        "image_width": "half",
+        "tag": "",
+        "eyebrow": "Gracias por estar aquí",
+        "heading": "Ilustramos momentos, creamos hogar",
+        "heading_size": "medium",
+        "text": "<p>En Viva la Home dibujamos cada lámina con mimo para que tus paredes cuenten vuestra historia. Desde nuestro estudio creamos ilustraciones personalizadas y colecciones pensadas para llenar de magia cada rincón.</p><p>Gracias por apoyar un proyecto pequeño, hecho con amor.</p>",
+        "button_label": "Escríbenos",
+        "button_link": "shopify://pages/contact",
+        "text_center": true,
+        "panel_bg": "#F7F3EE",
+        "contained": true,
+        "outer_background": "default"
+      }
+    },
+    "promise": {
+      "type": "icon-bar",
+      "settings": {
+        "label": "Nuestra promesa",
+        "bg": "#A89478",
+        "fg": "#FFFFFF"
+      },
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "brush",
+            "text": "Ilustrado a mano"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "frame",
+            "text": "Papel de calidad"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "gift",
+            "text": "Listo para regalar"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "lock",
+            "text": "Pago seguro"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
+    },
+    "reviews": {
+      "type": "testimonials",
+      "settings": {
+        "title": "Lo que dicen de nosotros",
+        "background": "default"
+      },
+      "blocks": {
+        "review_1": {
+          "type": "review",
+          "settings": {
+            "quote": "Escribe aquí la opinión real de una clienta.",
+            "author": "Nombre",
+            "rating": 5
+          }
+        },
+        "review_2": {
+          "type": "review",
+          "settings": {
+            "quote": "Escribe aquí la opinión real de otra clienta.",
+            "author": "Nombre",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": [
+        "review_1",
+        "review_2"
+      ],
+      "disabled": true
+    },
+    "services": {
+      "type": "service-cards",
+      "settings": {
+        "title": "",
+        "background": "default"
+      },
+      "blocks": {
+        "card_1": {
+          "type": "card",
+          "settings": {
+            "icon": "whatsapp",
+            "title": "Idea a medida",
+            "text": "¿Tienes algo especial en mente? Cuéntanoslo por WhatsApp",
+            "link": "https://wa.me/34604524295",
+            "new_tab": true
+          }
+        },
+        "card_2": {
+          "type": "card",
+          "settings": {
+            "icon": "gift",
+            "title": "Packs regalo",
+            "text": "Tu lámina lista para regalar, con mensaje incluido",
+            "link": "shopify://collections/packs-regalo",
+            "new_tab": false
+          }
+        },
+        "card_3": {
+          "type": "card",
+          "settings": {
+            "icon": "camera",
+            "title": "Cómo funciona",
+            "text": "Eliges, nos envías tu foto y la ilustramos para ti",
+            "link": "shopify://collections/laminas-personalizadas",
+            "new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "card_1",
+        "card_2",
+        "card_3"
+      ]
+    },
+    "instagram": {
+      "type": "instagram-gallery",
+      "settings": {
+        "title": "Visto en Instagram",
+        "instagram_url": "https://www.instagram.com/vivalahome.store",
+        "columns": 6,
+        "background": "default"
+      },
+      "blocks": {
+        "foto_1": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/ECC08481-A155-4C38-A50E-1141BC671330.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3850372147470668852&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_2": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/094123fe66084a249edf742f5ce787af.mov",
+            "enlace": "https://www.instagram.com/reel/DWofTakDKy5/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_3": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/0cbc20e0-5b71-4707-bb77-adedcb1732ac.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3954772933400993938&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_4": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/c1295c5b56644f4283209856fd3099ab.mov",
+            "enlace": "https://www.instagram.com/reel/Dau__OURJk4/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_5": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/065453a5-68b1-4725-aa49-d760712f6c4a.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3953335224192736842&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_6": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/c90e1b7ef1814b45b304f81d42446219.mov",
+            "enlace": "https://www.instagram.com/reel/DcEPTv1AcD9/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_7": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/E8722423-0E60-4CD8-924B-B20D3A122948.jpg",
+            "enlace": "https://www.instagram.com/p/DZPvz9QjF9v/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_8": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/copy_7B5855E7-03B1-476E-A488-B95310A0410B.mov",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3854125653239287334&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_9": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/855F268F-0713-41B5-B8E6-A871AFE879AD.jpg",
+            "enlace": "https://www.instagram.com/p/DaFyMQpjGQk/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_10": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/B88930C7-F90A-4842-B898-5E1F8E3CFC89.mov",
+            "enlace": "https://www.instagram.com/reel/DbL_t0SxD3B/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_11": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/297A8ADB-988A-40B9-8628-12A70FB21197.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3849845511910346280&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_12": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/8a926983dd1048d8841c62d2e520031e.mov",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3909863916348153291&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_13": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/F95434CA-0879-4787-99D9-8231E6A18040.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3909867111680528825&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_14": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/lv_0_20260214101144.mov",
+            "enlace": "https://www.instagram.com/reel/DU6TtrkCNR6/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_15": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/431da1f7-d3e7-43d8-8d8d-6f2262f6fecb.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3982493473076688679&stkn=enVzZWdqbnR2ZnF6"
+          }
+        }
+      },
+      "block_order": [
+        "foto_1",
+        "foto_2",
+        "foto_3",
+        "foto_4",
+        "foto_5",
+        "foto_6",
+        "foto_7",
+        "foto_8",
+        "foto_9",
+        "foto_10",
+        "foto_11",
+        "foto_12",
+        "foto_13",
+        "foto_14",
+        "foto_15"
+      ]
+    }
+  },
+  "order": [
+    "hero",
+    "strip",
+    "trending",
+    "icons",
+    "new_arrivals",
+    "worth",
+    "rooms",
+    "moments",
+    "kids",
+    "about",
+    "promise",
+    "reviews",
+    "services",
+    "instagram"
+  ]
+}

@@ -1,0 +1,12 @@
+{%- comment -%} Descripción del producto como sección independiente (para colocarla bajo el formulario) {%- endcomment -%}
+{%- if product.description != blank -%}
+  <section class="section" style="padding-top:0">
+    <div class="page-width page-width--narrow">
+      <div class="rte" style="font-size:15px;line-height:1.75">{{ product.description }}</div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{ "name": "Descripción de producto", "enabled_on": { "templates": ["product"] }, "presets": [{ "name": "Descripción de producto" }] }
+{% endschema %}

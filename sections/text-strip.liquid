@@ -1,0 +1,49 @@
+<div class="strip" style="background: {{ section.settings.bg }}; color: {{ section.settings.fg }};">
+  <div class="page-width strip__inner">
+    {%- if section.settings.label != blank -%}<span class="strip__label">{{ section.settings.label }}</span>{%- endif -%}
+    <div class="strip__items">
+      {%- for block in section.blocks -%}
+        <div class="strip__item" {{ block.shopify_attributes }}>
+          {%- if block.settings.logo != blank -%}
+            {{ block.settings.logo | image_url: height: 60 | image_tag: alt: block.settings.text }}
+          {%- else -%}
+            {%- if block.settings.icon != 'none' -%}{% render 'icon', name: block.settings.icon %}{%- endif -%}
+            <span>{{ block.settings.text }}</span>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Banda de texto / logos",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Etiqueta", "default": "Hecho con amor" },
+    { "type": "color", "id": "bg", "label": "Fondo", "default": "#A89478" },
+    { "type": "color", "id": "fg", "label": "Texto", "default": "#FFFFFF" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Elemento",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Texto", "default": "Ilustrado a mano" },
+        {
+          "type": "select", "id": "icon", "label": "Icono",
+          "options": [
+            { "value": "none", "label": "Ninguno" }, { "value": "brush", "label": "Pincel" }, { "value": "frame", "label": "Cuadro" },
+            { "value": "truck", "label": "Envío" }, { "value": "gift", "label": "Regalo" }, { "value": "heart", "label": "Corazón" },
+            { "value": "lock", "label": "Candado" }, { "value": "chat", "label": "Mensaje" }, { "value": "star", "label": "Estrella" },
+            { "value": "leaf", "label": "Hoja" }, { "value": "box", "label": "Caja" }, { "value": "camera", "label": "Cámara" }
+          ],
+          "default": "none"
+        },
+        { "type": "image_picker", "id": "logo", "label": "Logo (opcional, sustituye al texto)" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Banda de texto / logos", "blocks": [{ "type": "item" }, { "type": "item" }, { "type": "item" }] }]
+}
+{% endschema %}

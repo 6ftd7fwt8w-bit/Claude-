@@ -1,0 +1,117 @@
+{%- liquid
+  assign hero_image = collection.image
+  if section.settings.hero_image != blank
+    assign hero_image = section.settings.hero_image
+  endif
+-%}
+<div class="collection-hero{% if section.settings.show_image and hero_image %} collection-hero--image{% else %} bg-alt{% endif %}">
+  {%- if section.settings.show_image and hero_image -%}
+    <div class="collection-hero__media">
+      {{ hero_image | image_url: width: 2400 | image_tag: loading: 'eager', widths: '750, 1200, 1800, 2400', sizes: '100vw', alt: collection.title }}
+    </div>
+  {%- endif -%}
+  <div class="collection-hero__content">
+    <h1 class="display" style="font-size: clamp(32px, 4vw, 52px)">{{ collection.title }}</h1>
+    {%- if collection.description != blank and section.settings.show_description -%}
+      <div class="collection-hero__desc rte">{{ collection.description }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+<section class="section" style="padding-top:24px">
+  <div class="page-width">
+    {%- paginate collection.products by section.settings.per_page -%}
+      <form class="facets" data-facets-form>
+        <div class="facets__filters">
+          {%- for filter in collection.filters -%}
+            <details>
+              <summary>{{ filter.label }}{% if filter.active_values.size > 0 %} ({{ filter.active_values.size }}){% endif %}</summary>
+              <div class="facets__panel">
+                {%- case filter.type -%}
+                  {%- when 'price_range' -%}
+                    <div class="facets__price">
+                      <input class="input" type="number" name="{{ filter.min_value.param_name }}" placeholder="{{ 0 | money_without_currency }}"
+                        value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}" aria-label="min">
+                      <input class="input" type="number" name="{{ filter.max_value.param_name }}" placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                        value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}" aria-label="max">
+                    </div>
+                    <button type="submit" class="button" style="margin-top:12px;min-height:36px;width:100%">{{ 'collections.apply' | t }}</button>
+                  {%- else -%}
+                    {%- for value in filter.values -%}
+                      <label>
+                        <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}" {% if value.active %}checked{% endif %}
+                          {% if value.count == 0 and value.active == false %}disabled{% endif %} data-autosubmit>
+                        {{ value.label }} <span class="muted">({{ value.count }})</span>
+                      </label>
+                    {%- endfor -%}
+                {%- endcase -%}
+              </div>
+            </details>
+          {%- endfor -%}
+        </div>
+        <div class="facets__sort">
+          <label class="visually-hidden" for="SortBy">{{ 'collections.sort_by' | t }}</label>
+          <span class="muted" style="font-size:13px;margin-right:10px">{{ 'collections.product_count' | t: count: collection.products_count }}</span>
+          {%- assign current_sort = collection.sort_by | default: collection.default_sort_by -%}
+          <select name="sort_by" id="SortBy" data-autosubmit>
+            {%- for option in collection.sort_options -%}
+              <option value="{{ option.value }}" {% if option.value == current_sort %}selected{% endif %}>{{ option.name }}</option>
+            {%- endfor -%}
+          </select>
+        </div>
+      </form>
+
+      {%- assign active_count = 0 -%}
+      {%- capture active_pills -%}
+        {%- for filter in collection.filters -%}
+          {%- for value in filter.active_values -%}
+            {%- assign active_count = active_count | plus: 1 -%}
+            <a class="pill" href="{{ value.url_to_remove }}">{{ value.label }} &times;</a>
+          {%- endfor -%}
+          {%- if filter.type == 'price_range' and filter.min_value.value != nil or filter.type == 'price_range' and filter.max_value.value != nil -%}
+            {%- assign active_count = active_count | plus: 1 -%}
+            <a class="pill" href="{{ filter.url_to_remove }}">{{ filter.label }} &times;</a>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endcapture -%}
+      {%- if active_count > 0 -%}
+        <div class="facets__active">{{ active_pills }}<a class="pill" href="{{ collection.url }}?sort_by={{ collection.sort_by }}">{{ 'collections.clear_all' | t }}</a></div>
+      {%- endif -%}
+
+      {%- if collection.products.size > 0 -%}
+        <div class="product-grid" style="--cols: {{ section.settings.columns }}">
+          {%- for product in collection.products -%}
+            {%- if forloop.index <= 4 -%}{% render 'product-card', product: product, lazy: false %}{%- else -%}{% render 'product-card', product: product %}{%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <p class="cart-empty">{{ 'collections.empty' | t }}</p>
+      {%- endif -%}
+
+      {%- if paginate.pages > 1 -%}
+        <nav class="pagination" aria-label="pagination">
+          {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}" aria-label="{{ 'general.previous' | t }}">&larr;</a>{%- endif -%}
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>
+            {%- elsif part.title == paginate.current_page -%}<span class="current" aria-current="page">{{ part.title }}</span>
+            {%- else -%}<span>{{ part.title }}</span>{%- endif -%}
+          {%- endfor -%}
+          {%- if paginate.next -%}<a href="{{ paginate.next.url }}" aria-label="{{ 'general.next' | t }}">&rarr;</a>{%- endif -%}
+        </nav>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Colección",
+  "settings": [
+    { "type": "checkbox", "id": "show_image", "label": "Mostrar imagen de la colección en cabecera", "default": true },
+    { "type": "image_picker", "id": "hero_image", "label": "Imagen de cabecera (sustituye a la de la colección)" },
+    { "type": "checkbox", "id": "show_description", "label": "Mostrar descripción", "default": true },
+    { "type": "range", "id": "per_page", "label": "Productos por página", "min": 8, "max": 48, "step": 4, "default": 24 },
+    { "type": "range", "id": "columns", "label": "Columnas (escritorio)", "min": 2, "max": 5, "step": 1, "default": 4 }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,22 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-contact",
+      "settings": {}
+    },
+    "whatsapp": {
+      "type": "whatsapp-contact",
+      "settings": {
+        "titulo": "¿Prefieres WhatsApp?",
+        "subtitulo": "Te respondemos enseguida.",
+        "texto_boton": "Escríbenos por WhatsApp",
+        "whatsapp_numero": "34604524295",
+        "whatsapp_mensaje": "¡Hola! Tengo una duda sobre..."
+      }
+    }
+  },
+  "order": [
+    "main",
+    "whatsapp"
+  ]
+}

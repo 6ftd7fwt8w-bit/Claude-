@@ -1,0 +1,76 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {},
+      "blocks": {
+        "block_1": {
+          "type": "title",
+          "settings": {}
+        },
+        "block_2": {
+          "type": "price",
+          "settings": {}
+        },
+        "block_3": {
+          "type": "variant_picker",
+          "settings": {}
+        },
+        "block_4": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": false
+          }
+        },
+        "block_5": {
+          "type": "description",
+          "settings": {
+            "collapsible": true,
+            "heading": "Descripción",
+            "open": true
+          }
+        },
+        "block_6": {
+          "type": "usp",
+          "settings": {
+            "usp_1": "Papel de calidad",
+            "icon_1": "frame",
+            "usp_2": "Envío protegido",
+            "icon_2": "truck",
+            "usp_3": "Pago seguro",
+            "icon_3": "lock"
+          }
+        },
+        "block_7": {
+          "type": "whatsapp",
+          "settings": {
+            "label": "¿Dudas? Escríbenos por WhatsApp",
+            "number": "34604524295",
+            "message": "¡Hola! Tengo una duda sobre"
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3",
+        "block_4",
+        "block_5",
+        "block_6",
+        "block_7"
+      ]
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "title": "También te puede gustar",
+        "limit": 8,
+        "background": "alt"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "recommendations"
+  ]
+}

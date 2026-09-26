@@ -1,0 +1,38 @@
+<section class="section bg-{{ section.settings.background }}">
+  <div class="page-width page-width--narrow" style="text-align: {{ section.settings.align }}">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'heading' -%}
+          <h2 class="h2" style="margin-bottom:16px" {{ block.shopify_attributes }}>{{ block.settings.heading }}</h2>
+        {%- when 'text' -%}
+          <div class="rte muted" style="margin-bottom:20px" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+        {%- when 'button' -%}
+          <a href="{{ block.settings.link | default: '#' }}" class="button" {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Texto enriquecido",
+  "settings": [
+    {
+      "type": "select", "id": "align", "label": "Alineación",
+      "options": [{ "value": "left", "label": "Izquierda" }, { "value": "center", "label": "Centro" }],
+      "default": "center"
+    },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "default"
+    }
+  ],
+  "blocks": [
+    { "type": "heading", "name": "Título", "settings": [{ "type": "text", "id": "heading", "label": "Título", "default": "Hablemos de arte" }] },
+    { "type": "text", "name": "Texto", "settings": [{ "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Comparte información sobre tu marca.</p>" }] },
+    { "type": "button", "name": "Botón", "settings": [{ "type": "text", "id": "label", "label": "Texto", "default": "Saber más" }, { "type": "url", "id": "link", "label": "Enlace" }] }
+  ],
+  "presets": [{ "name": "Texto enriquecido", "blocks": [{ "type": "heading" }, { "type": "text" }, { "type": "button" }] }]
+}
+{% endschema %}

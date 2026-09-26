@@ -1,0 +1,90 @@
+{
+  "type": "footer",
+  "name": "Pie de página",
+  "sections": {
+    "whatsapp": {
+      "type": "whatsapp-contact",
+      "settings": {
+        "titulo": "¿Tienes alguna duda?",
+        "subtitulo": "Contáctanos y te ayudamos encantadas, sin compromiso. Email: hola@vivalahome.store",
+        "texto_boton": "Escríbenos por WhatsApp",
+        "whatsapp_numero": "34604524295",
+        "whatsapp_mensaje": "¡Hola! Tengo una duda sobre..."
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "show_payment": true
+      },
+      "blocks": {
+        "block_1": {
+          "type": "feature",
+          "settings": {
+            "icon": "brush",
+            "title": "Ilustrado a mano",
+            "text": "Cada lámina, con mimo"
+          }
+        },
+        "block_2": {
+          "type": "feature",
+          "settings": {
+            "icon": "gift",
+            "title": "Listo para regalar",
+            "text": "Packs con mensaje personal"
+          }
+        },
+        "block_3": {
+          "type": "feature",
+          "settings": {
+            "icon": "chat",
+            "title": "Atención cercana",
+            "text": "Te respondemos por WhatsApp"
+          }
+        },
+        "block_4": {
+          "type": "menu",
+          "settings": {
+            "heading": "Tienda",
+            "menu": "main-menu"
+          }
+        },
+        "block_5": {
+          "type": "menu",
+          "settings": {
+            "heading": "Ayuda",
+            "menu": "footer"
+          }
+        },
+        "block_6": {
+          "type": "text",
+          "settings": {
+            "heading": "Viva la Home",
+            "text": "<p>Ilustramos historias, diseñamos regalos y creamos hogar.</p><p><a href=\"mailto:hola@vivalahome.store\">hola@vivalahome.store</a></p>"
+          }
+        },
+        "block_7": {
+          "type": "newsletter",
+          "settings": {
+            "heading": "Las cosas buenas llegan primero por aquí",
+            "text": "Suscríbete para recibir descuentos exclusivos, acceso a sorteos y nuestras novedades antes que nadie.",
+            "button": "Suscribirme"
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3",
+        "block_4",
+        "block_5",
+        "block_6",
+        "block_7"
+      ]
+    }
+  },
+  "order": [
+    "whatsapp",
+    "footer"
+  ]
+}

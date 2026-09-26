@@ -1,0 +1,40 @@
+{%- comment -%} Líneas del carrito (compartido por página y panel lateral) {%- endcomment -%}
+{%- for item in cart.items -%}
+  <div class="cart-item" data-line="{{ forloop.index }}" data-key="{{ item.key }}">
+    <a href="{{ item.url }}" class="cart-item__media">
+      {%- if item.image -%}{{ item.image | image_url: width: 240 | image_tag: loading: 'lazy', alt: item.title }}{%- endif -%}
+    </a>
+    <div>
+      <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title | split: ' | ' | first }}</a>
+      {%- unless item.product.has_only_default_variant -%}
+        <div class="cart-item__meta">{{ item.variant.title }}</div>
+      {%- endunless -%}
+      {%- for property in item.properties -%}
+        {%- assign first_char = property.first | slice: 0 -%}
+        {%- if property.last != blank and first_char != '_' -%}
+          <div class="cart-item__meta">
+            {{ property.first }}:
+            {%- if property.last contains '/uploads/' -%}
+              <a href="{{ property.last }}" target="_blank" rel="noopener" class="link-underline">{{ property.last | split: '/' | last }}</a>
+            {%- else -%}
+              {{ property.last }}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- for discount in item.line_level_discount_allocations -%}
+        <div class="cart-item__meta price--sale">{{ discount.discount_application.title }} (-{{ discount.amount | money }})</div>
+      {%- endfor -%}
+      <div class="qty">
+        <button type="button" data-cart-qty="{{ item.quantity | minus: 1 }}" aria-label="-">&minus;</button>
+        <input type="number" value="{{ item.quantity }}" min="0" data-cart-qty-input aria-label="{{ 'products.quantity' | t }}">
+        <button type="button" data-cart-qty="{{ item.quantity | plus: 1 }}" aria-label="+">+</button>
+      </div>
+      <div><button type="button" class="cart-item__remove" data-cart-qty="0">{{ 'cart.remove' | t }}</button></div>
+    </div>
+    <div class="cart-item__price">
+      {%- if item.original_line_price != item.final_line_price -%}<s class="muted">{{ item.original_line_price | money }}</s><br>{%- endif -%}
+      {{ item.final_line_price | money }}
+    </div>
+  </div>
+{%- endfor -%}

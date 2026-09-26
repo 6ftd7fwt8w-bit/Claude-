@@ -1,0 +1,43 @@
+{
+  "type": "header",
+  "name": "Cabecera",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {
+        "bg": "#F2D16B",
+        "fg": "#231F1C"
+      },
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "text": "3x2 en láminas infantiles con el código PEQUES3X2",
+            "link": "shopify://collections/infantil"
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "text": "Ilustramos historias · Diseñamos regalos · Creamos hogar"
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1",
+        "announcement_2"
+      ]
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu",
+        "show_search": true
+      }
+    }
+  },
+  "order": [
+    "announcement",
+    "header"
+  ]
+}

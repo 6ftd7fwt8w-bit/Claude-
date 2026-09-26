@@ -1,0 +1,30 @@
+<div class="customer customer--wide">
+  <p><a class="link-underline" href="{{ routes.account_url }}">&larr; {{ 'customer.account' | t }}</a></p>
+  <h1 class="h2" style="margin:12px 0 24px">{{ 'customer.addresses' | t }}</h1>
+  {%- paginate customer.addresses by 10 -%}
+    {%- for address in customer.addresses -%}
+      <div style="padding:16px 0;border-bottom:1px solid var(--color-border)">
+        {{ address | format_address }}
+        {%- form 'customer_address', address -%}
+          <input type="hidden" name="_method" value="delete">
+          <button type="submit" class="cart-item__remove">{{ 'cart.remove' | t }}</button>
+        {%- endform -%}
+      </div>
+    {%- endfor -%}
+  {%- endpaginate -%}
+  <h2 class="h3" style="margin-top:32px">{{ 'customer.add_address' | t }}</h2>
+  {%- form 'customer_address', customer.new_address -%}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+      <div class="field"><label>{{ 'customer.first_name' | t }}</label><input type="text" name="address[first_name]" autocomplete="given-name"></div>
+      <div class="field"><label>{{ 'customer.last_name' | t }}</label><input type="text" name="address[last_name]" autocomplete="family-name"></div>
+      <div class="field" style="grid-column:1/-1"><label>{{ 'customer.address1' | t }}</label><input type="text" name="address[address1]" autocomplete="address-line1"></div>
+      <div class="field"><label>{{ 'customer.city' | t }}</label><input type="text" name="address[city]" autocomplete="address-level2"></div>
+      <div class="field"><label>{{ 'customer.zip' | t }}</label><input type="text" name="address[zip]" autocomplete="postal-code"></div>
+      <div class="field"><label>{{ 'customer.province' | t }}</label><input type="text" name="address[province]" autocomplete="address-level1"></div>
+      <div class="field"><label>{{ 'customer.country' | t }}</label><select name="address[country]" autocomplete="country">{{ all_country_option_tags }}</select></div>
+      <div class="field"><label>{{ 'contact.phone' | t }}</label><input type="tel" name="address[phone]" autocomplete="tel"></div>
+    </div>
+    <label style="display:flex;gap:8px;margin-top:12px;font-size:14px">{{ form.set_as_default_checkbox }} {{ 'customer.set_default' | t }}</label>
+    <button type="submit" class="button" style="margin-top:16px">{{ 'customer.add_address' | t }}</button>
+  {%- endform -%}
+</div>

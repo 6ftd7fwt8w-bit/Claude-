@@ -1,0 +1,15 @@
+<article class="main-page">
+  <div class="page-width page-width--narrow">
+    <p class="eyebrow muted" style="text-align:center;display:block">{{ article.published_at | date: format: 'date' }}</p>
+    <h1 class="h2 main-page__title" style="margin-top:10px">{{ article.title }}</h1>
+    {%- if article.image -%}
+      <div class="media" style="margin-bottom:36px">{{ article.image | image_url: width: 1600 | image_tag: loading: 'eager', widths: '600, 1000, 1600', sizes: '(min-width: 990px) 880px, 100vw' }}</div>
+    {%- endif -%}
+    <div class="rte">{{ article.content }}</div>
+    <p style="margin-top:40px;text-align:center"><a class="link-arrow" href="{{ blog.url }}">{{ 'general.back_to_blog' | t }}</a></p>
+  </div>
+</article>
+
+{% schema %}
+{ "name": "Artículo" }
+{% endschema %}

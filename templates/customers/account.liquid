@@ -1,0 +1,28 @@
+<div class="customer customer--wide">
+  <h1 class="h2" style="margin-bottom:8px">{{ 'customer.account' | t }}</h1>
+  <p><a class="link-underline" href="{{ routes.account_logout_url }}">{{ 'customer.log_out' | t }}</a></p>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:40px;margin-top:32px">
+    <div>
+      <h2 class="h3" style="margin-bottom:12px">{{ 'customer.orders' | t }}</h2>
+      {%- paginate customer.orders by 20 -%}
+        {%- if customer.orders.size > 0 -%}
+          <table>
+            <thead><tr><th>#</th><th>{{ 'customer.date' | t }}</th><th>{{ 'customer.status' | t }}</th><th>{{ 'cart.subtotal' | t }}</th></tr></thead>
+            <tbody>
+              {%- for order in customer.orders -%}
+                <tr><td>{{ order.name | link_to: order.customer_url }}</td><td>{{ order.created_at | date: format: 'date' }}</td><td>{{ order.fulfillment_status_label }}</td><td>{{ order.total_price | money }}</td></tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+        {%- else -%}
+          <p class="muted">{{ 'customer.no_orders' | t }}</p>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+    <div>
+      <h2 class="h3" style="margin-bottom:12px">{{ 'customer.addresses' | t }}</h2>
+      {{ customer.default_address | format_address }}
+      <p><a class="link-underline" href="{{ routes.account_addresses_url }}">{{ 'customer.view_addresses' | t }}</a></p>
+    </div>
+  </div>
+</div>

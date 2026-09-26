@@ -1,0 +1,57 @@
+<section class="section bg-{{ section.settings.background }} reveal" data-reveal>
+  <div class="page-width">
+    <div class="section-head-row">
+      <h2 class="section-title">{{ section.settings.title }}</h2>
+    </div>
+    <div class="carousel" data-carousel>
+      <div class="carousel__track" data-carousel-track style="--cols: 2; --gap: 24px;">
+        {%- for block in section.blocks -%}
+          <figure class="testimonial" style="margin:0" {{ block.shopify_attributes }}>
+            <div class="testimonial__media media">
+              {%- if block.settings.image != blank -%}
+                {{ block.settings.image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 990px) 20vw, 50vw' }}
+              {%- else -%}
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+            <div class="testimonial__body">
+              <blockquote class="testimonial__quote" style="margin:0">“{{ block.settings.quote }}”</blockquote>
+              <figcaption class="testimonial__author">{{ block.settings.author }}</figcaption>
+              <div class="stars" aria-label="{{ block.settings.rating }}/5">
+                {%- for i in (1..block.settings.rating) -%}★{%- endfor -%}
+              </div>
+            </div>
+          </figure>
+        {%- endfor -%}
+      </div>
+      <div class="carousel__progress" aria-hidden="true"><span data-carousel-progress></span></div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Opiniones",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Título", "default": "Lo que dicen de nosotros" },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Opinión",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Foto (cliente con su lámina)" },
+        { "type": "textarea", "id": "quote", "label": "Opinión", "default": "Escribe aquí la opinión real de una clienta." },
+        { "type": "text", "id": "author", "label": "Nombre", "default": "Nombre" },
+        { "type": "range", "id": "rating", "label": "Estrellas", "min": 1, "max": 5, "step": 1, "default": 5 }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Opiniones", "blocks": [{ "type": "review" }, { "type": "review" }] }]
+}
+{% endschema %}

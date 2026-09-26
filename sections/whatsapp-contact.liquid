@@ -1,0 +1,31 @@
+{%- liquid
+  assign s = section.settings
+  assign encoded_msg = s.whatsapp_mensaje | url_encode
+  assign wa_url = 'https://wa.me/' | append: s.whatsapp_numero | append: '?text=' | append: encoded_msg
+-%}
+<section class="section section--tight bg-alt">
+  <div class="page-width" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
+    <div>
+      <h2 class="h3" style="margin-bottom:6px">{{ s.titulo }}</h2>
+      <p class="muted" style="margin:0">{{ s.subtitulo }}</p>
+    </div>
+    <a href="{{ wa_url }}" class="button" target="_blank" rel="noopener">
+      <span style="width:18px;height:18px;display:inline-flex">{% render 'icon', name: 'whatsapp' %}</span>
+      {{ s.texto_boton }}
+    </a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Contacto WhatsApp",
+  "settings": [
+    { "type": "text", "id": "titulo", "label": "Título", "default": "¿Tienes alguna duda?" },
+    { "type": "text", "id": "subtitulo", "label": "Subtítulo", "default": "Escríbenos y te ayudamos encantadas, sin compromiso." },
+    { "type": "text", "id": "texto_boton", "label": "Texto del botón", "default": "Escríbenos por WhatsApp" },
+    { "type": "text", "id": "whatsapp_numero", "label": "Número (con prefijo, sin +)", "default": "34600000000" },
+    { "type": "text", "id": "whatsapp_mensaje", "label": "Mensaje inicial", "default": "¡Hola! Tengo una duda sobre..." }
+  ],
+  "presets": [{ "name": "Contacto WhatsApp" }]
+}
+{% endschema %}

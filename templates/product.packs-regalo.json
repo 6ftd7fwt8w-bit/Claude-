@@ -1,0 +1,57 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {},
+      "blocks": {
+        "block_1": {
+          "type": "title",
+          "settings": {}
+        },
+        "block_2": {
+          "type": "price",
+          "settings": {}
+        },
+        "block_3": {
+          "type": "pack_cta",
+          "settings": {}
+        },
+        "block_4": {
+          "type": "description",
+          "settings": {
+            "collapsible": false,
+            "heading": "Descripción",
+            "open": true
+          }
+        },
+        "block_5": {
+          "type": "whatsapp",
+          "settings": {
+            "label": "¿Dudas? Escríbenos por WhatsApp",
+            "number": "34604524295",
+            "message": "¡Hola! Tengo una duda sobre"
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3",
+        "block_4",
+        "block_5"
+      ]
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "title": "También te puede gustar",
+        "limit": 8,
+        "background": "alt"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "recommendations"
+  ]
+}

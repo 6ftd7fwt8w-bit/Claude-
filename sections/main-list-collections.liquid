@@ -1,0 +1,29 @@
+<section class="section">
+  <div class="page-width">
+    <h1 class="section-title" style="font-size:15px">{{ section.settings.title }}</h1>
+    <div class="tile-grid" style="--cols: 3; --tile-ratio: 3 / 4;">
+      {%- for collection in collections -%}
+        {%- unless collection.handle == 'frontpage' or collection.products_count == 0 -%}
+          <a href="{{ collection.url }}" class="tile">
+            <div class="media">
+              {%- if collection.featured_image -%}
+                {{ collection.featured_image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400, 700, 1000', sizes: '(min-width: 990px) 33vw, 90vw', alt: collection.title }}
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+            <span class="tile__title">{{ collection.title }}</span>
+            <span class="tile__subtitle">{{ 'collections.product_count' | t: count: collection.products_count }}</span>
+          </a>
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Lista de colecciones",
+  "settings": [{ "type": "text", "id": "title", "label": "Título", "default": "Colecciones" }]
+}
+{% endschema %}

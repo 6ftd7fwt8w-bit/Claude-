@@ -1,0 +1,32 @@
+<section class="section bg-{{ section.settings.background }}" data-recommendations
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}">
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="page-width">
+      <h2 class="section-title">{{ section.settings.title }}</h2>
+      <div class="carousel" data-carousel>
+        <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'chevron-left' %}</button>
+        <div class="carousel__track" data-carousel-track style="--cols: 4;">
+          {%- for rec in recommendations.products -%}
+            {% render 'product-card', product: rec %}
+          {%- endfor -%}
+        </div>
+        <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'chevron-right' %}</button>
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Productos relacionados",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Título", "default": "También te puede gustar" },
+    { "type": "range", "id": "limit", "label": "Productos", "min": 2, "max": 10, "step": 1, "default": 8 },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "alt"
+    }
+  ]
+}
+{% endschema %}

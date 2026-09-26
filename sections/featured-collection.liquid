@@ -1,0 +1,71 @@
+{%- liquid
+  assign collection_obj = section.settings.collection
+  assign limit = section.settings.limit
+-%}
+<section class="section bg-{{ section.settings.background }} reveal" data-reveal>
+  <div class="page-width">
+    {%- if section.settings.title != blank -%}<h2 class="section-title">{{ section.settings.title }}</h2>{%- endif -%}
+    {%- if section.settings.subtitle != blank -%}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{%- endif -%}
+
+    {%- if section.settings.layout == 'carousel' -%}
+      <div class="carousel" data-carousel>
+        <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'chevron-left' %}</button>
+        <div class="carousel__track" data-carousel-track style="--cols: {{ section.settings.columns }};">
+    {%- else -%}
+      <div class="product-grid" style="--cols: {{ section.settings.columns }};">
+    {%- endif -%}
+
+    {%- if collection_obj != blank and collection_obj.products_count > 0 -%}
+      {%- for product in collection_obj.products limit: limit -%}
+        {% render 'product-card', product: product %}
+      {%- endfor -%}
+    {%- else -%}
+      {%- for i in (1..4) -%}
+        <div class="card">
+          <div class="card__media">{{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}</div>
+          <div class="card__info"><span class="card__title">{{ 'products.placeholder_title' | t }}</span><div class="card__price">19,95 €</div></div>
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+
+    {%- if section.settings.layout == 'carousel' -%}
+        </div>
+        <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'chevron-right' %}</button>
+      </div>
+    {%- else -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.show_view_all and collection_obj != blank -%}
+      <div style="text-align:center;margin-top:36px">
+        <a href="{{ collection_obj.url }}" class="button button--outline">{{ section.settings.view_all_label }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Colección destacada",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Título", "default": "Las más queridas" },
+    { "type": "text", "id": "subtitle", "label": "Subtítulo" },
+    { "type": "collection", "id": "collection", "label": "Colección" },
+    { "type": "range", "id": "limit", "label": "Máximo de productos", "min": 2, "max": 24, "step": 1, "default": 12 },
+    { "type": "range", "id": "columns", "label": "Columnas (escritorio)", "min": 2, "max": 6, "step": 1, "default": 4 },
+    {
+      "type": "select", "id": "layout", "label": "Diseño",
+      "options": [{ "value": "carousel", "label": "Carrusel con flechas" }, { "value": "grid", "label": "Cuadrícula" }],
+      "default": "carousel"
+    },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "default"
+    },
+    { "type": "checkbox", "id": "show_view_all", "label": "Botón 'Ver todo'", "default": false },
+    { "type": "text", "id": "view_all_label", "label": "Texto del botón", "default": "Ver todo" }
+  ],
+  "presets": [{ "name": "Colección destacada" }]
+}
+{% endschema %}

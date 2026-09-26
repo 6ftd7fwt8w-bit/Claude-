@@ -1,0 +1,841 @@
+{% comment %}
+  ============================================================
+  VIVA LA HOME — Formulario personalizado de producto (v2, simplificado)
+  ============================================================
+  Diferencias respecto al formulario completo original:
+  - Se eliminan las opciones de Fondo y Texto personalizado como
+    extras de pago. Si el cliente quiere algo así, lo indica en el
+    campo de notas para el diseñador (ver placeholder de esa sección).
+  - Se elimina también la sección de Revisión con diseñador: la
+    revisión sigue incluida siempre en el precio base (como se ha
+    vendido históricamente), pero deja de ser una decisión o un
+    extra dentro del formulario.
+  - Se elimina el selector de fecha de entrega y el recargo de
+    urgencia. Se sustituye por un texto informativo con un rango de
+    fechas estimado (hoy + 15 a hoy + 20 días) calculado en el
+    momento de cargar la página, y un aviso para contactar por
+    WhatsApp si se necesita antes.
+  - La pregunta de "varias fotografías" se integra directamente en
+    la sección de subida de fotos, en vez de ir separada.
+  - El resto de la lógica de Shopify (variantes, precios, packs,
+    marco, add to cart, propiedades del pedido, subida de archivos)
+    se mantiene igual que en el formulario completo.
+  ============================================================
+{% endcomment %}
+
+{%- assign h_pack_regalo     = 'vlh-extra-pack-regalo' -%}
+{%- assign h_pack_valentina  = 'vlh-extra-pack-valentina' -%}
+{%- assign h_marco_a4        = 'vlh-extra-marco-a4' -%}
+{%- assign h_marco_a3        = 'vlh-extra-marco-a3' -%}
+{%- assign h_composicion     = 'vlh-extra-composicion-varias-fotos' -%}
+
+{%- assign p_pack_regalo     = all_products[h_pack_regalo] -%}
+{%- assign p_pack_valentina  = all_products[h_pack_valentina] -%}
+{%- assign p_marco_a4        = all_products[h_marco_a4] -%}
+{%- assign p_marco_a3        = all_products[h_marco_a3] -%}
+{%- assign p_composicion     = all_products[h_composicion] -%}
+
+{%- comment -%} Listas únicas de valores de Tamaño y de la 2ª opción (si existe), sacadas de las variantes reales del producto {%- endcomment -%}
+{%- assign vlh_tamanos_raw = '' -%}
+{%- assign vlh_mascotas_raw = '' -%}
+{%- for v in product.variants -%}
+  {%- unless vlh_tamanos_raw contains v.option1 -%}
+    {%- assign vlh_tamanos_raw = vlh_tamanos_raw | append: v.option1 | append: '||' -%}
+  {%- endunless -%}
+  {%- if v.option2 -%}
+    {%- unless vlh_mascotas_raw contains v.option2 -%}
+      {%- assign vlh_mascotas_raw = vlh_mascotas_raw | append: v.option2 | append: '||' -%}
+    {%- endunless -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign vlh_tamanos = vlh_tamanos_raw | split: '||' -%}
+{%- assign vlh_mascotas_valores = vlh_mascotas_raw | split: '||' -%}
+
+<div class="page-width">
+<div class="vlh-lamina-form" id="vlh-lamina-form" data-section-id="{{ section.id }}">
+
+  {%- comment -%} Aviso visible SOLO en el editor de temas si falta algún producto oculto {%- endcomment -%}
+  {% if request.design_mode %}
+    {% assign missing = '' %}
+    {% unless p_pack_regalo %}{% assign missing = missing | append: h_pack_regalo | append: ', ' %}{% endunless %}
+    {% unless p_pack_valentina %}{% assign missing = missing | append: h_pack_valentina | append: ', ' %}{% endunless %}
+    {% unless p_marco_a4 %}{% assign missing = missing | append: h_marco_a4 | append: ', ' %}{% endunless %}
+    {% unless p_marco_a3 %}{% assign missing = missing | append: h_marco_a3 | append: ', ' %}{% endunless %}
+    {% unless p_composicion %}{% assign missing = missing | append: h_composicion | append: ', ' %}{% endunless %}
+    {% if missing != '' %}
+      <div class="vlh-admin-warning">
+        ⚠️ Faltan por crear estos productos ocultos (handle): {{ missing }}
+        Revisa INSTRUCCIONES-configuracion.md
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <form id="vlh-form" novalidate>
+
+    <!-- ============ 1. TAMAÑO ============ -->
+    <fieldset class="vlh-field">
+      <legend>Tamaño</legend>
+      <div class="vlh-radio-cards" id="vlh-tamano-group">
+        {% for tamano_valor in vlh_tamanos %}
+          {% assign vlh_medida = '' %}
+          {% if tamano_valor contains 'A4' %}
+            {% assign vlh_medida = '21 × 29,7 cm' %}
+          {% elsif tamano_valor contains 'A3' %}
+            {% assign vlh_medida = '29,7 × 42 cm' %}
+          {% endif %}
+          <label class="vlh-radio-card">
+            <input
+              type="radio"
+              name="vlh-tamano"
+              value="{{ tamano_valor | escape }}"
+              {% if tamano_valor contains 'A3' %}checked{% elsif forloop.first and vlh_tamanos.size == 1 %}checked{% endif %}
+              required
+            >
+            <span class="vlh-radio-card__title">{{ tamano_valor }}</span>
+            {% if vlh_medida != '' %}
+              <span class="vlh-radio-card__medida">{{ vlh_medida }}</span>
+            {% endif %}
+            <span class="vlh-radio-card__price" data-tamano-precio>—</span>
+            {% if tamano_valor contains 'A3' %}
+              <span class="vlh-radio-card__badge">Recomendado ⭐</span>
+            {% endif %}
+          </label>
+        {% endfor %}
+      </div>
+      <p class="vlh-hint" id="vlh-tamano-valentina-nota" hidden>El Pack Valentina se presenta siempre en A3 con marco. Si quieres A4, primero tienes que desmarcar el Pack Valentina más abajo.</p>
+    </fieldset>
+
+    <!-- ============ 2. SEGUNDA VARIANTE (solo si el producto la tiene) ============ -->
+    {% if product.options.size > 1 %}
+    <fieldset class="vlh-field">
+      <legend>{{ product.options[1] }}</legend>
+      <div class="vlh-radio-list" id="vlh-mascotas-group">
+        {% for mascotas_valor in vlh_mascotas_valores %}
+          <label class="vlh-radio-row">
+            <input
+              type="radio"
+              name="vlh-mascotas"
+              value="{{ mascotas_valor | escape }}"
+              {% if forloop.first %}checked{% endif %}
+              required
+            >
+            {{ mascotas_valor }}
+            <span class="vlh-radio-row__price" data-mascotas-precio>{% if forloop.first %}sin coste extra{% endif %}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    {% endif %}
+
+    <!-- ============ 3. ¿ES PARA REGALO? ============ -->
+    <details class="vlh-field vlh-accordion">
+      <summary>
+        <span class="vlh-accordion__title">Lo quiero para regalar 🎁</span>
+        <span class="vlh-accordion__value vlh-accordion__value--empty" id="vlh-pack-summary">+</span>
+      </summary>
+      <div class="vlh-accordion__body">
+      <div class="vlh-radio-cards vlh-radio-cards--packs" id="vlh-pack-group">
+        <label class="vlh-radio-card vlh-radio-card--pack">
+          <input type="radio" name="vlh-pack" value="no" checked>
+          <span class="vlh-radio-card__title">No, gracias</span>
+        </label>
+        {% if p_pack_regalo %}
+        <label class="vlh-radio-card vlh-radio-card--pack">
+          <input type="radio" name="vlh-pack" value="regalo"
+            data-variant-id="{{ p_pack_regalo.selected_or_first_available_variant.id }}"
+            data-price-cents="{{ p_pack_regalo.selected_or_first_available_variant.price }}">
+          {% if p_pack_regalo.featured_image %}
+            <img class="vlh-radio-card__img" src="{{ p_pack_regalo.featured_image | image_url: width: 160 }}" alt="Pack regalo" loading="lazy" width="56" height="56">
+          {% endif %}
+          <span class="vlh-radio-card__title">Pack Regalo</span>
+          <span class="vlh-radio-card__price">+ {{ p_pack_regalo.selected_or_first_available_variant.price | money }}</span>
+        </label>
+        {% endif %}
+        {% if p_pack_valentina %}
+        <label class="vlh-radio-card vlh-radio-card--pack" id="vlh-pack-valentina-card">
+          <input type="radio" name="vlh-pack" value="valentina" id="vlh-pack-valentina-input"
+            data-variant-id="{{ p_pack_valentina.selected_or_first_available_variant.id }}"
+            data-price-cents="{{ p_pack_valentina.selected_or_first_available_variant.price }}">
+          {% if p_pack_valentina.featured_image %}
+            <img class="vlh-radio-card__img" src="{{ p_pack_valentina.featured_image | image_url: width: 160 }}" alt="Pack Valentina" loading="lazy" width="56" height="56">
+          {% endif %}
+          <span class="vlh-radio-card__title">Pack Valentina</span>
+          <span class="vlh-radio-card__price">+ {{ p_pack_valentina.selected_or_first_available_variant.price | money }}</span>
+          <span class="vlh-radio-card__badge" id="vlh-pack-valentina-badge">Se presenta enmarcado en A3</span>
+        </label>
+        {% endif %}
+      </div>
+
+      <p class="vlh-hint" id="vlh-pack-regalo-desc" hidden>Presentación especial lista para regalar.</p>
+      <p class="vlh-hint" id="vlh-pack-valentina-desc" hidden>Nuestra presentación más especial, con flores y detalles hechos a mano.</p>
+
+      {% if p_pack_regalo %}
+      <details class="vlh-details" id="vlh-pack-regalo-details" hidden>
+        <summary>Ver qué incluye el Pack Regalo</summary>
+        <div class="vlh-pack-desc__body">{{ p_pack_regalo.description }}</div>
+      </details>
+      {% endif %}
+      {% if p_pack_valentina %}
+      <details class="vlh-details" id="vlh-pack-valentina-details" hidden>
+        <summary>Ver qué incluye el Pack Valentina</summary>
+        <div class="vlh-pack-desc__body">{{ p_pack_valentina.description }}</div>
+      </details>
+      {% endif %}
+
+      <p class="vlh-hint" id="vlh-tamano-valentina-nota-pack" hidden>Este pack se presenta siempre en A3 y enmarcado — hemos ajustado el tamaño automáticamente.</p>
+
+      <div class="vlh-subpanel" id="vlh-pack-mensaje-panel" hidden>
+        <p class="vlh-hint" style="margin-top:0;">Mensaje personalizado para el interior de la tapa (máx. 10 palabras)</p>
+        <input type="text" id="vlh-mensaje-pack" maxlength="80" placeholder="Ej: Con todo mi cariño para ti">
+        <p class="vlh-hint" id="vlh-mensaje-pack-contador" style="text-align:right;margin-top:4px;">0 / 10 palabras</p>
+      </div>
+      </div>
+    </details>
+
+    <!-- ============ 4. MARCO ============ -->
+    <details class="vlh-field vlh-accordion" id="vlh-marco-field">
+      <summary>
+        <span class="vlh-accordion__title">Lo quiero enmarcado 🖼️</span>
+        <span class="vlh-accordion__value vlh-accordion__value--empty" id="vlh-marco-summary">+</span>
+      </summary>
+      <div class="vlh-accordion__body">
+        <p class="vlh-hint" id="vlh-marco-obligatorio-nota" style="margin-top:0;" hidden>El Pack Valentina se presenta siempre enmarcado — elige el acabado que completará tu pedido.</p>
+        <div class="vlh-radio-cards" id="vlh-marco-color-group"></div>
+        <details class="vlh-details">
+          <summary>¿Cómo se envía tu pedido?</summary>
+          <p class="vlh-hint" style="margin-top:0;" id="vlh-envio-nota">Si tu pedido no incluye marco ni ningún pack, se envía en sobre rígido. Si incluye marco o algún pack, se envía en caja kraft.</p>
+        </details>
+      </div>
+    </details>
+
+    <!-- ============ 5. COMPOSICIÓN DESDE VARIAS FOTOS ============ -->
+    <details class="vlh-field vlh-accordion">
+      <summary>
+        <span class="vlh-accordion__title">¿Necesitas que creemos la ilustración a partir de varias fotos?</span>
+        <span class="vlh-accordion__value" id="vlh-composicion-summary">No, incluido</span>
+      </summary>
+      <div class="vlh-accordion__body">
+        <div class="vlh-radio-list" id="vlh-composicion-group">
+          <label class="vlh-radio-row">
+            <input type="radio" name="vlh-composicion" value="no" checked>
+            No, todas las personas aparecen juntas en la fotografía <span class="vlh-radio-row__price">incluido</span>
+          </label>
+          {% if p_composicion %}
+          <label class="vlh-radio-row">
+            <input type="radio" name="vlh-composicion" value="si"
+              data-variant-id="{{ p_composicion.selected_or_first_available_variant.id }}"
+              data-price-cents="{{ p_composicion.selected_or_first_available_variant.price }}">
+            Sí, quiero que unamos personas o elementos de diferentes fotografías <span class="vlh-radio-row__price" data-composicion-precio style="white-space:nowrap;"></span>
+          </label>
+          {% endif %}
+        </div>
+        <details class="vlh-details">
+          <summary>Más información</summary>
+          <p class="vlh-hint" style="margin-top:0;">Si nos envías varias fotografías tuyas para que las tomemos como referencia, no hace falta marcar esta casilla: elegiremos la que mejor se ajuste y crearemos la ilustración a partir de ella.</p>
+          <p class="vlh-hint">Marca esta opción únicamente si quieres que aparezcan juntas en la misma lámina personas o elementos que están en fotografías distintas — por ejemplo, si no tenéis ninguna foto en la que salgáis todos juntos. Este servicio requiere un trabajo adicional de composición y adaptación para que el resultado quede natural y coherente.</p>
+        </details>
+      </div>
+    </details>
+
+    <!-- ============ 6. FOTOGRAFÍA ============ -->
+    <fieldset class="vlh-field" id="vlh-upload-field">
+      <legend id="vlh-upload-label">Añade tus fotos</legend>
+      <input type="file" id="vlh-upload-input" name="properties[Foto 1]" accept="image/*" required multiple>
+      <p class="vlh-hint" id="vlh-upload-hint">JPG o PNG, máx. 20MB por foto. Puedes subir más de una si quieres darnos más referencia.</p>
+
+      <label class="vlh-checkbox" style="margin-top:14px;">
+        <input type="checkbox" id="vlh-sin-foto-toggle">
+        La enviaré después
+      </label>
+      <details class="vlh-details" id="vlh-sin-foto-details" hidden>
+        <summary>¿Cómo la envío después?</summary>
+        <p class="vlh-hint" style="margin-top:0;">Podrás enviárnosla después de realizar el pedido, por WhatsApp o email, indicando tu número de pedido.</p>
+      </details>
+    </fieldset>
+
+    <!-- ============ 7. NOTAS PARA EL DISEÑADOR ============ -->
+    <fieldset class="vlh-field">
+      <legend>¿Quieres contarnos algo sobre tu ilustración? <span class="vlh-opcional">(opcional)</span></legend>
+      <textarea id="vlh-descripcion" rows="3" placeholder="Ej: Quiero añadir el texto 'Marta &amp; Pablo · 12.06.2026'. Quiero que el fondo sea sencillo, en tonos verdes, con alguna flor."></textarea>
+      <p class="vlh-hint">No necesitas describirlo todo — trabajaremos con cariño tomando como referencia las fotografías que nos envíes, cuidando cada detalle para que la lámina quede elegante y preciosa. Los aspectos que no nos indiques quedarán a criterio de nuestro equipo de diseño, que siempre busca el resultado más armonioso.</p>
+    </fieldset>
+
+    <!-- ============ 8. FECHA DE ENTREGA ESTIMADA ============ -->
+    <p class="vlh-hint" id="vlh-fecha-estimada" style="font-weight:600;color:var(--vlh-tinta, inherit);"></p>
+    <p class="vlh-hint">A los 5-7 días de tu pedido te contactaremos para mostrarte el diseño y confirmarlo contigo — podrás solicitar hasta 3 ajustes antes de que preparemos la versión final.</p>
+    <details class="vlh-details">
+      <summary>¿Lo necesitas antes?</summary>
+      <p class="vlh-hint" style="margin-top:0;"><a href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener" style="color:var(--vlh-terracota);font-weight:600;">Escríbenos por WhatsApp</a> antes de realizar el pedido y comprobamos disponibilidad.</p>
+    </details>
+
+    <!-- ============ RESUMEN DE PRECIO ============ -->
+    <div class="vlh-summary">
+      <div class="vlh-summary__row vlh-summary__row--total">
+        <span class="vlh-summary__label">Total</span>
+        <span class="vlh-summary__value" id="vlh-total-price">—</span>
+      </div>
+      <ul class="vlh-summary__breakdown" id="vlh-breakdown"></ul>
+      <p class="vlh-summary__envio">Los gastos de envío se calculan en el checkout, según tu dirección.</p>
+    </div>
+
+    <p class="vlh-error" id="vlh-error" role="alert" hidden></p>
+
+    <button type="submit" class="vlh-submit" id="vlh-submit-btn">
+      <span class="vlh-submit__text">Añadir al carrito</span>
+    </button>
+    <p class="vlh-hint" style="text-align:center;">Pago seguro · Creado especialmente para ti</p>
+  </form>
+</div>
+</div>
+
+<style>
+  .vlh-lamina-form {
+    --vlh-crema: var(--color-bg, #F7F3EE);
+    --vlh-tinta: var(--color-text, #2C2218);
+    --vlh-terracota: var(--color-accent, #B5613A);
+    --vlh-dorado: #C9A84C;
+    --vlh-mist: var(--color-border, #E8E0D5);
+    font-family: var(--font-body);
+    color: var(--vlh-tinta);
+    max-width: 520px;
+    margin: 40px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+  .vlh-lamina-form .vlh-field {
+    border: none;
+    padding: 0 0 28px;
+    margin: 0 0 28px;
+    border-bottom: 1px solid var(--vlh-mist);
+  }
+  .vlh-accordion summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--vlh-tinta);
+  }
+  .vlh-accordion summary::-webkit-details-marker { display: none; }
+  .vlh-accordion__title { flex: 1; }
+  .vlh-accordion__value { font-family: var(--font-body); font-size: 13px; font-weight: 400; letter-spacing: normal; text-transform: none; color: var(--vlh-terracota); font-weight: 600; white-space: nowrap; }
+  .vlh-accordion__value--empty { font-size: 20px; font-weight: 300; line-height: 1; }
+  .vlh-accordion__body { margin-top: 16px; }
+  .vlh-lamina-form legend {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--vlh-tinta);
+    margin-bottom: 14px;
+    padding: 0;
+  }
+  .vlh-opcional {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    color: #a8a096;
+  }
+  .vlh-details {
+    margin: 10px 0 0;
+    border: 1px solid var(--vlh-mist);
+    padding: 10px 14px;
+  }
+  .vlh-details summary {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--vlh-terracota);
+    cursor: pointer;
+  }
+  .vlh-details[open] summary { margin-bottom: 8px; }
+  .vlh-details .vlh-hint { margin-top: 8px; }
+  .vlh-details .vlh-hint:first-of-type { margin-top: 0; }
+  .vlh-pack-desc__body { font-size: 13px; line-height: 1.6; color: var(--vlh-tinta); }
+  .vlh-pack-desc__body p { margin: 0 0 6px; }
+  .vlh-admin-warning {
+    background: #fff3cd;
+    border: 1px solid #e0c060;
+    color: #6b5300;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+  }
+  .vlh-radio-cards { display: flex; gap: 10px; flex-wrap: wrap; }
+  .vlh-radio-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--vlh-mist);
+    padding: 26px 14px 12px;
+    cursor: pointer;
+    background: #fff;
+    transition: border-color .15s ease;
+    min-width: 90px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  .vlh-radio-card input { position: absolute; top: 8px; right: 8px; margin: 0; }
+  .vlh-radio-card:has(input:checked) { border-color: var(--vlh-terracota); border-width: 1.5px; }
+  .vlh-radio-card:has(input:disabled) { opacity: .4; cursor: not-allowed; }
+  .vlh-radio-card__title { font-weight: 600; font-size: 14px; line-height: 1.3; }
+  .vlh-radio-card__medida { font-size: 11px; color: #8a7d6e; }
+  .vlh-radio-card__price { font-size: 12px; color: #6b6055; }
+  .vlh-radio-card__img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+  .vlh-radio-card--pack { min-width: 0; flex: 1 1 calc(33% - 7px); }
+  .vlh-radio-card__badge {
+    font-size: 10px; color: var(--vlh-terracota); font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase; text-align: center;
+  }
+  .vlh-radio-card:has(input:disabled) .vlh-radio-card__badge { color: #a8a096; }
+
+  .vlh-checkbox {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 600; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--vlh-tinta); cursor: pointer;
+  }
+  .vlh-checkbox input { width: 18px; height: 18px; accent-color: var(--vlh-terracota); flex-shrink: 0; }
+  .vlh-checkbox--frase {
+    align-items: flex-start; font-size: 14px; font-weight: 400;
+    letter-spacing: normal; text-transform: none;
+  }
+  .vlh-checkbox--frase input { margin-top: 2px; }
+  .vlh-checkbox-row { display: flex; align-items: center; gap: 10px; }
+
+  .vlh-subpanel { margin-top: 16px; padding: 18px; background: var(--vlh-crema); }
+  .vlh-radio-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .vlh-radio-row { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .vlh-radio-row input { accent-color: var(--vlh-terracota); }
+  .vlh-radio-row__price { margin-left: auto; color: #6b6055; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+
+  .vlh-precio-muted {
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 400; color: #6b6055; white-space: nowrap;
+  }
+  .vlh-hint { font-size: 13px; color: #6b6055; margin: 8px 0 0; }
+
+  #vlh-upload-input, #vlh-descripcion, #vlh-mensaje-pack {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--vlh-mist);
+    border-radius: 8px; font-family: inherit; font-size: 14px; box-sizing: border-box;
+  }
+  #vlh-descripcion { resize: vertical; }
+
+  .vlh-summary {
+    border-top: 1px solid var(--vlh-tinta);
+    border-bottom: 1px solid var(--vlh-tinta);
+    padding: 20px 0; margin: 24px 0;
+  }
+  .vlh-summary__row--total { display: flex; justify-content: space-between; align-items: baseline; }
+  .vlh-summary__label {
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase;
+  }
+  .vlh-summary__value {
+    font-family: var(--font-serif);
+    font-size: 28px; font-weight: 600;
+  }
+  .vlh-summary__breakdown { list-style: none; margin: 12px 0 0; padding: 0; font-size: 13px; opacity: .75; }
+  .vlh-summary__breakdown li { display: flex; justify-content: space-between; padding: 3px 0; }
+  .vlh-summary__envio { font-size: 12px; opacity: .65; margin: 14px 0 0; }
+
+  .vlh-submit {
+    width: 100%; background: var(--vlh-tinta); color: var(--vlh-crema);
+    border: none; padding: 16px 20px; font-family: var(--font-body);
+    font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: opacity .15s ease;
+  }
+  .vlh-submit:disabled { opacity: .6; cursor: not-allowed; }
+  .vlh-error { color: #b32020; font-size: 14px; margin: -8px 0 16px; }
+
+  @media (max-width: 480px) {
+    .vlh-lamina-form { max-width: 100%; }
+    .vlh-radio-card--pack { flex: 1 1 calc(50% - 5px); }
+  }
+</style>
+
+<script>
+(function () {
+  const form = document.getElementById('vlh-form');
+  if (!form) return;
+
+  const els = {
+    tamanoInputs: form.querySelectorAll('input[name="vlh-tamano"]'),
+    mascotasInputs: form.querySelectorAll('input[name="vlh-mascotas"]'),
+    packInputs: form.querySelectorAll('input[name="vlh-pack"]'),
+    packRegaloDesc: document.getElementById('vlh-pack-regalo-desc'),
+    packValentinaDesc: document.getElementById('vlh-pack-valentina-desc'),
+    packRegaloDetails: document.getElementById('vlh-pack-regalo-details'),
+    packValentinaDetails: document.getElementById('vlh-pack-valentina-details'),
+    packMensajePanel: document.getElementById('vlh-pack-mensaje-panel'),
+    tamanoValentinaNota: document.getElementById('vlh-tamano-valentina-nota'),
+    tamanoValentinaNotaPack: document.getElementById('vlh-tamano-valentina-nota-pack'),
+    marcoObligatorioNota: document.getElementById('vlh-marco-obligatorio-nota'),
+    marcoField: document.getElementById('vlh-marco-field'),
+    marcoColorGroup: document.getElementById('vlh-marco-color-group'),
+    mensajePack: document.getElementById('vlh-mensaje-pack'),
+    mensajePackContador: document.getElementById('vlh-mensaje-pack-contador'),
+    composicionInputs: form.querySelectorAll('input[name="vlh-composicion"]'),
+    composicionPrecio: document.querySelector('[data-composicion-precio]'),
+    composicionSummary: document.getElementById('vlh-composicion-summary'),
+    packSummary: document.getElementById('vlh-pack-summary'),
+    marcoSummary: document.getElementById('vlh-marco-summary'),
+    sinFotoToggle: document.getElementById('vlh-sin-foto-toggle'),
+    sinFotoDetails: document.getElementById('vlh-sin-foto-details'),
+    uploadField: document.getElementById('vlh-upload-field'),
+    uploadInput: document.getElementById('vlh-upload-input'),
+    descripcion: document.getElementById('vlh-descripcion'),
+    fechaEstimadaEl: document.getElementById('vlh-fecha-estimada'),
+    totalPriceEl: document.getElementById('vlh-total-price'),
+    breakdownEl: document.getElementById('vlh-breakdown'),
+    errorEl: document.getElementById('vlh-error'),
+    submitBtn: document.getElementById('vlh-submit-btn'),
+  };
+
+  // Colores de marco disponibles por tamaño (variantes reales de los
+  // productos ocultos vlh-extra-marco-a4 / vlh-extra-marco-a3).
+  const MARCO_COLORS = {
+    "A4": [
+      {% if p_marco_a4 %}{% for v in p_marco_a4.variants %}
+      {%- assign vlh_marco_img = v.image | default: p_marco_a4.featured_image -%}
+      { id: {{ v.id }}, price: {{ v.price }}, label: {{ v.option1 | json }}, image: {% if vlh_marco_img %}{{ vlh_marco_img | image_url: width: 160 | json }}{% else %}null{% endif %} }{% unless forloop.last %},{% endunless %}
+      {% endfor %}{% endif %}
+    ],
+    "A3": [
+      {% if p_marco_a3 %}{% for v in p_marco_a3.variants %}
+      {%- assign vlh_marco_img = v.image | default: p_marco_a3.featured_image -%}
+      { id: {{ v.id }}, price: {{ v.price }}, label: {{ v.option1 | json }}, image: {% if vlh_marco_img %}{{ vlh_marco_img | image_url: width: 160 | json }}{% else %}null{% endif %} }{% unless forloop.last %},{% endunless %}
+      {% endfor %}{% endif %}
+    ]
+  };
+
+  // Variantes reales del producto (Tamaño x Segunda opción), leídas de Shopify.
+  const VARIANTES = [
+    {% for v in product.variants %}
+    { id: {{ v.id }}, price: {{ v.price }}, tamano: {{ v.option1 | json }}, mascotas: {{ v.option2 | json }} }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
+
+  const money = (cents) => (cents / 100).toLocaleString('es-ES', { style: 'currency', currency: '{{ cart.currency.iso_code | default: "EUR" }}' });
+
+  function getSelectedTamano() {
+    const checked = [...els.tamanoInputs].find(i => i.checked);
+    return checked ? checked.value : null;
+  }
+  function getSelectedMascotas() {
+    const checked = [...els.mascotasInputs].find(i => i.checked);
+    return checked ? checked.value : null;
+  }
+  function getVarianteActual() {
+    const tamano = getSelectedTamano();
+    const mascotas = getSelectedMascotas();
+    return VARIANTES.find(v => v.tamano === tamano && v.mascotas === mascotas) || null;
+  }
+  function getCheckedRadio(list) {
+    return [...list].find(i => i.checked) || null;
+  }
+  function getTamanoCategoria() {
+    const tamano = getSelectedTamano() || '';
+    if (tamano.indexOf('A4') !== -1) return 'A4';
+    if (tamano.indexOf('A3') !== -1) return 'A3';
+    return null;
+  }
+
+  function syncPreciosVariante() {
+    const mascotasActual = getSelectedMascotas();
+    els.tamanoInputs.forEach(input => {
+      const v = VARIANTES.find(v => v.tamano === input.value && v.mascotas === mascotasActual);
+      const el = input.closest('label').querySelector('[data-tamano-precio]');
+      if (el && v) el.textContent = money(v.price);
+    });
+    const tamanoActual = getSelectedTamano();
+    els.mascotasInputs.forEach(input => {
+      const v = VARIANTES.find(v => v.tamano === tamanoActual && v.mascotas === input.value);
+      const el = input.closest('label').querySelector('[data-mascotas-precio]');
+      if (!el || !v) return;
+      const base = VARIANTES.find(vv => vv.tamano === tamanoActual && vv.mascotas === [...els.mascotasInputs][0].value);
+      const diff = base ? v.price - base.price : 0;
+      el.textContent = diff > 0 ? `+ ${money(diff)}` : 'sin coste extra';
+    });
+  }
+
+  function isValentina() {
+    const pack = getCheckedRadio(els.packInputs);
+    return pack && pack.value === 'valentina';
+  }
+  function isRegalo() {
+    const pack = getCheckedRadio(els.packInputs);
+    return pack && pack.value === 'regalo';
+  }
+
+  function syncValentinaRules() {
+    const valentina = isValentina();
+    if (valentina && getTamanoCategoria() === 'A4') {
+      const inputA3 = [...els.tamanoInputs].find(i => i.value.indexOf('A3') !== -1);
+      if (inputA3) inputA3.checked = true;
+    }
+    els.tamanoInputs.forEach(input => {
+      input.disabled = valentina && input.value.indexOf('A3') === -1;
+    });
+    if (els.tamanoValentinaNota) els.tamanoValentinaNota.hidden = !valentina;
+    if (els.tamanoValentinaNotaPack) els.tamanoValentinaNotaPack.hidden = !valentina;
+  }
+
+  let vlhEraValentina = false;
+
+  function syncPackUI() {
+    els.packRegaloDesc.hidden = !isRegalo();
+    els.packValentinaDesc.hidden = !isValentina();
+    if (els.packRegaloDetails) els.packRegaloDetails.hidden = !isRegalo();
+    if (els.packValentinaDetails) els.packValentinaDetails.hidden = !isValentina();
+    els.packMensajePanel.hidden = !(isRegalo() || isValentina());
+    // Al pasar a Pack Valentina, despliega el acordeón de Marco automáticamente
+    // para que quede claro que hay que elegir un acabado (es obligatorio con este pack).
+    if (isValentina() && !vlhEraValentina && els.marcoField) {
+      els.marcoField.open = true;
+    }
+    vlhEraValentina = isValentina();
+    if (els.packSummary) {
+      const tieneAlgo = isRegalo() || isValentina();
+      els.packSummary.textContent = isRegalo() ? 'Pack Regalo' : isValentina() ? 'Pack Valentina' : '+';
+      els.packSummary.classList.toggle('vlh-accordion__value--empty', !tieneAlgo);
+    }
+  }
+
+  function getMarcoColorsForSize() {
+    return MARCO_COLORS[getTamanoCategoria()] || [];
+  }
+  function getSelectedMarco() {
+    return els.marcoColorGroup.querySelector('input[name="vlh-marco-color"]:checked') || null;
+  }
+  function renderMarcoColors() {
+    const colors = getMarcoColorsForSize();
+    const valentina = isValentina();
+    if (!colors.length) {
+      els.marcoColorGroup.innerHTML = `<p class="vlh-hint" style="color:#b32020;margin:0;">No hay acabados de marco disponibles para ${getSelectedTamano()} ahora mismo. Contáctanos antes de completar el pedido.</p>`;
+      return;
+    }
+    const previousLabel = getSelectedMarco()?.dataset.label || null;
+    const opciones = valentina ? colors : [{ id: '', price: 0, label: 'Sin marco' }, ...colors];
+    els.marcoColorGroup.innerHTML = opciones.map((c, i) => {
+      const esSinMarco = c.label === 'Sin marco';
+      const checked = previousLabel ? (c.label === previousLabel) : (valentina ? i === 0 : esSinMarco);
+      return `
+        <label class="vlh-radio-card">
+          <input type="radio" name="vlh-marco-color" value="${c.label}"
+            data-variant-id="${c.id}" data-price-cents="${c.price}" data-label="${c.label}"
+            ${checked ? 'checked' : ''}>
+          ${c.image ? `<img class="vlh-radio-card__img" src="${c.image}" alt="${c.label}" loading="lazy" width="56" height="56">` : ''}
+          <span class="vlh-radio-card__title">${c.label}</span>
+          <span class="vlh-radio-card__price">${c.price > 0 ? '+ ' + money(c.price) : 'incluido'}</span>
+        </label>`;
+    }).join('');
+  }
+  function syncMarco() {
+    renderMarcoColors();
+    els.marcoObligatorioNota.hidden = !isValentina();
+    if (els.marcoSummary) {
+      const marco = getSelectedMarco();
+      const tieneMarco = marco && marco.dataset.label && marco.dataset.label !== 'Sin marco';
+      els.marcoSummary.textContent = tieneMarco ? marco.dataset.label : '+';
+      els.marcoSummary.classList.toggle('vlh-accordion__value--empty', !tieneMarco);
+    }
+  }
+
+  function necesitaComposicion() {
+    const c = getCheckedRadio(els.composicionInputs);
+    return c ? c.value === 'si' : false;
+  }
+
+  function syncComposicion() {
+    if (els.composicionPrecio) {
+      const input = [...els.composicionInputs].find(i => i.value === 'si');
+      if (input && input.dataset.priceCents) {
+        els.composicionPrecio.textContent = `+ ${money(parseInt(input.dataset.priceCents, 10))}`;
+      }
+    }
+    if (els.composicionSummary) {
+      els.composicionSummary.textContent = necesitaComposicion() ? 'Sí, +varias fotos' : 'No, incluido';
+    }
+  }
+
+  function syncFotosUI() {
+    const sinFoto = els.sinFotoToggle.checked;
+    els.sinFotoDetails.hidden = !sinFoto;
+    if (sinFoto) {
+      els.uploadInput.hidden = true;
+      els.uploadInput.required = false;
+    } else {
+      els.uploadInput.hidden = false;
+      els.uploadInput.required = true;
+    }
+  }
+
+  // ---------------- FECHA DE ENTREGA ESTIMADA (solo informativo) ----------------
+  function formatFecha(d) {
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  function initFechaEstimada() {
+    const hoy = new Date();
+    const desde = new Date(hoy); desde.setDate(desde.getDate() + 15);
+    const hasta = new Date(hoy); hasta.setDate(hasta.getDate() + 20);
+    els.fechaEstimadaEl.textContent = `📦 Tu fecha de entrega estimada será entre el ${formatFecha(desde)} y el ${formatFecha(hasta)}.`;
+    els.fechaEstimadaEl.dataset.rango = `${formatFecha(desde)} - ${formatFecha(hasta)}`;
+  }
+
+  function calcTotal() {
+    let total = 0;
+    const lines = [];
+
+    const variante = getVarianteActual();
+    if (variante) {
+      total += variante.price;
+      lines.push([`Ilustración ${variante.tamano}${variante.mascotas ? ' (' + variante.mascotas + ')' : ''}`, variante.price]);
+    }
+
+    const pack = getCheckedRadio(els.packInputs);
+    if (pack && pack.dataset.priceCents) {
+      const cents = parseInt(pack.dataset.priceCents, 10);
+      total += cents;
+      lines.push([pack.value === 'regalo' ? 'Pack Regalo' : 'Pack Valentina', cents]);
+    }
+
+    const marco = getSelectedMarco();
+    if (marco && marco.dataset.priceCents && parseInt(marco.dataset.priceCents, 10) > 0) {
+      const cents = parseInt(marco.dataset.priceCents, 10);
+      total += cents;
+      lines.push([`Marco ${marco.dataset.label}`, cents]);
+    }
+
+    if (necesitaComposicion()) {
+      const composicion = getCheckedRadio(els.composicionInputs);
+      if (composicion && composicion.dataset.priceCents) {
+        const cents = parseInt(composicion.dataset.priceCents, 10);
+        total += cents;
+        lines.push(['Varias fotografías', cents]);
+      }
+    }
+
+    els.totalPriceEl.textContent = money(total);
+    els.breakdownEl.innerHTML = lines.map(([label, cents]) => `<li><span>${label}</span><span>${money(cents)}</span></li>`).join('');
+  }
+
+  function syncAll() {
+    if (els.errorEl) els.errorEl.hidden = true;
+    const pasos = [syncPreciosVariante, syncValentinaRules, syncPackUI, syncMarco, syncComposicion, syncFotosUI, calcTotal];
+    pasos.forEach((fn) => { try { fn(); } catch (e) { console.error('Error en ' + fn.name + ':', e); } });
+  }
+
+  initFechaEstimada();
+  form.addEventListener('change', syncAll);
+  els.mensajePack.addEventListener('input', () => {
+    const palabras = els.mensajePack.value.split(/\s+/).filter(Boolean);
+    if (palabras.length > 10) els.mensajePack.value = palabras.slice(0, 10).join(' ');
+    const total = els.mensajePack.value.split(/\s+/).filter(Boolean).length;
+    els.mensajePackContador.textContent = `${total} / 10 palabras`;
+  });
+  syncAll();
+
+  // ---------------- ENVÍO ----------------
+  function collectAddons() {
+    const addons = [];
+    const pack = getCheckedRadio(els.packInputs);
+    if (pack && pack.dataset.variantId) addons.push({ id: parseInt(pack.dataset.variantId, 10), quantity: 1 });
+
+    const marco = getSelectedMarco();
+    if (marco && marco.dataset.variantId) addons.push({ id: parseInt(marco.dataset.variantId, 10), quantity: 1 });
+
+    if (necesitaComposicion()) {
+      const composicion = getCheckedRadio(els.composicionInputs);
+      if (composicion && composicion.dataset.variantId) {
+        addons.push({ id: parseInt(composicion.dataset.variantId, 10), quantity: 1 });
+      }
+    }
+    return addons;
+  }
+
+  function showError(msg) {
+    els.errorEl.textContent = msg;
+    els.errorEl.hidden = false;
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    els.errorEl.hidden = true;
+
+    const variante = getVarianteActual();
+    if (!variante) {
+      showError(els.mascotasInputs.length > 0 ? 'Selecciona el tamaño y la otra opción disponible.' : 'Selecciona un tamaño.');
+      return;
+    }
+    if (isValentina() && (!getSelectedMarco() || getSelectedMarco().dataset.label === 'Sin marco')) {
+      showError('El Pack Valentina requiere elegir un acabado de marco.');
+      return;
+    }
+    if (!els.sinFotoToggle.checked && (!els.uploadInput.files || els.uploadInput.files.length === 0)) {
+      showError('Sube al menos una foto, o marca "La enviaré después".');
+      return;
+    }
+
+    els.submitBtn.disabled = true;
+    els.submitBtn.querySelector('.vlh-submit__text').textContent = 'Añadiendo…';
+
+    try {
+      const mainData = new FormData();
+      mainData.append('id', variante.id);
+      mainData.append('quantity', 1);
+      mainData.append('properties[¿Tiene la foto?]', els.sinFotoToggle.checked ? 'La enviará más adelante' : 'Sí, adjunta');
+      mainData.append('properties[Fecha de entrega estimada]', els.fechaEstimadaEl.dataset.rango || '');
+
+      if (els.descripcion.value.trim()) {
+        mainData.append('properties[Cómo quiere su lámina]', els.descripcion.value.trim());
+      }
+      if ((isRegalo() || isValentina()) && els.mensajePack.value.trim()) {
+        mainData.append('properties[Mensaje para la tapa del pack]', els.mensajePack.value.trim());
+      }
+      if (!els.sinFotoToggle.checked && els.uploadInput.files.length) {
+        [...els.uploadInput.files].forEach((file, i) => {
+          mainData.append(`properties[Foto ${i + 1}]`, file);
+        });
+      }
+
+      const mainRes = await fetch('/cart/add.js', { method: 'POST', body: mainData });
+      if (!mainRes.ok) {
+        const err = await mainRes.json().catch(() => ({}));
+        throw new Error(err.description || 'No se pudo añadir la lámina al carrito.');
+      }
+
+      const addons = collectAddons();
+      if (addons.length) {
+        const addonsRes = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: addons }),
+        });
+        if (!addonsRes.ok) {
+          const err = await addonsRes.json().catch(() => ({}));
+          throw new Error(err.description || 'No se pudieron añadir los extras al carrito.');
+        }
+      }
+
+      window.location.href = '/cart';
+    } catch (err) {
+      showError(err.message || 'Ha ocurrido un error. Inténtalo de nuevo.');
+      els.submitBtn.disabled = false;
+      els.submitBtn.querySelector('.vlh-submit__text').textContent = 'Añadir al carrito';
+    }
+  });
+})();
+</script>

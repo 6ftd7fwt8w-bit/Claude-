@@ -1,0 +1,21 @@
+<div class="customer">
+  <h1 class="h2" style="text-align:center;margin-bottom:28px">{{ 'customer.login' | t }}</h1>
+  {%- form 'customer_login' -%}
+    {{ form.errors | default_errors }}
+    <div class="field"><label for="LoginEmail">{{ 'contact.email' | t }}</label><input id="LoginEmail" type="email" name="customer[email]" autocomplete="email" required></div>
+    <div class="field"><label for="LoginPassword">{{ 'general.password' | t }}</label><input id="LoginPassword" type="password" name="customer[password]" autocomplete="current-password" required></div>
+    <button type="submit" class="button button--full">{{ 'customer.sign_in' | t }}</button>
+    <p style="text-align:center;font-size:13px"><a class="link-underline" href="#recover" onclick="document.getElementById('RecoverForm').hidden=false">{{ 'customer.forgot_password' | t }}</a> · <a class="link-underline" href="{{ routes.account_register_url }}">{{ 'customer.create_account' | t }}</a></p>
+  {%- endform -%}
+  <div id="RecoverForm" hidden style="margin-top:32px">
+    {%- form 'recover_customer_password' -%}
+      {%- if form.posted_successfully? -%}<p class="form-message">{{ 'customer.recover_success' | t }}</p>{%- endif -%}
+      {{ form.errors | default_errors }}
+      <div class="field"><label for="RecoverEmail">{{ 'contact.email' | t }}</label><input id="RecoverEmail" type="email" name="email" autocomplete="email" required></div>
+      <button type="submit" class="button button--outline button--full">{{ 'customer.reset_password' | t }}</button>
+    {%- endform -%}
+  </div>
+  {%- if shop.checkout.guest_login -%}
+    {%- form 'guest_login' -%}<button type="submit" class="button button--outline button--full" style="margin-top:16px">{{ 'customer.guest' | t }}</button>{%- endform -%}
+  {%- endif -%}
+</div>

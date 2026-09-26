@@ -1,0 +1,21 @@
+<div class="customer customer--wide">
+  <p><a class="link-underline" href="{{ routes.account_url }}">&larr; {{ 'customer.account' | t }}</a></p>
+  <h1 class="h2" style="margin:12px 0 24px">{{ order.name }}</h1>
+  <p class="muted">{{ order.created_at | date: format: 'date' }} · {{ order.financial_status_label }} · {{ order.fulfillment_status_label }}</p>
+  <table style="margin-top:24px">
+    <thead><tr><th>{{ 'customer.product' | t }}</th><th>{{ 'products.quantity' | t }}</th><th>{{ 'cart.subtotal' | t }}</th></tr></thead>
+    <tbody>
+      {%- for line_item in order.line_items -%}
+        <tr><td>{{ line_item.title | link_to: line_item.product.url }}</td><td>{{ line_item.quantity }}</td><td>{{ line_item.final_line_price | money }}</td></tr>
+      {%- endfor -%}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="2">{{ 'customer.shipping' | t }}</td><td>{{ order.shipping_price | money }}</td></tr>
+      <tr><td colspan="2"><strong>Total</strong></td><td><strong>{{ order.total_price | money_with_currency }}</strong></td></tr>
+    </tfoot>
+  </table>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px">
+    <div><h2 class="h3">{{ 'customer.billing_address' | t }}</h2>{{ order.billing_address | format_address }}</div>
+    <div><h2 class="h3">{{ 'customer.shipping_address' | t }}</h2>{{ order.shipping_address | format_address }}</div>
+  </div>
+</div>

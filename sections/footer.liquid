@@ -1,0 +1,126 @@
+{%- liquid
+  assign features = section.blocks | where: 'type', 'feature'
+-%}
+<footer class="footer">
+  <div class="page-width">
+    {%- if features.size > 0 -%}
+      <div class="footer__features">
+        {%- for block in features -%}
+          <div class="footer__feature" {{ block.shopify_attributes }}>
+            {% render 'icon', name: block.settings.icon %}
+            <div><strong>{{ block.settings.title }}</strong><span>{{ block.settings.text }}</span></div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="footer__main">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'menu' -%}
+            <div {{ block.shopify_attributes }}>
+              <h3 class="footer__heading">{{ block.settings.heading | default: block.settings.menu.title }}</h3>
+              <ul class="footer__links">
+                {%- for link in block.settings.menu.links -%}<li><a href="{{ link.url }}">{{ link.title }}</a></li>{%- endfor -%}
+              </ul>
+            </div>
+          {%- when 'text' -%}
+            <div {{ block.shopify_attributes }}>
+              <h3 class="footer__heading">{{ block.settings.heading }}</h3>
+              <div class="footer__links rte muted" style="font-size:13px">{{ block.settings.text }}</div>
+            </div>
+          {%- when 'newsletter' -%}
+            <div class="footer__newsletter" {{ block.shopify_attributes }}>
+              <h3 class="footer__heading">{{ block.settings.heading }}</h3>
+              {%- if block.settings.text != blank -%}<p class="muted" style="font-size:13px">{{ block.settings.text }}</p>{%- endif -%}
+              {%- form 'customer', id: 'FooterNewsletter' -%}
+                <input type="hidden" name="contact[tags]" value="newsletter">
+                {%- if form.posted_successfully? -%}
+                  <p class="form-message">{{ 'newsletter.success' | t }}</p>
+                {%- else -%}
+                  {%- if form.errors -%}<p class="form-message form-message--error">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>{%- endif -%}
+                  <div class="field" style="max-width:360px">
+                    <input type="email" name="contact[email]" id="FooterEmail" autocomplete="email" required placeholder="{{ 'newsletter.email' | t }}" aria-label="{{ 'newsletter.email' | t }}">
+                  </div>
+                  <button type="submit" class="button" style="margin-top:12px;min-height:38px;padding:0 22px;font-size:11px">{{ block.settings.button }}</button>
+                {%- endif -%}
+              {%- endform -%}
+              <div class="footer__social">
+                {%- if settings.social_instagram != blank -%}<a href="{{ settings.social_instagram }}" target="_blank" rel="noopener" aria-label="Instagram">{% render 'icon', name: 'instagram' %}</a>{%- endif -%}
+                {%- if settings.social_tiktok != blank -%}<a href="{{ settings.social_tiktok }}" target="_blank" rel="noopener" aria-label="TikTok">{% render 'icon', name: 'tiktok' %}</a>{%- endif -%}
+                {%- if settings.social_facebook != blank -%}<a href="{{ settings.social_facebook }}" target="_blank" rel="noopener" aria-label="Facebook">{% render 'icon', name: 'facebook' %}</a>{%- endif -%}
+                {%- if settings.social_pinterest != blank -%}<a href="{{ settings.social_pinterest }}" target="_blank" rel="noopener" aria-label="Pinterest">{% render 'icon', name: 'pinterest' %}</a>{%- endif -%}
+              </div>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name | link_to: routes.root_url }}
+        {%- for policy in shop.policies -%} · <a href="{{ policy.url }}">{{ policy.title }}</a>{%- endfor -%}
+      </span>
+      {%- if section.settings.show_payment -%}
+        <div class="footer__payments">
+          {%- for type in shop.enabled_payment_types -%}{{ type | payment_type_svg_tag }}{%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Pie de página",
+  "settings": [
+    { "type": "checkbox", "id": "show_payment", "label": "Mostrar métodos de pago", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Ventaja (fila superior)",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "select", "id": "icon", "label": "Icono",
+          "options": [
+            { "value": "truck", "label": "Envío" }, { "value": "brush", "label": "Pincel" }, { "value": "frame", "label": "Cuadro" },
+            { "value": "gift", "label": "Regalo" }, { "value": "heart", "label": "Corazón" }, { "value": "lock", "label": "Candado" },
+            { "value": "chat", "label": "Mensaje" }, { "value": "star", "label": "Estrella" }, { "value": "box", "label": "Caja" }
+          ],
+          "default": "truck"
+        },
+        { "type": "text", "id": "title", "label": "Título", "default": "Envío cuidado" },
+        { "type": "text", "id": "text", "label": "Texto", "default": "Embalaje protegido" }
+      ]
+    },
+    {
+      "type": "menu",
+      "name": "Menú",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Título" },
+        { "type": "link_list", "id": "menu", "label": "Menú", "default": "footer" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Texto",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Título", "default": "Sobre nosotras" },
+        { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Cuéntale a tus clientes quién está detrás de la marca.</p>" }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Título", "default": "Suscríbete" },
+        { "type": "text", "id": "text", "label": "Texto" },
+        { "type": "text", "id": "button", "label": "Botón", "default": "Suscribirme" }
+      ]
+    }
+  ],
+  "enabled_on": { "groups": ["footer"] }
+}
+{% endschema %}
