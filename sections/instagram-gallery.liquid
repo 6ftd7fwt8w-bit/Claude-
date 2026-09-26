@@ -33,9 +33,9 @@
     </div>
   {%- else -%}
     <div class="carousel" data-carousel>
-      <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="{{ 'general.previous' | t }}" style="left:12px;background:var(--color-bg);border-radius:50%">{% render 'icon', name: 'chevron-left' %}</button>
+      <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'chevron-left' %}</button>
       <div class="carousel__track" data-carousel-track style="--cols: {{ section.settings.columns }}; --gap: 4px;">{{ ig_items }}</div>
-      <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="{{ 'general.next' | t }}" style="right:12px;background:var(--color-bg);border-radius:50%">{% render 'icon', name: 'chevron-right' %}</button>
+      <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'chevron-right' %}</button>
     </div>
   {%- endif -%}
 </section>

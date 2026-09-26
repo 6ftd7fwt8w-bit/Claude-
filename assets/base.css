@@ -259,16 +259,36 @@ body.overflow-hidden { overflow: hidden; }
 @media (max-width: 989px) { .carousel__track { --cols: 2.4 !important; } }
 @media (max-width: 599px) { .carousel__track { --cols: 1.45 !important; --gap: 14px; } }
 .carousel__btn {
-  position: absolute; top: calc(50% - 24px); transform: translateY(-50%); z-index: 2; width: 34px; height: 34px;
-  display: grid; place-items: center; color: var(--color-muted); transition: color .2s ease, opacity .2s ease;
+  position: absolute; top: calc(42% - 22px); z-index: 3; width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--color-text);
+  background: rgba(247, 243, 238, .92); border: 1px solid rgba(var(--color-text-rgb), .12);
+  box-shadow: 0 6px 18px rgba(35, 31, 28, .10); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  transition: opacity .3s ease, background .2s ease, color .2s ease, transform .2s ease;
 }
-.carousel__btn:hover { color: var(--color-text); }
-.carousel__btn[disabled] { opacity: .2; pointer-events: none; }
-.carousel__btn svg { width: 16px; height: 16px; }
-.carousel__btn--prev { left: -40px; }
-.carousel__btn--next { right: -40px; }
-@media (max-width: 1459px) { .carousel__btn--prev { left: -30px; } .carousel__btn--next { right: -30px; } }
-@media (max-width: 989px) { .carousel__btn { display: none; } }
+.carousel__btn:hover { background: var(--color-text); color: var(--color-bg); }
+.carousel__btn:active { transform: scale(.94); }
+.carousel__btn[disabled] { opacity: 0; pointer-events: none; }
+.carousel__btn svg { width: 16px; height: 16px; position: relative; z-index: 1; }
+.carousel__btn--prev { left: 14px; }
+.carousel__btn--next { right: 14px; }
+/* Pista animada: halo que late + pequeño empujón hacia la derecha */
+.carousel__btn--next.is-hint::before {
+  content: ""; position: absolute; inset: -1px; border-radius: 50%;
+  border: 1px solid var(--color-accent); opacity: 0;
+  animation: carousel-halo 2.6s ease-out infinite;
+}
+.carousel__btn--next.is-hint svg { animation: carousel-nudge 2.6s ease-in-out infinite; }
+@keyframes carousel-halo { 0% { transform: scale(1); opacity: .9; } 70%, 100% { transform: scale(1.55); opacity: 0; } }
+@keyframes carousel-nudge { 0%, 55%, 100% { transform: translateX(0); } 20% { transform: translateX(4px); } 35% { transform: translateX(0); } 45% { transform: translateX(2px); } }
+@media (max-width: 749px) {
+  .carousel__btn { width: 38px; height: 38px; top: calc(42% - 19px); }
+  .carousel__btn svg { width: 14px; height: 14px; }
+  .carousel__btn--prev { left: 8px; }
+  .carousel__btn--next { right: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .carousel__btn--next.is-hint::before, .carousel__btn--next.is-hint svg { animation: none; }
+}
 .carousel__progress { height: 2px; background: var(--color-border); margin-top: 28px; position: relative; }
 .carousel__progress span { position: absolute; top: 0; left: 0; height: 100%; background: var(--color-text); width: 25%; transition: transform .2s linear; }
 

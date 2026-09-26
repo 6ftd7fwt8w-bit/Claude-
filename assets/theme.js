@@ -250,6 +250,11 @@
         bar.style.transform = 'translateX(' + (max > 0 ? (track.scrollLeft / max) * ((1 / ratio) - 1) * 100 : 0) + '%)';
       }
     };
+    var stopHint = function () { if (next) next.classList.remove('is-hint'); };
+    if (next && track.scrollWidth > track.clientWidth + 4) next.classList.add('is-hint');
+    track.addEventListener('scroll', function () { if (track.scrollLeft > 8) stopHint(); }, { passive: true });
+    track.addEventListener('pointerdown', stopHint, { passive: true });
+    if (next) next.addEventListener('click', stopHint);
     if (prev) prev.addEventListener('click', function () { track.scrollBy({ left: -step() * Math.max(1, Math.floor(track.clientWidth / step())), behavior: 'smooth' }); });
     if (next) next.addEventListener('click', function () { track.scrollBy({ left: step() * Math.max(1, Math.floor(track.clientWidth / step())), behavior: 'smooth' }); });
     track.addEventListener('scroll', update, { passive: true });
