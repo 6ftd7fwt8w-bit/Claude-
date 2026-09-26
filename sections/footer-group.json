@@ -22,16 +22,16 @@
           "type": "feature",
           "settings": {
             "icon": "brush",
-            "title": "Ilustrado a mano",
-            "text": "Cada lámina, con mimo"
+            "title": "Ilustraciones propias",
+            "text": "Dibujadas en nuestro estudio"
           }
         },
         "block_2": {
           "type": "feature",
           "settings": {
-            "icon": "gift",
-            "title": "Listo para regalar",
-            "text": "Packs con mensaje personal"
+            "icon": "frame",
+            "title": "Papel de algodón",
+            "text": "Verjurado de 300 g"
           }
         },
         "block_3": {

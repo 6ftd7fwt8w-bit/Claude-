@@ -17,7 +17,7 @@
             "overlay": 0,
             "tag": "Colección infantil",
             "heading": "Láminas que hacen soñar",
-            "text": "Ilustraciones para las habitaciones más especiales.",
+            "text": "Diseños originales, ilustrados en nuestro estudio.",
             "button_label": "Ver colección infantil",
             "button_link": "shopify://collections/infantil",
             "align": "right",
@@ -32,9 +32,9 @@
             "image": "shopify://shop_images/vlh-hero-salon-pareja.png",
             "focal": "25% center",
             "overlay": 0,
-            "tag": "Hecho a mano para ti",
+            "tag": "Dibujada por nosotras",
             "heading": "Tu historia, ilustrada",
-            "text": "Ilustraciones personalizadas a partir de tu foto.",
+            "text": "Partimos de tu foto y la convertimos en una ilustración única.",
             "button_label": "Crear mi ilustración",
             "button_link": "shopify://collections/laminas-personalizadas",
             "align": "right",
@@ -60,7 +60,7 @@
         "item_1": {
           "type": "item",
           "settings": {
-            "text": "Ilustrado a mano",
+            "text": "Ilustraciones propias",
             "icon": "none"
           }
         },
@@ -74,7 +74,7 @@
         "item_3": {
           "type": "item",
           "settings": {
-            "text": "Papel de calidad",
+            "text": "Algodón verjurado 300 g",
             "icon": "none"
           }
         },
@@ -192,7 +192,7 @@
           "type": "tile",
           "settings": {
             "title": "Láminas personalizadas",
-            "subtitle": "",
+            "subtitle": "Dibujadas por nosotras a partir de tu foto",
             "image": "shopify://shop_images/vlh-novedades-personalizadas.png",
             "collection": "laminas-personalizadas"
           }
@@ -232,7 +232,7 @@
         "eyebrow": "",
         "heading": "Tu historia, ilustrada",
         "heading_size": "large",
-        "text": "<p>Parejas, familias, mascotas, bodas o ese lugar especial: lo dibujamos a partir de tu foto.</p>",
+        "text": "<p>Parejas, familias, mascotas, bodas o ese lugar especial. Nos envías tu foto y la dibujamos nosotras, trazo a trazo, hasta convertirla en una ilustración única.</p><p>La imprimimos en papel de algodón verjurado de 300 g, con una textura preciosa que se nota al tacto.</p>",
         "button_label": "Crear mi ilustración",
         "button_link": "shopify://collections/laminas-personalizadas",
         "text_center": false,
@@ -299,6 +299,7 @@
       "type": "collection-tiles",
       "settings": {
         "title": "Ilustraciones para cada momento",
+        "subtitle": "Cada una dibujada por nosotras, a partir de tu foto",
         "layout": "carousel",
         "columns": 4,
         "ratio": "3 / 4",
@@ -412,7 +413,7 @@
         "eyebrow": "Gracias por estar aquí",
         "heading": "Ilustramos momentos, creamos hogar",
         "heading_size": "medium",
-        "text": "<p>En Viva la Home dibujamos cada lámina con mimo para que tus paredes cuenten vuestra historia. Desde nuestro estudio creamos ilustraciones personalizadas y colecciones pensadas para llenar de magia cada rincón.</p><p>Gracias por apoyar un proyecto pequeño, hecho con amor.</p>",
+        "text": "<p>En Viva la Home todas las ilustraciones las dibujamos nosotras, del primer boceto al último detalle. Sin plantillas: cada lámina nace en nuestro estudio para que tus paredes cuenten vuestra historia.</p><p>Las imprimimos en papel de algodón verjurado de 300 g, un papel artístico con cuerpo y una textura muy especial.</p><p>Gracias por apoyar un proyecto pequeño, hecho con cariño.</p>",
         "button_label": "Escríbenos",
         "button_link": "shopify://pages/contact",
         "text_center": true,
@@ -433,14 +434,14 @@
           "type": "item",
           "settings": {
             "icon": "brush",
-            "text": "Ilustrado a mano"
+            "text": "Ilustraciones propias"
           }
         },
         "item_2": {
           "type": "item",
           "settings": {
             "icon": "frame",
-            "text": "Papel de calidad"
+            "text": "Algodón verjurado 300 g"
           }
         },
         "item_3": {
@@ -527,7 +528,7 @@
           "settings": {
             "icon": "camera",
             "title": "Cómo funciona",
-            "text": "Eliges, nos envías tu foto y la ilustramos para ti",
+            "text": "Nos envías tu foto y la dibujamos para ti",
             "link": "shopify://collections/laminas-personalizadas",
             "new_tab": false
           }
