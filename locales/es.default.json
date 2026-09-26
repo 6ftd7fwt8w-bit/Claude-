@@ -56,7 +56,10 @@
     "discount_invalid": "Este código no existe o no se aplica a los productos de tu carrito.",
     "discount_pending": "Código guardado. Se aplicará en cuanto añadas un producto válido.",
     "added_note": "¡Añadido a tu carrito!",
-    "deal_more": "Tu {{ percent }} % se aplica a cada lámina personalizada: cuantas más añadas, más ahorras. Añadir otra"
+    "deal_more": "Tu {{ percent }} % se aplica a cada lámina personalizada: cuantas más añadas, más ahorras. Añadir otra",
+    "deal_title_max": "¡No hay quien dé más!",
+    "deal_max_html": "Has combinado {{ codes }} · Máximo ahorro: <strong>{{ amount }}</strong>",
+    "discount_label_more": "¿Tienes otro código? Se suma a tu descuento"
   },
   "collections": {
     "apply": "Aplicar",

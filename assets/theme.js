@@ -358,6 +358,28 @@
       body: JSON.stringify({ discount: code })
     }).then(function (r) { return r.json(); });
   };
+  // Códigos guardados en el carrito (aplicables o pendientes)
+  var getCartCodes = function () {
+    return fetch((theme.routes.root || '/').replace(/\/?$/, '/') + 'cart.js', { headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (cart) { return (cart.discount_codes || []).map(function (d) { return { code: d.code, applicable: d.applicable }; }); })
+      .catch(function () { return []; });
+  };
+  var sameCode = function (a, b) { return String(a || '').trim().toUpperCase() === String(b || '').trim().toUpperCase(); };
+  var addCode = function (code) {
+    return getCartCodes().then(function (codes) {
+      var list = codes.map(function (c) { return c.code; }).filter(function (c) { return !sameCode(c, code); });
+      list.push(code);
+      return cartUpdateDiscount(list.join(','));
+    });
+  };
+  var removeCode = function (code) {
+    return getCartCodes().then(function (codes) {
+      var list = codes.map(function (c) { return c.code; }).filter(function (c) { return !sameCode(c, code); });
+      return cartUpdateDiscount(list.join(','));
+    });
+  };
+  window.vivaAddDiscountCode = addCode;
   var afterCartChange = function () {
     if (document.querySelector('[data-cart-page]')) { window.location.reload(); return; }
     refreshDrawer().then(refreshDiscount);
@@ -387,22 +409,27 @@
       var paint = function (ds) {
         if (!ds) return;
         var applied = ds.applied > 0;
+        var codesApplied = (ds.codesApplied || []).filter(Boolean);
+        var isMax = applied && codesApplied.length > 1;
+        var key = isMax ? 'max' : (applied ? 'ok' : 'wait');
         badge.classList.toggle('is-success', applied);
-        titleEl.textContent = badge.getAttribute(applied ? 'data-ok-title' : 'data-wait-title');
-        var parts = (badge.getAttribute(applied ? 'data-ok-text' : 'data-wait-text') || '').split('[amount]');
+        badge.classList.toggle('is-max', isMax);
+        titleEl.textContent = badge.getAttribute('data-' + key + '-title');
+        var parts = (badge.getAttribute('data-' + key + '-text') || '').replace('[codes]', codesApplied.join(' + ')).split('[amount]');
         textEl.textContent = parts[0];
         if (parts.length > 1) {
           var amt = document.createElement('b');
           amt.className = 'welcome-badge__amount';
-          amt.textContent = formatMoney(ds.applied);
+          amt.textContent = formatMoney(isMax ? (ds.saving || ds.applied) : ds.applied);
           textEl.appendChild(amt);
           textEl.appendChild(document.createTextNode(parts.slice(1).join('')));
         }
         linkEl.setAttribute('href', badge.getAttribute(applied ? 'data-ok-url' : 'data-wait-url'));
-        if (applied && wasApplied === false) {
+        if ((applied && wasApplied === false) || (isMax && badge._wasMax === false)) {
           badge.classList.remove('is-celebrate'); void badge.offsetWidth; badge.classList.add('is-celebrate');
         }
         wasApplied = applied;
+        badge._wasMax = isMax;
       };
       var hideBtn = $('[data-welcome-badge-hide]', badge);
       if (hideBtn) hideBtn.addEventListener('click', function () {
@@ -423,14 +450,14 @@
           if (left <= 0) {
             clearInterval(iv);
             badge.hidden = true;
-            if (!welcome.cleared) { welcome.cleared = true; writeWelcome(welcome); cartUpdateDiscount(''); }
+            if (!welcome.cleared) { welcome.cleared = true; writeWelcome(welcome); removeCode(welcome.code || (discountState && discountState.code) || ''); }
           }
         };
         iv = setInterval(tick, 1000);
         tick();
       };
       if (welcomeActive()) runBadge();
-      else if (welcome.status === 'accepted' && !welcome.cleared) { welcome.cleared = true; writeWelcome(welcome); cartUpdateDiscount(''); }
+      else if (welcome.status === 'accepted' && !welcome.cleared) { welcome.cleared = true; writeWelcome(welcome); removeCode(welcome.code || (discountState && discountState.code) || ''); }
     }
 
     // Pop-up
@@ -488,24 +515,53 @@
     var code = (input.value || '').trim();
     if (!code) { input.focus(); return; }
     btn.disabled = true;
-    cartUpdateDiscount(code).then(function (cart) {
+    addCode(code).then(function (cart) {
       btn.disabled = false;
-      var entry = (cart.discount_codes || []).find(function (d) { return d.code.toUpperCase() === code.toUpperCase(); });
+      var entry = (cart.discount_codes || []).find(function (d) { return sameCode(d.code, code); });
       if (entry && entry.applicable) { afterCartChange(); return; }
-      var isWelcome = discountState && discountState.code && discountState.code.toUpperCase() === code.toUpperCase();
+      var ds = discountState || {};
+      var known = sameCode(code, ds.code) || sameCode(code, ds.crossCode);
       msg.hidden = false;
-      msg.classList.toggle('is-error', !isWelcome);
-      msg.textContent = isWelcome ? theme.strings.discountPending : theme.strings.discountInvalid;
-      if (!isWelcome) cartUpdateDiscount('');
-      else refreshDiscount();
+      msg.classList.toggle('is-error', !known);
+      msg.textContent = known ? theme.strings.discountPending : theme.strings.discountInvalid;
+      if (!known) removeCode(code);
+      else { refreshDiscount(); paintCrossCards(); }
     }).catch(function () { btn.disabled = false; });
   });
   document.addEventListener('click', function (e) {
     var rm = e.target.closest('[data-discount-remove]');
-    if (!rm) return;
-    e.preventDefault();
-    cartUpdateDiscount('').then(afterCartChange);
+    if (rm) {
+      e.preventDefault();
+      removeCode(rm.getAttribute('data-discount-remove')).then(afterCartChange);
+      return;
+    }
+    var cross = e.target.closest('[data-cross-apply]');
+    if (cross) {
+      e.preventDefault();
+      var card = cross.closest('[data-cross-card]');
+      cross.disabled = true;
+      addCode(card.getAttribute('data-code')).then(function () {
+        window.location.href = card.getAttribute('data-url') || '/';
+      }).catch(function () { cross.disabled = false; });
+    }
   });
+
+  /* Oferta cruzada: si el código ya está guardado (pendiente), cambia el texto y el botón */
+  var paintCrossCards = function () {
+    var cards = $$('[data-cross-card]');
+    if (!cards.length) return;
+    getCartCodes().then(function (codes) {
+      cards.forEach(function (card) {
+        var saved = codes.some(function (c) { return sameCode(c.code, card.getAttribute('data-code')); });
+        $('[data-cross-offer]', card).hidden = saved;
+        $('[data-cross-pending]', card).hidden = !saved;
+        $('[data-cross-apply]', card).hidden = saved;
+        $('[data-cross-go]', card).hidden = !saved;
+      });
+    });
+  };
+  paintCrossCards();
+  discountListeners.push(paintCrossCards);
 
   /* Filters -------------------------------------------------------------- */
   $$('[data-facets-form]').forEach(function (form) {

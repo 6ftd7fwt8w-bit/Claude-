@@ -48,6 +48,8 @@
   data-wait-text="{{ s.badge_wait_text | escape }}"
   data-ok-title="{{ s.badge_ok_title | replace: '[code]', w_code | escape }}"
   data-ok-text="{{ s.badge_ok_text | escape }}"
+  data-max-title="{{ s.badge_max_title | escape }}"
+  data-max-text="{{ s.badge_max_text | escape }}"
   data-wait-url="{{ redirect_path }}" data-ok-url="{{ routes.cart_url }}">
   <a class="welcome-badge__main" href="{{ redirect_path }}" data-badge-link>
     <span class="welcome-badge__icon">{% render 'icon', name: 'gift' %}<span class="welcome-badge__sparkle" aria-hidden="true">✦</span></span>
@@ -87,6 +89,8 @@
     { "type": "text", "id": "badge_wait_text", "label": "Esperando: texto", "default": "Elige tu lámina personalizada para usarlo" },
     { "type": "text", "id": "badge_ok_title", "label": "Aplicado: título", "default": "¡Enhorabuena! Tu [code] ya está aplicado" },
     { "type": "text", "id": "badge_ok_text", "label": "Aplicado: texto", "default": "Te ahorras [amount] en tu pedido", "info": "[amount] se sustituye por el ahorro" },
+    { "type": "text", "id": "badge_max_title", "label": "Varios códigos: título", "default": "¡No hay quien dé más!" },
+    { "type": "text", "id": "badge_max_text", "label": "Varios códigos: texto", "default": "[codes] · Máximo ahorro: [amount]", "info": "[codes] = códigos aplicados, [amount] = ahorro total" },
     { "type": "text", "id": "badge_timer_text", "label": "Texto antes del contador", "default": "Te lo guardamos durante" }
   ],
   "presets": [{ "name": "Pop-up de bienvenida" }]

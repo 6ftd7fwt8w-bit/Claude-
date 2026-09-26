@@ -262,6 +262,49 @@
         "step": 5,
         "unit": "%",
         "default": 10
+      },
+      {
+        "type": "header",
+        "content": "Oferta cruzada en el carrito"
+      },
+      {
+        "type": "paragraph",
+        "content": "Cuando el código de bienvenida ya está aplicado, el carrito sugiere este segundo código. Ambos descuentos deben poder combinarse en Shopify."
+      },
+      {
+        "type": "text",
+        "id": "cross_code",
+        "label": "Código sugerido",
+        "default": "PEQUES3X2"
+      },
+      {
+        "type": "collection",
+        "id": "cross_collection",
+        "label": "Colección del código sugerido"
+      },
+      {
+        "type": "text",
+        "id": "cross_title",
+        "label": "Título",
+        "default": "¿Y para los peques?"
+      },
+      {
+        "type": "text",
+        "id": "cross_text",
+        "label": "Texto",
+        "default": "Llévate 3 láminas infantiles y paga solo 2 con el código [code]. ¡Se suma a tu descuento!"
+      },
+      {
+        "type": "text",
+        "id": "cross_pending",
+        "label": "Texto cuando ya lo ha guardado",
+        "default": "¡[code] guardado! Añade 3 láminas infantiles y la más barata te sale gratis."
+      },
+      {
+        "type": "text",
+        "id": "cross_button",
+        "label": "Botón",
+        "default": "¡Lo quiero!"
       }
     ]
   },

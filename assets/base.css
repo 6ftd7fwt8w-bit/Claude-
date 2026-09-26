@@ -24,6 +24,7 @@ p { margin: 0 0 1em; }
 p:last-child { margin-bottom: 0; }
 ul { margin: 0; padding: 0; list-style: none; }
 
+[hidden] { display: none !important; }
 .visually-hidden {
   position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0;
   overflow: hidden; clip: rect(0 0 0 0); border: 0; white-space: nowrap;
@@ -694,3 +695,14 @@ body.overflow-hidden { overflow: hidden; }
 .cart-page__back a { text-decoration: underline; text-underline-offset: 4px; }
 .deal-card__more { font-size: 12px; line-height: 1.45; margin-top: 4px; color: #6b4f10; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
 .deal-card__more:hover { color: var(--color-text); }
+
+/* Máximo ahorro y oferta cruzada ---------------------------------------- */
+.deal-card--max { background: linear-gradient(135deg, #fff1c4 0%, #f2d16b 55%, #e8bd52 100%); border-color: rgba(160,120,30,.6); box-shadow: 0 8px 26px rgba(201,160,60,.28); }
+.deal-card--max .deal-card__title { font-size: 16px; letter-spacing: .01em; }
+.welcome-badge.is-max { background: linear-gradient(135deg, #3a2c14 0%, #6b5220 100%); box-shadow: 0 14px 38px rgba(107,82,32,.45), 0 0 0 1px rgba(242,209,107,.8) inset; }
+.cross-card { position: relative; margin: 0 0 14px; padding: 16px 16px 16px; background: var(--color-bg); border: 1px dashed var(--color-accent); text-align: center; }
+.cross-card__tag { display: inline-block; font-size: 19px; background: var(--color-highlight); padding: 1px 10px; margin-bottom: 8px; }
+.cross-card__text { font-size: 13px; line-height: 1.5; margin: 0 0 12px; }
+.cross-card__text strong { letter-spacing: .08em; }
+.cross-card__btn { min-height: 38px; padding: 0 22px; font-size: 11px; }
+.cart-discount__form--compact .cart-discount__label { font-size: 11px; opacity: .8; }

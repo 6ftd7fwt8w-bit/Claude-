@@ -102,6 +102,8 @@
         "badge_wait_text": "Elige tu lámina personalizada para usarlo",
         "badge_ok_title": "¡Enhorabuena! Tu [code] ya está aplicado",
         "badge_ok_text": "Te ahorras [amount] en tu pedido",
+        "badge_max_title": "¡No hay quien dé más!",
+        "badge_max_text": "[codes] · Máximo ahorro: [amount]",
         "badge_timer_text": "Te lo guardamos durante"
       }
     }

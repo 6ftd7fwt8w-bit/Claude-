@@ -22,6 +22,25 @@
       endif
     endif
   endfor
+  assign x_code = settings.cross_code | strip | upcase
+  assign x_applied = 0
+  assign codes_applied = ''
+  for item in cart.items
+    for alloc in item.line_level_discount_allocations
+      assign t = alloc.discount_application.title | strip | upcase
+      if t == x_code
+        assign x_applied = x_applied | plus: alloc.amount
+      endif
+      if alloc.discount_application.type == 'discount_code' and alloc.amount > 0
+        assign t_key = '|' | append: t | append: '|'
+        assign codes_check = '|' | append: codes_applied
+        unless codes_check contains t_key
+          assign codes_applied = codes_applied | append: t | append: '|'
+        endunless
+      endif
+    endfor
+  endfor
+  assign saving = cart.original_total_price | minus: cart.total_price
   for app in cart.cart_level_discount_applications
     assign app_title = app.title | strip | upcase
     if app_title == w_code
@@ -37,6 +56,11 @@
     "applied": {{ w_applied | json }},
     "qualifying": {{ w_qualifying | json }},
     "totalDiscount": {{ cart.total_discount | json }},
+    "saving": {{ saving | json }},
+    "codesApplied": {{ codes_applied | split: '|' | json }},
+    "crossCode": {{ settings.cross_code | strip | json }},
+    "crossApplied": {{ x_applied | json }},
+    "crossUrl": {{ settings.cross_collection.url | default: '' | json }},
     "itemCount": {{ cart.item_count | json }},
     "currency": {{ cart.currency.iso_code | json }},
     "locale": {{ request.locale.iso_code | json }}
