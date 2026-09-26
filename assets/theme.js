@@ -315,6 +315,93 @@
     }
   }
 
+  /* Pop-up de bienvenida + contador del descuento ---------------------------- */
+  (function () {
+    var popup = $('[data-welcome]');
+    var badge = $('[data-welcome-badge]');
+    if (!popup && !badge) return;
+    var KEY = 'vlh_welcome';
+    var read = function () { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
+    var write = function (o) { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
+    var state = read();
+    var now = Date.now();
+    var designMode = window.Shopify && Shopify.designMode;
+
+    // Contador
+    var timerEl = badge && $('[data-welcome-timer]', badge);
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var clearDiscount = function () {
+      fetch((theme.routes.root || '/').replace(/\/?$/, '/') + 'cart/update.js', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ discount: '' })
+      }).catch(function () {});
+    };
+    var runBadge = function () {
+      if (!badge || !state.expires) return;
+      var hiddenThisSession = false;
+      try { hiddenThisSession = sessionStorage.getItem(KEY + '_badge_hidden') === '1'; } catch (e) {}
+      if (!hiddenThisSession) badge.hidden = false;
+      var tick = function () {
+        var left = Math.max(0, state.expires - Date.now());
+        var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), s = Math.floor(left % 60000 / 1000);
+        if (timerEl) timerEl.textContent = (h ? h + ':' + pad(m) : m) + ':' + pad(s);
+        if (left <= 0) {
+          clearInterval(iv);
+          badge.hidden = true;
+          if (!state.cleared) { state.cleared = true; write(state); clearDiscount(); }
+        }
+      };
+      var iv = setInterval(tick, 1000);
+      tick();
+    };
+    if (badge) {
+      var hideBtn = $('[data-welcome-badge-hide]', badge);
+      if (hideBtn) hideBtn.addEventListener('click', function () {
+        badge.hidden = true;
+        try { sessionStorage.setItem(KEY + '_badge_hidden', '1'); } catch (e) {}
+      });
+    }
+    if (state.status === 'accepted') {
+      if (state.expires > now) runBadge();
+      else if (!state.cleared) { state.cleared = true; write(state); clearDiscount(); }
+    }
+
+    if (!popup) return;
+    var open = function () {
+      popup.hidden = false;
+      requestAnimationFrame(function () { requestAnimationFrame(function () { popup.classList.add('is-open'); }); });
+      document.body.classList.add('overflow-hidden');
+      var cta = $('[data-welcome-accept]', popup);
+      if (cta) cta.focus({ preventScroll: true });
+    };
+    var close = function (remember) {
+      popup.classList.remove('is-open');
+      document.body.classList.remove('overflow-hidden');
+      setTimeout(function () { popup.hidden = true; }, 450);
+      if (remember) { state.status = 'dismissed'; state.at = Date.now(); write(state); }
+    };
+    $$('[data-welcome-close]', popup).forEach(function (el) { el.addEventListener('click', function () { close(!designMode); }); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !popup.hidden) close(!designMode); });
+    var accept = $('[data-welcome-accept]', popup);
+    if (accept) accept.addEventListener('click', function () {
+      if (designMode) return;
+      var minutes = parseInt(popup.getAttribute('data-minutes'), 10) || 90;
+      write({ status: 'accepted', at: Date.now(), expires: Date.now() + minutes * 60000, code: popup.getAttribute('data-code') });
+    });
+
+    if (designMode) {
+      document.addEventListener('shopify:section:select', function (e) { if (e.target.contains(popup)) open(); });
+      document.addEventListener('shopify:section:deselect', function (e) { if (e.target.contains(popup)) close(false); });
+      return;
+    }
+    var repeatDays = parseInt(popup.getAttribute('data-repeat-days'), 10) || 7;
+    var shouldShow = !state.status || (state.status === 'dismissed' && now - (state.at || 0) > repeatDays * 86400000);
+    var onCart = /\/cart(\/|$|\?)/.test(location.pathname);
+    if (shouldShow && !onCart) {
+      setTimeout(open, (parseInt(popup.getAttribute('data-delay'), 10) || 0) * 1000);
+    }
+  })();
+
   /* Filters -------------------------------------------------------------- */
   $$('[data-facets-form]').forEach(function (form) {
     form.addEventListener('change', function (e) {

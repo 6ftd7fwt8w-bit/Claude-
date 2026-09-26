@@ -81,10 +81,32 @@
         "block_6",
         "block_7"
       ]
+    },
+    "welcome": {
+      "type": "welcome-popup",
+      "settings": {
+        "enabled": true,
+        "image": "shopify://shop_images/vlh-popup-bienvenida.png",
+        "tag": "¡Hola!",
+        "heading": "Nos alegra mucho verte por aquí",
+        "text": "<p>Para tu primera compra te regalamos un <strong>10 % de descuento</strong> en nuestras láminas personalizadas.</p>",
+        "code_label": "Tu código",
+        "code": "HOLA10",
+        "button_label": "¡Sí, lo quiero!",
+        "link": "shopify://collections/laminas-personalizadas",
+        "decline_label": "Ahora no, gracias",
+        "small_print": "Válido una vez por cliente en láminas personalizadas.",
+        "delay": 4,
+        "repeat_days": 7,
+        "minutes": 90,
+        "badge_title": "Tu 10 % con [code] está aplicado",
+        "badge_text": "Te lo guardamos durante"
+      }
     }
   },
   "order": [
     "whatsapp",
-    "footer"
+    "footer",
+    "welcome"
   ]
 }
