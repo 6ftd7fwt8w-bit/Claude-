@@ -103,7 +103,7 @@
     changeLine(line.getAttribute('data-key'), parseInt(btn.getAttribute('data-cart-qty'), 10)).then(function (cart) {
       if (document.querySelector('[data-cart-page]') && !btn.closest('[data-cart-drawer]')) { window.location.reload(); return; }
       updateCount(cart.item_count);
-      refreshDrawer();
+      refreshDrawer().then(refreshDiscount);
     });
   });
   document.addEventListener('change', function (e) {
@@ -113,7 +113,7 @@
     changeLine(line.getAttribute('data-key'), Math.max(0, parseInt(input.value, 10) || 0)).then(function (cart) {
       if (document.querySelector('[data-cart-page]') && !input.closest('[data-cart-drawer]')) { window.location.reload(); return; }
       updateCount(cart.item_count);
-      refreshDrawer();
+      refreshDrawer().then(refreshDiscount);
     });
   });
 
@@ -131,7 +131,7 @@
         .then(function (res) {
           btn.disabled = false;
           if (!res.ok) { if (err) { err.textContent = res.body.description || res.body.message; err.hidden = false; } return; }
-          refreshDrawer().then(function () { openDrawer('CartDrawer'); });
+          refreshDrawer().then(function () { openDrawer('CartDrawer'); refreshDiscount(); });
         })
         .catch(function () { btn.disabled = false; form.submit(); });
     });
@@ -315,57 +315,112 @@
     }
   }
 
-  /* Pop-up de bienvenida + contador del descuento ---------------------------- */
+  /* Descuento: estado real del carrito ----------------------------------- */
+  var parseDiscountState = function (root) {
+    var el = (root || document).querySelector('[data-discount-state]');
+    if (!el) return null;
+    try { return JSON.parse(el.textContent); } catch (e) { return null; }
+  };
+  var discountState = parseDiscountState();
+  var formatMoney = function (cents) {
+    var ds = discountState || {};
+    try { return (cents / 100).toLocaleString(ds.locale || 'es', { style: 'currency', currency: ds.currency || 'EUR' }); }
+    catch (e) { return (cents / 100).toFixed(2) + ' €'; }
+  };
+  var discountListeners = [];
+  var refreshDiscount = function () {
+    return fetch((theme.routes.root || '/') + '?section_id=discount-state')
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var ds = parseDiscountState(doc);
+        if (ds) { discountState = ds; discountListeners.forEach(function (fn) { fn(ds); }); }
+        return ds;
+      }).catch(function () {});
+  };
+  window.vivaRefreshDiscount = refreshDiscount;
+  var cartUpdateDiscount = function (code) {
+    return fetch((theme.routes.root || '/').replace(/\/?$/, '/') + 'cart/update.js', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ discount: code })
+    }).then(function (r) { return r.json(); });
+  };
+  var afterCartChange = function () {
+    if (document.querySelector('[data-cart-page]')) { window.location.reload(); return; }
+    refreshDrawer().then(refreshDiscount);
+  };
+
+  /* Pop-up de bienvenida + pastilla con contador ------------------------------ */
+  var WKEY = 'vlh_welcome';
+  var readWelcome = function () { try { return JSON.parse(localStorage.getItem(WKEY)) || {}; } catch (e) { return {}; } };
+  var writeWelcome = function (o) { try { localStorage.setItem(WKEY, JSON.stringify(o)); } catch (e) {} };
+  var welcome = readWelcome();
+  var welcomeActive = function () { return welcome.status === 'accepted' && welcome.expires > Date.now(); };
+
   (function () {
     var popup = $('[data-welcome]');
     var badge = $('[data-welcome-badge]');
-    if (!popup && !badge) return;
-    var KEY = 'vlh_welcome';
-    var read = function () { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
-    var write = function (o) { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} };
-    var state = read();
     var now = Date.now();
     var designMode = window.Shopify && Shopify.designMode;
 
-    // Contador
-    var timerEl = badge && $('[data-welcome-timer]', badge);
-    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    var clearDiscount = function () {
-      fetch((theme.routes.root || '/').replace(/\/?$/, '/') + 'cart/update.js', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ discount: '' })
-      }).catch(function () {});
-    };
-    var runBadge = function () {
-      if (!badge || !state.expires) return;
-      var hiddenThisSession = false;
-      try { hiddenThisSession = sessionStorage.getItem(KEY + '_badge_hidden') === '1'; } catch (e) {}
-      if (!hiddenThisSession) badge.hidden = false;
-      var tick = function () {
-        var left = Math.max(0, state.expires - Date.now());
-        var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), s = Math.floor(left % 60000 / 1000);
-        if (timerEl) timerEl.textContent = (h ? h + ':' + pad(m) : m) + ':' + pad(s);
-        if (left <= 0) {
-          clearInterval(iv);
-          badge.hidden = true;
-          if (!state.cleared) { state.cleared = true; write(state); clearDiscount(); }
-        }
-      };
-      var iv = setInterval(tick, 1000);
-      tick();
-    };
+    // Pastilla
     if (badge) {
+      var timerEl = $('[data-welcome-timer]', badge);
+      var titleEl = $('[data-badge-title]', badge);
+      var textEl = $('[data-badge-text]', badge);
+      var linkEl = $('[data-badge-link]', badge);
+      var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      var wasApplied = null;
+      var paint = function (ds) {
+        if (!ds) return;
+        var applied = ds.applied > 0;
+        badge.classList.toggle('is-success', applied);
+        titleEl.textContent = badge.getAttribute(applied ? 'data-ok-title' : 'data-wait-title');
+        var parts = (badge.getAttribute(applied ? 'data-ok-text' : 'data-wait-text') || '').split('[amount]');
+        textEl.textContent = parts[0];
+        if (parts.length > 1) {
+          var amt = document.createElement('b');
+          amt.className = 'welcome-badge__amount';
+          amt.textContent = formatMoney(ds.applied);
+          textEl.appendChild(amt);
+          textEl.appendChild(document.createTextNode(parts.slice(1).join('')));
+        }
+        linkEl.setAttribute('href', badge.getAttribute(applied ? 'data-ok-url' : 'data-wait-url'));
+        if (applied && wasApplied === false) {
+          badge.classList.remove('is-celebrate'); void badge.offsetWidth; badge.classList.add('is-celebrate');
+        }
+        wasApplied = applied;
+      };
       var hideBtn = $('[data-welcome-badge-hide]', badge);
       if (hideBtn) hideBtn.addEventListener('click', function () {
         badge.hidden = true;
-        try { sessionStorage.setItem(KEY + '_badge_hidden', '1'); } catch (e) {}
+        try { sessionStorage.setItem(WKEY + '_badge_hidden', '1'); } catch (e) {}
       });
-    }
-    if (state.status === 'accepted') {
-      if (state.expires > now) runBadge();
-      else if (!state.cleared) { state.cleared = true; write(state); clearDiscount(); }
+      var runBadge = function () {
+        var hiddenThisSession = false;
+        try { hiddenThisSession = sessionStorage.getItem(WKEY + '_badge_hidden') === '1'; } catch (e) {}
+        if (!hiddenThisSession) badge.hidden = false;
+        paint(discountState);
+        discountListeners.push(paint);
+        var iv;
+        var tick = function () {
+          var left = Math.max(0, welcome.expires - Date.now());
+          var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), sec = Math.floor(left % 60000 / 1000);
+          if (timerEl) timerEl.textContent = (h ? h + ':' + pad(m) : m) + ':' + pad(sec);
+          if (left <= 0) {
+            clearInterval(iv);
+            badge.hidden = true;
+            if (!welcome.cleared) { welcome.cleared = true; writeWelcome(welcome); cartUpdateDiscount(''); }
+          }
+        };
+        iv = setInterval(tick, 1000);
+        tick();
+      };
+      if (welcomeActive()) runBadge();
+      else if (welcome.status === 'accepted' && !welcome.cleared) { welcome.cleared = true; writeWelcome(welcome); cartUpdateDiscount(''); }
     }
 
+    // Pop-up
     if (!popup) return;
     var open = function () {
       popup.hidden = false;
@@ -378,7 +433,7 @@
       popup.classList.remove('is-open');
       document.body.classList.remove('overflow-hidden');
       setTimeout(function () { popup.hidden = true; }, 450);
-      if (remember) { state.status = 'dismissed'; state.at = Date.now(); write(state); }
+      if (remember) { welcome.status = 'dismissed'; welcome.at = Date.now(); writeWelcome(welcome); }
     };
     $$('[data-welcome-close]', popup).forEach(function (el) { el.addEventListener('click', function () { close(!designMode); }); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !popup.hidden) close(!designMode); });
@@ -386,21 +441,58 @@
     if (accept) accept.addEventListener('click', function () {
       if (designMode) return;
       var minutes = parseInt(popup.getAttribute('data-minutes'), 10) || 90;
-      write({ status: 'accepted', at: Date.now(), expires: Date.now() + minutes * 60000, code: popup.getAttribute('data-code') });
+      writeWelcome({ status: 'accepted', at: Date.now(), expires: Date.now() + minutes * 60000, code: popup.getAttribute('data-code') });
     });
-
     if (designMode) {
       document.addEventListener('shopify:section:select', function (e) { if (e.target.contains(popup)) open(); });
       document.addEventListener('shopify:section:deselect', function (e) { if (e.target.contains(popup)) close(false); });
       return;
     }
     var repeatDays = parseInt(popup.getAttribute('data-repeat-days'), 10) || 7;
-    var shouldShow = !state.status || (state.status === 'dismissed' && now - (state.at || 0) > repeatDays * 86400000);
+    var shouldShow = !welcome.status || (welcome.status === 'dismissed' && now - (welcome.at || 0) > repeatDays * 86400000);
     var onCart = /\/cart(\/|$|\?)/.test(location.pathname);
-    if (shouldShow && !onCart) {
-      setTimeout(open, (parseInt(popup.getAttribute('data-delay'), 10) || 0) * 1000);
-    }
+    if (shouldShow && !onCart) setTimeout(open, (parseInt(popup.getAttribute('data-delay'), 10) || 0) * 1000);
   })();
+
+  /* Código de descuento en el carrito ---------------------------------------- */
+  var paintCartHints = function () {
+    $$('[data-discount-hint]').forEach(function (h) {
+      var show = welcomeActive() && discountState && !(discountState.applied > 0);
+      h.hidden = !show;
+      var input = h.closest('[data-discount-form]') && $('[data-discount-input]', h.closest('[data-discount-form]'));
+      if (show && input && !input.value) input.value = (discountState && discountState.code) || '';
+    });
+  };
+  paintCartHints();
+  discountListeners.push(paintCartHints);
+  document.addEventListener('submit', function (e) {
+    var form = e.target.closest('[data-discount-form]');
+    if (!form) return;
+    e.preventDefault();
+    var input = $('[data-discount-input]', form);
+    var msg = $('[data-discount-msg]', form);
+    var btn = $('button[type=submit]', form);
+    var code = (input.value || '').trim();
+    if (!code) { input.focus(); return; }
+    btn.disabled = true;
+    cartUpdateDiscount(code).then(function (cart) {
+      btn.disabled = false;
+      var entry = (cart.discount_codes || []).find(function (d) { return d.code.toUpperCase() === code.toUpperCase(); });
+      if (entry && entry.applicable) { afterCartChange(); return; }
+      var isWelcome = discountState && discountState.code && discountState.code.toUpperCase() === code.toUpperCase();
+      msg.hidden = false;
+      msg.classList.toggle('is-error', !isWelcome);
+      msg.textContent = isWelcome ? theme.strings.discountPending : theme.strings.discountInvalid;
+      if (!isWelcome) cartUpdateDiscount('');
+      else refreshDiscount();
+    }).catch(function () { btn.disabled = false; });
+  });
+  document.addEventListener('click', function (e) {
+    var rm = e.target.closest('[data-discount-remove]');
+    if (!rm) return;
+    e.preventDefault();
+    cartUpdateDiscount('').then(afterCartChange);
+  });
 
   /* Filters -------------------------------------------------------------- */
   $$('[data-facets-form]').forEach(function (form) {

@@ -1,18 +1,21 @@
 {%- comment -%}
-  Pop-up de bienvenida con código de descuento.
+  Pop-up de bienvenida con código de descuento (código, colección y % en Configuración del tema → Descuento de bienvenida).
   - Aparece una vez por visitante (se vuelve a mostrar tras X días si lo cierra sin aceptar).
-  - Al aceptar, aplica el código automáticamente (/discount/CODIGO) y redirige.
-  - Muestra una pastilla con cuenta atrás mientras el código se mantiene aplicado;
-    al terminar, el código se quita del carrito (se puede seguir escribiendo a mano en el pago).
+  - Al aceptar, guarda el código en el carrito (/discount/CODIGO) y redirige a la colección.
+  - Pastilla inferior con dos estados reales (calculados por Shopify):
+      · esperando: aún no hay productos de la colección en el carrito
+      · aplicado: el código ya descuenta dinero → muestra el ahorro
+    y cuenta atrás del tiempo que se lo guardamos aplicado (al terminar se quita del carrito).
 {%- endcomment -%}
 {%- liquid
   assign s = section.settings
-  assign redirect_path = s.link | default: routes.all_products_collection_url
-  assign apply_url = routes.root_url | append: '/discount/' | append: s.code | replace: '//', '/' | append: '?redirect=' | append: redirect_path
+  assign w_code = settings.welcome_code | strip
+  assign redirect_path = s.link | default: settings.welcome_collection.url | default: routes.all_products_collection_url
+  assign apply_url = routes.root_url | append: '/discount/' | append: w_code | replace: '//', '/' | append: '?redirect=' | append: redirect_path
 -%}
-{%- if s.enabled and s.code != blank -%}
+{%- if s.enabled and w_code != blank -%}
 <div class="welcome" data-welcome
-  data-code="{{ s.code | escape }}" data-apply-url="{{ apply_url }}"
+  data-code="{{ w_code | escape }}" data-apply-url="{{ apply_url }}"
   data-delay="{{ s.delay }}" data-minutes="{{ s.minutes }}" data-repeat-days="{{ s.repeat_days }}"
   data-design-mode="{{ request.design_mode }}" hidden>
   <div class="welcome__overlay" data-welcome-close></div>
@@ -31,7 +34,7 @@
       {%- if s.text != blank -%}<div class="welcome__text rte">{{ s.text }}</div>{%- endif -%}
       <div class="welcome__code">
         <span class="welcome__code-label">{{ s.code_label }}</span>
-        <span class="welcome__code-value">{{ s.code }}</span>
+        <span class="welcome__code-value">{{ w_code }}</span>
       </div>
       <a href="{{ apply_url }}" class="button button--full welcome__cta" data-welcome-accept>{{ s.button_label }}</a>
       <button type="button" class="welcome__decline" data-welcome-close>{{ s.decline_label }}</button>
@@ -40,12 +43,21 @@
   </div>
 </div>
 
-<div class="welcome-badge" data-welcome-badge hidden role="status" aria-live="polite">
-  <span class="welcome-badge__icon">{% render 'icon', name: 'gift' %}</span>
-  <span class="welcome-badge__text">
-    <strong>{{ s.badge_title | replace: '[code]', s.code }}</strong>
-    <span>{{ s.badge_text }} <b class="welcome-badge__timer" data-welcome-timer>--:--</b></span>
-  </span>
+<div class="welcome-badge" data-welcome-badge hidden role="status" aria-live="polite"
+  data-wait-title="{{ s.badge_wait_title | replace: '[code]', w_code | escape }}"
+  data-wait-text="{{ s.badge_wait_text | escape }}"
+  data-ok-title="{{ s.badge_ok_title | replace: '[code]', w_code | escape }}"
+  data-ok-text="{{ s.badge_ok_text | escape }}"
+  data-wait-url="{{ redirect_path }}" data-ok-url="{{ routes.cart_url }}">
+  <a class="welcome-badge__main" href="{{ redirect_path }}" data-badge-link>
+    <span class="welcome-badge__icon">{% render 'icon', name: 'gift' %}<span class="welcome-badge__sparkle" aria-hidden="true">✦</span></span>
+    <span class="welcome-badge__text">
+      <strong data-badge-title>{{ s.badge_wait_title | replace: '[code]', w_code }}</strong>
+      <span data-badge-text>{{ s.badge_wait_text }}</span>
+      <span class="welcome-badge__timer-line">{{ s.badge_timer_text }} <b class="welcome-badge__timer" data-welcome-timer>--:--</b></span>
+    </span>
+    <span class="welcome-badge__shine" aria-hidden="true"></span>
+  </a>
   <button type="button" class="welcome-badge__close" data-welcome-badge-hide aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
 </div>
 {%- endif -%}
@@ -61,9 +73,9 @@
     { "type": "text", "id": "heading", "label": "Título", "default": "Nos alegra mucho verte por aquí" },
     { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Para tu primera compra te regalamos un <strong>10 % de descuento</strong> en nuestras láminas personalizadas.</p>" },
     { "type": "text", "id": "code_label", "label": "Texto sobre el código", "default": "Tu código" },
-    { "type": "text", "id": "code", "label": "Código de descuento", "default": "HOLA10", "info": "Debe existir en Descuentos de Shopify" },
+    { "type": "paragraph", "content": "El código, la colección y el % se configuran en Configuración del tema → Descuento de bienvenida." },
     { "type": "text", "id": "button_label", "label": "Botón", "default": "¡Sí, lo quiero!" },
-    { "type": "url", "id": "link", "label": "Página a la que lleva", "default": "/collections/all" },
+    { "type": "url", "id": "link", "label": "Página a la que lleva", "info": "Si está vacío, lleva a la colección del descuento" },
     { "type": "text", "id": "decline_label", "label": "Texto para rechazar", "default": "Ahora no, gracias" },
     { "type": "text", "id": "small_print", "label": "Letra pequeña", "default": "Válido una vez por cliente en láminas personalizadas." },
     { "type": "header", "content": "Comportamiento" },
@@ -71,8 +83,11 @@
     { "type": "range", "id": "repeat_days", "label": "Volver a mostrar si lo cierran, tras", "min": 1, "max": 30, "step": 1, "unit": "d", "default": 7 },
     { "type": "header", "content": "Pastilla con cuenta atrás" },
     { "type": "range", "id": "minutes", "label": "Tiempo que el código queda aplicado", "min": 15, "max": 180, "step": 15, "unit": "min", "default": 90 },
-    { "type": "text", "id": "badge_title", "label": "Título", "default": "Tu 10 % con [code] está aplicado", "info": "[code] se sustituye por el código" },
-    { "type": "text", "id": "badge_text", "label": "Texto antes del contador", "default": "Te lo guardamos durante" }
+    { "type": "text", "id": "badge_wait_title", "label": "Esperando: título", "default": "Tu código [code] te está esperando", "info": "[code] se sustituye por el código" },
+    { "type": "text", "id": "badge_wait_text", "label": "Esperando: texto", "default": "Elige tu lámina personalizada para usarlo" },
+    { "type": "text", "id": "badge_ok_title", "label": "Aplicado: título", "default": "¡Enhorabuena! Tu [code] ya está aplicado" },
+    { "type": "text", "id": "badge_ok_text", "label": "Aplicado: texto", "default": "Te ahorras [amount] en tu pedido", "info": "[amount] se sustituye por el ahorro" },
+    { "type": "text", "id": "badge_timer_text", "label": "Texto antes del contador", "default": "Te lo guardamos durante" }
   ],
   "presets": [{ "name": "Pop-up de bienvenida" }]
 }

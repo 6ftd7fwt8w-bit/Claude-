@@ -91,7 +91,6 @@
         "heading": "Nos alegra mucho verte por aquí",
         "text": "<p>Para tu primera compra te regalamos un <strong>10 % de descuento</strong> en nuestras láminas personalizadas.</p>",
         "code_label": "Tu código",
-        "code": "HOLA10",
         "button_label": "¡Sí, lo quiero!",
         "link": "shopify://collections/laminas-personalizadas",
         "decline_label": "Ahora no, gracias",
@@ -99,8 +98,11 @@
         "delay": 4,
         "repeat_days": 7,
         "minutes": 90,
-        "badge_title": "Tu 10 % con [code] está aplicado",
-        "badge_text": "Te lo guardamos durante"
+        "badge_wait_title": "Tu código [code] te está esperando",
+        "badge_wait_text": "Elige tu lámina personalizada para usarlo",
+        "badge_ok_title": "¡Enhorabuena! Tu [code] ya está aplicado",
+        "badge_ok_text": "Te ahorras [amount] en tu pedido",
+        "badge_timer_text": "Te lo guardamos durante"
       }
     }
   },

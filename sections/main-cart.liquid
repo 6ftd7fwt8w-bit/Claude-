@@ -5,8 +5,8 @@
       <div class="cart-page">
         <div data-cart-page-items>{% render 'cart-items' %}</div>
         <div class="cart-page__summary">
+          {% render 'cart-summary', form_id: 'page' %}
           <form action="{{ routes.cart_url }}" method="post" id="CartForm">
-            {% render 'cart-summary' %}
             {%- if settings.cart_show_note -%}
               <div class="cart-note">
                 <label for="CartNote" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase">{{ 'cart.note' | t }}</label>

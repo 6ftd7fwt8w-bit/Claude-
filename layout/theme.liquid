@@ -86,6 +86,8 @@
 
     {% sections 'footer-group' %}
 
+    {% render 'discount-state' %}
+
     {%- if settings.cart_type == 'drawer' -%}
       {% render 'cart-drawer' %}
     {%- endif -%}
@@ -105,7 +107,9 @@
           addToCart: {{ 'products.add_to_cart' | t | json }},
           soldOut: {{ 'products.sold_out' | t | json }},
           unavailable: {{ 'products.unavailable' | t | json }},
-          added: {{ 'products.added' | t | json }}
+          added: {{ 'products.added' | t | json }},
+          discountInvalid: {{ 'cart.discount_invalid' | t | json }},
+          discountPending: {{ 'cart.discount_pending' | t | json }}
         }
       };
     </script>

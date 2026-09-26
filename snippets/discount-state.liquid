@@ -1,0 +1,44 @@
+{%- comment -%}
+  Estado real del descuento de bienvenida en el carrito (lo calcula Shopify):
+  - applied: céntimos que el código ya descuenta en el carrito
+  - qualifying: importe de las líneas que pertenecen a la colección del descuento
+{%- endcomment -%}
+{%- liquid
+  assign w_code = settings.welcome_code | strip | upcase
+  assign w_handle = settings.welcome_collection.handle | default: ''
+  assign w_applied = 0
+  assign w_qualifying = 0
+  for item in cart.items
+    for alloc in item.line_level_discount_allocations
+      assign alloc_title = alloc.discount_application.title | strip | upcase
+      if alloc_title == w_code
+        assign w_applied = w_applied | plus: alloc.amount
+      endif
+    endfor
+    if w_handle != ''
+      assign item_handles = item.product.collections | map: 'handle'
+      if item_handles contains w_handle
+        assign w_qualifying = w_qualifying | plus: item.original_line_price
+      endif
+    endif
+  endfor
+  for app in cart.cart_level_discount_applications
+    assign app_title = app.title | strip | upcase
+    if app_title == w_code
+      assign w_applied = w_applied | plus: app.total_allocated_amount
+    endif
+  endfor
+-%}
+<script type="application/json" data-discount-state>
+  {
+    "code": {{ settings.welcome_code | strip | json }},
+    "percent": {{ settings.welcome_percent | json }},
+    "collectionUrl": {{ settings.welcome_collection.url | default: routes.all_products_collection_url | json }},
+    "applied": {{ w_applied | json }},
+    "qualifying": {{ w_qualifying | json }},
+    "totalDiscount": {{ cart.total_discount | json }},
+    "itemCount": {{ cart.item_count | json }},
+    "currency": {{ cart.currency.iso_code | json }},
+    "locale": {{ request.locale.iso_code | json }}
+  }
+</script>

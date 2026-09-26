@@ -9,7 +9,7 @@
       {%- if cart.item_count > 0 -%}
         <div class="drawer__body">{% render 'cart-items' %}</div>
         <div class="drawer__footer">
-          {% render 'cart-summary' %}
+          {% render 'cart-summary', form_id: 'drawer' %}
           <form action="{{ routes.cart_url }}" method="post">
             <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
           </form>

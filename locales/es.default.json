@@ -42,7 +42,19 @@
     "remove": "Eliminar",
     "subtotal": "Subtotal",
     "taxes_shipping": "Impuestos incluidos. Gastos de envío calculados al finalizar la compra.",
-    "view_cart": "Ver carrito"
+    "view_cart": "Ver carrito",
+    "deal_title_percent": "¡Genial! Has conseguido un {{ percent }} % de descuento",
+    "deal_title": "¡Genial! Tu descuento está aplicado",
+    "deal_saving_html": "Te ahorras <strong>{{ amount }}</strong> en este pedido",
+    "discount_remove": "Quitar código",
+    "before": "Antes",
+    "discount_label": "¿Tienes un código de descuento?",
+    "discount_placeholder": "Escribe tu código",
+    "discount_apply": "Aplicar",
+    "discount_waiting_html": "Tu código {{ code }} te está esperando: te descuenta un {{ percent }} % en láminas personalizadas.",
+    "discount_waiting_link": "Elegir mi lámina",
+    "discount_invalid": "Este código no existe o no se aplica a los productos de tu carrito.",
+    "discount_pending": "Código guardado. Se aplicará en cuanto añadas un producto válido."
   },
   "collections": {
     "apply": "Aplicar",

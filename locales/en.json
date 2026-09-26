@@ -42,7 +42,19 @@
     "remove": "Remove",
     "subtotal": "Subtotal",
     "taxes_shipping": "Taxes included. Shipping calculated at checkout.",
-    "view_cart": "View cart"
+    "view_cart": "View cart",
+    "deal_title_percent": "Great! You've unlocked {{ percent }}% off",
+    "deal_title": "Great! Your discount is applied",
+    "deal_saving_html": "You save <strong>{{ amount }}</strong> on this order",
+    "discount_remove": "Remove code",
+    "before": "Before",
+    "discount_label": "Have a discount code?",
+    "discount_placeholder": "Enter your code",
+    "discount_apply": "Apply",
+    "discount_waiting_html": "Your code {{ code }} is waiting: {{ percent }}% off personalised illustrations.",
+    "discount_waiting_link": "Choose my illustration",
+    "discount_invalid": "This code doesn't exist or doesn't apply to the items in your cart.",
+    "discount_pending": "Code saved. It will apply as soon as you add an eligible item."
   },
   "collections": {
     "apply": "Apply",

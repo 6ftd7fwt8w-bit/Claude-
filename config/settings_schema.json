@@ -10,27 +10,109 @@
   {
     "name": "Logo",
     "settings": [
-      { "type": "image_picker", "id": "logo", "label": "Logo" },
-      { "type": "range", "id": "logo_width", "label": "Ancho del logo (escritorio)", "min": 60, "max": 260, "step": 5, "unit": "px", "default": 130 },
-      { "type": "text", "id": "logo_text", "label": "Texto del logo (si no hay imagen)", "default": "Viva la Home" },
-      { "type": "text", "id": "logo_tagline", "label": "Subtítulo del logo", "default": "LÁMINAS & ILUSTRACIÓN" },
-      { "type": "image_picker", "id": "favicon", "label": "Favicon" }
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Ancho del logo (escritorio)",
+        "min": 60,
+        "max": 260,
+        "step": 5,
+        "unit": "px",
+        "default": 130
+      },
+      {
+        "type": "text",
+        "id": "logo_text",
+        "label": "Texto del logo (si no hay imagen)",
+        "default": "Viva la Home"
+      },
+      {
+        "type": "text",
+        "id": "logo_tagline",
+        "label": "Subtítulo del logo",
+        "default": "LÁMINAS & ILUSTRACIÓN"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      }
     ]
   },
   {
     "name": "Colores",
     "settings": [
-      { "type": "color", "id": "color_background", "label": "Fondo", "default": "#F7F3EE" },
-      { "type": "color", "id": "color_background_alt", "label": "Fondo alternativo (arena)", "default": "#EFE8DE" },
-      { "type": "color", "id": "color_accent", "label": "Acento (bandas topo)", "default": "#A89478" },
-      { "type": "color", "id": "color_accent_text", "label": "Texto sobre acento", "default": "#FFFFFF" },
-      { "type": "color", "id": "color_text", "label": "Texto", "default": "#231F1C" },
-      { "type": "color", "id": "color_muted", "label": "Texto secundario", "default": "#7B7168" },
-      { "type": "color", "id": "color_button", "label": "Botón", "default": "#231F1C" },
-      { "type": "color", "id": "color_button_text", "label": "Texto del botón", "default": "#FFFFFF" },
-      { "type": "color", "id": "color_highlight", "label": "Etiqueta destacada (ej. 'Summer Edit')", "default": "#F2D16B" },
-      { "type": "color", "id": "color_sale", "label": "Precio rebajado", "default": "#A2573A" },
-      { "type": "color", "id": "color_border", "label": "Bordes", "default": "#E3DBD0" }
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Fondo",
+        "default": "#F7F3EE"
+      },
+      {
+        "type": "color",
+        "id": "color_background_alt",
+        "label": "Fondo alternativo (arena)",
+        "default": "#EFE8DE"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Acento (bandas topo)",
+        "default": "#A89478"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_text",
+        "label": "Texto sobre acento",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Texto",
+        "default": "#231F1C"
+      },
+      {
+        "type": "color",
+        "id": "color_muted",
+        "label": "Texto secundario",
+        "default": "#7B7168"
+      },
+      {
+        "type": "color",
+        "id": "color_button",
+        "label": "Botón",
+        "default": "#231F1C"
+      },
+      {
+        "type": "color",
+        "id": "color_button_text",
+        "label": "Texto del botón",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "color_highlight",
+        "label": "Etiqueta destacada (ej. 'Summer Edit')",
+        "default": "#F2D16B"
+      },
+      {
+        "type": "color",
+        "id": "color_sale",
+        "label": "Precio rebajado",
+        "default": "#A2573A"
+      },
+      {
+        "type": "color",
+        "id": "color_border",
+        "label": "Bordes",
+        "default": "#E3DBD0"
+      }
     ]
   },
   {
@@ -41,13 +123,31 @@
         "id": "font_pairing",
         "label": "Combinación de fuentes",
         "options": [
-          { "value": "jost", "label": "Jost + Cormorant (fina, estilo galería)" },
-          { "value": "montserrat", "label": "Montserrat + Playfair (clásica)" },
-          { "value": "dmsans", "label": "DM Sans + DM Serif (suave)" }
+          {
+            "value": "jost",
+            "label": "Jost + Cormorant (fina, estilo galería)"
+          },
+          {
+            "value": "montserrat",
+            "label": "Montserrat + Playfair (clásica)"
+          },
+          {
+            "value": "dmsans",
+            "label": "DM Sans + DM Serif (suave)"
+          }
         ],
         "default": "jost"
       },
-      { "type": "range", "id": "heading_scale", "label": "Escala de títulos", "min": 80, "max": 130, "step": 5, "unit": "%", "default": 100 }
+      {
+        "type": "range",
+        "id": "heading_scale",
+        "label": "Escala de títulos",
+        "min": 80,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "default": 100
+      }
     ]
   },
   {
@@ -58,16 +158,43 @@
         "id": "card_ratio",
         "label": "Proporción de imagen",
         "options": [
-          { "value": "portrait", "label": "Vertical (4:5)" },
-          { "value": "tall", "label": "Vertical alta (3:4)" },
-          { "value": "square", "label": "Cuadrada" },
-          { "value": "adapt", "label": "Adaptar a la imagen" }
+          {
+            "value": "portrait",
+            "label": "Vertical (4:5)"
+          },
+          {
+            "value": "tall",
+            "label": "Vertical alta (3:4)"
+          },
+          {
+            "value": "square",
+            "label": "Cuadrada"
+          },
+          {
+            "value": "adapt",
+            "label": "Adaptar a la imagen"
+          }
         ],
         "default": "tall"
       },
-      { "type": "checkbox", "id": "card_show_second_image", "label": "Mostrar segunda imagen al pasar el ratón", "default": true },
-      { "type": "checkbox", "id": "card_from_price", "label": "Mostrar 'Desde' cuando hay varios tamaños", "default": true },
-      { "type": "checkbox", "id": "card_show_vendor", "label": "Mostrar artista / marca", "default": false }
+      {
+        "type": "checkbox",
+        "id": "card_show_second_image",
+        "label": "Mostrar segunda imagen al pasar el ratón",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_from_price",
+        "label": "Mostrar 'Desde' cuando hay varios tamaños",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_vendor",
+        "label": "Mostrar artista / marca",
+        "default": false
+      }
     ]
   },
   {
@@ -78,22 +205,90 @@
         "id": "cart_type",
         "label": "Tipo de carrito",
         "options": [
-          { "value": "drawer", "label": "Panel lateral" },
-          { "value": "page", "label": "Página" }
+          {
+            "value": "drawer",
+            "label": "Panel lateral"
+          },
+          {
+            "value": "page",
+            "label": "Página"
+          }
         ],
         "default": "drawer"
       },
-      { "type": "range", "id": "free_shipping_threshold", "label": "Umbral de envío gratis (0 = oculto)", "min": 0, "max": 300, "step": 5, "unit": "€", "default": 0 },
-      { "type": "checkbox", "id": "cart_show_note", "label": "Permitir nota de pedido", "default": true }
+      {
+        "type": "range",
+        "id": "free_shipping_threshold",
+        "label": "Umbral de envío gratis (0 = oculto)",
+        "min": 0,
+        "max": 300,
+        "step": 5,
+        "unit": "€",
+        "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_note",
+        "label": "Permitir nota de pedido",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Descuento de bienvenida",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Lo usan el pop-up de bienvenida, la pastilla con el contador y el carrito."
+      },
+      {
+        "type": "text",
+        "id": "welcome_code",
+        "label": "Código",
+        "default": "HOLA10",
+        "info": "Debe existir en Descuentos de Shopify"
+      },
+      {
+        "type": "collection",
+        "id": "welcome_collection",
+        "label": "Colección a la que se aplica"
+      },
+      {
+        "type": "range",
+        "id": "welcome_percent",
+        "label": "Porcentaje de descuento",
+        "min": 5,
+        "max": 50,
+        "step": 5,
+        "unit": "%",
+        "default": 10
+      }
     ]
   },
   {
     "name": "Redes sociales",
     "settings": [
-      { "type": "text", "id": "social_instagram", "label": "Instagram", "default": "https://instagram.com/" },
-      { "type": "text", "id": "social_pinterest", "label": "Pinterest" },
-      { "type": "text", "id": "social_tiktok", "label": "TikTok" },
-      { "type": "text", "id": "social_facebook", "label": "Facebook" }
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram",
+        "default": "https://instagram.com/"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "label": "Pinterest"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook"
+      }
     ]
   }
 ]

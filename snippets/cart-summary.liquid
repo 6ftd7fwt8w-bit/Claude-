@@ -13,6 +13,7 @@
     <div class="cart-shipping-bar__track"><div class="cart-shipping-bar__fill" style="width: {{ pct }}%"></div></div>
   </div>
 {%- endif -%}
+{%- if cart.item_count > 0 -%}{% render 'cart-discount', form_id: form_id %}{%- endif -%}
 {%- for discount in cart.cart_level_discount_applications -%}
   <div class="cart-totals muted"><span>{{ discount.title }}</span><span>-{{ discount.total_allocated_amount | money }}</span></div>
 {%- endfor -%}
