@@ -406,6 +406,21 @@
       var linkEl = $('[data-badge-link]', badge);
       var pad = function (n) { return (n < 10 ? '0' : '') + n; };
       var wasApplied = null;
+      var render = function (key, ds, amountCents, codesApplied) {
+        titleEl.textContent = badge.getAttribute('data-' + key + '-title');
+        var parts = (badge.getAttribute('data-' + key + '-text') || '').replace('[codes]', codesApplied.join(' + ')).split('[amount]');
+        textEl.textContent = parts[0];
+        if (parts.length > 1) {
+          var amt = document.createElement('b');
+          amt.className = 'welcome-badge__amount';
+          amt.textContent = formatMoney(amountCents);
+          textEl.appendChild(amt);
+          textEl.appendChild(document.createTextNode(parts.slice(1).join('')));
+        }
+        var url = key === 'wait' ? badge.getAttribute('data-wait-url') : (key === 'cross' ? (ds.crossUrl || badge.getAttribute('data-ok-url')) : badge.getAttribute('data-ok-url'));
+        linkEl.setAttribute('href', url);
+        badge.classList.toggle('is-cross', key === 'cross');
+      };
       var paint = function (ds) {
         if (!ds) return;
         var applied = ds.applied > 0;
@@ -414,17 +429,13 @@
         var key = isMax ? 'max' : (applied ? 'ok' : 'wait');
         badge.classList.toggle('is-success', applied);
         badge.classList.toggle('is-max', isMax);
-        titleEl.textContent = badge.getAttribute('data-' + key + '-title');
-        var parts = (badge.getAttribute('data-' + key + '-text') || '').replace('[codes]', codesApplied.join(' + ')).split('[amount]');
-        textEl.textContent = parts[0];
-        if (parts.length > 1) {
-          var amt = document.createElement('b');
-          amt.className = 'welcome-badge__amount';
-          amt.textContent = formatMoney(isMax ? (ds.saving || ds.applied) : ds.applied);
-          textEl.appendChild(amt);
-          textEl.appendChild(document.createTextNode(parts.slice(1).join('')));
+        render(key, ds, isMax ? (ds.saving || ds.applied) : ds.applied, codesApplied);
+        if (key === 'ok' && ds.crossCode) {
+          getCartCodes().then(function (codes) {
+            var saved = codes.some(function (c) { return sameCode(c.code, ds.crossCode); });
+            if (saved && discountState === ds) render('cross', ds, ds.applied, codesApplied);
+          });
         }
-        linkEl.setAttribute('href', badge.getAttribute(applied ? 'data-ok-url' : 'data-wait-url'));
         if ((applied && wasApplied === false) || (isMax && badge._wasMax === false)) {
           badge.classList.remove('is-celebrate'); void badge.offsetWidth; badge.classList.add('is-celebrate');
         }
@@ -446,10 +457,14 @@
         var tick = function () {
           var left = Math.max(0, welcome.expires - Date.now());
           var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), sec = Math.floor(left % 60000 / 1000);
-          if (timerEl) timerEl.textContent = (h ? h + ':' + pad(m) : m) + ':' + pad(sec);
+          var txt = (h ? h + ':' + pad(m) : m) + ':' + pad(sec);
+          $$('[data-welcome-timer]').forEach(function (el) { el.textContent = txt; });
+          var showCartTimer = left > 0 && discountState && discountState.applied > 0;
+          $$('[data-cart-timer]').forEach(function (el) { el.hidden = !showCartTimer; });
           if (left <= 0) {
             clearInterval(iv);
             badge.hidden = true;
+            $$('[data-cart-timer]').forEach(function (el) { el.hidden = true; });
             if (!welcome.cleared) { welcome.cleared = true; writeWelcome(welcome); removeCode(welcome.code || (discountState && discountState.code) || ''); }
           }
         };
@@ -499,7 +514,8 @@
     $$('[data-discount-hint]').forEach(function (h) {
       var show = welcomeActive() && discountState && !(discountState.applied > 0);
       h.hidden = !show;
-      var input = h.closest('[data-discount-form]') && $('[data-discount-input]', h.closest('[data-discount-form]'));
+      var box = h.closest('[data-cart-discount]');
+      var input = box && $('[data-discount-input]', box);
       if (show && input && !input.value) input.value = (discountState && discountState.code) || '';
     });
   };

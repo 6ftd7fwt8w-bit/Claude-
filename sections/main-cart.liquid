@@ -16,6 +16,7 @@
                 <textarea name="note" id="CartNote">{{ cart.note }}</textarea>
               </div>
             {%- endif -%}
+            <p class="cart-timer" data-cart-timer hidden>{% render 'icon', name: 'gift' %}<span>{{ 'cart.timer_before' | t }} <b data-welcome-timer>--:--</b> {{ 'cart.timer_after' | t: percent: settings.welcome_percent }}</span></p>
             <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
           </form>
           <a href="{{ routes.all_products_collection_url }}" class="link-underline" style="display:block;text-align:center;margin-top:14px;font-size:13px">{{ 'cart.continue' | t }}</a>

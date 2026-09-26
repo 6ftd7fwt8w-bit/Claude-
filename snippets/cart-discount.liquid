@@ -49,7 +49,7 @@
     assign show_cross = true
   endif
 -%}
-<div class="cart-discount" data-cart-discount>
+<div class="cart-discount{% if compact %} cart-discount--compact{% endif %}" data-cart-discount>
   {%- if saving_cents > 0 -%}
     <div class="deal-card{% if codes_list.size > 1 %} deal-card--max{% endif %}">
       <span class="deal-card__shine" aria-hidden="true"></span>
@@ -70,7 +70,7 @@
         {%- else -%}
           <span class="deal-card__text">{{ 'cart.deal_saving_html' | t: amount: saving_formatted }}</span>
         {%- endif -%}
-        {%- if codes_list.first == w_code and codes_list.size == 1 and settings.welcome_collection != blank -%}
+        {%- if codes_list.first == w_code and codes_list.size == 1 and settings.welcome_collection != blank and compact != true -%}
           <a class="deal-card__more" href="{{ settings.welcome_collection.url }}">{{ 'cart.deal_more' | t: percent: settings.welcome_percent }} <span aria-hidden="true">&rarr;</span></a>
         {%- endif -%}
         <span class="deal-card__codes">
@@ -84,23 +84,28 @@
   {%- endif -%}
 
   {%- if show_cross -%}
-    <div class="cross-card" data-cross-card data-code="{{ settings.cross_code | strip | escape }}" data-url="{{ settings.cross_collection.url }}">
-      <span class="cross-card__tag script">{{ settings.cross_title }}</span>
-      <p class="cross-card__text" data-cross-offer>{{ settings.cross_text | escape | replace: '[code]', '<strong>[code]</strong>' | replace: '[code]', x_code }}</p>
-      <p class="cross-card__text" data-cross-pending hidden>{{ settings.cross_pending | escape | replace: '[code]', '<strong>[code]</strong>' | replace: '[code]', x_code }}</p>
-      <button type="button" class="button cross-card__btn" data-cross-apply>{{ settings.cross_button }}</button>
-      <a class="button cross-card__btn" href="{{ settings.cross_collection.url }}" data-cross-go hidden>{{ settings.cross_collection.title }} &rarr;</a>
+    <div class="cross-teaser" data-cross-card data-code="{{ settings.cross_code | strip | escape }}" data-url="{{ settings.cross_collection.url }}">
+      <span class="cross-teaser__icon" aria-hidden="true">{% render 'icon', name: 'gift' %}</span>
+      <span class="cross-teaser__text" data-cross-offer>{{ settings.cross_teaser }}</span>
+      <span class="cross-teaser__text" data-cross-pending hidden>{{ settings.cross_pending | escape | replace: '[code]', '<strong>[code]</strong>' | replace: '[code]', x_code }}</span>
+      <button type="button" class="cross-teaser__link" data-cross-apply>{{ settings.cross_button }}</button>
+      <a class="cross-teaser__link" href="{{ settings.cross_collection.url }}" data-cross-go hidden>{{ settings.cross_go }} &rarr;</a>
     </div>
   {%- endif -%}
 
-  <form class="cart-discount__form{% if saving_cents > 0 %} cart-discount__form--compact{% endif %}" data-discount-form novalidate>
-    <label class="cart-discount__label" for="DiscountCode-{{ form_id | default: 'cart' }}">{% render 'icon', name: 'gift' %}<span>{% if saving_cents > 0 %}{{ 'cart.discount_label_more' | t }}{% else %}{{ 'cart.discount_label' | t }}{% endif %}</span></label>
+  <details class="cart-discount__details"{% unless compact or saving_cents > 0 %} open{% endunless %}>
+  <summary class="cart-discount__label">{% render 'icon', name: 'gift' %}<span>{% if saving_cents > 0 %}{{ 'cart.discount_label_more' | t }}{% else %}{{ 'cart.discount_label' | t }}{% endif %}</span></summary>
+  <form class="cart-discount__form" data-discount-form novalidate>
+    <label class="visually-hidden" for="DiscountCode-{{ form_id | default: 'cart' }}">{{ 'cart.discount_placeholder' | t }}</label>
     <div class="cart-discount__row">
       <input class="input" type="text" id="DiscountCode-{{ form_id | default: 'cart' }}" name="discount" autocomplete="off" autocapitalize="characters" spellcheck="false"
         placeholder="{{ 'cart.discount_placeholder' | t }}" data-discount-input>
       <button type="submit" class="button cart-discount__apply">{{ 'cart.discount_apply' | t }}</button>
     </div>
     <p class="cart-discount__msg" data-discount-msg hidden></p>
+  </form>
+  </details>
+  <div class="cart-discount__form-extra">
     {%- if w_applied == 0 -%}
       <p class="cart-discount__hint" data-discount-hint hidden>
         {%- assign code_html = '<strong>' | append: settings.welcome_code | append: '</strong>' -%}
@@ -108,5 +113,5 @@
         {%- if settings.welcome_collection != blank %} <a href="{{ settings.welcome_collection.url }}">{{ 'cart.discount_waiting_link' | t }}</a>{%- endif -%}
       </p>
     {%- endif -%}
-  </form>
+  </div>
 </div>

@@ -50,6 +50,8 @@
   data-ok-text="{{ s.badge_ok_text | escape }}"
   data-max-title="{{ s.badge_max_title | escape }}"
   data-max-text="{{ s.badge_max_text | escape }}"
+  data-cross-title="{{ s.badge_cross_title | escape }}"
+  data-cross-text="{{ s.badge_cross_text | escape }}"
   data-wait-url="{{ redirect_path }}" data-ok-url="{{ routes.cart_url }}">
   <a class="welcome-badge__main" href="{{ redirect_path }}" data-badge-link>
     <span class="welcome-badge__icon">{% render 'icon', name: 'gift' %}<span class="welcome-badge__sparkle" aria-hidden="true">✦</span></span>
@@ -91,7 +93,9 @@
     { "type": "text", "id": "badge_ok_text", "label": "Aplicado: texto", "default": "Te ahorras [amount] en tu pedido", "info": "[amount] se sustituye por el ahorro" },
     { "type": "text", "id": "badge_max_title", "label": "Varios códigos: título", "default": "¡No hay quien dé más!" },
     { "type": "text", "id": "badge_max_text", "label": "Varios códigos: texto", "default": "[codes] · Máximo ahorro: [amount]", "info": "[codes] = códigos aplicados, [amount] = ahorro total" },
-    { "type": "text", "id": "badge_timer_text", "label": "Texto antes del contador", "default": "Te lo guardamos durante" }
+    { "type": "text", "id": "badge_cross_title", "label": "Segundo código guardado: título", "default": "¡Tienes otro descuento esperando!" },
+    { "type": "text", "id": "badge_cross_text", "label": "Segundo código guardado: texto", "default": "Ya ahorras [amount]. Elige 3 láminas infantiles y te regalamos la tercera" },
+    { "type": "text", "id": "badge_timer_text", "label": "Texto antes del contador", "default": "Tu 10 % sigue aplicado durante" }
   ],
   "presets": [{ "name": "Pop-up de bienvenida" }]
 }

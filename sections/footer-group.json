@@ -104,7 +104,9 @@
         "badge_ok_text": "Te ahorras [amount] en tu pedido",
         "badge_max_title": "¡No hay quien dé más!",
         "badge_max_text": "[codes] · Máximo ahorro: [amount]",
-        "badge_timer_text": "Te lo guardamos durante"
+        "badge_cross_title": "¡Tienes otro descuento esperando!",
+        "badge_cross_text": "Ya ahorras [amount]. Elige 3 láminas infantiles y te regalamos la tercera",
+        "badge_timer_text": "Tu 10 % sigue aplicado durante"
       }
     }
   },

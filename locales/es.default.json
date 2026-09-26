@@ -59,7 +59,9 @@
     "deal_more": "Tu {{ percent }} % se aplica a cada lámina personalizada: cuantas más añadas, más ahorras. Añadir otra",
     "deal_title_max": "¡No hay quien dé más!",
     "deal_max_html": "Has combinado {{ codes }} · Máximo ahorro: <strong>{{ amount }}</strong>",
-    "discount_label_more": "¿Tienes otro código? Se suma a tu descuento"
+    "discount_label_more": "¿Tienes otro código? Se suma a tu descuento",
+    "timer_before": "Finaliza tu pedido en",
+    "timer_after": "para mantener tu {{ percent }} % aplicado"
   },
   "collections": {
     "apply": "Aplicar",

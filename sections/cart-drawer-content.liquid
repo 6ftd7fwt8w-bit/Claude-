@@ -1,13 +1,19 @@
 {%- comment -%} Renderizado por la Section Rendering API para refrescar el panel del carrito {%- endcomment -%}
 {%- if cart.item_count > 0 -%}
-  <div class="drawer__body">{% render 'cart-items' %}</div>
+  <div class="drawer__body">
+    {% render 'cart-items' %}
+    {% render 'cart-discount', form_id: 'drawer', compact: true %}
+  </div>
   <div class="drawer__footer">
-    {% render 'cart-summary', form_id: 'drawer' %}
+    <p class="cart-timer" data-cart-timer hidden>{% render 'icon', name: 'gift' %}<span>{{ 'cart.timer_before' | t }} <b data-welcome-timer>--:--</b> {{ 'cart.timer_after' | t: percent: settings.welcome_percent }}</span></p>
+    {% render 'cart-summary', form_id: 'drawer', hide_discount: true %}
     <form action="{{ routes.cart_url }}" method="post">
       <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
     </form>
-    <button type="button" class="button button--outline button--full cart-continue" data-drawer-close>{{ 'cart.continue' | t }}</button>
-    <a href="{{ routes.cart_url }}" class="link-underline" style="display:block;text-align:center;margin-top:12px;font-size:12px">{{ 'cart.view_cart' | t }}</a>
+    <div class="drawer__links">
+      <button type="button" class="link-underline" data-drawer-close>{{ 'cart.continue' | t }}</button>
+      <a href="{{ routes.cart_url }}" class="link-underline">{{ 'cart.view_cart' | t }}</a>
+    </div>
   </div>
 {%- else -%}
   <div class="drawer__body cart-empty">

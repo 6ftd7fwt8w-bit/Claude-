@@ -284,27 +284,28 @@
       },
       {
         "type": "text",
-        "id": "cross_title",
-        "label": "Título",
-        "default": "¿Y para los peques?"
+        "id": "cross_teaser",
+        "label": "Aviso",
+        "default": "¡Tenemos otro descuento para ti!"
       },
       {
         "type": "text",
-        "id": "cross_text",
-        "label": "Texto",
-        "default": "Llévate 3 láminas infantiles y paga solo 2 con el código [code]. ¡Se suma a tu descuento!"
+        "id": "cross_button",
+        "label": "Enlace del aviso",
+        "default": "Quiero verlo"
       },
       {
         "type": "text",
         "id": "cross_pending",
         "label": "Texto cuando ya lo ha guardado",
-        "default": "¡[code] guardado! Añade 3 láminas infantiles y la más barata te sale gratis."
+        "default": "[code] guardado: elige 3 láminas infantiles y te regalamos la tercera.",
+        "info": "[code] se sustituye por el código"
       },
       {
         "type": "text",
-        "id": "cross_button",
-        "label": "Botón",
-        "default": "¡Lo quiero!"
+        "id": "cross_go",
+        "label": "Enlace cuando ya lo ha guardado",
+        "default": "Elegir"
       }
     ]
   },
