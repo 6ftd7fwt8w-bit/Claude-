@@ -72,7 +72,9 @@
       "one": "{{ count }} product",
       "other": "{{ count }} products"
     },
-    "sort_by": "Sort by"
+    "sort_by": "Sort by",
+    "showing": "You've seen {{ shown }} of {{ total }} prints",
+    "load_more": "Load more"
   },
   "contact": {
     "email": "Email",

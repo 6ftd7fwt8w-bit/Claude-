@@ -79,7 +79,7 @@
       {%- endif -%}
 
       {%- if collection.products.size > 0 -%}
-        <div class="product-grid" style="--cols: {{ section.settings.columns }}">
+        <div class="product-grid" style="--cols: {{ section.settings.columns }}" data-product-grid data-total="{{ paginate.items }}">
           {%- for product in collection.products -%}
             {%- if forloop.index <= 4 -%}{% render 'product-card', product: product, lazy: false %}{%- else -%}{% render 'product-card', product: product %}{%- endif -%}
           {%- endfor -%}
@@ -89,15 +89,17 @@
       {%- endif -%}
 
       {%- if paginate.pages > 1 -%}
-        <nav class="pagination" aria-label="pagination">
-          {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}" aria-label="{{ 'general.previous' | t }}">&larr;</a>{%- endif -%}
-          {%- for part in paginate.parts -%}
-            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>
-            {%- elsif part.title == paginate.current_page -%}<span class="current" aria-current="page">{{ part.title }}</span>
-            {%- else -%}<span>{{ part.title }}</span>{%- endif -%}
-          {%- endfor -%}
-          {%- if paginate.next -%}<a href="{{ paginate.next.url }}" aria-label="{{ 'general.next' | t }}">&rarr;</a>{%- endif -%}
-        </nav>
+        {%- liquid
+          assign shown = paginate.current_offset | plus: collection.products.size
+          assign pct = shown | times: 100 | divided_by: paginate.items
+        -%}
+        <div class="load-more" data-load-more>
+          <p class="load-more__count" data-load-more-count>{{ 'collections.showing' | t: shown: shown, total: paginate.items }}</p>
+          <div class="load-more__bar"><span data-load-more-bar style="width: {{ pct }}%"></span></div>
+          {%- if paginate.next -%}
+            <a class="button button--outline" href="{{ paginate.next.url }}" data-load-more-btn>{{ 'collections.load_more' | t }}</a>
+          {%- endif -%}
+        </div>
       {%- endif -%}
     {%- endpaginate -%}
   </div>
@@ -110,7 +112,7 @@
     { "type": "checkbox", "id": "show_image", "label": "Mostrar imagen de la colección en cabecera", "default": true },
     { "type": "image_picker", "id": "hero_image", "label": "Imagen de cabecera (sustituye a la de la colección)" },
     { "type": "checkbox", "id": "show_description", "label": "Mostrar descripción", "default": true },
-    { "type": "range", "id": "per_page", "label": "Productos por página", "min": 8, "max": 48, "step": 4, "default": 24 },
+    { "type": "range", "id": "per_page", "label": "Productos por página", "min": 8, "max": 48, "step": 4, "default": 12 },
     { "type": "range", "id": "columns", "label": "Columnas (escritorio)", "min": 2, "max": 5, "step": 1, "default": 4 }
   ]
 }

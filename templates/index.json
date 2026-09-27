@@ -120,17 +120,17 @@
           "settings": {
             "title": "Bosque encantado",
             "subtitle": "",
-            "link": "https://www.vivalahome.store/search?q=bosque&type=product",
+            "link": "shopify://collections/bosque-encantado",
             "image": "shopify://shop_images/vlh-tendencia-bosque.png"
           }
         },
         "tile_2": {
           "type": "tile",
           "settings": {
-            "title": "Aventuras en el mar",
+            "title": "Frases con sonrisa",
             "subtitle": "",
-            "link": "https://www.vivalahome.store/search?q=mar&type=product",
-            "image": "shopify://shop_images/vlh-tendencia-mar.png"
+            "link": "shopify://collections/frases-con-sonrisa",
+            "image": "shopify://shop_images/1407BF8C-D83D-4DBC-9276-DC34AF019920.jpg"
           }
         },
         "tile_3": {
@@ -138,7 +138,7 @@
           "settings": {
             "title": "Estrellas y sueños",
             "subtitle": "",
-            "link": "https://www.vivalahome.store/search?q=estrella&type=product",
+            "link": "shopify://collections/estrellas-y-suenos",
             "image": "shopify://shop_images/vlh-tendencia-estrellas.png"
           }
         },
@@ -147,6 +147,8 @@
           "settings": {
             "title": "Retratos de mascotas",
             "subtitle": "",
+            "zoom": 125,
+            "zoom_origin": "50% 50%",
             "link": "shopify://products/ilustracion-mascota",
             "image": "shopify://shop_images/vlh-tendencia-mascotas.png"
           }

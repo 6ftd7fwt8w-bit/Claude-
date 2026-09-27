@@ -72,7 +72,9 @@
       "one": "{{ count }} producto",
       "other": "{{ count }} productos"
     },
-    "sort_by": "Ordenar por"
+    "sort_by": "Ordenar por",
+    "showing": "Has visto {{ shown }} de {{ total }} láminas",
+    "load_more": "Ver más"
   },
   "contact": {
     "email": "Email",
