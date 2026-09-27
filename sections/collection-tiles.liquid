@@ -26,7 +26,7 @@
           endif
         -%}
         <a href="{{ url | default: '#' }}" class="tile" {{ block.shopify_attributes }}>
-          <div class="media"{% if block.settings.zoom > 100 %} style="--zoom: {{ block.settings.zoom | divided_by: 100.0 }}; --zoom-origin: {{ block.settings.zoom_origin }};"{% endif %}>
+          <div class="media" style="--pos-x: {{ block.settings.pos_x | default: 50 }}%;{% if block.settings.zoom > 100 %} --zoom: {{ block.settings.zoom | divided_by: 100.0 }}; --zoom-origin: {{ block.settings.zoom_origin }};{% endif %}">
             {%- if img != blank -%}
               {{ img | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1000, 1200', sizes: '(min-width: 990px) 33vw, 70vw', alt: title }}
             {%- else -%}
@@ -94,6 +94,7 @@
         { "type": "text", "id": "title", "label": "Título" },
         { "type": "text", "id": "subtitle", "label": "Texto pequeño" },
         { "type": "url", "id": "link", "label": "Enlace (opcional)" },
+        { "type": "range", "id": "pos_x", "label": "Encuadre horizontal", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50, "info": "0 = se ve la parte izquierda de la foto, 100 = la derecha" },
         { "type": "range", "id": "zoom", "label": "Ampliar imagen", "min": 100, "max": 160, "step": 5, "unit": "%", "default": 100 },
         {
           "type": "select", "id": "zoom_origin", "label": "Punto fijo al ampliar",
