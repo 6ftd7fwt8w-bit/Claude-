@@ -221,6 +221,7 @@
     "worth": {
       "type": "split-banner",
       "settings": {
+        "image": "shopify://shop_images/vlh-video-dibujando-poster.jpg",
         "video": "shopify://files/videos/06EB102F-304D-4D95-A66F-89751EF40AE5.mov",
         "video_start": 32,
         "video_duration": 8,
