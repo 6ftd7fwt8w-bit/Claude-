@@ -30,7 +30,13 @@
     "placeholder_title": "Print name",
     "tax_included": "Tax included.",
     "quantity": "Quantity",
-    "zoom": "Zoom image"
+    "zoom": "Zoom image",
+    "pack_current": "You are viewing",
+    "pack_include": "Include",
+    "pack_add": "Add all {{ count }} to cart",
+    "pack_add_one": "Add to cart",
+    "pack_count": "{{ count }} prints",
+    "pack_cross": "With {{ code }}, buy 3 kids prints and the third is free."
   },
   "cart": {
     "title": "Your cart",

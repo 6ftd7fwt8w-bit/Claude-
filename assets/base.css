@@ -839,3 +839,28 @@ body.overflow-hidden .welcome-badge { opacity: 0; pointer-events: none; }
 
 /* Protección de imágenes -------------------------------------------------- */
 .protect-images img, .protect-images video { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+/* Hacen pack ------------------------------------------------------------- */
+.pack { display: grid; grid-template-columns: 1fr 280px; gap: 40px; align-items: center; }
+.pack__grid { display: grid; grid-template-columns: repeat(var(--pack-n, 3), minmax(0, 1fr)); gap: 44px; counter-reset: pack; }
+.pack__item { position: relative; transition: opacity .3s ease; }
+.pack__item + .pack__item::before { content: '+'; position: absolute; left: -32px; top: 38%; width: 20px; text-align: center; font-size: 24px; font-weight: 300; color: var(--color-muted); }
+.pack__item.is-off .card { opacity: .4; }
+.pack__label { position: absolute; top: 10px; left: 10px; z-index: 2; background: var(--color-bg); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding: 5px 9px; }
+.pack__check { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; letter-spacing: .06em; color: var(--color-muted); cursor: pointer; }
+.pack__check input { accent-color: var(--color-text); width: 16px; height: 16px; }
+.pack__buy { display: flex; flex-direction: column; gap: 14px; padding: 28px 24px; background: var(--color-bg); border: 1px solid var(--color-border); }
+.bg-default .pack__buy { background: var(--color-bg-alt); }
+.pack__size { display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+.pack__total { display: flex; justify-content: space-between; align-items: baseline; margin: 0; font-size: 13px; color: var(--color-muted); }
+.pack__total strong { font-size: 20px; color: var(--color-text); font-weight: 500; }
+.pack__buy .button { width: 100%; }
+.pack__hint { margin: 0; font-size: 12px; line-height: 1.5; color: var(--color-text); background: var(--color-highlight); padding: 8px 10px; }
+@media (max-width: 989px) {
+  .pack { grid-template-columns: 1fr; }
+}
+@media (max-width: 749px) {
+  .pack__grid { grid-template-columns: repeat(var(--pack-n, 3), 62%); overflow-x: auto; scroll-snap-type: x mandatory; gap: 32px; padding-bottom: 6px; margin-right: -16px; padding-right: 16px; }
+  .pack__item { scroll-snap-align: start; }
+  .pack__item + .pack__item::before { left: -24px; }
+}

@@ -30,7 +30,13 @@
     "placeholder_title": "Nombre de la lámina",
     "tax_included": "Impuestos incluidos.",
     "quantity": "Cantidad",
-    "zoom": "Ampliar imagen"
+    "zoom": "Ampliar imagen",
+    "pack_current": "Estás viendo",
+    "pack_include": "Incluir",
+    "pack_add": "Añadir las {{ count }} al carrito",
+    "pack_add_one": "Añadir al carrito",
+    "pack_count": "{{ count }} láminas",
+    "pack_cross": "Con {{ code }}, al llevarte 3 láminas infantiles la tercera es gratis."
   },
   "cart": {
     "title": "Tu carrito",

@@ -74,6 +74,16 @@
         "block_9"
       ]
     },
+    "pack": {
+      "type": "product-recommendations",
+      "settings": {
+        "intent": "complementary",
+        "title": "Hacen pack",
+        "subtitle": "Pensadas para colgar juntas",
+        "limit": 4,
+        "background": "default"
+      }
+    },
     "recommendations": {
       "type": "product-recommendations",
       "settings": {
@@ -218,6 +228,7 @@
   },
   "order": [
     "main",
+    "pack",
     "recommendations",
     "instagram"
   ]
