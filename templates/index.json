@@ -234,14 +234,16 @@
     "worth": {
       "type": "split-banner",
       "settings": {
-        "image": "shopify://shop_images/vlh-banner-retrato.png",
+        "video": "shopify://files/videos/06EB102F-304D-4D95-A66F-89751EF40AE5.mov",
+        "video_start": 32,
+        "video_duration": 8,
         "image_first": false,
         "image_width": "wide",
-        "tag": "Ilustración personalizada",
+        "tag": "Gracias por estar aquí",
         "eyebrow": "",
-        "heading": "Tu historia, ilustrada",
-        "heading_size": "large",
-        "text": "<p>Parejas, familias, mascotas, bodas o ese lugar especial. Nos envías tu foto y la dibujamos nosotras, trazo a trazo, hasta convertirla en una ilustración única.</p><p>La imprimimos en papel de algodón verjurado de 300 g, con una textura preciosa que se nota al tacto.</p>",
+        "heading": "Ilustramos momentos, creamos hogar",
+        "heading_size": "medium",
+        "text": "<p>En Viva la Home las ilustraciones y todos nuestros packs los confeccionamos nosotras, a mano y cuidando hasta el último detalle. Sin plantillas ni prisas: cada pieza nace en nuestro estudio para que tus paredes cuenten vuestra historia.</p><p>Las imprimimos en papel de algodón verjurado de 300 g, un papel artístico con cuerpo y una textura muy especial.</p><p>Gracias por apoyar un proyecto pequeño, hecho con cariño.</p>",
         "button_label": "Crear mi ilustración",
         "button_link": "shopify://collections/laminas-personalizadas",
         "text_center": false,
@@ -410,27 +412,6 @@
         "background": "alt",
         "show_view_all": true,
         "view_all_label": "Ver las 68 láminas"
-      }
-    },
-    "about": {
-      "type": "split-banner",
-      "settings": {
-        "video": "shopify://files/videos/06EB102F-304D-4D95-A66F-89751EF40AE5.mov",
-        "video_start": 32,
-        "video_duration": 8,
-        "image_first": true,
-        "image_width": "half",
-        "tag": "",
-        "eyebrow": "Gracias por estar aquí",
-        "heading": "Ilustramos momentos, creamos hogar",
-        "heading_size": "medium",
-        "text": "<p>En Viva la Home las ilustraciones y todos nuestros packs los confeccionamos nosotras, a mano y cuidando hasta el último detalle. Sin plantillas ni prisas: cada pieza nace en nuestro estudio para que tus paredes cuenten vuestra historia.</p><p>Las imprimimos en papel de algodón verjurado de 300 g, un papel artístico con cuerpo y una textura muy especial.</p><p>Gracias por apoyar un proyecto pequeño, hecho con cariño.</p>",
-        "button_label": "Escríbenos",
-        "button_link": "shopify://pages/contact",
-        "text_center": true,
-        "panel_bg": "#F7F3EE",
-        "contained": true,
-        "outer_background": "default"
       }
     },
     "promise": {
@@ -695,7 +676,6 @@
     "rooms",
     "moments",
     "kids",
-    "about",
     "promise",
     "reviews",
     "services",
