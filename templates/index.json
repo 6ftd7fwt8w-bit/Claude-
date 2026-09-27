@@ -36,7 +36,7 @@
             "image_mobile": "shopify://shop_images/vlh-hero-salon-pareja-movil.png",
             "focal": "25% center",
             "overlay": 0,
-            "tag": "Dibujada por nosotras",
+            "tag": "Hecha con mimo para ti",
             "heading": "Tu historia, ilustrada",
             "text": "Partimos de tu foto y la convertimos en una ilustración única.",
             "button_label": "Crear mi ilustración",
@@ -186,7 +186,7 @@
           "type": "tile",
           "settings": {
             "title": "Láminas personalizadas",
-            "subtitle": "",
+            "subtitle": "Tu foto favorita, convertida en ilustración",
             "zoom": 120,
             "zoom_origin": "50% 0%",
             "image": "shopify://shop_images/vlh-novedades-personalizadas-v2.png",
@@ -197,8 +197,8 @@
           "type": "tile",
           "settings": {
             "title": "Colección infantil",
-            "subtitle": "",
-            "image": "shopify://shop_images/vlh-novedades-infantil.png",
+            "subtitle": "Sets que hacen soñar en su habitación",
+            "image": "shopify://shop_images/vlh-novedades-infantil-v2.png",
             "collection": "infantil"
           }
         },
@@ -206,8 +206,8 @@
           "type": "tile",
           "settings": {
             "title": "Packs regalo",
-            "subtitle": "",
-            "image": "shopify://shop_images/vlh-novedades-packs-regalo.png",
+            "subtitle": "Listos para regalar, con mensaje incluido",
+            "image": "shopify://shop_images/vlh-novedades-packs-regalo-v2.png",
             "collection": "packs-regalo"
           }
         }
@@ -243,7 +243,7 @@
       "type": "collection-tiles",
       "settings": {
         "title": "Ilustraciones para cada momento",
-        "subtitle": "Nos envías tu foto y la dibujamos nosotras, trazo a trazo, hasta convertirla en tu lámina",
+        "subtitle": "Nos envías tu foto y la convertimos en una ilustración única. Todo lo confeccionamos nosotras, a mano y cuidando cada detalle",
         "badge": "A partir de tu foto",
         "layout": "carousel",
         "columns": 4,
