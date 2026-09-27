@@ -230,7 +230,7 @@
         "eyebrow": "",
         "heading": "Ilustramos momentos, creamos hogar",
         "heading_size": "medium",
-        "text": "<p>En Viva la Home las ilustraciones y todos nuestros packs los confeccionamos nosotras, a mano y cuidando hasta el último detalle. Sin plantillas ni prisas: cada pieza nace en nuestro estudio para que tus paredes cuenten vuestra historia.</p><p>Las imprimimos en papel de algodón verjurado de 300 g, un papel artístico con cuerpo y una textura muy especial.</p><p>Gracias por apoyar un proyecto pequeño, hecho con cariño.</p>",
+        "text": "<p>En Viva la Home diseñamos cada ilustración y del resto también nos encargamos nosotras: las imprimimos, las enmarcamos y montamos a mano cada pack regalo, con sus telas y sus ramitos. Sin prisas y cuidando hasta el último detalle, para que tus paredes cuenten vuestra historia.</p><p>Las imprimimos en papel de algodón verjurado de 300 g, un papel artístico con cuerpo y una textura muy especial.</p><p>Gracias por apoyar un proyecto pequeño, hecho con cariño.</p>",
         "button_label": "Crear mi ilustración",
         "button_link": "shopify://collections/laminas-personalizadas",
         "text_center": false,
@@ -243,7 +243,7 @@
       "type": "collection-tiles",
       "settings": {
         "title": "Ilustraciones para cada momento",
-        "subtitle": "Nos envías tu foto y la convertimos en una ilustración única. Todo lo confeccionamos nosotras, a mano y cuidando cada detalle",
+        "subtitle": "Nos envías tu foto y la convertimos en una ilustración única, diseñada en nuestro estudio y preparada con mimo hasta que llega a tu casa",
         "badge": "A partir de tu foto",
         "layout": "carousel",
         "columns": 4,
