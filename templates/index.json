@@ -533,8 +533,8 @@
         "item_1": {
           "type": "item",
           "settings": {
-            "icon": "brush",
-            "text": "Ilustraciones propias"
+            "icon": "chat",
+            "text": "Trato personal y cercano"
           }
         },
         "item_2": {
