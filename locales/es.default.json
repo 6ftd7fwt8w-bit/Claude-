@@ -32,11 +32,16 @@
     "quantity": "Cantidad",
     "zoom": "Ampliar imagen",
     "pack_current": "Estás viendo",
-    "pack_include": "Incluir",
+    "pack_include": "Añadir",
     "pack_add": "Añadir las {{ count }} al carrito",
-    "pack_add_one": "Añadir al carrito",
     "pack_count": "{{ count }} láminas",
-    "pack_cross": "Con {{ code }}, al llevarte 3 láminas infantiles la tercera es gratis."
+    "pack_cross": "Si eliges 3 láminas infantiles, la tercera te sale gratis con {{ code }}.",
+    "pack_included": "Añadida",
+    "pack_intro": "Opcional: toca «Añadir» en las láminas que quieras llevarte junto a esta.",
+    "pack_total": "Total",
+    "pack_save": "Descuento {{ code }} ({{ count }} gratis)",
+    "pack_code_note": "El código {{ code }} se aplica automáticamente al añadirlas al carrito.",
+    "pack_subtotal": "Subtotal"
   },
   "cart": {
     "title": "Tu carrito",

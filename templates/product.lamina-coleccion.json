@@ -78,8 +78,8 @@
       "type": "product-recommendations",
       "settings": {
         "intent": "complementary",
-        "title": "Hacen pack",
-        "subtitle": "Pensadas para colgar juntas",
+        "title": "Combínala con…",
+        "subtitle": "Láminas pensadas para colgar juntas. Añade solo las que te gusten.",
         "limit": 4,
         "background": "default"
       }

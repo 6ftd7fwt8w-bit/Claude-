@@ -32,6 +32,7 @@
             {% render 'pack-item', product: product, current: true %}
           </div>
           <div class="pack__buy">
+            <p class="pack__intro" data-pack-intro>{{ 'products.pack_intro' | t }}</p>
             {%- assign opt = product.options_with_values.first -%}
             {%- if product.has_only_default_variant == false and opt -%}
               <label class="pack__size">
@@ -43,13 +44,23 @@
                 </select>
               </label>
             {%- endif -%}
-            <p class="pack__total">
-              <span data-pack-count></span>
-              <strong data-pack-total></strong>
-            </p>
-            <button type="button" class="button" data-pack-add data-label="{{ 'products.pack_add' | t: count: '[n]' | escape }}" data-label-one="{{ 'products.pack_add_one' | t | escape }}" data-count-label="{{ 'products.pack_count' | t: count: '[n]' | escape }}">{{ 'products.add_to_cart' | t }}</button>
+            <div class="pack__lines" data-pack-lines hidden>
+              <p class="pack__row" data-pack-sub-row hidden><span>{{ 'products.pack_subtotal' | t }}</span><span data-pack-subtotal></span></p>
+              {%- if in_cross -%}
+                <p class="pack__row pack__row--save" data-pack-save-row hidden><span data-pack-save-label></span><span data-pack-save></span></p>
+              {%- endif -%}
+              <p class="pack__row pack__row--total"><span>{{ 'products.pack_total' | t }} · <span data-pack-count></span></span><strong data-pack-total></strong></p>
+              {%- if in_cross -%}
+                <p class="pack__note" data-pack-note hidden>{{ 'products.pack_code_note' | t: code: settings.cross_code }}</p>
+              {%- endif -%}
+            </div>
+            <button type="button" class="button" data-pack-add hidden
+              data-label="{{ 'products.pack_add' | t: count: '[n]' | escape }}"
+              data-count-label="{{ 'products.pack_count' | t: count: '[n]' | escape }}"
+              data-save-label="{{ 'products.pack_save' | t: code: settings.cross_code, count: '[n]' | escape }}"
+              data-code="{{ settings.cross_code | escape }}">{{ 'products.add_to_cart' | t }}</button>
             {%- if in_cross -%}
-              <p class="pack__hint" data-pack-hint hidden>{{ 'products.pack_cross' | t: code: settings.cross_code }}</p>
+              <p class="pack__hint" data-pack-hint>{{ 'products.pack_cross' | t: code: settings.cross_code }}</p>
             {%- endif -%}
           </div>
         </div>

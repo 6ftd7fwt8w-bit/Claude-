@@ -841,21 +841,32 @@ body.overflow-hidden .welcome-badge { opacity: 0; pointer-events: none; }
 .protect-images img, .protect-images video { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
 /* Hacen pack ------------------------------------------------------------- */
-.pack { display: grid; grid-template-columns: 1fr 280px; gap: 40px; align-items: center; }
-.pack__grid { display: grid; grid-template-columns: repeat(var(--pack-n, 3), minmax(0, 1fr)); gap: 44px; counter-reset: pack; }
-.pack__item { position: relative; transition: opacity .3s ease; }
+.pack { display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: center; }
+.pack__grid { display: grid; grid-template-columns: repeat(var(--pack-n, 3), minmax(0, 1fr)); gap: 44px; }
+.pack__item { position: relative; }
 .pack__item + .pack__item::before { content: '+'; position: absolute; left: -32px; top: 38%; width: 20px; text-align: center; font-size: 24px; font-weight: 300; color: var(--color-muted); }
-.pack__item.is-off .card { opacity: .4; }
+.pack__item .card { transition: opacity .3s ease; }
+.pack__item:not(.is-on) .card { opacity: .78; }
+.pack__item.is-on:not(.is-current) .card__media { box-shadow: 0 0 0 2px var(--color-text); }
 .pack__label { position: absolute; top: 10px; left: 10px; z-index: 2; background: var(--color-bg); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding: 5px 9px; }
-.pack__check { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; letter-spacing: .06em; color: var(--color-muted); cursor: pointer; }
-.pack__check input { accent-color: var(--color-text); width: 16px; height: 16px; }
-.pack__buy { display: flex; flex-direction: column; gap: 14px; padding: 28px 24px; background: var(--color-bg); border: 1px solid var(--color-border); }
-.bg-default .pack__buy { background: var(--color-bg-alt); }
+.pack__toggle { margin-top: 12px; width: 100%; min-height: 40px; border: 1px solid var(--color-text); background: transparent; color: var(--color-text); font: inherit; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: background .2s ease, color .2s ease; }
+.pack__toggle:hover { background: rgba(var(--color-text-rgb), .06); }
+.pack__toggle-on { display: none; }
+.pack__item.is-on .pack__toggle { background: var(--color-text); color: var(--color-bg); }
+.pack__item.is-on .pack__toggle-on { display: inline; }
+.pack__item.is-on .pack__toggle-off { display: none; }
+.pack__buy { display: flex; flex-direction: column; gap: 14px; padding: 28px 24px; background: var(--color-bg-alt); border: 1px solid var(--color-border); }
+.bg-alt .pack__buy { background: var(--color-bg); }
+.pack__intro { margin: 0; font-size: 14px; line-height: 1.55; color: var(--color-text); }
 .pack__size { display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
-.pack__total { display: flex; justify-content: space-between; align-items: baseline; margin: 0; font-size: 13px; color: var(--color-muted); }
-.pack__total strong { font-size: 20px; color: var(--color-text); font-weight: 500; }
+.pack__lines { display: flex; flex-direction: column; gap: 8px; }
+.pack__row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 0; font-size: 13px; color: var(--color-muted); }
+.pack__row--save { color: var(--color-sale); }
+.pack__row--total { padding-top: 8px; border-top: 1px solid var(--color-border); color: var(--color-text); }
+.pack__row--total strong { font-size: 20px; font-weight: 500; }
+.pack__note { margin: 0; font-size: 12px; color: var(--color-muted); }
 .pack__buy .button { width: 100%; }
-.pack__hint { margin: 0; font-size: 12px; line-height: 1.5; color: var(--color-text); background: var(--color-highlight); padding: 8px 10px; }
+.pack__hint { margin: 0; font-size: 12px; line-height: 1.5; color: var(--color-muted); padding-left: 10px; border-left: 2px solid var(--color-highlight); }
 @media (max-width: 989px) {
   .pack { grid-template-columns: 1fr; }
 }

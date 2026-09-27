@@ -754,7 +754,7 @@
     if (!grid) return;
     var btn = $('[data-pack-add]', sec);
     var size = $('[data-pack-size]', sec);
-    var hint = $('[data-pack-hint]', sec);
+    var q = function (sel) { return $(sel, sec); };
     var money = function (cents) {
       return (cents / 100).toLocaleString(document.documentElement.lang || 'es', { style: 'currency', currency: (window.Shopify && Shopify.currency && Shopify.currency.active) || 'EUR' });
     };
@@ -762,36 +762,63 @@
       var vs = [];
       try { vs = JSON.parse($('[data-pack-variants]', item).textContent); } catch (err) {}
       var want = size ? size.value : null;
-      var match = vs.filter(function (v) { return v.a && v.o === want; })[0];
-      return match || vs.filter(function (v) { return v.a; })[0] || null;
+      return vs.filter(function (v) { return v.a && v.o === want; })[0] || vs.filter(function (v) { return v.a; })[0] || null;
     };
+    var saving = 0;
+    var show = function (sel, on) { var el = q(sel); if (el) el.hidden = !on; };
     var update = function () {
-      var items = $$('[data-pack-item]', grid);
-      var total = 0, n = 0;
-      items.forEach(function (item) {
-        var on = $('[data-pack-check]', item).checked;
+      var chosen = $$('[data-pack-item]', grid).filter(function (i) { return i.classList.contains('is-on'); });
+      var subtotal = 0, n = 0, crossPrices = [];
+      chosen.forEach(function (item) {
         var v = pick(item);
-        item.classList.toggle('is-off', !on);
-        if (on && v) { total += v.p; n++; }
+        if (!v) return;
+        subtotal += v.p; n++;
+        if (item.getAttribute('data-cross') === 'true') crossPrices.push(v.p);
       });
-      $('[data-pack-count]', sec).textContent = btn.getAttribute('data-count-label').replace('[n]', n);
-      $('[data-pack-total]', sec).textContent = money(total);
-      btn.textContent = n > 1 ? btn.getAttribute('data-label').replace('[n]', n) : btn.getAttribute('data-label-one');
-      btn.disabled = n === 0;
-      if (hint) hint.hidden = n < 3;
+      // Compra 2 y llévate 1: gratis la más barata de cada grupo de 3
+      crossPrices.sort(function (x, y) { return x - y; });
+      var free = Math.floor(crossPrices.length / 3);
+      saving = 0;
+      for (var i = 0; i < free; i++) saving += crossPrices[i];
+      var extra = n > 1;
+      show('[data-pack-intro]', !extra);
+      show('[data-pack-lines]', extra);
+      btn.hidden = !extra;
+      show('[data-pack-sub-row]', saving > 0);
+      show('[data-pack-save-row]', saving > 0);
+      show('[data-pack-note]', saving > 0);
+      show('[data-pack-hint]', saving === 0);
+      if (!extra) return;
+      q('[data-pack-count]').textContent = btn.getAttribute('data-count-label').replace('[n]', n);
+      q('[data-pack-subtotal]').textContent = money(subtotal);
+      if (saving > 0) {
+        q('[data-pack-save-label]').textContent = btn.getAttribute('data-save-label').replace('[n]', free);
+        q('[data-pack-save]').textContent = '−' + money(saving);
+      }
+      q('[data-pack-total]').textContent = money(subtotal - saving);
+      btn.textContent = btn.getAttribute('data-label').replace('[n]', n);
     };
-    sec.addEventListener('change', function (e) {
-      if (e.target.matches('[data-pack-check], [data-pack-size]')) update();
+    sec.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-pack-toggle]');
+      if (!t) return;
+      var item = t.closest('[data-pack-item]');
+      var on = !item.classList.contains('is-on');
+      item.classList.toggle('is-on', on);
+      t.setAttribute('aria-pressed', on);
+      update();
     });
+    if (size) size.addEventListener('change', update);
     btn.addEventListener('click', function () {
-      var items = $$('[data-pack-item]', grid).filter(function (i) { return $('[data-pack-check]', i).checked; })
+      var items = $$('[data-pack-item]', grid).filter(function (i) { return i.classList.contains('is-on'); })
         .map(function (i) { var v = pick(i); return v ? { id: v.id, quantity: 1 } : null; }).filter(Boolean);
       if (!items.length) return;
+      var code = btn.getAttribute('data-code');
       btn.disabled = true;
       fetch((theme.routes.root || '/').replace(/\/?$/, '/') + 'cart/add.js', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ items: items })
       }).then(function (r) { if (!r.ok) throw new Error('add'); return r.json(); })
+        .then(function () { return saving > 0 && code ? addCode(code).catch(function () {}) : null; })
         .then(function () { btn.disabled = false; window.vivaCartAdded(); })
         .catch(function () { btn.disabled = false; toast(theme.strings.unavailable); });
     });
