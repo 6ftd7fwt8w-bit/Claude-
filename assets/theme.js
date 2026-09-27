@@ -831,16 +831,34 @@
         .then(function () { btn.disabled = false; window.vivaCartAdded(); })
         .catch(function () { btn.disabled = false; toast(theme.strings.unavailable); });
     });
-    fetch(sec.getAttribute('data-url')).then(function (r) { return r.text(); }).then(function (html) {
-      var doc = new DOMParser().parseFromString(html, 'text/html');
-      var fresh = doc.querySelector('[data-pack-fresh]');
-      var recs = fresh ? $$('[data-pack-item]', fresh) : [];
+    // Complementarias de Search & Discovery; si hay menos de 2, completamos con relacionadas
+    var MIN = 2, FILL = 3;
+    var loadRecs = function (url) {
+      return fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var fresh = doc.querySelector('[data-pack-fresh]');
+        return fresh ? $$('[data-pack-item]', fresh) : [];
+      }).catch(function () { return []; });
+    };
+    var url = sec.getAttribute('data-url');
+    loadRecs(url).then(function (recs) {
+      if (recs.length >= MIN) return recs;
+      return loadRecs(url.replace('intent=complementary', 'intent=related').replace(/limit=\d+/, 'limit=10')).then(function (related) {
+        var seen = {};
+        seen[$('[data-pack-item]', grid).getAttribute('data-product-id')] = true;
+        recs.forEach(function (i) { seen[i.getAttribute('data-product-id')] = true; });
+        var extra = related.filter(function (i) { return !seen[i.getAttribute('data-product-id')]; });
+        // Primero las que entran en la oferta
+        extra.sort(function (a, b) { return (b.getAttribute('data-cross') === 'true') - (a.getAttribute('data-cross') === 'true'); });
+        return recs.concat(extra.slice(0, FILL - recs.length));
+      });
+    }).then(function (recs) {
       if (!recs.length) return;
       recs.forEach(function (item) { grid.appendChild(document.importNode(item, true)); });
       grid.style.setProperty('--pack-n', recs.length + 1);
       sec.hidden = false;
       update();
-    }).catch(function () {});
+    });
   });
 
   /* Recommendations ------------------------------------------------------ */
