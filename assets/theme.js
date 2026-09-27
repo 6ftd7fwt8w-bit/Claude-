@@ -705,6 +705,13 @@
     update();
   })();
 
+  /* Protección de imágenes: sin clic derecho ni arrastrar sobre fotos -------- */
+  if (document.body.classList.contains('protect-images')) {
+    var isProtected = function (el) { return el && (el.tagName === 'IMG' || el.tagName === 'VIDEO' || (el.closest && el.closest('.gallery-main, .lightbox__stage, .card__media, .tile .media, .gallery__item'))); };
+    document.addEventListener('contextmenu', function (e) { if (isProtected(e.target)) e.preventDefault(); });
+    document.addEventListener('dragstart', function (e) { if (isProtected(e.target)) e.preventDefault(); });
+  }
+
   /* Filters -------------------------------------------------------------- */
   $$('[data-facets-form]').forEach(function (form) {
     form.addEventListener('change', function (e) {

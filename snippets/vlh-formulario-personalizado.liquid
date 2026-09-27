@@ -166,7 +166,7 @@
           {% if p_pack_regalo.featured_image %}
             <img class="vlh-radio-card__img vlh-radio-card__img--pack" src="{{ p_pack_regalo.featured_image | image_url: width: 600 }}" alt="Pack regalo" loading="lazy" width="300" height="225">
             {%- if p_pack_regalo.images.size > 0 -%}
-              {%- capture pack_imgs -%}[{%- for im in p_pack_regalo.images -%}{{ im | image_url: width: 1600 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
+              {%- capture pack_imgs -%}[{%- for im in p_pack_regalo.images -%}{{ im | image_url: width: 1400 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
               <button type="button" class="vlh-pack-photos" data-lightbox-images='{{ pack_imgs | escape }}' data-lightbox-title="Pack regalo">Ver fotos ({{ p_pack_regalo.images.size }})</button>
             {%- endif -%}
           {% endif %}
@@ -182,7 +182,7 @@
           {% if p_pack_valentina.featured_image %}
             <img class="vlh-radio-card__img vlh-radio-card__img--pack" src="{{ p_pack_valentina.featured_image | image_url: width: 600 }}" alt="Pack Valentina" loading="lazy" width="300" height="225">
             {%- if p_pack_valentina.images.size > 0 -%}
-              {%- capture pack_imgs -%}[{%- for im in p_pack_valentina.images -%}{{ im | image_url: width: 1600 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
+              {%- capture pack_imgs -%}[{%- for im in p_pack_valentina.images -%}{{ im | image_url: width: 1400 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
               <button type="button" class="vlh-pack-photos" data-lightbox-images='{{ pack_imgs | escape }}' data-lightbox-title="Pack Valentina">Ver fotos ({{ p_pack_valentina.images.size }})</button>
             {%- endif -%}
           {% endif %}

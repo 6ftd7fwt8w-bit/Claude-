@@ -194,6 +194,17 @@
         "id": "card_show_vendor",
         "label": "Mostrar artista / marca",
         "default": false
+      },
+      {
+        "type": "header",
+        "content": "Protección de imágenes"
+      },
+      {
+        "type": "checkbox",
+        "id": "protect_images",
+        "label": "Dificultar la descarga de imágenes",
+        "default": true,
+        "info": "Desactiva el clic derecho, arrastrar y mantener pulsado sobre las fotos. No impide capturas de pantalla."
       }
     ]
   },
