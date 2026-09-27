@@ -3,6 +3,13 @@
   (el vídeo se reproduce en bucle, sin sonido) con enlace al post.
 {%- endcomment -%}
 <section class="section section--tight bg-{{ section.settings.background }}" style="padding-bottom:0">
+  {%- if section.settings.eyebrow != blank -%}
+    <p class="ig-eyebrow">
+      {%- if section.settings.instagram_url != blank -%}<a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener">{%- endif -%}
+      {% render 'icon', name: 'instagram' %}<span>{{ section.settings.eyebrow }}</span>
+      {%- if section.settings.instagram_url != blank -%}</a>{%- endif -%}
+    </p>
+  {%- endif -%}
   <h2 class="section-title">
     {%- if section.settings.instagram_url != blank -%}
       <a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener">{{ section.settings.title }}</a>
@@ -10,6 +17,7 @@
       {{ section.settings.title }}
     {%- endif -%}
   </h2>
+  {%- if section.settings.subtitle != blank -%}<p class="section-subtitle ig-subtitle">{{ section.settings.subtitle }}</p>{%- endif -%}
   {%- capture ig_items -%}
     {%- for block in section.blocks -%}
       <a class="gallery__item" href="{{ block.settings.enlace | default: section.settings.instagram_url | default: '#' }}" target="_blank" rel="noopener" {{ block.shopify_attributes }}>
@@ -44,7 +52,9 @@
 {
   "name": "Visto en Instagram",
   "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Antetítulo (con icono de Instagram)", "info": "Ej.: @vivalahome.store" },
     { "type": "text", "id": "title", "label": "Título", "default": "Visto en Instagram" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtítulo" },
     { "type": "url", "id": "instagram_url", "label": "Enlace a tu perfil" },
     { "type": "checkbox", "id": "autoscroll", "label": "Movimiento automático", "default": true },
     { "type": "range", "id": "speed", "label": "Lentitud del movimiento (segundos por foto)", "min": 2, "max": 8, "step": 1, "unit": "s", "default": 4 },

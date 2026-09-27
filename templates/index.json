@@ -346,55 +346,16 @@
         "image_pos": "last",
         "card_ratio": "square",
         "price_suffix": "la lámina",
+        "products_first": [
+          "lamina-decorativa-infantil-todo-bajo-control-vivalahome-copia",
+          "lamina-decorativa-infantil-bonito-vivalahome-copia",
+          "lamina-decorativa-infantil-suenos-con-alas-vivalahome-copia"
+        ],
         "layout": "carousel",
         "background": "alt",
         "show_view_all": true,
         "view_all_label": "Ver las 68 láminas"
       }
-    },
-    "promise": {
-      "type": "icon-bar",
-      "settings": {
-        "label": "Nuestra promesa",
-        "bg": "#A89478",
-        "fg": "#FFFFFF"
-      },
-      "blocks": {
-        "item_1": {
-          "type": "item",
-          "settings": {
-            "icon": "brush",
-            "text": "Ilustraciones propias"
-          }
-        },
-        "item_2": {
-          "type": "item",
-          "settings": {
-            "icon": "frame",
-            "text": "Algodón verjurado 300 g"
-          }
-        },
-        "item_3": {
-          "type": "item",
-          "settings": {
-            "icon": "gift",
-            "text": "Listo para regalar"
-          }
-        },
-        "item_4": {
-          "type": "item",
-          "settings": {
-            "icon": "lock",
-            "text": "Pago seguro"
-          }
-        }
-      },
-      "block_order": [
-        "item_1",
-        "item_2",
-        "item_3",
-        "item_4"
-      ]
     },
     "reviews": {
       "type": "testimonials",
@@ -429,7 +390,9 @@
     "instagram": {
       "type": "instagram-gallery",
       "settings": {
+        "eyebrow": "@vivalahome.store",
         "title": "Visto en Instagram",
+        "subtitle": "Son vuestras fotos: las láminas que nos enviáis ya colgadas en casa. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
         "instagram_url": "https://www.instagram.com/vivalahome.store",
         "columns": 6,
         "background": "default"
@@ -558,6 +521,50 @@
         "foto_14",
         "foto_15"
       ]
+    },
+    "promise": {
+      "type": "icon-bar",
+      "settings": {
+        "label": "Nuestra promesa",
+        "bg": "#A89478",
+        "fg": "#FFFFFF"
+      },
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "brush",
+            "text": "Ilustraciones propias"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "frame",
+            "text": "Algodón verjurado 300 g"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "gift",
+            "text": "Listo para regalar"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "lock",
+            "text": "Pago seguro"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ]
     }
   },
   "order": [
@@ -568,8 +575,8 @@
     "worth",
     "moments",
     "kids",
-    "promise",
     "reviews",
-    "instagram"
+    "instagram",
+    "promise"
   ]
 }

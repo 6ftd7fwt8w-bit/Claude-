@@ -15,7 +15,9 @@
     "instagram": {
       "type": "instagram-gallery",
       "settings": {
+        "eyebrow": "@vivalahome.store",
         "title": "Visto en Instagram",
+        "subtitle": "Son vuestras fotos: las láminas que nos enviáis ya colgadas en casa. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
         "instagram_url": "https://www.instagram.com/vivalahome.store",
         "columns": 6,
         "background": "default"

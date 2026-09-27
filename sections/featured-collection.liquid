@@ -16,14 +16,36 @@
     {%- endif -%}
 
     {%- if collection_obj != blank and collection_obj.products_count > 0 -%}
-      {%- for product in collection_obj.products limit: limit -%}
-        {%- liquid
-          assign fc_ratio = ''
-          if section.settings.card_ratio == 'square'
-            assign fc_ratio = '1 / 1'
-          endif
-        -%}
-        {% render 'product-card', product: product, image_pos: section.settings.image_pos, ratio: fc_ratio, price_suffix: section.settings.price_suffix %}
+      {%- liquid
+        assign fc_ratio = ''
+        if section.settings.card_ratio == 'square'
+          assign fc_ratio = '1 / 1'
+        endif
+        assign shown = 0
+        assign used = ','
+      -%}
+      {%- comment -%} Primero los productos elegidos a mano; luego la colección, sin repetir producto ni foto {%- endcomment -%}
+      {%- for pass in (1..2) -%}
+        {%- if pass == 1 -%}{%- assign src = section.settings.products_first -%}{%- else -%}{%- assign src = collection_obj.products -%}{%- endif -%}
+        {%- for product in src limit: 50 -%}
+          {%- liquid
+            if shown >= limit
+              break
+            endif
+            assign pkey = ',p' | append: product.id | append: ','
+            if section.settings.image_pos == 'last' and product.media.size > 1
+              assign ikey = ',m' | append: product.media.last.id | append: ','
+            else
+              assign ikey = ',m' | append: product.featured_media.id | append: ','
+            endif
+            if used contains pkey or used contains ikey
+              continue
+            endif
+            assign used = used | append: pkey | append: ikey
+            assign shown = shown | plus: 1
+          -%}
+          {% render 'product-card', product: product, image_pos: section.settings.image_pos, ratio: fc_ratio, price_suffix: section.settings.price_suffix %}
+        {%- endfor -%}
       {%- endfor -%}
     {%- else -%}
       {%- for i in (1..4) -%}
@@ -57,6 +79,7 @@
     { "type": "text", "id": "title", "label": "Título", "default": "Las más queridas" },
     { "type": "text", "id": "subtitle", "label": "Subtítulo" },
     { "type": "collection", "id": "collection", "label": "Colección" },
+    { "type": "product_list", "id": "products_first", "label": "Productos que salen primero", "limit": 12, "info": "Opcional. Después se muestran los de la colección, sin repetir productos ni fotos." },
     {
       "type": "select", "id": "image_pos", "label": "Foto principal de cada producto",
       "options": [{ "value": "first", "label": "La primera" }, { "value": "last", "label": "La última (p. ej. composición de set)" }],

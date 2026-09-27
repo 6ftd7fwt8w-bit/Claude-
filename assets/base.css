@@ -892,3 +892,10 @@ body.overflow-hidden .welcome-badge { opacity: 0; pointer-events: none; }
   .pack__item { scroll-snap-align: start; }
   .pack__item + .pack__item::before { left: -24px; }
 }
+
+/* Instagram: antetítulo y subtítulo */
+.ig-eyebrow { display: flex; justify-content: center; margin: 0 0 10px; }
+.ig-eyebrow a, .ig-eyebrow { align-items: center; gap: 8px; font-size: 12px; letter-spacing: .12em; color: var(--color-muted); }
+.ig-eyebrow a { display: inline-flex; }
+.ig-eyebrow svg { width: 16px; height: 16px; }
+.ig-subtitle { max-width: 620px; }
