@@ -199,7 +199,9 @@
           "type": "tile",
           "settings": {
             "title": "Láminas personalizadas",
-            "subtitle": "Dibujadas por nosotras a partir de tu foto",
+            "subtitle": "",
+            "zoom": 120,
+            "zoom_origin": "50% 0%",
             "image": "shopify://shop_images/vlh-novedades-personalizadas-v2.png",
             "collection": "laminas-personalizadas"
           }
