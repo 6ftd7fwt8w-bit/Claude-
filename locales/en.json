@@ -77,7 +77,8 @@
     "deal_max_html": "You've combined {{ codes }} · Maximum saving: <strong>{{ amount }}</strong>",
     "discount_label_more": "Have another code? It adds to your discount",
     "timer_before": "Complete your order within",
-    "timer_after": "to keep your {{ percent }}% applied"
+    "timer_after": "to keep your {{ percent }}% applied",
+    "secure_payment": "100% secure payment · Encrypted data"
   },
   "collections": {
     "apply": "Apply",

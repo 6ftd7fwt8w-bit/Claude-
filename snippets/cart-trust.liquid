@@ -1,0 +1,9 @@
+{%- comment -%} Sello de pago seguro bajo el botón de tramitar pedido {%- endcomment -%}
+<div class="cart-trust">
+  <p class="cart-trust__line">{% render 'icon', name: 'lock' %}<span>{{ 'cart.secure_payment' | t }}</span></p>
+  {%- if shop.enabled_payment_types.size > 0 -%}
+    <div class="cart-trust__icons">
+      {%- for type in shop.enabled_payment_types -%}{{ type | payment_type_svg_tag }}{%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
