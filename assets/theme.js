@@ -841,6 +841,10 @@
       }).catch(function () { return []; });
     };
     var url = sec.getAttribute('data-url');
+    // Si se muestra "Combínala con…", sobra "También te puede gustar"
+    var related = $$('[data-recommendations]').map(function (el) { return el.closest('.shopify-section') || el; });
+    related.forEach(function (el) { el.hidden = true; });
+    var showRelated = function () { related.forEach(function (el) { el.hidden = false; }); };
     loadRecs(url).then(function (recs) {
       if (recs.length >= MIN) return recs;
       return loadRecs(url.replace('intent=complementary', 'intent=related').replace(/limit=\d+/, 'limit=10')).then(function (related) {
@@ -853,12 +857,13 @@
         return recs.concat(extra.slice(0, FILL - recs.length));
       });
     }).then(function (recs) {
-      if (!recs.length) return;
+      if (!recs.length) { showRelated(); return; }
+      related.forEach(function (el) { el.remove(); });
       recs.forEach(function (item) { grid.appendChild(document.importNode(item, true)); });
       grid.style.setProperty('--pack-n', recs.length + 1);
       sec.hidden = false;
       update();
-    });
+    }).catch(showRelated);
   });
 
   /* Recommendations ------------------------------------------------------ */
