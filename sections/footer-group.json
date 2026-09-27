@@ -19,51 +19,27 @@
       },
       "blocks": {
         "block_1": {
-          "type": "feature",
-          "settings": {
-            "icon": "brush",
-            "title": "Ilustraciones propias",
-            "text": "Dibujadas en nuestro estudio"
-          }
-        },
-        "block_2": {
-          "type": "feature",
-          "settings": {
-            "icon": "frame",
-            "title": "Papel de algodón",
-            "text": "Verjurado de 300 g"
-          }
-        },
-        "block_3": {
-          "type": "feature",
-          "settings": {
-            "icon": "chat",
-            "title": "Atención cercana",
-            "text": "Te respondemos por WhatsApp"
-          }
-        },
-        "block_4": {
           "type": "menu",
           "settings": {
             "heading": "Tienda",
             "menu": "main-menu"
           }
         },
-        "block_5": {
+        "block_2": {
           "type": "menu",
           "settings": {
             "heading": "Ayuda",
             "menu": "footer"
           }
         },
-        "block_6": {
+        "block_3": {
           "type": "text",
           "settings": {
             "heading": "Viva la Home",
             "text": "<p>Ilustramos historias, diseñamos regalos y creamos hogar.</p><p><a href=\"mailto:hola@vivalahome.store\">hola@vivalahome.store</a></p>"
           }
         },
-        "block_7": {
+        "block_4": {
           "type": "newsletter",
           "settings": {
             "heading": "Las cosas buenas llegan primero por aquí",
@@ -76,10 +52,7 @@
         "block_1",
         "block_2",
         "block_3",
-        "block_4",
-        "block_5",
-        "block_6",
-        "block_7"
+        "block_4"
       ]
     },
     "welcome": {

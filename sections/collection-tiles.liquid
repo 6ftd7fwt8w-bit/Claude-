@@ -33,6 +33,7 @@
               {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
             {%- endif -%}
           </div>
+          {%- if section.settings.badge != blank -%}<span class="tile__badge">{% render 'icon', name: 'camera' %}{{ section.settings.badge }}</span>{%- endif -%}
           {%- if title != blank -%}<span class="tile__title">{{ title }}</span>{%- endif -%}
           {%- if block.settings.subtitle != blank -%}<span class="tile__subtitle">{{ block.settings.subtitle }}</span>{%- endif -%}
         </a>
@@ -61,6 +62,7 @@
   "settings": [
     { "type": "text", "id": "title", "label": "Título", "default": "Tendencias" },
     { "type": "text", "id": "subtitle", "label": "Subtítulo" },
+    { "type": "text", "id": "badge", "label": "Etiqueta sobre cada foto", "info": "Ej.: A partir de tu foto" },
     {
       "type": "select", "id": "layout", "label": "Diseño",
       "options": [{ "value": "carousel", "label": "Carrusel con flechas" }, { "value": "grid", "label": "Cuadrícula" }],

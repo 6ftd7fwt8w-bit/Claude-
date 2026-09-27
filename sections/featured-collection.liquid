@@ -17,7 +17,13 @@
 
     {%- if collection_obj != blank and collection_obj.products_count > 0 -%}
       {%- for product in collection_obj.products limit: limit -%}
-        {% render 'product-card', product: product %}
+        {%- liquid
+          assign fc_ratio = ''
+          if section.settings.card_ratio == 'square'
+            assign fc_ratio = '1 / 1'
+          endif
+        -%}
+        {% render 'product-card', product: product, image_pos: section.settings.image_pos, ratio: fc_ratio, price_suffix: section.settings.price_suffix %}
       {%- endfor -%}
     {%- else -%}
       {%- for i in (1..4) -%}
@@ -51,6 +57,17 @@
     { "type": "text", "id": "title", "label": "Título", "default": "Las más queridas" },
     { "type": "text", "id": "subtitle", "label": "Subtítulo" },
     { "type": "collection", "id": "collection", "label": "Colección" },
+    {
+      "type": "select", "id": "image_pos", "label": "Foto principal de cada producto",
+      "options": [{ "value": "first", "label": "La primera" }, { "value": "last", "label": "La última (p. ej. composición de set)" }],
+      "default": "first"
+    },
+    {
+      "type": "select", "id": "card_ratio", "label": "Formato de las fotos",
+      "options": [{ "value": "theme", "label": "Como en el resto de la tienda" }, { "value": "square", "label": "Cuadrado (sin recortar fotos cuadradas)" }],
+      "default": "theme"
+    },
+    { "type": "text", "id": "price_suffix", "label": "Texto tras el precio", "info": "Ej.: la lámina" },
     { "type": "range", "id": "limit", "label": "Máximo de productos", "min": 2, "max": 24, "step": 1, "default": 12 },
     { "type": "range", "id": "columns", "label": "Columnas (escritorio)", "min": 2, "max": 6, "step": 1, "default": 4 },
     {

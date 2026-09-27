@@ -1,9 +1,14 @@
 {%- comment -%}
-  Tarjeta de producto. Parámetros: product, lazy (bool), show_quick_add (bool)
+  Tarjeta de producto. Parámetros: product, lazy (bool), show_quick_add (bool),
+  image_pos ('last' = usa la última foto como principal), ratio (p. ej. '1 / 1'), price_suffix (texto tras el precio)
 {%- endcomment -%}
 {%- liquid
   assign img = product.featured_media.preview_image
   assign img2 = product.media[1].preview_image
+  if image_pos == 'last' and product.media.size > 1
+    assign img = product.media.last.preview_image
+    assign img2 = product.featured_media.preview_image
+  endif
   assign loading = 'lazy'
   if lazy == false
     assign loading = 'eager'
@@ -15,7 +20,7 @@
 -%}
 <div class="card">
   <a href="{{ product.url }}" class="card__media"
-    {%- if settings.card_ratio == 'adapt' and img %} style="aspect-ratio: {{ img.aspect_ratio }}"{% endif %}
+    {%- if ratio != blank %} style="aspect-ratio: {{ ratio }}"{% elsif settings.card_ratio == 'adapt' and img %} style="aspect-ratio: {{ img.aspect_ratio }}"{% endif %}
     aria-label="{{ product.title | escape }}">
     {%- if product.compare_at_price > product.price and product.available -%}
       <span class="card__badge card__badge--sale">{{ 'products.sale' | t }}</span>
@@ -46,6 +51,6 @@
   <div class="card__info">
     {%- if settings.card_show_vendor -%}<div class="card__vendor">{{ product.vendor }}</div>{%- endif -%}
     <a href="{{ product.url }}" class="card__title">{{ product.title | split: ' | ' | first | escape }}</a>
-    <div class="card__price">{% render 'price', product: product, show_from: settings.card_from_price %}</div>
+    <div class="card__price">{% render 'price', product: product, show_from: settings.card_from_price %}{% if price_suffix != blank %} <span class="card__price-suffix">{{ price_suffix }}</span>{% endif %}</div>
   </div>
 </div>

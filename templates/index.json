@@ -172,19 +172,6 @@
         "tile_5"
       ]
     },
-    "icons": {
-      "type": "featured-collection",
-      "settings": {
-        "title": "Las más queridas",
-        "collection": "los-mas-vendidos",
-        "limit": 12,
-        "columns": 4,
-        "layout": "carousel",
-        "background": "default",
-        "show_view_all": true,
-        "view_all_label": "Ver todas"
-      }
-    },
     "new_arrivals": {
       "type": "collection-tiles",
       "settings": {
@@ -252,65 +239,12 @@
         "outer_background": "default"
       }
     },
-    "rooms": {
-      "type": "collection-tiles",
-      "settings": {
-        "title": "Un rincón para cada lámina",
-        "layout": "carousel",
-        "columns": 4,
-        "ratio": "3 / 4",
-        "background": "alt"
-      },
-      "blocks": {
-        "tile_1": {
-          "type": "tile",
-          "settings": {
-            "title": "Habitación infantil",
-            "subtitle": "",
-            "link": "shopify://collections/infantil",
-            "image": "shopify://shop_images/vlh-estancia-habitacion-infantil.png"
-          }
-        },
-        "tile_2": {
-          "type": "tile",
-          "settings": {
-            "title": "Cuarto del bebé",
-            "subtitle": "",
-            "link": "shopify://collections/infantil",
-            "image": "shopify://shop_images/vlh-estancia-bebe.png"
-          }
-        },
-        "tile_3": {
-          "type": "tile",
-          "settings": {
-            "title": "Salón",
-            "subtitle": "",
-            "link": "shopify://collections/laminas-personalizadas",
-            "image": "shopify://shop_images/vlh-estancia-salon.png"
-          }
-        },
-        "tile_4": {
-          "type": "tile",
-          "settings": {
-            "title": "Dormitorio",
-            "subtitle": "",
-            "link": "shopify://collections/laminas-personalizadas",
-            "image": "shopify://shop_images/vlh-estancia-dormitorio.png"
-          }
-        }
-      },
-      "block_order": [
-        "tile_1",
-        "tile_2",
-        "tile_3",
-        "tile_4"
-      ]
-    },
     "moments": {
       "type": "collection-tiles",
       "settings": {
         "title": "Ilustraciones para cada momento",
-        "subtitle": "Cada una dibujada por nosotras, a partir de tu foto",
+        "subtitle": "Nos envías tu foto y la dibujamos nosotras, trazo a trazo, hasta convertirla en tu lámina",
+        "badge": "A partir de tu foto",
         "layout": "carousel",
         "columns": 4,
         "ratio": "3 / 4",
@@ -405,9 +339,13 @@
       "type": "featured-collection",
       "settings": {
         "title": "Colección infantil",
+        "subtitle": "Algunas ideas de sets para su habitación: combina tus láminas favoritas",
         "collection": "infantil",
         "limit": 12,
         "columns": 4,
+        "image_pos": "last",
+        "card_ratio": "square",
+        "price_suffix": "la lámina",
         "layout": "carousel",
         "background": "alt",
         "show_view_all": true,
@@ -487,50 +425,6 @@
         "review_2"
       ],
       "disabled": true
-    },
-    "services": {
-      "type": "service-cards",
-      "settings": {
-        "title": "",
-        "background": "default"
-      },
-      "blocks": {
-        "card_1": {
-          "type": "card",
-          "settings": {
-            "icon": "whatsapp",
-            "title": "Idea a medida",
-            "text": "¿Tienes algo especial en mente? Cuéntanoslo por WhatsApp",
-            "link": "https://wa.me/34604524295",
-            "new_tab": true
-          }
-        },
-        "card_2": {
-          "type": "card",
-          "settings": {
-            "icon": "gift",
-            "title": "Packs regalo",
-            "text": "Tu lámina lista para regalar, con mensaje incluido",
-            "link": "shopify://collections/packs-regalo",
-            "new_tab": false
-          }
-        },
-        "card_3": {
-          "type": "card",
-          "settings": {
-            "icon": "camera",
-            "title": "Cómo funciona",
-            "text": "Nos envías tu foto y la dibujamos para ti",
-            "link": "shopify://collections/laminas-personalizadas",
-            "new_tab": false
-          }
-        }
-      },
-      "block_order": [
-        "card_1",
-        "card_2",
-        "card_3"
-      ]
     },
     "instagram": {
       "type": "instagram-gallery",
@@ -670,15 +564,12 @@
     "hero",
     "strip",
     "trending",
-    "icons",
     "new_arrivals",
     "worth",
-    "rooms",
     "moments",
     "kids",
     "promise",
     "reviews",
-    "services",
     "instagram"
   ]
 }
