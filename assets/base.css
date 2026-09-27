@@ -508,6 +508,7 @@ body.overflow-hidden { overflow: hidden; }
 .load-more__count { font-size: 12px; letter-spacing: .06em; color: var(--color-muted); }
 .load-more__bar { width: 180px; height: 2px; background: var(--color-border); position: relative; overflow: hidden; }
 .load-more__bar span { position: absolute; inset: 0 auto 0 0; background: var(--color-text); transition: width .4s ease; }
+.load-more__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 .load-more .button.is-loading { opacity: .6; pointer-events: none; }
 
 /* Cart ------------------------------------------------------------------ */

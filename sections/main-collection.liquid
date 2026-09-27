@@ -88,17 +88,32 @@
         <p class="cart-empty">{{ 'collections.empty' | t }}</p>
       {%- endif -%}
 
-      {%- if paginate.pages > 1 -%}
+      {%- liquid
+        assign all_col = section.settings.all_collection
+        assign all_handles = section.settings.all_handles | remove: ' ' | split: ','
+        assign show_all = false
+        if all_col != blank and all_col.handle != collection.handle and all_handles contains collection.handle
+          assign show_all = true
+        endif
+      -%}
+      {%- if paginate.pages > 1 or show_all -%}
         {%- liquid
           assign shown = paginate.current_offset | plus: collection.products.size
           assign pct = shown | times: 100 | divided_by: paginate.items
         -%}
         <div class="load-more" data-load-more>
-          <p class="load-more__count" data-load-more-count>{{ 'collections.showing' | t: shown: shown, total: paginate.items }}</p>
-          <div class="load-more__bar"><span data-load-more-bar style="width: {{ pct }}%"></span></div>
-          {%- if paginate.next -%}
-            <a class="button button--outline" href="{{ paginate.next.url }}" data-load-more-btn>{{ 'collections.load_more' | t }}</a>
+          {%- if paginate.pages > 1 -%}
+            <p class="load-more__count" data-load-more-count>{{ 'collections.showing' | t: shown: shown, total: paginate.items }}</p>
+            <div class="load-more__bar"><span data-load-more-bar style="width: {{ pct }}%"></span></div>
           {%- endif -%}
+          <div class="load-more__actions">
+            {%- if paginate.next -%}
+              <a class="button button--outline" href="{{ paginate.next.url }}" data-load-more-btn>{{ 'collections.load_more' | t }}</a>
+            {%- endif -%}
+            {%- if show_all -%}
+              <a class="button" href="{{ all_col.url }}">{{ section.settings.all_label | default: all_col.title }}</a>
+            {%- endif -%}
+          </div>
         </div>
       {%- endif -%}
     {%- endpaginate -%}
@@ -113,7 +128,11 @@
     { "type": "image_picker", "id": "hero_image", "label": "Imagen de cabecera (sustituye a la de la colección)" },
     { "type": "checkbox", "id": "show_description", "label": "Mostrar descripción", "default": true },
     { "type": "range", "id": "per_page", "label": "Productos por página", "min": 8, "max": 48, "step": 4, "default": 12 },
-    { "type": "range", "id": "columns", "label": "Columnas (escritorio)", "min": 2, "max": 5, "step": 1, "default": 4 }
+    { "type": "range", "id": "columns", "label": "Columnas (escritorio)", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "header", "content": "Botón «Ver toda la colección»" },
+    { "type": "collection", "id": "all_collection", "label": "Colección completa" },
+    { "type": "text", "id": "all_label", "label": "Texto del botón", "default": "Ver toda la colección" },
+    { "type": "text", "id": "all_handles", "label": "Mostrar en estas colecciones", "info": "Identificadores separados por comas, p. ej. bosque-encantado, estrellas-y-suenos" }
   ]
 }
 {% endschema %}

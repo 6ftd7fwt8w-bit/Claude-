@@ -148,8 +148,8 @@
           "settings": {
             "title": "Retratos de mascotas",
             "subtitle": "",
-            "zoom": 110,
-            "zoom_origin": "50% 0%",
+            "zoom": 115,
+            "zoom_origin": "0% 0%",
             "link": "shopify://products/ilustracion-mascota",
             "image": "shopify://shop_images/vlh-tendencia-mascotas.png"
           }
