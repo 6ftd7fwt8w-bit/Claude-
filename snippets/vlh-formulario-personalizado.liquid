@@ -127,6 +127,25 @@
     </fieldset>
     {% endif %}
 
+    <!-- ============ 6. FOTOGRAFÍA ============ -->
+    <fieldset class="vlh-field" id="vlh-upload-field">
+      <legend id="vlh-upload-label">Tus fotos</legend>
+      <input type="file" id="vlh-upload-input" name="properties[Foto 1]" accept="image/*" required multiple>
+      <p class="vlh-hint" id="vlh-upload-hint">JPG o PNG, máx. 20MB por foto. Puedes subir más de una si quieres darnos más referencia.</p>
+
+      <label class="vlh-checkbox" style="margin-top:14px;">
+        <input type="checkbox" id="vlh-sin-foto-toggle">
+        La enviaré después
+      </label>
+      <details class="vlh-details" id="vlh-sin-foto-details" hidden>
+        <summary>¿Cómo la envío después?</summary>
+        <p class="vlh-hint" style="margin-top:0;">Podrás enviárnosla después de realizar el pedido, por WhatsApp o email, indicando tu número de pedido.</p>
+      </details>
+    </fieldset>
+
+    <!-- ============ EXTRAS (opcionales) ============ -->
+    <p class="vlh-extras-title">Personaliza tu pedido <span class="vlh-opcional">(opcional)</span></p>
+
     <!-- ============ 3. ¿ES PARA REGALO? ============ -->
     <details class="vlh-field vlh-accordion">
       <summary>
@@ -145,7 +164,11 @@
             data-variant-id="{{ p_pack_regalo.selected_or_first_available_variant.id }}"
             data-price-cents="{{ p_pack_regalo.selected_or_first_available_variant.price }}">
           {% if p_pack_regalo.featured_image %}
-            <img class="vlh-radio-card__img" src="{{ p_pack_regalo.featured_image | image_url: width: 160 }}" alt="Pack regalo" loading="lazy" width="56" height="56">
+            <img class="vlh-radio-card__img vlh-radio-card__img--pack" src="{{ p_pack_regalo.featured_image | image_url: width: 600 }}" alt="Pack regalo" loading="lazy" width="300" height="225">
+            {%- if p_pack_regalo.images.size > 0 -%}
+              {%- capture pack_imgs -%}[{%- for im in p_pack_regalo.images -%}{{ im | image_url: width: 1600 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
+              <button type="button" class="vlh-pack-photos" data-lightbox-images='{{ pack_imgs | escape }}' data-lightbox-title="Pack regalo">Ver fotos ({{ p_pack_regalo.images.size }})</button>
+            {%- endif -%}
           {% endif %}
           <span class="vlh-radio-card__title">Pack Regalo</span>
           <span class="vlh-radio-card__price">+ {{ p_pack_regalo.selected_or_first_available_variant.price | money }}</span>
@@ -157,7 +180,11 @@
             data-variant-id="{{ p_pack_valentina.selected_or_first_available_variant.id }}"
             data-price-cents="{{ p_pack_valentina.selected_or_first_available_variant.price }}">
           {% if p_pack_valentina.featured_image %}
-            <img class="vlh-radio-card__img" src="{{ p_pack_valentina.featured_image | image_url: width: 160 }}" alt="Pack Valentina" loading="lazy" width="56" height="56">
+            <img class="vlh-radio-card__img vlh-radio-card__img--pack" src="{{ p_pack_valentina.featured_image | image_url: width: 600 }}" alt="Pack Valentina" loading="lazy" width="300" height="225">
+            {%- if p_pack_valentina.images.size > 0 -%}
+              {%- capture pack_imgs -%}[{%- for im in p_pack_valentina.images -%}{{ im | image_url: width: 1600 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
+              <button type="button" class="vlh-pack-photos" data-lightbox-images='{{ pack_imgs | escape }}' data-lightbox-title="Pack Valentina">Ver fotos ({{ p_pack_valentina.images.size }})</button>
+            {%- endif -%}
           {% endif %}
           <span class="vlh-radio-card__title">Pack Valentina</span>
           <span class="vlh-radio-card__price">+ {{ p_pack_valentina.selected_or_first_available_variant.price | money }}</span>
@@ -237,32 +264,26 @@
       </div>
     </details>
 
-    <!-- ============ 6. FOTOGRAFÍA ============ -->
-    <fieldset class="vlh-field" id="vlh-upload-field">
-      <legend id="vlh-upload-label">Añade tus fotos</legend>
-      <input type="file" id="vlh-upload-input" name="properties[Foto 1]" accept="image/*" required multiple>
-      <p class="vlh-hint" id="vlh-upload-hint">JPG o PNG, máx. 20MB por foto. Puedes subir más de una si quieres darnos más referencia.</p>
-
-      <label class="vlh-checkbox" style="margin-top:14px;">
-        <input type="checkbox" id="vlh-sin-foto-toggle">
-        La enviaré después
-      </label>
-      <details class="vlh-details" id="vlh-sin-foto-details" hidden>
-        <summary>¿Cómo la envío después?</summary>
-        <p class="vlh-hint" style="margin-top:0;">Podrás enviárnosla después de realizar el pedido, por WhatsApp o email, indicando tu número de pedido.</p>
-      </details>
-    </fieldset>
-
-    <!-- ============ 7. NOTAS PARA EL DISEÑADOR ============ -->
-    <fieldset class="vlh-field">
-      <legend>¿Quieres contarnos algo sobre tu ilustración? <span class="vlh-opcional">(opcional)</span></legend>
-      <textarea id="vlh-descripcion" rows="3" placeholder="Ej: Quiero añadir el texto 'Marta &amp; Pablo · 12.06.2026'. Quiero que el fondo sea sencillo, en tonos verdes, con alguna flor."></textarea>
-      <p class="vlh-hint">No necesitas describirlo todo — trabajaremos con cariño tomando como referencia las fotografías que nos envíes, cuidando cada detalle para que la lámina quede elegante y preciosa. Los aspectos que no nos indiques quedarán a criterio de nuestro equipo de diseño, que siempre busca el resultado más armonioso.</p>
-    </fieldset>
+    <!-- ============ 7. NOTAS PARA EL DISEÑADOR (plegado) ============ -->
+    <details class="vlh-field vlh-accordion vlh-notes">
+      <summary>
+        <span class="vlh-accordion__title">Añadir detalles para tu ilustración ✍️</span>
+        <span class="vlh-accordion__value vlh-accordion__value--empty">+</span>
+      </summary>
+      <div class="vlh-accordion__body">
+        <p class="vlh-hint" style="margin-top:0;">Nombres, una fecha, una frase, el fondo o los colores que prefieras… <span class="vlh-opcional">(opcional)</span></p>
+        <textarea id="vlh-descripcion" rows="3" placeholder="Ej: Quiero añadir el texto 'Marta &amp; Pablo · 12.06.2026'. Quiero que el fondo sea sencillo, en tonos verdes, con alguna flor."></textarea>
+        <p class="vlh-hint">No necesitas describirlo todo — trabajaremos con cariño tomando como referencia las fotografías que nos envíes, cuidando cada detalle para que la lámina quede elegante y preciosa. Los aspectos que no nos indiques quedarán a criterio de nuestro equipo de diseño, que siempre busca el resultado más armonioso.</p>
+      </div>
+    </details>
 
     <!-- ============ 8. FECHA DE ENTREGA ESTIMADA ============ -->
     <p class="vlh-hint" id="vlh-fecha-estimada" style="font-weight:600;color:var(--vlh-tinta, inherit);"></p>
-    <p class="vlh-hint">A los 5-7 días de tu pedido te contactaremos para mostrarte el diseño y confirmarlo contigo — podrás solicitar hasta 3 ajustes antes de que preparemos la versión final.</p>
+    <p class="vlh-reassure">✓ Te enseñamos el diseño antes de imprimirlo · hasta 3 ajustes incluidos</p>
+    <details class="vlh-details">
+      <summary>¿Cómo funciona?</summary>
+      <p class="vlh-hint" style="margin-top:0;">A los 5-7 días de tu pedido te contactaremos para mostrarte el diseño y confirmarlo contigo — podrás solicitar hasta 3 ajustes antes de que preparemos la versión final.</p>
+    </details>
     <details class="vlh-details">
       <summary>¿Lo necesitas antes?</summary>
       <p class="vlh-hint" style="margin-top:0;"><a href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener" style="color:var(--vlh-terracota);font-weight:600;">Escríbenos por WhatsApp</a> antes de realizar el pedido y comprobamos disponibilidad.</p>
@@ -395,6 +416,14 @@
   .vlh-radio-card__price { font-size: 12px; color: #6b6055; }
   .vlh-radio-card__img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
   .vlh-radio-card--pack { min-width: 0; flex: 1 1 calc(33% - 7px); }
+  .vlh-radio-card__img--pack { width: 100%; height: auto; aspect-ratio: 4 / 3; border-radius: 6px; margin-bottom: 6px; }
+  #vlh-pack-group .vlh-radio-card--pack { flex: 1 1 calc(50% - 5px) !important; }
+  #vlh-pack-group .vlh-radio-card--pack:first-child { flex: 1 1 100% !important; min-height: 0; padding-top: 12px; padding-bottom: 12px; flex-direction: row; justify-content: flex-start; gap: 10px; }
+  #vlh-pack-group .vlh-radio-card--pack:first-child .vlh-radio-card__title { margin: 0; }
+  .vlh-pack-photos { margin-top: 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; cursor: zoom-in; color: var(--vlh-tinta); padding: 2px 0; }
+  .vlh-extras-title { margin: 26px 0 6px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+  .vlh-reassure { margin: 8px 0 4px; font-size: 13px; color: var(--vlh-tinta); }
+  .vlh-notes .vlh-accordion__body textarea { width: 100%; }
   .vlh-radio-card__badge {
     font-size: 10px; color: var(--vlh-terracota); font-weight: 600;
     letter-spacing: 0.05em; text-transform: uppercase; text-align: center;

@@ -1,12 +1,83 @@
-{%- comment -%} Descripción del producto como sección independiente (para colocarla bajo el formulario) {%- endcomment -%}
-{%- if product.description != blank -%}
-  <section class="section" style="padding-top:0">
-    <div class="page-width page-width--narrow">
-      <div class="rte" style="font-size:15px;line-height:1.75">{{ product.description }}</div>
-    </div>
-  </section>
+{%- comment -%}
+  Descripción del producto como sección independiente (bajo el formulario).
+  - Franja opcional "Cómo funciona" en pasos.
+  - Convierte automáticamente cada título (h2/h3) de la descripción en un desplegable.
+{%- endcomment -%}
+{%- capture desc_html -%}{% render 'product-description-text', product: product %}{%- endcapture -%}
+{%- liquid
+  assign s = section.settings
+  assign normalized = desc_html | replace: '<h2', '<h3' | replace: '</h2>', '</h3>'
+  assign parts = normalized | split: '<h3'
+-%}
+{%- if desc_html != blank or s.show_steps -%}
+<section class="section pdesc" style="padding-top:{% if s.show_steps %}24px{% else %}0{% endif %}">
+  <div class="page-width page-width--narrow">
+    {%- if s.show_steps -%}
+      <div class="pdesc-steps">
+        {%- if s.steps_title != blank -%}<h2 class="section-title" style="margin-bottom:24px">{{ s.steps_title }}</h2>{%- endif -%}
+        <ol class="pdesc-steps__list">
+          {%- for i in (1..4) -%}
+            {%- assign t_key = 'step_' | append: i | append: '_title' -%}
+            {%- assign x_key = 'step_' | append: i | append: '_text' -%}
+            {%- assign i_key = 'step_' | append: i | append: '_icon' -%}
+            {%- if s[t_key] != blank -%}
+              <li class="pdesc-steps__item">
+                <span class="pdesc-steps__icon">{% render 'icon', name: s[i_key] %}<b>{{ i }}</b></span>
+                <strong>{{ s[t_key] }}</strong>
+                {%- if s[x_key] != blank -%}<span>{{ s[x_key] }}</span>{%- endif -%}
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ol>
+      </div>
+    {%- endif -%}
+
+    {%- if desc_html != blank -%}
+      {%- if s.accordion and parts.size > 1 -%}
+        {%- assign intro = parts.first | strip -%}
+        {%- if intro != blank -%}<div class="rte pdesc__intro">{{ intro }}</div>{%- endif -%}
+        <div class="pdesc__accordions">
+          {%- for part in parts offset: 1 -%}
+            {%- assign head_and_body = part | split: '</h3>' -%}
+            {%- assign title = head_and_body.first | prepend: '<h3' | strip_html | strip -%}
+            {%- assign body = part | remove_first: head_and_body.first | remove_first: '</h3>' -%}
+            <details class="accordion"{% if forloop.first and s.first_open %} open{% endif %}>
+              <summary>{{ title }}</summary>
+              <div class="accordion__content rte">{{ body }}</div>
+            </details>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="rte pdesc__intro">{{ desc_html }}</div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
 {%- endif -%}
 
 {% schema %}
-{ "name": "Descripción de producto", "enabled_on": { "templates": ["product"] }, "presets": [{ "name": "Descripción de producto" }] }
+{
+  "name": "Descripción de producto",
+  "enabled_on": { "templates": ["product"] },
+  "settings": [
+    { "type": "checkbox", "id": "accordion", "label": "Convertir los títulos en desplegables", "default": true },
+    { "type": "checkbox", "id": "first_open", "label": "Primer desplegable abierto", "default": true },
+    { "type": "header", "content": "Cómo funciona" },
+    { "type": "checkbox", "id": "show_steps", "label": "Mostrar pasos", "default": false },
+    { "type": "text", "id": "steps_title", "label": "Título", "default": "Cómo funciona" },
+    { "type": "text", "id": "step_1_title", "label": "Paso 1", "default": "Elige tu lámina" },
+    { "type": "text", "id": "step_1_text", "label": "Paso 1: texto", "default": "Tamaño, extras y regalo" },
+    { "type": "select", "id": "step_1_icon", "label": "Paso 1: icono", "options": [{ "value": "frame", "label": "Cuadro" }, { "value": "camera", "label": "Cámara" }, { "value": "brush", "label": "Pincel" }, { "value": "chat", "label": "Mensaje" }, { "value": "box", "label": "Caja" }, { "value": "gift", "label": "Regalo" }, { "value": "heart", "label": "Corazón" }, { "value": "truck", "label": "Envío" }], "default": "frame" },
+    { "type": "text", "id": "step_2_title", "label": "Paso 2", "default": "Sube tu foto" },
+    { "type": "text", "id": "step_2_text", "label": "Paso 2: texto", "default": "O envíanosla después" },
+    { "type": "select", "id": "step_2_icon", "label": "Paso 2: icono", "options": [{ "value": "frame", "label": "Cuadro" }, { "value": "camera", "label": "Cámara" }, { "value": "brush", "label": "Pincel" }, { "value": "chat", "label": "Mensaje" }, { "value": "box", "label": "Caja" }, { "value": "gift", "label": "Regalo" }, { "value": "heart", "label": "Corazón" }, { "value": "truck", "label": "Envío" }], "default": "camera" },
+    { "type": "text", "id": "step_3_title", "label": "Paso 3", "default": "Te enseñamos el diseño" },
+    { "type": "text", "id": "step_3_text", "label": "Paso 3: texto", "default": "Hasta 3 ajustes incluidos" },
+    { "type": "select", "id": "step_3_icon", "label": "Paso 3: icono", "options": [{ "value": "frame", "label": "Cuadro" }, { "value": "camera", "label": "Cámara" }, { "value": "brush", "label": "Pincel" }, { "value": "chat", "label": "Mensaje" }, { "value": "box", "label": "Caja" }, { "value": "gift", "label": "Regalo" }, { "value": "heart", "label": "Corazón" }, { "value": "truck", "label": "Envío" }], "default": "brush" },
+    { "type": "text", "id": "step_4_title", "label": "Paso 4", "default": "Lo recibes en casa" },
+    { "type": "text", "id": "step_4_text", "label": "Paso 4: texto", "default": "Listo para colgar o regalar" },
+    { "type": "select", "id": "step_4_icon", "label": "Paso 4: icono", "options": [{ "value": "frame", "label": "Cuadro" }, { "value": "camera", "label": "Cámara" }, { "value": "brush", "label": "Pincel" }, { "value": "chat", "label": "Mensaje" }, { "value": "box", "label": "Caja" }, { "value": "gift", "label": "Regalo" }, { "value": "heart", "label": "Corazón" }, { "value": "truck", "label": "Envío" }], "default": "box" }
+  ],
+  "presets": [{ "name": "Descripción de producto" }]
+}
 {% endschema %}

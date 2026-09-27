@@ -179,10 +179,7 @@
       if (variant.featured_media) {
         var media = $('[data-media-id="' + variant.featured_media.id + '"]', root);
         var gallery = $('[data-product-gallery]', root);
-        if (media && gallery) {
-          if (window.matchMedia('(max-width: 749px)').matches) gallery.scrollTo({ left: media.offsetLeft - 24, behavior: 'smooth' });
-          else if (media !== gallery.firstElementChild) gallery.insertBefore(media, gallery.firstElementChild);
-        }
+        if (media && gallery) gallery.scrollTo({ left: media.offsetLeft - gallery.offsetLeft, behavior: 'smooth' });
       }
     });
   });
@@ -578,6 +575,135 @@
   };
   paintCrossCards();
   discountListeners.push(paintCrossCards);
+
+  /* Visor de fotos (lightbox) -------------------------------------------- */
+  var lightbox = $('[data-lightbox]');
+  var lb = { list: [], i: 0 };
+  var lbShow = function () {
+    if (!lightbox || !lb.list.length) return;
+    $('[data-lightbox-img]', lightbox).src = lb.list[lb.i];
+    $('[data-lightbox-count]', lightbox).textContent = lb.list.length > 1 ? (lb.i + 1) + ' / ' + lb.list.length : '';
+    $('[data-lightbox-prev]', lightbox).hidden = lb.list.length < 2;
+    $('[data-lightbox-next]', lightbox).hidden = lb.list.length < 2;
+  };
+  var lbOpen = function (list, index) {
+    if (!lightbox) return;
+    lb.list = list.filter(Boolean); lb.i = Math.max(0, Math.min(index || 0, lb.list.length - 1));
+    lbShow();
+    lightbox.hidden = false;
+    requestAnimationFrame(function () { lightbox.classList.add('is-open'); });
+    document.body.classList.add('overflow-hidden');
+    $('[data-lightbox-close]', lightbox).focus({ preventScroll: true });
+  };
+  var lbClose = function () {
+    if (!lightbox || lightbox.hidden) return;
+    lightbox.classList.remove('is-open');
+    setTimeout(function () { lightbox.hidden = true; }, 250);
+    if (!$('.drawer.is-open') && !($('[data-welcome]') && !$('[data-welcome]').hidden)) document.body.classList.remove('overflow-hidden');
+  };
+  var lbStep = function (d) { if (lb.list.length) { lb.i = (lb.i + d + lb.list.length) % lb.list.length; lbShow(); } };
+  window.vivaLightbox = lbOpen;
+  if (lightbox) {
+    $('[data-lightbox-close]', lightbox).addEventListener('click', lbClose);
+    $('[data-lightbox-prev]', lightbox).addEventListener('click', function () { lbStep(-1); });
+    $('[data-lightbox-next]', lightbox).addEventListener('click', function () { lbStep(1); });
+    lightbox.addEventListener('click', function (e) { if (e.target === lightbox || e.target.hasAttribute('data-lightbox-stage')) lbClose(); });
+    document.addEventListener('keydown', function (e) {
+      if (lightbox.hidden) return;
+      if (e.key === 'Escape') lbClose();
+      if (e.key === 'ArrowLeft') lbStep(-1);
+      if (e.key === 'ArrowRight') lbStep(1);
+    });
+    var lbX = null;
+    lightbox.addEventListener('touchstart', function (e) { lbX = e.touches[0].clientX; }, { passive: true });
+    lightbox.addEventListener('touchend', function (e) {
+      if (lbX === null) return;
+      var dx = e.changedTouches[0].clientX - lbX;
+      if (Math.abs(dx) > 40) lbStep(dx < 0 ? 1 : -1);
+      lbX = null;
+    });
+  }
+  // Botones "Ver fotos" (packs, etc.)
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-lightbox-images]');
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    try { lbOpen(JSON.parse(btn.getAttribute('data-lightbox-images')), 0); } catch (err) {}
+  }, true);
+
+  /* Galería de producto: carrusel con miniaturas -------------------------- */
+  $$('[data-gallery]').forEach(function (g) {
+    var track = $('[data-gallery-track]', g);
+    if (!track) return;
+    var slides = $$('.gallery-main__slide', track);
+    var thumbs = $$('[data-gallery-thumb]', g);
+    var dots = $$('.gallery-dots__dot', g);
+    var prev = $('[data-gallery-prev]', g), next = $('[data-gallery-next]', g);
+    var zoomList = [];
+    try { zoomList = JSON.parse($('[data-gallery-zoom-list]', g).textContent); } catch (e) {}
+    var current = 0;
+    var goTo = function (i) { var s2 = slides[i]; if (s2) track.scrollTo({ left: s2.offsetLeft - track.offsetLeft, behavior: 'smooth' }); };
+    var mark = function (i) {
+      current = i;
+      thumbs.forEach(function (t, k) { t.classList.toggle('is-active', k === i); });
+      dots.forEach(function (d, k) { d.classList.toggle('is-active', k === i); });
+      if (prev) prev.disabled = i === 0;
+      if (next) next.disabled = i === slides.length - 1;
+      var t = thumbs[i];
+      if (t && t.parentNode.scrollWidth > t.parentNode.clientWidth) t.parentNode.scrollTo({ left: t.offsetLeft - t.parentNode.clientWidth / 2 + t.clientWidth / 2, behavior: 'smooth' });
+    };
+    var onScroll = function () {
+      var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      if (i !== current) mark(Math.max(0, Math.min(i, slides.length - 1)));
+    };
+    track.addEventListener('scroll', function () { window.requestAnimationFrame(onScroll); }, { passive: true });
+    thumbs.forEach(function (t) { t.addEventListener('click', function () { goTo(parseInt(t.getAttribute('data-gallery-thumb'), 10)); }); });
+    if (prev) prev.addEventListener('click', function () { goTo(Math.max(0, current - 1)); });
+    if (next) next.addEventListener('click', function () { goTo(Math.min(slides.length - 1, current + 1)); });
+    $$('[data-gallery-zoom]', g).forEach(function (z) {
+      z.addEventListener('click', function () {
+        var idx = parseInt(z.getAttribute('data-gallery-zoom'), 10);
+        var imgs = zoomList.filter(Boolean);
+        var target = zoomList[idx];
+        lbOpen(imgs, Math.max(0, imgs.indexOf(target)));
+      });
+    });
+    mark(0);
+  });
+
+  /* Barra fija "Añadir al carrito" en móvil (formulario personalizado) ------ */
+  (function () {
+    var submit = document.getElementById('vlh-submit-btn');
+    var totalEl = document.getElementById('vlh-total-price');
+    if (!submit || !totalEl) return;
+    var bar = document.createElement('div');
+    bar.className = 'sticky-buy';
+    bar.innerHTML = '<span class="sticky-buy__total">Total<b data-sticky-total></b></span><button type="button" class="button">' + (submit.textContent.trim() || 'Añadir al carrito') + '</button>';
+    document.body.appendChild(bar);
+    document.body.classList.add('has-sticky-buy');
+    var tEl = $('[data-sticky-total]', bar);
+    var sync = function () { tEl.textContent = totalEl.textContent; };
+    sync();
+    new MutationObserver(sync).observe(totalEl, { childList: true, characterData: true, subtree: true });
+    $('button', bar).addEventListener('click', function () {
+      submit.click();
+      setTimeout(function () {
+        var err = document.getElementById('vlh-error');
+        if (err && !err.hidden) err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 60);
+    });
+    var formTop = document.getElementById('vlh-form');
+    var submitVisible = true;
+    var update = function () {
+      var started = formTop ? formTop.getBoundingClientRect().top < window.innerHeight * 0.6 : window.scrollY > 300;
+      bar.classList.toggle('is-visible', started && !submitVisible);
+    };
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (en) { submitVisible = en[0].isIntersecting; update(); }).observe(submit);
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  })();
 
   /* Filters -------------------------------------------------------------- */
   $$('[data-facets-form]').forEach(function (form) {

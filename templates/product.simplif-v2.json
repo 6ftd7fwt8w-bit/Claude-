@@ -34,7 +34,11 @@
     },
     "description": {
       "type": "product-description",
-      "settings": {}
+      "settings": {
+        "accordion": true,
+        "first_open": true,
+        "show_steps": true
+      }
     },
     "recommendations": {
       "type": "product-recommendations",

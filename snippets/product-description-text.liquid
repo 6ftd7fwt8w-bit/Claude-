@@ -1,0 +1,14 @@
+{%- comment -%}
+  Descripción del producto con los reemplazos de texto de Configuración del tema → Textos de producto.
+  Sirve para ajustar frases solo en este tema, sin tocar la descripción guardada en Shopify.
+{%- endcomment -%}
+{%- liquid
+  assign desc = product.description
+  if settings.desc_find_1 != blank
+    assign desc = desc | replace: settings.desc_find_1, settings.desc_replace_1
+  endif
+  if settings.desc_find_2 != blank
+    assign desc = desc | replace: settings.desc_find_2, settings.desc_replace_2
+  endif
+  echo desc
+-%}

@@ -29,7 +29,8 @@
     "sale": "Sale",
     "placeholder_title": "Print name",
     "tax_included": "Tax included.",
-    "quantity": "Quantity"
+    "quantity": "Quantity",
+    "zoom": "Zoom image"
   },
   "cart": {
     "title": "Your cart",

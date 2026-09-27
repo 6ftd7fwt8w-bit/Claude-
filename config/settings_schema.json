@@ -310,6 +310,37 @@
     ]
   },
   {
+    "name": "Textos de producto",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Sustituye frases de las descripciones de producto solo en este tema, sin cambiar el producto en Shopify. Copia la frase exactamente como está (incluidas negritas)."
+      },
+      {
+        "type": "textarea",
+        "id": "desc_find_1",
+        "label": "Buscar (1)",
+        "default": "Todos nuestros productos se realizan <strong>a mano y cuidando cada detalle</strong>."
+      },
+      {
+        "type": "textarea",
+        "id": "desc_replace_1",
+        "label": "Sustituir por (1)",
+        "default": "Diseñamos cada ilustración y preparamos cada pedido <strong>a mano, cuidando cada detalle</strong>."
+      },
+      {
+        "type": "textarea",
+        "id": "desc_find_2",
+        "label": "Buscar (2)"
+      },
+      {
+        "type": "textarea",
+        "id": "desc_replace_2",
+        "label": "Sustituir por (2)"
+      }
+    ]
+  },
+  {
     "name": "Redes sociales",
     "settings": [
       {

@@ -29,7 +29,8 @@
     "sale": "Oferta",
     "placeholder_title": "Nombre de la lámina",
     "tax_included": "Impuestos incluidos.",
-    "quantity": "Cantidad"
+    "quantity": "Cantidad",
+    "zoom": "Ampliar imagen"
   },
   "cart": {
     "title": "Tu carrito",

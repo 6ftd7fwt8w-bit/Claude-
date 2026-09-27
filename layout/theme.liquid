@@ -88,6 +88,14 @@
 
     {% render 'discount-state' %}
 
+    <div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="{{ 'products.zoom' | t }}">
+      <button type="button" class="lightbox__close" data-lightbox-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+      <button type="button" class="lightbox__nav lightbox__nav--prev" data-lightbox-prev aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'chevron-left' %}</button>
+      <figure class="lightbox__stage" data-lightbox-stage><img data-lightbox-img alt="" width="1600" height="1600"></figure>
+      <button type="button" class="lightbox__nav lightbox__nav--next" data-lightbox-next aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'chevron-right' %}</button>
+      <p class="lightbox__count" data-lightbox-count></p>
+    </div>
+
     {%- if settings.cart_type == 'drawer' -%}
       {% render 'cart-drawer' %}
     {%- endif -%}
