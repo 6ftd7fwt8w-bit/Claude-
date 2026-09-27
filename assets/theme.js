@@ -859,6 +859,10 @@
     }).then(function (recs) {
       if (!recs.length) { showRelated(); return; }
       related.forEach(function (el) { el.remove(); });
+      // El botón "Ver más láminas" pasa debajo del bloque
+      var back = document.querySelector('[data-back-link]');
+      var more = $('[data-pack-more]', sec);
+      if (back && more) { back.classList.remove('button--full'); more.appendChild(back); more.hidden = false; }
       recs.forEach(function (item) { grid.appendChild(document.importNode(item, true)); });
       grid.style.setProperty('--pack-n', recs.length + 1);
       sec.hidden = false;

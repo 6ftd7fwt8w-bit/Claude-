@@ -157,7 +157,7 @@
             {%- when 'back_link' -%}
               {%- assign back = collection | default: product.collections.first -%}
               {%- if back -%}
-                <a href="{{ back.url }}" class="button button--outline button--full" {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
+                <a href="{{ back.url }}" class="button button--outline button--full" data-back-link {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
               {%- endif -%}
 
             {%- when 'custom_liquid' -%}

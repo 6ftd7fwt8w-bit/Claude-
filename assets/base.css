@@ -865,6 +865,8 @@ body.overflow-hidden .welcome-badge { opacity: 0; pointer-events: none; }
 .pack__row--total { padding-top: 8px; border-top: 1px solid var(--color-border); color: var(--color-text); }
 .pack__row--total strong { font-size: 20px; font-weight: 500; }
 .pack__buy .button { width: 100%; }
+.pack__more { display: flex; justify-content: center; margin-top: 48px; }
+.pack__more .button { min-width: 260px; }
 .pack__variant { display: block; margin-top: 10px; }
 .pack__variant select { width: 100%; min-height: 40px; padding: 8px 12px; font-size: 13px; }
 .pack__offer { position: relative; padding: 18px 18px 16px; background: var(--color-highlight); color: var(--color-text); overflow: hidden; }
