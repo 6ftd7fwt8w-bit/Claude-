@@ -17,6 +17,18 @@
   </script>
   {%- if current -%}<span class="pack__label">{{ 'products.pack_current' | t }}</span>{%- endif -%}
   {% render 'product-card', product: product %}
+  {%- if product.has_only_default_variant == false -%}
+    {%- assign sel = product.selected_or_first_available_variant -%}
+    <label class="pack__variant">
+      <span class="visually-hidden">{{ product.options.first }}</span>
+      <select class="input" data-pack-variant>
+        {%- for v in product.variants -%}
+          {%- assign money_v = v.price | money -%}
+          <option value="{{ v.id }}"{% if v.id == sel.id %} selected{% endif %}{% unless v.available %} disabled{% endunless %}>{{ v.title | split: ':' | first }} · {{ money_v }}</option>
+        {%- endfor -%}
+      </select>
+    </label>
+  {%- endif -%}
   {%- unless current -%}
     <button type="button" class="pack__toggle" aria-pressed="false" data-pack-toggle>
       <span class="pack__toggle-off">+ {{ 'products.pack_include' | t }}</span>

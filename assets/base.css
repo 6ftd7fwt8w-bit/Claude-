@@ -841,7 +841,7 @@ body.overflow-hidden .welcome-badge { opacity: 0; pointer-events: none; }
 .protect-images img, .protect-images video { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
 /* Hacen pack ------------------------------------------------------------- */
-.pack { display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: center; }
+.pack { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 40px; align-items: center; }
 .pack__grid { display: grid; grid-template-columns: repeat(var(--pack-n, 3), minmax(0, 1fr)); gap: 44px; }
 .pack__item { position: relative; }
 .pack__item + .pack__item::before { content: '+'; position: absolute; left: -32px; top: 38%; width: 20px; text-align: center; font-size: 24px; font-weight: 300; color: var(--color-muted); }
@@ -864,9 +864,19 @@ body.overflow-hidden .welcome-badge { opacity: 0; pointer-events: none; }
 .pack__row--save { color: var(--color-sale); }
 .pack__row--total { padding-top: 8px; border-top: 1px solid var(--color-border); color: var(--color-text); }
 .pack__row--total strong { font-size: 20px; font-weight: 500; }
-.pack__note { margin: 0; font-size: 12px; color: var(--color-muted); }
 .pack__buy .button { width: 100%; }
-.pack__hint { margin: 0; font-size: 12px; line-height: 1.5; color: var(--color-muted); padding-left: 10px; border-left: 2px solid var(--color-highlight); }
+.pack__variant { display: block; margin-top: 10px; }
+.pack__variant select { width: 100%; min-height: 40px; padding: 8px 12px; font-size: 13px; }
+.pack__offer { position: relative; padding: 18px 18px 16px; background: var(--color-highlight); color: var(--color-text); overflow: hidden; }
+.pack__offer-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+.pack__offer-tag svg { width: 15px; height: 15px; }
+.pack__offer-title { margin: 8px 0 4px; font-size: 17px; font-weight: 500; line-height: 1.3; }
+.pack__offer-text { margin: 0; font-size: 13px; line-height: 1.45; }
+.pack__offer-code { margin: 8px 0 0; font-size: 11px; opacity: .75; }
+.pack__offer.is-won .pack__offer-text { font-weight: 600; }
+.pack__offer.is-won::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%); transform: translateX(-100%); animation: pack-shine 2.6s ease 1 .2s; pointer-events: none; }
+@keyframes pack-shine { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .pack__offer.is-won::after { animation: none; } }
 @media (max-width: 989px) {
   .pack { grid-template-columns: 1fr; }
 }

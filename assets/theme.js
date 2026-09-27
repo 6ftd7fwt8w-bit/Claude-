@@ -753,7 +753,7 @@
     var grid = $('[data-pack-grid]', sec);
     if (!grid) return;
     var btn = $('[data-pack-add]', sec);
-    var size = $('[data-pack-size]', sec);
+    var offer = $('[data-pack-offer]', sec);
     var q = function (sel) { return $(sel, sec); };
     var money = function (cents) {
       return (cents / 100).toLocaleString(document.documentElement.lang || 'es', { style: 'currency', currency: (window.Shopify && Shopify.currency && Shopify.currency.active) || 'EUR' });
@@ -761,8 +761,9 @@
     var pick = function (item) {
       var vs = [];
       try { vs = JSON.parse($('[data-pack-variants]', item).textContent); } catch (err) {}
-      var want = size ? size.value : null;
-      return vs.filter(function (v) { return v.a && v.o === want; })[0] || vs.filter(function (v) { return v.a; })[0] || null;
+      var sel = $('[data-pack-variant]', item);
+      var want = sel ? parseInt(sel.value, 10) : null;
+      return vs.filter(function (v) { return v.a && v.id === want; })[0] || vs.filter(function (v) { return v.a; })[0] || null;
     };
     var saving = 0;
     var show = function (sel, on) { var el = q(sel); if (el) el.hidden = !on; };
@@ -786,8 +787,16 @@
       btn.hidden = !extra;
       show('[data-pack-sub-row]', saving > 0);
       show('[data-pack-save-row]', saving > 0);
-      show('[data-pack-note]', saving > 0);
-      show('[data-pack-hint]', saving === 0);
+      if (offer) {
+        var need = (3 - crossPrices.length % 3) % 3;
+        var txt;
+        if (free > 0 && need === 0) txt = offer.getAttribute('data-got').replace('[amount]', money(saving));
+        else if (need === 1) txt = offer.getAttribute('data-need-one');
+        else txt = offer.getAttribute('data-need-many').replace('[n]', need);
+        if (free > 0 && need !== 0) txt = offer.getAttribute('data-got').replace('[amount]', money(saving)) + ' ' + txt;
+        $('[data-pack-offer-text]', offer).textContent = txt;
+        offer.classList.toggle('is-won', free > 0);
+      }
       if (!extra) return;
       q('[data-pack-count]').textContent = btn.getAttribute('data-count-label').replace('[n]', n);
       q('[data-pack-subtotal]').textContent = money(subtotal);
@@ -807,7 +816,7 @@
       t.setAttribute('aria-pressed', on);
       update();
     });
-    if (size) size.addEventListener('change', update);
+    sec.addEventListener('change', function (e) { if (e.target.matches('[data-pack-variant]')) update(); });
     btn.addEventListener('click', function () {
       var items = $$('[data-pack-item]', grid).filter(function (i) { return i.classList.contains('is-on'); })
         .map(function (i) { var v = pick(i); return v ? { id: v.id, quantity: 1 } : null; }).filter(Boolean);
