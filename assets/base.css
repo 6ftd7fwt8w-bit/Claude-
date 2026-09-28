@@ -969,6 +969,8 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 /* Banner partido: imagen completa, sin recortar */
 .split__media--contain { display: flex; align-items: center; justify-content: center; padding: clamp(20px, 4vw, 48px); background: var(--split-bg, var(--color-bg-alt)); }
 .split__media--contain > img { width: auto !important; height: auto !important; max-width: 100%; max-height: 560px; object-fit: contain !important; box-shadow: 0 14px 32px rgba(35,31,28,.14); }
+.split__pair { display: grid; gap: clamp(10px, 1.6vw, 20px); align-items: end; width: 100%; max-width: 640px; }
+.split__pair > img { width: 100%; height: auto; display: block; box-shadow: 0 14px 32px rgba(35,31,28,.14); }
 @media (max-width: 749px) {
   .split .split__media--contain { padding: 24px 24px 0; }
   .split .split__media--contain > img { aspect-ratio: auto; max-height: 460px; }

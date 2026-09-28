@@ -48,6 +48,11 @@
             data-clip-video data-src-small="{{ v_small }}" data-src-large="{{ v_large }}"
             data-start="{{ s.video_start }}" data-end="{{ v_end }}"
             aria-label="{{ s.video.alt | default: s.heading | escape }}"></video>
+        {%- elsif s.image != blank and s.image_2 != blank -%}
+          <div class="split__pair" style="grid-template-columns: {{ s.image.aspect_ratio }}fr {{ s.image_2.aspect_ratio }}fr;">
+            {{ s.image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1000', sizes: '(min-width: 750px) 30vw, 50vw' }}
+            {{ s.image_2 | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400, 600, 800, 1000', sizes: '(min-width: 750px) 30vw, 50vw' }}
+          </div>
         {%- elsif s.image != blank -%}
           {{ s.image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '600, 900, 1200, 1500, 1800', sizes: '(min-width: 750px) 60vw, 100vw' }}
         {%- else -%}
@@ -63,6 +68,7 @@
   "name": "Banner partido",
   "settings": [
     { "type": "image_picker", "id": "image", "label": "Imagen" },
+    { "type": "image_picker", "id": "image_2", "label": "Segunda imagen (opcional)", "info": "Se muestra junto a la primera, a la misma altura" },
     { "type": "video", "id": "video", "label": "Vídeo (sustituye a la imagen)", "info": "Se reproduce en bucle, sin sonido, solo el fragmento indicado" },
     { "type": "number", "id": "video_start", "label": "Empezar en el segundo", "default": 0 },
     { "type": "range", "id": "video_duration", "label": "Duración del fragmento", "min": 3, "max": 20, "step": 1, "unit": "s", "default": 8 },
