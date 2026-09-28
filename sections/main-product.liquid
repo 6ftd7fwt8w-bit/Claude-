@@ -126,7 +126,14 @@
               </div>
 
             {%- when 'personalization_form' -%}
-              <div {{ block.shopify_attributes }}>{% render 'vlh-formulario-personalizado', product: product, lamina_image: block.settings.lamina_image, canvas_image: block.settings.canvas_image, canvas_detail: block.settings.canvas_detail, canvas_text: block.settings.canvas_text, guide_art: block.settings.guide_art, guide_art_a3: block.settings.guide_art_a3 %}</div>
+              {%- liquid
+                comment
+                  Fotos de ejemplo: las del producto (metacampos vlh.ejemplo_lamina / vlh.ejemplo_lienzo) o, si no tiene, las del bloque
+                endcomment
+                assign ej_lamina = product.metafields.vlh.ejemplo_lamina.value | default: block.settings.lamina_image
+                assign ej_lienzo = product.metafields.vlh.ejemplo_lienzo.value | default: block.settings.canvas_image
+              -%}
+              <div {{ block.shopify_attributes }}>{% render 'vlh-formulario-personalizado', product: product, lamina_image: ej_lamina, canvas_image: ej_lienzo, canvas_detail: block.settings.canvas_detail, canvas_text: block.settings.canvas_text, guide_art: block.settings.guide_art, guide_art_a3: block.settings.guide_art_a3 %}</div>
 
             {%- when 'pack_cta' -%}
               <div {{ block.shopify_attributes }}>{% render 'vlh-pack-cta', product: product %}</div>
@@ -204,8 +211,8 @@
       "settings": [{ "type": "checkbox", "id": "show_dynamic_checkout", "label": "Mostrar botón de pago rápido", "default": false }]
     },
     { "type": "personalization_form", "name": "Formulario personalizado", "limit": 1, "settings": [
-      { "type": "image_picker", "id": "lamina_image", "label": "Foto de ejemplo de lámina", "info": "Miniatura junto a los tamaños de lámina (se amplía al pulsar)" },
-      { "type": "image_picker", "id": "canvas_image", "label": "Foto de ejemplo de lienzo", "info": "Miniatura junto a los tamaños de lienzo (se amplía al pulsar)" },
+      { "type": "image_picker", "id": "lamina_image", "label": "Foto de ejemplo de lámina", "info": "Miniatura junto a los tamaños de lámina. Cada producto puede tener la suya en el metacampo «Ejemplo en lámina»" },
+      { "type": "image_picker", "id": "canvas_image", "label": "Foto de ejemplo de lienzo", "info": "Miniatura junto a los tamaños de lienzo. Cada producto puede tener la suya en el metacampo «Ejemplo en lienzo»" },
       { "type": "image_picker", "id": "canvas_detail", "label": "Foto de detalle del lienzo (esquina)", "info": "Segunda foto al ampliar" },
       { "type": "text", "id": "canvas_text", "label": "Texto de los lienzos", "default": "Listo para colgar · bastidor de madera · tela 100 % algodón" },
       { "type": "image_picker", "id": "guide_art", "label": "Guía de tamaños: ilustración de ejemplo", "info": "Solo la ilustración, sin fondo" },
