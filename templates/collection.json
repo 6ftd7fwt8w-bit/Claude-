@@ -16,8 +16,8 @@
           "type": "banner",
           "settings": {
             "collection": "laminas-personalizadas",
-            "image": "shopify://shop_images/vlh-portada-personalizadas.png",
-            "image_mobile": "shopify://shop_images/vlh-portada-personalizadas-movil.png",
+            "image": "shopify://shop_images/vlh-portada-personalizadas-v2.png",
+            "image_mobile": "shopify://shop_images/vlh-portada-personalizadas-movil-v2.png",
             "eyebrow": "De tu foto a tu pared",
             "text": "Retratos, parejas, familias y mascotas convertidos en una ilustración única, lista para colgar o regalar."
           }
