@@ -191,23 +191,23 @@
       <legend id="vlh-upload-label">Tus fotos</legend>
       <label class="vlh-drop" id="vlh-drop">
         <input type="file" id="vlh-upload-input" name="properties[Foto 1]" accept="image/*" required multiple>
-        <span class="vlh-drop__icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
-        <span class="vlh-drop__title" id="vlh-drop-title">Sube tus fotos</span>
-        <span class="vlh-drop__sub" id="vlh-drop-sub">Toca para elegir · JPG o PNG, puedes subir varias</span>
+        <span class="vlh-drop__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+        <span class="vlh-drop__txt"><span class="vlh-drop__title" id="vlh-drop-title">Sube tus fotos</span>
+        <span class="vlh-drop__sub" id="vlh-drop-sub">Toca para elegir · una o varias</span></span>
       </label>
       <div class="vlh-drop__thumbs" id="vlh-drop-thumbs" hidden></div>
 
       <div class="vlh-photo-opts">
         <label class="vlh-opt">
           <input type="checkbox" id="vlh-sin-foto-toggle">
-          <span><b>Aún no tengo la foto</b><small>Nos la envías después por WhatsApp o email con tu número de pedido.</small></span>
+          <span>Enviaré la foto más tarde</span>
         </label>
         {% if p_composicion %}
         <label class="vlh-opt">
           <input type="checkbox" name="vlh-composicion" value="si"
             data-variant-id="{{ p_composicion.selected_or_first_available_variant.id }}"
             data-price-cents="{{ p_composicion.selected_or_first_available_variant.price }}">
-          <span><b>Juntar personas de fotos distintas <em data-composicion-precio></em></b><small>Solo si no tenéis una foto todos juntos. Si nos mandas varias como referencia, no hace falta.</small></span>
+          <span>Unir personas de varias fotos <em data-composicion-precio></em></span>
         </label>
         {% endif %}
       </div>
@@ -529,22 +529,22 @@
   .vlh-extras-sub { margin: 4px 0 0; font-size: 13px; color: #8a7d6e; }
   .vlh-lamina-only { margin: 0 0 22px; padding: 10px 12px; font-size: 13px; line-height: 1.45; background: rgba(168,148,120,.12); color: var(--vlh-tinta); }
   .vlh-radio-card__ribbon { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); white-space: nowrap; pointer-events: none; padding: 2px 8px; background: var(--color-highlight, #F2D16B); color: var(--vlh-tinta); font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; line-height: 1.3; }
-  .vlh-drop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 22px 16px; border: 1.5px dashed #cbbfae; background: #fff; text-align: center; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+  .vlh-drop { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1.5px dashed #cbbfae; background: #fff; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
   .vlh-drop:hover, .vlh-drop:focus-within { border-color: var(--vlh-tinta); }
   .vlh-drop.has-files { border-style: solid; border-color: #2f6b3a; background: #f3f7f1; }
   .vlh-drop input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-  .vlh-drop__icon { color: #8a7d6e; }
-  .vlh-drop.has-files .vlh-drop__icon { color: #2f6b3a; }
-  .vlh-drop__title { font-size: 15px; font-weight: 600; }
-  .vlh-drop__sub { font-size: 12.5px; color: #8a7d6e; }
-  .vlh-drop__thumbs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .vlh-drop__thumbs img { width: 52px; height: 52px; object-fit: cover; border: 1px solid var(--vlh-mist); }
-  .vlh-photo-opts { display: grid; gap: 10px; margin-top: 16px; }
-  .vlh-opt { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; line-height: 1.35; }
-  .vlh-opt input { flex: none; width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--vlh-terracota); }
-  .vlh-opt b { font-weight: 500; }
+  .vlh-drop__icon { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--vlh-crema); color: #8a7d6e; }
+  .vlh-drop.has-files .vlh-drop__icon { color: #2f6b3a; background: #e3eee0; }
+  .vlh-drop__txt { display: flex; flex-direction: column; min-width: 0; }
+  .vlh-drop__title { font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .vlh-drop__sub { font-size: 12px; color: #8a7d6e; line-height: 1.35; }
+  .vlh-drop__thumbs { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .vlh-drop__thumbs img { width: 40px; height: 40px; object-fit: cover; border: 1px solid var(--vlh-mist); }
+  .vlh-photo-opts { display: grid; gap: 8px; margin-top: 12px; }
+  .vlh-opt { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 13.5px; line-height: 1.4; }
+  .vlh-opt input { flex: none; width: 17px; height: 17px; margin: 1px 0 0; accent-color: var(--vlh-terracota); }
   .vlh-opt em { font-style: normal; color: #6b6055; white-space: nowrap; }
-  .vlh-opt small { display: block; margin-top: 2px; font-size: 12.5px; color: #8a7d6e; }
+  .vlh-opt small { font-size: 12px; color: #8a7d6e; }
   .vlh-composicion__price { color: #6b6055; white-space: nowrap; }
   .vlh-details--mini { border: 0; padding: 4px 0 0 28px; margin: 0; }
   .vlh-details--mini summary { font-size: 11px; }
@@ -1050,7 +1050,7 @@
     document.getElementById('vlh-drop-title').textContent = files.length
       ? (files.length === 1 ? '1 foto lista ✓' : `${files.length} fotos listas ✓`)
       : 'Sube tus fotos';
-    document.getElementById('vlh-drop-sub').textContent = files.length ? 'Toca para cambiarlas' : 'Toca para elegir · JPG o PNG, puedes subir varias';
+    document.getElementById('vlh-drop-sub').textContent = files.length ? 'Toca para cambiarlas' : 'Toca para elegir · una o varias';
     thumbs.innerHTML = '';
     files.slice(0, 8).forEach(f => {
       if (!f.type || f.type.indexOf('image/') !== 0) return;
@@ -1108,7 +1108,7 @@
       return;
     }
     if (!els.sinFotoToggle.checked && (!els.uploadInput.files || els.uploadInput.files.length === 0)) {
-      showError('Sube al menos una foto, o marca "Aún no tengo la foto".');
+      showError('Sube al menos una foto, o marca "Enviaré la foto más tarde".');
       return;
     }
 
