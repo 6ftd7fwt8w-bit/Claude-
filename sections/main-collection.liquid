@@ -13,7 +13,7 @@
 -%}
 {%- if banner -%}
   {%- comment -%} Portada propia de esta colección: texto oscuro sobre la zona libre de la foto; en móvil, foto arriba y texto debajo {%- endcomment -%}
-  <div class="collection-banner" {{ banner.shopify_attributes }}>
+  <div class="collection-banner collection-banner--{{ banner.settings.text_position | default: 'center' }}" {{ banner.shopify_attributes }}>
     <picture class="collection-banner__media">
       {%- if banner.settings.image_mobile != blank -%}
         <source media="(max-width: 749px)" srcset="{{ banner.settings.image_mobile | image_url: width: 750 }} 750w, {{ banner.settings.image_mobile | image_url: width: 1200 }} 1200w" sizes="100vw">
@@ -170,6 +170,11 @@
         { "type": "collection", "id": "collection", "label": "Colección" },
         { "type": "image_picker", "id": "image", "label": "Imagen (ordenador)", "info": "Panorámica con el centro despejado para el texto" },
         { "type": "image_picker", "id": "image_mobile", "label": "Imagen (móvil)", "info": "Se muestra encima del texto" },
+        {
+          "type": "select", "id": "text_position", "label": "Posición del texto (ordenador)",
+          "options": [{ "value": "left", "label": "Izquierda" }, { "value": "center", "label": "Centro" }, { "value": "right", "label": "Derecha" }],
+          "default": "center"
+        },
         { "type": "text", "id": "eyebrow", "label": "Antetítulo" },
         { "type": "textarea", "id": "text", "label": "Texto corto", "info": "Si está vacío, se usa la descripción de la colección" }
       ]
