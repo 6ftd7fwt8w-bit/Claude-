@@ -77,7 +77,8 @@
       <legend>Tamaño</legend>
       {%- comment -%} Los tamaños cuyo nombre contiene "Lienzo" se muestran aparte, como Lienzo XL {%- endcomment -%}
       {%- assign vlh_hay_lienzo = false -%}
-      {%- for t in vlh_tamanos -%}{%- if t contains 'Lienzo' -%}{%- assign vlh_hay_lienzo = true -%}{%- endif -%}{%- endfor -%}
+      {%- assign vlh_lienzo_max = '' -%}
+      {%- for t in vlh_tamanos -%}{%- if t contains 'Lienzo' -%}{%- assign vlh_hay_lienzo = true -%}{%- assign vlh_lienzo_max = t -%}{%- endif -%}{%- endfor -%}
       {%- if vlh_hay_lienzo -%}
       <button type="button" class="vlh-guide-link vlh-guide-link--all" data-size-guide-open>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="1.5"/><path d="M6 7v4M10 7v3M14 7v4M18 7v3"/></svg>
@@ -118,8 +119,8 @@
               <span class="vlh-radio-card__medida">{{ vlh_medida }}</span>
             {% endif %}
             <span class="vlh-radio-card__price" data-tamano-precio>—</span>
-            {% if tamano_valor contains 'A3' %}
-              <span class="vlh-radio-card__badge">Recomendado ⭐</span>
+            {% if tamano_valor contains 'A3' and vlh_hay_lienzo == false %}
+              <span class="vlh-radio-card__ribbon">★ Recomendado</span>
             {% endif %}
           </label>
         {% endfor %}
@@ -143,6 +144,7 @@
               {% unless tamano_valor contains 'Lienzo' %}{% continue %}{% endunless %}
               <label class="vlh-radio-card">
                 <input type="radio" name="vlh-tamano" value="{{ tamano_valor | escape }}" data-lienzo required>
+                {%- if tamano_valor == vlh_lienzo_max -%}<span class="vlh-radio-card__ribbon">★ Recomendado</span>{%- endif -%}
                 <span class="vlh-radio-card__title">{{ tamano_valor | remove: 'Lienzo' | remove: 'cm' | replace: 'x', ' × ' | strip }} cm</span>
                 <span class="vlh-radio-card__medida">Lienzo</span>
                 <span class="vlh-radio-card__price" data-tamano-precio>—</span>
@@ -182,6 +184,19 @@
       <input type="file" id="vlh-upload-input" name="properties[Foto 1]" accept="image/*" required multiple>
       <p class="vlh-hint" id="vlh-upload-hint">JPG o PNG, máx. 20MB por foto. Puedes subir más de una si quieres darnos más referencia.</p>
 
+      {% if p_composicion %}
+      <label class="vlh-checkbox vlh-checkbox--frase vlh-composicion">
+        <input type="checkbox" name="vlh-composicion" value="si"
+          data-variant-id="{{ p_composicion.selected_or_first_available_variant.id }}"
+          data-price-cents="{{ p_composicion.selected_or_first_available_variant.price }}">
+        <span>Quiero juntar personas o elementos de fotos distintas <span class="vlh-composicion__price" data-composicion-precio></span></span>
+      </label>
+      <details class="vlh-details vlh-details--mini">
+        <summary>¿Cuándo marcarlo?</summary>
+        <p class="vlh-hint">Solo si queréis aparecer juntos pero estáis en fotos distintas (por ejemplo, no tenéis ninguna foto todos juntos). Si solo nos mandas varias fotos como referencia, no hace falta: elegimos la que mejor funcione.</p>
+      </details>
+      {% endif %}
+
       <label class="vlh-checkbox" style="margin-top:14px;">
         <input type="checkbox" id="vlh-sin-foto-toggle">
         La enviaré después
@@ -193,7 +208,15 @@
     </fieldset>
 
     <!-- ============ EXTRAS (opcionales) ============ -->
-    <p class="vlh-extras-title">Personaliza tu pedido <span class="vlh-opcional">(opcional)</span></p>
+    <div class="vlh-extras-head">
+      <p class="vlh-extras-title">Personaliza tu pedido</p>
+      <p class="vlh-extras-sub">Opcional · regalo, marco y detalles de tu ilustración</p>
+    </div>
+
+    {%- if vlh_hay_lienzo -%}
+    <p class="vlh-lamina-only" data-canvas-note hidden>🎁 🖼️ Pack regalo y marco disponibles para <strong>láminas A4 y A3</strong>. Tu lienzo llega listo para colgar.</p>
+    {%- endif -%}
+    <div data-lamina-extras>
 
     <!-- ============ 3. ¿ES PARA REGALO? ============ -->
     <details class="vlh-field vlh-accordion">
@@ -202,7 +225,6 @@
         <span class="vlh-accordion__value vlh-accordion__value--empty" id="vlh-pack-summary">+</span>
       </summary>
       <div class="vlh-accordion__body">
-      <p class="vlh-hint vlh-canvas-note" data-canvas-note hidden>Has elegido un lienzo: llega montado en bastidor, listo para colgar, así que no lleva pack de regalo. Si lo quieres con pack, elige A4 o A3.</p>
       <div class="vlh-radio-cards vlh-radio-cards--packs" id="vlh-pack-group">
         <label class="vlh-radio-card vlh-radio-card--pack">
           <input type="radio" name="vlh-pack" value="no" checked>
@@ -277,7 +299,6 @@
       </summary>
       <div class="vlh-accordion__body">
         <p class="vlh-hint" id="vlh-marco-obligatorio-nota" style="margin-top:0;" hidden>El Pack Valentina se presenta siempre enmarcado — elige el acabado que completará tu pedido.</p>
-        <p class="vlh-hint vlh-canvas-note" data-canvas-note hidden>El lienzo llega montado en bastidor de madera, listo para colgar: no necesita marco.</p>
         <div class="vlh-radio-cards" id="vlh-marco-color-group"></div>
         <details class="vlh-details">
           <summary>¿Cómo se envía tu pedido?</summary>
@@ -286,34 +307,7 @@
       </div>
     </details>
 
-    <!-- ============ 5. COMPOSICIÓN DESDE VARIAS FOTOS ============ -->
-    <details class="vlh-field vlh-accordion">
-      <summary>
-        <span class="vlh-accordion__title">¿Necesitas que creemos la ilustración a partir de varias fotos?</span>
-        <span class="vlh-accordion__value" id="vlh-composicion-summary">No, incluido</span>
-      </summary>
-      <div class="vlh-accordion__body">
-        <div class="vlh-radio-list" id="vlh-composicion-group">
-          <label class="vlh-radio-row">
-            <input type="radio" name="vlh-composicion" value="no" checked>
-            No, todas las personas aparecen juntas en la fotografía <span class="vlh-radio-row__price">incluido</span>
-          </label>
-          {% if p_composicion %}
-          <label class="vlh-radio-row">
-            <input type="radio" name="vlh-composicion" value="si"
-              data-variant-id="{{ p_composicion.selected_or_first_available_variant.id }}"
-              data-price-cents="{{ p_composicion.selected_or_first_available_variant.price }}">
-            Sí, quiero que unamos personas o elementos de diferentes fotografías <span class="vlh-radio-row__price" data-composicion-precio style="white-space:nowrap;"></span>
-          </label>
-          {% endif %}
-        </div>
-        <details class="vlh-details">
-          <summary>Más información</summary>
-          <p class="vlh-hint" style="margin-top:0;">Si nos envías varias fotografías tuyas para que las tomemos como referencia, no hace falta marcar esta casilla: elegiremos la que mejor se ajuste y crearemos la ilustración a partir de ella.</p>
-          <p class="vlh-hint">Marca esta opción únicamente si quieres que aparezcan juntas en la misma lámina personas o elementos que están en fotografías distintas — por ejemplo, si no tenéis ninguna foto en la que salgáis todos juntos. Este servicio requiere un trabajo adicional de composición y adaptación para que el resultado quede natural y coherente.</p>
-        </details>
-      </div>
-    </details>
+    </div>
 
     <!-- ============ 7. NOTAS PARA EL DISEÑADOR (plegado) ============ -->
     <details class="vlh-field vlh-accordion vlh-notes">
@@ -344,10 +338,41 @@
     <div class="vlh-summary">
       <div class="vlh-summary__row vlh-summary__row--total">
         <span class="vlh-summary__label">Total</span>
-        <span class="vlh-summary__value" id="vlh-total-price">—</span>
+        <span><span class="vlh-summary__old" id="vlh-total-old" hidden></span><span class="vlh-summary__value" id="vlh-total-price">—</span></span>
       </div>
       <ul class="vlh-summary__breakdown" id="vlh-breakdown"></ul>
       <p class="vlh-summary__envio">Los gastos de envío se calculan en el checkout, según tu dirección.</p>
+    </div>
+
+    <!-- ============ CÓDIGO DE DESCUENTO ============ -->
+    {%- liquid
+      assign vlh_w_code = settings.welcome_code | strip | upcase
+      assign vlh_w_ok = true
+      if settings.welcome_collection != blank
+        assign vlh_col_handles = product.collections | map: 'handle'
+        unless vlh_col_handles contains settings.welcome_collection.handle
+          assign vlh_w_ok = false
+        endunless
+      endif
+    -%}
+    <div class="vlh-coupon" id="vlh-coupon"
+      data-welcome-code="{% if vlh_w_ok %}{{ vlh_w_code | escape }}{% endif %}"
+      data-welcome-percent="{{ settings.welcome_percent | default: 10 }}">
+      <details class="vlh-coupon__box" id="vlh-coupon-box">
+        <summary>🏷️ ¿Tienes un código de descuento?</summary>
+        <div class="vlh-coupon__row">
+          <input type="text" id="vlh-coupon-input" placeholder="Escribe tu código" autocomplete="off" autocapitalize="characters" spellcheck="false">
+          <button type="button" id="vlh-coupon-apply">Aplicar</button>
+        </div>
+        <p class="vlh-coupon__msg" id="vlh-coupon-msg" hidden></p>
+      </details>
+      <div class="vlh-coupon__win" id="vlh-coupon-win" hidden>
+        <span class="vlh-coupon__shine" aria-hidden="true"></span>
+        <p class="vlh-coupon__kicker">🎉 ¡Mejor oferta desbloqueada!</p>
+        <p class="vlh-coupon__big">Nadie da más</p>
+        <p class="vlh-coupon__detail" id="vlh-coupon-detail"></p>
+        <button type="button" class="vlh-coupon__remove" id="vlh-coupon-remove">Quitar código</button>
+      </div>
     </div>
 
     <p class="vlh-error" id="vlh-error" role="alert" hidden></p>
@@ -494,7 +519,36 @@
   #vlh-pack-group .vlh-radio-card--pack:first-child { flex: 1 1 100% !important; min-height: 0; padding-top: 12px; padding-bottom: 12px; flex-direction: row; justify-content: flex-start; gap: 10px; }
   #vlh-pack-group .vlh-radio-card--pack:first-child .vlh-radio-card__title { margin: 0; }
   .vlh-pack-photos { margin-top: 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; cursor: zoom-in; color: var(--vlh-tinta); padding: 2px 0; }
-  .vlh-extras-title { margin: 26px 0 6px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+  .vlh-extras-head { margin: 34px 0 18px; padding-top: 22px; border-top: 1px solid var(--vlh-tinta); }
+  .vlh-extras-title { margin: 0; font-family: var(--font-serif); font-size: 26px; line-height: 1.15; font-weight: 400; }
+  .vlh-extras-sub { margin: 4px 0 0; font-size: 13px; color: #8a7d6e; }
+  .vlh-lamina-only { margin: 0 0 22px; padding: 10px 12px; font-size: 13px; line-height: 1.45; background: rgba(168,148,120,.12); color: var(--vlh-tinta); }
+  .vlh-radio-card__ribbon { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); white-space: nowrap; pointer-events: none; padding: 2px 8px; background: var(--color-highlight, #F2D16B); color: var(--vlh-tinta); font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; line-height: 1.3; }
+  .vlh-composicion { margin-top: 16px; }
+  .vlh-composicion__price { color: #6b6055; white-space: nowrap; }
+  .vlh-details--mini { border: 0; padding: 4px 0 0 28px; margin: 0; }
+  .vlh-details--mini summary { font-size: 11px; }
+  .vlh-coupon { margin: -8px 0 22px; }
+  .vlh-coupon__box summary { cursor: pointer; list-style: none; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; color: var(--vlh-tinta); }
+  .vlh-coupon__box summary::-webkit-details-marker { display: none; }
+  .vlh-coupon__row { display: flex; gap: 8px; margin-top: 10px; }
+  .vlh-coupon__row input { flex: 1; min-width: 0; padding: 11px 12px; border: 1px solid var(--vlh-mist); background: #fff; font: inherit; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; }
+  .vlh-coupon__row button { padding: 0 18px; border: 1px solid var(--vlh-tinta); background: var(--vlh-tinta); color: var(--vlh-crema); font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+  .vlh-coupon__msg { margin: 8px 0 0; font-size: 13px; color: #b32020; }
+  .vlh-coupon__msg.is-ok { color: #2f6b3a; }
+  .vlh-coupon__win { position: relative; overflow: hidden; padding: 16px 18px; text-align: center; background: linear-gradient(135deg, #F2D16B 0%, #F7E3A1 45%, #EFC75A 100%); color: #2C2218; box-shadow: 0 10px 26px rgba(201,168,76,.35); animation: vlhPop .5s cubic-bezier(.2,1.4,.4,1); }
+  .vlh-coupon__shine { position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.65) 50%, transparent 70%); transform: translateX(-100%); animation: vlhShine 2.6s ease-in-out .3s infinite; pointer-events: none; }
+  .vlh-coupon__kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .vlh-coupon__big { margin: 2px 0 4px; font-family: var(--font-serif); font-size: 30px; line-height: 1.1; }
+  .vlh-coupon__detail { margin: 0; font-size: 14px; }
+  .vlh-coupon__detail strong { font-size: 16px; }
+  .vlh-coupon__remove { margin-top: 8px; padding: 0; border: 0; background: none; font: inherit; font-size: 11px; text-decoration: underline; cursor: pointer; color: #5a4a36; }
+  .vlh-summary__old { margin-right: 8px; font-size: 18px; color: #a8a096; text-decoration: line-through; font-family: var(--font-serif); }
+  .vlh-summary__breakdown li.is-discount { color: #2f6b3a; font-weight: 600; opacity: 1; }
+  .vlh-summary.has-discount .vlh-summary__value { color: #2f6b3a; }
+  @keyframes vlhPop { 0% { transform: scale(.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes vlhShine { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
+  @media (prefers-reduced-motion: reduce) { .vlh-coupon__win, .vlh-coupon__shine { animation: none; } }
   .vlh-reassure { margin: 8px 0 4px; font-size: 13px; color: var(--vlh-tinta); }
   .vlh-notes .vlh-accordion__body textarea { width: 100%; }
   .vlh-radio-card__badge {
@@ -591,7 +645,16 @@
     mensajePackContador: document.getElementById('vlh-mensaje-pack-contador'),
     composicionInputs: form.querySelectorAll('input[name="vlh-composicion"]'),
     composicionPrecio: document.querySelector('[data-composicion-precio]'),
-    composicionSummary: document.getElementById('vlh-composicion-summary'),
+    couponWrap: document.getElementById('vlh-coupon'),
+    couponBox: document.getElementById('vlh-coupon-box'),
+    couponInput: document.getElementById('vlh-coupon-input'),
+    couponApply: document.getElementById('vlh-coupon-apply'),
+    couponMsg: document.getElementById('vlh-coupon-msg'),
+    couponWin: document.getElementById('vlh-coupon-win'),
+    couponDetail: document.getElementById('vlh-coupon-detail'),
+    couponRemove: document.getElementById('vlh-coupon-remove'),
+    totalOldEl: document.getElementById('vlh-total-old'),
+    laminaExtras: form.querySelector('[data-lamina-extras]'),
     packSummary: document.getElementById('vlh-pack-summary'),
     marcoSummary: document.getElementById('vlh-marco-summary'),
     sinFotoToggle: document.getElementById('vlh-sin-foto-toggle'),
@@ -715,6 +778,10 @@
       }
     });
     form.querySelectorAll('[data-canvas-note]').forEach(n => { n.hidden = !lienzo; });
+    if (els.laminaExtras) {
+      els.laminaExtras.hidden = lienzo;
+      if (lienzo) els.laminaExtras.querySelectorAll('details').forEach(d => { d.open = false; });
+    }
   }
 
   function syncPackUI() {
@@ -789,9 +856,6 @@
         els.composicionPrecio.textContent = `+ ${money(parseInt(input.dataset.priceCents, 10))}`;
       }
     }
-    if (els.composicionSummary) {
-      els.composicionSummary.textContent = necesitaComposicion() ? 'Sí, +varias fotos' : 'No, incluido';
-    }
   }
 
   function syncFotosUI() {
@@ -816,6 +880,61 @@
     const hasta = new Date(hoy); hasta.setDate(hasta.getDate() + 20);
     els.fechaEstimadaEl.textContent = `📦 Tu fecha de entrega estimada será entre el ${formatFecha(desde)} y el ${formatFecha(hasta)}.`;
     els.fechaEstimadaEl.dataset.rango = `${formatFecha(desde)} - ${formatFecha(hasta)}`;
+  }
+
+  // ---------------- CÓDIGO DE DESCUENTO ----------------
+  let coupon = null; // { code, percent }  (percent = null si no conocemos el importe)
+  const WELCOME_CODE = (els.couponWrap && els.couponWrap.dataset.welcomeCode || '').toUpperCase();
+  const WELCOME_PCT = parseInt(els.couponWrap && els.couponWrap.dataset.welcomePercent, 10) || 0;
+
+  function setCoupon(code, silent) {
+    code = String(code || '').trim().toUpperCase();
+    if (!code) return;
+    els.couponMsg.hidden = true;
+    els.couponMsg.classList.remove('is-ok');
+    if (WELCOME_CODE && code === WELCOME_CODE) {
+      coupon = { code, percent: WELCOME_PCT };
+      els.couponWin.hidden = false;
+      els.couponBox.hidden = true;
+    } else {
+      // Otros códigos: los guardamos y Shopify los valida en el carrito
+      coupon = { code, percent: null };
+      if (!silent) {
+        els.couponMsg.textContent = `Código ${code} guardado: lo aplicamos al añadir al carrito y verás el descuento allí si es válido para este producto.`;
+        els.couponMsg.classList.add('is-ok');
+        els.couponMsg.hidden = false;
+      }
+    }
+    calcTotal();
+  }
+  function clearCoupon() {
+    coupon = null;
+    els.couponWin.hidden = true;
+    els.couponBox.hidden = false;
+    els.couponInput.value = '';
+    els.couponMsg.hidden = true;
+    calcTotal();
+  }
+  if (els.couponWrap) {
+    els.couponApply.addEventListener('click', () => {
+      if (!els.couponInput.value.trim()) {
+        els.couponMsg.textContent = 'Escribe tu código.';
+        els.couponMsg.classList.remove('is-ok');
+        els.couponMsg.hidden = false;
+        return;
+      }
+      setCoupon(els.couponInput.value);
+    });
+    els.couponInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); els.couponApply.click(); } });
+    els.couponRemove.addEventListener('click', clearCoupon);
+    // Si ya aceptó el código de bienvenida (pop-up), lo aplicamos directamente
+    try {
+      const w = JSON.parse(localStorage.getItem('vlh_welcome') || '{}');
+      if (WELCOME_CODE && w.status === 'accepted' && w.expires > Date.now()) {
+        els.couponInput.value = WELCOME_CODE;
+        setCoupon(WELCOME_CODE, true);
+      }
+    } catch (e) {}
   }
 
   function calcTotal() {
@@ -851,8 +970,26 @@
       }
     }
 
-    els.totalPriceEl.textContent = money(total);
-    els.breakdownEl.innerHTML = lines.map(([label, cents]) => `<li><span>${label}</span><span>${money(cents)}</span></li>`).join('');
+    // Código de descuento (solo sobre la ilustración, como en Shopify)
+    let ahorro = 0;
+    if (coupon && coupon.percent && variante) {
+      ahorro = Math.round(variante.price * coupon.percent / 100);
+    }
+    const final = total - ahorro;
+    els.totalPriceEl.textContent = money(final);
+    if (els.totalOldEl) {
+      els.totalOldEl.hidden = !ahorro;
+      els.totalOldEl.textContent = ahorro ? money(total) : '';
+    }
+    els.totalPriceEl.closest('.vlh-summary').classList.toggle('has-discount', ahorro > 0);
+    let html = lines.map(([label, cents]) => `<li><span>${label}</span><span>${money(cents)}</span></li>`).join('');
+    if (ahorro) html += `<li class="is-discount"><span>Descuento ${coupon.code} (−${coupon.percent} %)</span><span>−${money(ahorro)}</span></li>`;
+    els.breakdownEl.innerHTML = html;
+    if (coupon && els.couponDetail) {
+      els.couponDetail.innerHTML = ahorro
+        ? `Código <b>${coupon.code}</b> aplicado · te ahorras <strong>${money(ahorro)}</strong>`
+        : `Código <b>${coupon.code}</b> guardado: se aplicará en el carrito`;
+    }
   }
 
   function syncAll() {
@@ -969,6 +1106,14 @@
           const err = await addonsRes.json().catch(() => ({}));
           throw new Error(err.description || 'No se pudieron añadir los extras al carrito.');
         }
+      }
+
+      // Código de descuento: se guarda en el carrito para que Shopify lo aplique
+      if (coupon && coupon.code) {
+        try {
+          if (window.vivaAddDiscountCode) await window.vivaAddDiscountCode(coupon.code);
+          else await fetch('/cart/update.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ discount: coupon.code }) });
+        } catch (e) {}
       }
 
       // Abre el carrito lateral (si el tema lo tiene) en lugar de ir a la página del carrito
