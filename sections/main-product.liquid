@@ -120,7 +120,7 @@
               </div>
 
             {%- when 'personalization_form' -%}
-              <div {{ block.shopify_attributes }}>{% render 'vlh-formulario-personalizado', product: product, canvas_image: block.settings.canvas_image, canvas_text: block.settings.canvas_text %}</div>
+              <div {{ block.shopify_attributes }}>{% render 'vlh-formulario-personalizado', product: product, canvas_image: block.settings.canvas_image, canvas_text: block.settings.canvas_text, guide_art: block.settings.guide_art, guide_art_a3: block.settings.guide_art_a3 %}</div>
 
             {%- when 'pack_cta' -%}
               <div {{ block.shopify_attributes }}>{% render 'vlh-pack-cta', product: product %}</div>
@@ -199,7 +199,9 @@
     },
     { "type": "personalization_form", "name": "Formulario personalizado", "limit": 1, "settings": [
       { "type": "image_picker", "id": "canvas_image", "label": "Foto del lienzo (esquina)", "info": "Se muestra junto a los tamaños de lienzo" },
-      { "type": "text", "id": "canvas_text", "label": "Texto de los lienzos", "default": "Listo para colgar · bastidor de madera · tela 100 % algodón" }
+      { "type": "text", "id": "canvas_text", "label": "Texto de los lienzos", "default": "Listo para colgar · bastidor de madera · tela 100 % algodón" },
+      { "type": "image_picker", "id": "guide_art", "label": "Guía de tamaños: ilustración de ejemplo", "info": "Solo la ilustración, sin fondo" },
+      { "type": "image_picker", "id": "guide_art_a3", "label": "Guía de tamaños: ejemplo lámina A3" }
     ] },
     { "type": "pack_cta", "name": "CTA Packs regalo", "limit": 1 },
     { "type": "idea_cta", "name": "CTA Idea a medida", "limit": 1 },

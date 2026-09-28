@@ -22,7 +22,9 @@
         "block_4": {
           "type": "personalization_form",
           "settings": {
-            "canvas_image": "shopify://shop_images/vlh-lienzo-esquina.jpg"
+            "canvas_image": "shopify://shop_images/vlh-lienzo-esquina.jpg",
+            "guide_art": "shopify://shop_images/vlh-arte-fallera-mantilla.jpg",
+            "guide_art_a3": "shopify://shop_images/vlh-fallera-lucia.jpg"
           }
         },
         "block_5": {

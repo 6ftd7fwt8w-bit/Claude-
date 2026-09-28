@@ -20,7 +20,7 @@
       "type": "collection-tiles",
       "settings": {
         "title": "Así quedan en casa",
-        "layout": "grid",
+        "layout": "carousel",
         "columns": 4,
         "ratio": "2 / 3",
         "background": "alt"
@@ -73,48 +73,12 @@
     "sizes": {
       "type": "canvas-sizes",
       "settings": {
-        "title": "Elige el tamaño",
-        "subtitle": "A escala, junto a una lámina A3 para que te hagas una idea",
+        "title": "¿Qué tamaño elijo?",
+        "subtitle": "Todos a escala, junto a una persona de 1,65 m",
         "background": "default",
-        "note": "Todos los lienzos se envían listos para colgar. El precio de cada tamaño aparece en la ficha del producto."
-      },
-      "blocks": {
-        "size_1": {
-          "type": "size",
-          "settings": {
-            "label": "Lámina A3",
-            "width": 30,
-            "height": 42,
-            "canvas": false,
-            "text": "Nuestra lámina en papel, como referencia"
-          }
-        },
-        "size_2": {
-          "type": "size",
-          "settings": {
-            "label": "Lienzo",
-            "width": 70,
-            "height": 100,
-            "canvas": true,
-            "text": "Ideal sobre una cómoda, un cabecero o en el comedor"
-          }
-        },
-        "size_3": {
-          "type": "size",
-          "settings": {
-            "label": "Lienzo",
-            "width": 80,
-            "height": 120,
-            "canvas": true,
-            "text": "Protagonista en paredes grandes"
-          }
-        }
-      },
-      "block_order": [
-        "size_1",
-        "size_2",
-        "size_3"
-      ]
+        "art": "shopify://shop_images/vlh-arte-fallera-mantilla.jpg",
+        "art_a3": "shopify://shop_images/vlh-fallera-lucia.jpg"
+      }
     },
     "name": {
       "type": "split-banner",
@@ -122,6 +86,7 @@
         "image": "shopify://shop_images/vlh-fallera-lucia.jpg",
         "image_first": true,
         "image_width": "half",
+        "image_fit": "contain",
         "tag": "Hecho para ella",
         "eyebrow": "",
         "heading": "Su nombre y su año de fallera",

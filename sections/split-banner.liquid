@@ -18,7 +18,7 @@
           <div><a href="{{ s.button_link | default: routes.all_products_collection_url }}" class="button" style="min-height:38px;padding:0 20px;font-size:11px">{{ s.button_label }}</a></div>
         {%- endif -%}
       </div>
-      <div class="split__media media{% if s.video != blank %} split__media--video{% endif %}">
+      <div class="split__media media{% if s.video != blank %} split__media--video{% elsif s.image_fit == 'contain' %} split__media--contain{% endif %}">
         {%- if s.video != blank -%}
           {%- liquid
             assign v_small = ''
@@ -67,6 +67,11 @@
     { "type": "number", "id": "video_start", "label": "Empezar en el segundo", "default": 0 },
     { "type": "range", "id": "video_duration", "label": "Duración del fragmento", "min": 3, "max": 20, "step": 1, "unit": "s", "default": 8 },
     { "type": "checkbox", "id": "image_first", "label": "Imagen a la izquierda", "default": false },
+    {
+      "type": "select", "id": "image_fit", "label": "Encaje de la imagen",
+      "options": [{ "value": "cover", "label": "Rellenar (puede recortar)" }, { "value": "contain", "label": "Completa, sin recortar" }],
+      "default": "cover"
+    },
     {
       "type": "select", "id": "image_width", "label": "Ancho de imagen",
       "options": [{ "value": "wide", "label": "Ancha" }, { "value": "half", "label": "Mitad" }],
