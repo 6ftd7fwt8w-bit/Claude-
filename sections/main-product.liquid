@@ -71,7 +71,13 @@
 
             {%- when 'price' -%}
               <div {{ block.shopify_attributes }}>
-                <div class="product__price" data-product-price>{% render 'price', product: product, variant: current_variant %}</div>
+                <div class="product__price" data-product-price>
+                  {%- if product.price_varies and product.selected_variant == blank -%}
+                    {% render 'price', product: product, show_from: true %}
+                  {%- else -%}
+                    {% render 'price', product: product, variant: current_variant %}
+                  {%- endif -%}
+                </div>
                 {%- if cart.taxes_included -%}<div class="product__tax">{{ 'products.tax_included' | t }}</div>{%- endif -%}
               </div>
 
@@ -120,7 +126,7 @@
               </div>
 
             {%- when 'personalization_form' -%}
-              <div {{ block.shopify_attributes }}>{% render 'vlh-formulario-personalizado', product: product, canvas_image: block.settings.canvas_image, canvas_text: block.settings.canvas_text, guide_art: block.settings.guide_art, guide_art_a3: block.settings.guide_art_a3 %}</div>
+              <div {{ block.shopify_attributes }}>{% render 'vlh-formulario-personalizado', product: product, lamina_image: block.settings.lamina_image, canvas_image: block.settings.canvas_image, canvas_detail: block.settings.canvas_detail, canvas_text: block.settings.canvas_text, guide_art: block.settings.guide_art, guide_art_a3: block.settings.guide_art_a3 %}</div>
 
             {%- when 'pack_cta' -%}
               <div {{ block.shopify_attributes }}>{% render 'vlh-pack-cta', product: product %}</div>
@@ -198,7 +204,9 @@
       "settings": [{ "type": "checkbox", "id": "show_dynamic_checkout", "label": "Mostrar botón de pago rápido", "default": false }]
     },
     { "type": "personalization_form", "name": "Formulario personalizado", "limit": 1, "settings": [
-      { "type": "image_picker", "id": "canvas_image", "label": "Foto del lienzo (esquina)", "info": "Se muestra junto a los tamaños de lienzo" },
+      { "type": "image_picker", "id": "lamina_image", "label": "Foto de ejemplo de lámina", "info": "Miniatura junto a los tamaños de lámina (se amplía al pulsar)" },
+      { "type": "image_picker", "id": "canvas_image", "label": "Foto de ejemplo de lienzo", "info": "Miniatura junto a los tamaños de lienzo (se amplía al pulsar)" },
+      { "type": "image_picker", "id": "canvas_detail", "label": "Foto de detalle del lienzo (esquina)", "info": "Segunda foto al ampliar" },
       { "type": "text", "id": "canvas_text", "label": "Texto de los lienzos", "default": "Listo para colgar · bastidor de madera · tela 100 % algodón" },
       { "type": "image_picker", "id": "guide_art", "label": "Guía de tamaños: ilustración de ejemplo", "info": "Solo la ilustración, sin fondo" },
       { "type": "image_picker", "id": "guide_art_a3", "label": "Guía de tamaños: ejemplo lámina A3" }

@@ -91,6 +91,12 @@
       </dialog>
       <div class="vlh-canvas">
         <div class="vlh-canvas__head">
+          {%- if lamina_image != blank -%}
+            <button type="button" class="vlh-canvas__thumb" data-lightbox-images='{{ lamina_image | image_url: width: 1400 | json | prepend: '[' | append: ']' | escape }}' data-lightbox-title="Así es una lámina" aria-label="Ver cómo queda una lámina">
+              {{ lamina_image | image_url: width: 200 | image_tag: loading: 'lazy', width: 64, height: 80, alt: 'Ejemplo de lámina' }}
+              <span class="vlh-canvas__zoom" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8M10.5 7.5v6M7.5 10.5h6"/></svg></span>
+            </button>
+          {%- endif -%}
           <div>
             <p class="vlh-size-group__title">Lámina</p>
             <p class="vlh-canvas__text">Papel de algodón verjurado 300 g · marco y pack regalo opcionales</p>
@@ -130,8 +136,10 @@
         <div class="vlh-canvas">
           <div class="vlh-canvas__head">
             {%- if canvas_image != blank -%}
-              <button type="button" class="vlh-canvas__thumb" data-lightbox-images='{{ canvas_image | image_url: width: 1400 | json | prepend: '[' | append: ']' | escape }}' aria-label="Ver detalle del lienzo">
-                {{ canvas_image | image_url: width: 160 | image_tag: loading: 'lazy', width: 64, height: 64, alt: 'Detalle de la esquina del lienzo' }}
+              {%- capture canvas_imgs -%}[{{ canvas_image | image_url: width: 1400 | json }}{%- if canvas_detail != blank -%},{{ canvas_detail | image_url: width: 1400 | json }}{%- endif -%}]{%- endcapture -%}
+              <button type="button" class="vlh-canvas__thumb" data-lightbox-images='{{ canvas_imgs | escape }}' data-lightbox-title="Así es un lienzo" aria-label="Ver cómo queda un lienzo">
+                {{ canvas_image | image_url: width: 200 | image_tag: loading: 'lazy', width: 64, height: 80, alt: 'Ejemplo de lienzo' }}
+                <span class="vlh-canvas__zoom" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8M10.5 7.5v6M7.5 10.5h6"/></svg></span>
               </button>
             {%- endif -%}
             <div>
@@ -399,6 +407,10 @@
     padding: 0 20px;
     box-sizing: border-box;
   }
+  .vlh-lamina-form fieldset, .vlh-lamina-form .vlh-canvas, .vlh-lamina-form .vlh-canvas__head > div { min-width: 0; }
+  .vlh-lamina-form { overflow-wrap: anywhere; }
+  .product__info .page-width:has(> .vlh-lamina-form) { padding: 0; }
+  .product__info .vlh-lamina-form { max-width: none; margin: 8px 0 0; padding: 0; }
   .vlh-lamina-form .vlh-field {
     border: none;
     padding: 0 0 28px;
@@ -493,8 +505,9 @@
   .vlh-canvas { margin-top: 18px; padding: 14px; border: 1px solid var(--vlh-mist); background: rgba(255,255,255,.45); }
   .vlh-canvas__head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
   .vlh-canvas__head .vlh-size-group__title { margin: 0 0 2px; }
-  .vlh-canvas__thumb { flex: none; width: 64px; height: 64px; padding: 0; border: 1px solid var(--vlh-mist); background: none; cursor: zoom-in; overflow: hidden; }
-  .vlh-canvas__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vlh-canvas__thumb { position: relative; flex: none; width: 64px; height: 80px; padding: 0; border: 1px solid var(--vlh-mist); background: none; cursor: zoom-in; overflow: hidden; }
+  .vlh-canvas__thumb img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
+  .vlh-canvas__zoom { position: absolute; right: 3px; bottom: 3px; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.92); color: var(--vlh-tinta); display: grid; place-items: center; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
   .vlh-canvas__new { display: inline-block; margin-left: 6px !important; padding: 2px 7px; background: var(--color-highlight, #F2D16B); color: var(--vlh-tinta) !important; font-size: 10px; font-weight: 600 !important; letter-spacing: .1em !important; text-transform: uppercase !important; }
   .vlh-canvas__text { margin: 0; font-size: 12.5px; color: #7b7168; line-height: 1.45; }
   .vlh-canvas .vlh-radio-cards { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
