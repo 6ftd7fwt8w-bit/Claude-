@@ -21,10 +21,21 @@
             "eyebrow": "De tu foto a tu pared",
             "text": "Retratos, parejas, familias y mascotas convertidos en una ilustración única, lista para colgar o regalar."
           }
+        },
+        "banner_2": {
+          "type": "banner",
+          "settings": {
+            "collection": "infantil",
+            "image": "shopify://shop_images/vlh-portada-infantil.png",
+            "image_mobile": "shopify://shop_images/vlh-portada-infantil-movil.png",
+            "eyebrow": "Para soñar despiertos",
+            "text": "Animales tiernos, cielos estrellados y frases que hacen sonreír. Combínalas en sets para su habitación."
+          }
         }
       },
       "block_order": [
-        "banner_1"
+        "banner_1",
+        "banner_2"
       ]
     },
     "instagram": {
