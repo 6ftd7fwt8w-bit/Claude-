@@ -2,21 +2,21 @@
 {%- case t -%}
   {%- when 'Availability' -%}Disponibilidad
   {%- when 'Price' -%}Precio
-  {%- when 'In stock' -%}Disponible
+  {%- when 'In stock', 'En existencia' -%}Disponible
   {%- when 'Out of stock' -%}Agotado
   {%- when 'Product type' -%}Tipo de producto
   {%- when 'Vendor', 'Brand' -%}Marca
   {%- when 'Size' -%}Tamaño
   {%- when 'Color', 'Colour' -%}Color
   {%- when 'Tags', 'Tag' -%}Etiquetas
-  {%- when 'Featured' -%}Destacados
+  {%- when 'Featured', 'Características' -%}Destacados
   {%- when 'Best selling' -%}Más vendidos
   {%- when 'Alphabetically, A-Z' -%}Alfabéticamente, A-Z
   {%- when 'Alphabetically, Z-A' -%}Alfabéticamente, Z-A
   {%- when 'Price, low to high' -%}Precio, de menor a mayor
   {%- when 'Price, high to low' -%}Precio, de mayor a menor
-  {%- when 'Date, old to new' -%}Fecha, más antiguos primero
-  {%- when 'Date, new to old' -%}Fecha, más recientes primero
+  {%- when 'Date, old to new', 'Fecha: antiguo(a) a reciente' -%}Más antiguos primero
+  {%- when 'Date, new to old', 'Fecha: reciente a antiguo(a)' -%}Novedades primero
   {%- when 'Relevance' -%}Relevancia
   {%- else -%}{{ t }}
 {%- endcase -%}
