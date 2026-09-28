@@ -341,6 +341,13 @@
       },
       {
         "type": "textarea",
+        "id": "desc_canvas",
+        "label": "Párrafo de lienzo XL",
+        "info": "Se añade en los productos con lienzo, antes de «Si seleccionas marco». Admite <strong>negritas</strong>. Déjalo vacío para no mostrarlo.",
+        "default": "Si prefieres un formato grande, elige <strong>lienzo XL de 70×100 o 80×120 cm</strong>: tu ilustración sobre tela 100 % algodón, montada en un bastidor de madera y lista para colgar. Al ser un lienzo no necesita marco, y los packs regalo están disponibles solo para las láminas."
+      },
+      {
+        "type": "textarea",
         "id": "desc_find_2",
         "label": "Buscar (2)"
       },

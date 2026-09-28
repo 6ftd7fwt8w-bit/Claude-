@@ -1,6 +1,7 @@
 {%- comment -%}
   Descripción del producto con los reemplazos de texto de Configuración del tema → Textos de producto.
   Sirve para ajustar frases solo en este tema, sin tocar la descripción guardada en Shopify.
+  En productos con lienzo XL añade el párrafo del lienzo antes de «Si seleccionas marco» (o al final).
 {%- endcomment -%}
 {%- liquid
   assign desc = product.description
@@ -9,6 +10,27 @@
   endif
   if settings.desc_find_2 != blank
     assign desc = desc | replace: settings.desc_find_2, settings.desc_replace_2
+  endif
+
+  if settings.desc_canvas != blank
+    assign has_canvas = false
+    for v in product.variants
+      if v.option1 contains 'Lienzo'
+        assign has_canvas = true
+        break
+      endif
+    endfor
+    if has_canvas
+      assign desc = desc | replace: 'la personalización de tu lámina', 'la personalización de tu ilustración'
+      assign canvas_p = '<p dir="auto">' | append: settings.desc_canvas | append: '</p>'
+      assign anchor = '<p dir="auto">Si seleccionas <strong>marco</strong>'
+      if desc contains anchor
+        assign canvas_anchor = canvas_p | append: anchor
+        assign desc = desc | replace_first: anchor, canvas_anchor
+      else
+        assign desc = desc | append: canvas_p
+      endif
+    endif
   endif
   echo desc
 -%}
