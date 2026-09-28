@@ -12,7 +12,7 @@
 - Papel: algodón verjurado 300 g.
 
 ## Lienzos XL
-- Tamaños (variantes de las 9 ilustraciones personalizadas): "Lienzo 60x90 cm", "Lienzo 70x100 cm", "Lienzo 80x120 cm". Precio = precio A4 (misma 2ª opción) + 45 / + 60 / + 90 €.
+- Tamaños (variantes de las 9 ilustraciones personalizadas): "Lienzo 70x100 cm" (proporción como A3) y "Lienzo 80x120 cm". Precio = precio A4 (misma 2ª opción) + 60 / + 90 €. El 60x90 se eliminó por ser casi igual que el 70x100.
 - Tela 100 % algodón en bastidor, listo para colgar. Al elegir lienzo el formulario desactiva marco y packs regalo.
 - Plazo y envío: igual que las personalizadas. Infantiles: sin lienzo de momento.
 - Campaña: página /pages/lienzos-xl-fallera (plantilla page.lienzos-fallera), reel vlh-reel-lienzos-fallera.mov. Título de campaña: «Tu retrato de fallera».

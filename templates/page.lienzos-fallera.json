@@ -8,7 +8,7 @@
         "tag": "Nuevo · Lienzos XL",
         "heading": "Tu retrato de fallera",
         "text": "<p>Convertimos tu foto de fallera en una ilustración en acuarela y la imprimimos en un lienzo de gran formato, montado en bastidor y listo para colgar.</p>",
-        "points": "Lienzos de 60×90, 70×100 y 80×120 cm\nTela 100 % algodón montada en bastidor\nListo para colgar, sin necesidad de marco\nTe enseñamos el diseño antes de imprimirlo",
+        "points": "Lienzos de 70×100 y 80×120 cm\nTela 100 % algodón montada en bastidor\nListo para colgar, sin necesidad de marco\nTe enseñamos el diseño antes de imprimirlo",
         "button_label": "Crear mi lienzo",
         "button_link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
         "link_label": "¿Dudas? Escríbenos por WhatsApp",
@@ -58,7 +58,7 @@
           "settings": {
             "title": "",
             "subtitle": "",
-            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=60x90",
+            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
             "image": "shopify://shop_images/vlh-fallera-mantilla.jpg"
           }
         }
@@ -93,23 +93,13 @@
           "type": "size",
           "settings": {
             "label": "Lienzo",
-            "width": 60,
-            "height": 90,
-            "canvas": true,
-            "text": "Ideal sobre una cómoda o un cabecero"
-          }
-        },
-        "size_3": {
-          "type": "size",
-          "settings": {
-            "label": "Lienzo",
             "width": 70,
             "height": 100,
             "canvas": true,
-            "text": "Equilibrado para el salón o el comedor"
+            "text": "Ideal sobre una cómoda, un cabecero o en el comedor"
           }
         },
-        "size_4": {
+        "size_3": {
           "type": "size",
           "settings": {
             "label": "Lienzo",
@@ -123,8 +113,7 @@
       "block_order": [
         "size_1",
         "size_2",
-        "size_3",
-        "size_4"
+        "size_3"
       ]
     },
     "name": {
