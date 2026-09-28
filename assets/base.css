@@ -807,6 +807,9 @@ body.overflow-hidden .welcome-badge { opacity: 0; pointer-events: none; }
 .lightbox__stage img { width: auto; height: auto; max-width: 100%; max-height: calc(100vh - 110px); object-fit: contain; box-shadow: 0 20px 60px rgba(0,0,0,.4); }
 .lightbox__nav, .lightbox__close { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: rgba(255,255,255,.1); justify-self: center; }
 .lightbox__nav:hover, .lightbox__close:hover { background: rgba(255,255,255,.2); }
+.lightbox__nav[hidden] { display: grid; visibility: hidden; }
+.lightbox__stage { grid-column: 2; grid-row: 1; }
+.lightbox__nav--prev { grid-column: 1; grid-row: 1; } .lightbox__nav--next { grid-column: 3; grid-row: 1; }
 .lightbox__nav svg, .lightbox__close svg { width: 20px; height: 20px; }
 .lightbox__close { position: absolute; top: 14px; right: 14px; z-index: 2; }
 .lightbox__count { position: absolute; bottom: 16px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.75); font-size: 12px; letter-spacing: .18em; margin: 0; }
@@ -814,7 +817,7 @@ body.overflow-hidden .welcome-badge { opacity: 0; pointer-events: none; }
   .lightbox { grid-template-columns: 1fr; }
   .lightbox__nav { position: absolute; bottom: 8px; background: rgba(255,255,255,.12); }
   .lightbox__nav--prev { left: 16px; } .lightbox__nav--next { right: 16px; }
-  .lightbox__stage { padding: 56px 8px 64px; }
+  .lightbox__stage { padding: 56px 8px 64px; } .lightbox__stage { grid-column: 1; }
 }
 
 /* Barra fija de compra en móvil (formulario personalizado) ---------------- */
