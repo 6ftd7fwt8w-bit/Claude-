@@ -929,7 +929,7 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .product__crumb span { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 
 /* Portada propia de colección */
-.collection-banner { position: relative; display: flex; align-items: center; justify-content: center; min-height: clamp(340px, 30vw, 480px); overflow: hidden; background: var(--color-bg-alt); text-align: center; }
+.collection-banner { position: relative; display: flex; align-items: center; justify-content: center; min-height: clamp(360px, 36vw, 620px); overflow: hidden; background: var(--color-bg-alt); text-align: center; }
 .collection-banner__media { position: absolute; inset: 0; }
 .collection-banner__media img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .collection-banner__content { position: relative; max-width: 460px; padding: 40px 24px; color: var(--color-text); }
