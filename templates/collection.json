@@ -10,7 +10,22 @@
         "all_collection": "infantil",
         "all_label": "Ver toda la colección infantil",
         "all_handles": "bosque-encantado, frases-con-sonrisa, estrellas-y-suenos"
-      }
+      },
+      "blocks": {
+        "banner_1": {
+          "type": "banner",
+          "settings": {
+            "collection": "laminas-personalizadas",
+            "image": "shopify://shop_images/vlh-portada-personalizadas.png",
+            "image_mobile": "shopify://shop_images/vlh-portada-personalizadas-movil.png",
+            "eyebrow": "De tu foto a tu pared",
+            "text": "Retratos, parejas, familias y mascotas convertidos en una ilustración única, lista para colgar o regalar."
+          }
+        }
+      },
+      "block_order": [
+        "banner_1"
+      ]
     },
     "instagram": {
       "type": "instagram-gallery",

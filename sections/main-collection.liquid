@@ -3,7 +3,34 @@
   if section.settings.hero_image != blank
     assign hero_image = section.settings.hero_image
   endif
+  assign banner = nil
+  for block in section.blocks
+    if block.type == 'banner' and block.settings.collection.handle == collection.handle and block.settings.image != blank
+      assign banner = block
+      break
+    endif
+  endfor
 -%}
+{%- if banner -%}
+  {%- comment -%} Portada propia de esta colección: texto oscuro sobre la zona libre de la foto; en móvil, foto arriba y texto debajo {%- endcomment -%}
+  <div class="collection-banner" {{ banner.shopify_attributes }}>
+    <picture class="collection-banner__media">
+      {%- if banner.settings.image_mobile != blank -%}
+        <source media="(max-width: 749px)" srcset="{{ banner.settings.image_mobile | image_url: width: 750 }} 750w, {{ banner.settings.image_mobile | image_url: width: 1200 }} 1200w" sizes="100vw">
+      {%- endif -%}
+      {{ banner.settings.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '1000, 1400, 1800, 2400', sizes: '100vw', alt: collection.title }}
+    </picture>
+    <div class="collection-banner__content">
+      {%- if banner.settings.eyebrow != blank -%}<span class="eyebrow">{{ banner.settings.eyebrow }}</span>{%- endif -%}
+      <h1 class="display">{{ collection.title }}</h1>
+      {%- if banner.settings.text != blank -%}
+        <p class="collection-banner__text">{{ banner.settings.text }}</p>
+      {%- elsif collection.description != blank and section.settings.show_description -%}
+        <div class="collection-banner__text rte">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- else -%}
 <div class="collection-hero{% if section.settings.show_image and hero_image %} collection-hero--image{% else %} bg-alt{% endif %}">
   {%- if section.settings.show_image and hero_image -%}
     <div class="collection-hero__media">
@@ -17,6 +44,7 @@
     {%- endif -%}
   </div>
 </div>
+{%- endif -%}
 
 <section class="section" style="padding-top:24px">
   <div class="page-width">
@@ -133,6 +161,19 @@
     { "type": "collection", "id": "all_collection", "label": "Colección completa" },
     { "type": "text", "id": "all_label", "label": "Texto del botón", "default": "Ver toda la colección" },
     { "type": "text", "id": "all_handles", "label": "Mostrar en estas colecciones", "info": "Identificadores separados por comas, p. ej. bosque-encantado, estrellas-y-suenos" }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Portada de una colección",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Colección" },
+        { "type": "image_picker", "id": "image", "label": "Imagen (ordenador)", "info": "Panorámica con el centro despejado para el texto" },
+        { "type": "image_picker", "id": "image_mobile", "label": "Imagen (móvil)", "info": "Se muestra encima del texto" },
+        { "type": "text", "id": "eyebrow", "label": "Antetítulo" },
+        { "type": "textarea", "id": "text", "label": "Texto corto", "info": "Si está vacío, se usa la descripción de la colección" }
+      ]
+    }
   ]
 }
 {% endschema %}
