@@ -21,7 +21,9 @@
         },
         "block_4": {
           "type": "personalization_form",
-          "settings": {}
+          "settings": {
+            "canvas_image": "shopify://shop_images/vlh-lienzo-esquina.jpg"
+          }
         },
         "block_5": {
           "type": "whatsapp",

@@ -1,0 +1,299 @@
+{
+  "sections": {
+    "hero": {
+      "type": "video-feature",
+      "settings": {
+        "video": "shopify://files/videos/vlh-reel-lienzos-fallera.mov",
+        "poster": "shopify://shop_images/vlh-fallera-abrazo.jpg",
+        "tag": "Nuevo · Lienzos XL",
+        "heading": "Tu fallera, en gran formato",
+        "text": "<p>Convertimos tu foto de fallera en una ilustración en acuarela y la imprimimos en un lienzo de gran formato, montado en bastidor y listo para colgar.</p>",
+        "points": "Lienzos de 60×90, 70×100 y 80×120 cm\nTela 100 % algodón montada en bastidor\nListo para colgar, sin necesidad de marco\nTe enseñamos el diseño antes de imprimirlo",
+        "button_label": "Crear mi lienzo",
+        "button_link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
+        "link_label": "¿Dudas? Escríbenos por WhatsApp",
+        "link_url": "https://wa.me/34604524295?text=Hola!%20Tengo%20una%20duda%20sobre%20los%20lienzos%20de%20fallera",
+        "background": "default"
+      }
+    },
+    "gallery": {
+      "type": "collection-tiles",
+      "settings": {
+        "title": "Así quedan en casa",
+        "layout": "grid",
+        "columns": 4,
+        "ratio": "2 / 3",
+        "background": "alt"
+      },
+      "blocks": {
+        "tile_1": {
+          "type": "tile",
+          "settings": {
+            "title": "",
+            "subtitle": "",
+            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
+            "image": "shopify://shop_images/vlh-fallera-abrazo.jpg"
+          }
+        },
+        "tile_2": {
+          "type": "tile",
+          "settings": {
+            "title": "",
+            "subtitle": "",
+            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
+            "image": "shopify://shop_images/vlh-fallera-retrato.jpg"
+          }
+        },
+        "tile_3": {
+          "type": "tile",
+          "settings": {
+            "title": "",
+            "subtitle": "",
+            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=80x120",
+            "image": "shopify://shop_images/vlh-fallera-tres.jpg"
+          }
+        },
+        "tile_4": {
+          "type": "tile",
+          "settings": {
+            "title": "",
+            "subtitle": "",
+            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=60x90",
+            "image": "shopify://shop_images/vlh-fallera-mantilla.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "tile_1",
+        "tile_2",
+        "tile_3",
+        "tile_4"
+      ]
+    },
+    "sizes": {
+      "type": "canvas-sizes",
+      "settings": {
+        "title": "Elige el tamaño",
+        "subtitle": "A escala, junto a una lámina A3 para que te hagas una idea",
+        "background": "default",
+        "note": "Todos los lienzos se envían listos para colgar. El precio de cada tamaño aparece en la ficha del producto."
+      },
+      "blocks": {
+        "size_1": {
+          "type": "size",
+          "settings": {
+            "label": "Lámina A3",
+            "width": 30,
+            "height": 42,
+            "canvas": false,
+            "text": "Nuestra lámina en papel, como referencia"
+          }
+        },
+        "size_2": {
+          "type": "size",
+          "settings": {
+            "label": "Lienzo",
+            "width": 60,
+            "height": 90,
+            "canvas": true,
+            "text": "Ideal sobre una cómoda o un cabecero"
+          }
+        },
+        "size_3": {
+          "type": "size",
+          "settings": {
+            "label": "Lienzo",
+            "width": 70,
+            "height": 100,
+            "canvas": true,
+            "text": "Equilibrado para el salón o el comedor"
+          }
+        },
+        "size_4": {
+          "type": "size",
+          "settings": {
+            "label": "Lienzo",
+            "width": 80,
+            "height": 120,
+            "canvas": true,
+            "text": "Protagonista en paredes grandes"
+          }
+        }
+      },
+      "block_order": [
+        "size_1",
+        "size_2",
+        "size_3",
+        "size_4"
+      ]
+    },
+    "name": {
+      "type": "split-banner",
+      "settings": {
+        "image": "shopify://shop_images/vlh-fallera-lucia.jpg",
+        "image_first": true,
+        "image_width": "half",
+        "tag": "Hecho para ella",
+        "eyebrow": "",
+        "heading": "Su nombre y su año de fallera",
+        "heading_size": "medium",
+        "text": "<p>Podemos añadir el nombre, el año o un fondo con un rincón especial de tu ciudad, para que el lienzo sea solo suyo.</p><p>Indícanoslo al hacer el pedido y lo tendremos en cuenta en el diseño.</p>",
+        "button_label": "Crear mi lienzo",
+        "button_link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
+        "text_center": false,
+        "panel_bg": "#EFE8DE",
+        "contained": true,
+        "outer_background": "default"
+      }
+    },
+    "faq": {
+      "type": "custom-liquid",
+      "settings": {
+        "custom_liquid": "<section class=\"section\"><div class=\"page-width page-width--narrow\">\n<h2 class=\"section-title\">Preguntas frecuentes</h2>\n<details class=\"accordion\" open><summary>¿Cómo es el lienzo?</summary><div class=\"accordion__content rte\"><p>Imprimimos tu ilustración sobre tela 100 % algodón y la montamos en un bastidor de madera. Llega lista para colgar: no necesita marco.</p></div></details>\n<details class=\"accordion\"><summary>¿Qué foto necesito?</summary><div class=\"accordion__content rte\"><p>Una foto nítida y con buena luz de la fallera (o de las falleras) vestidas con el traje. Si tienes varias, envíanoslas todas: elegiremos la que mejor funcione.</p></div></details>\n<details class=\"accordion\"><summary>¿Puedo ver el diseño antes de imprimirlo?</summary><div class=\"accordion__content rte\"><p>Sí. Te enseñamos la ilustración antes de imprimirla y puedes pedirnos hasta 3 ajustes.</p></div></details>\n<details class=\"accordion\"><summary>¿Cuánto tarda?</summary><div class=\"accordion__content rte\"><p>El mismo plazo que nuestras ilustraciones personalizadas. Si lo necesitas para una fecha concreta, escríbenos por WhatsApp antes de hacer el pedido.</p></div></details>\n<details class=\"accordion\"><summary>¿Puedo añadir un nombre o un año?</summary><div class=\"accordion__content rte\"><p>Sí, indícalo en «Añadir detalles para tu ilustración» al hacer el pedido.</p></div></details>\n</div></section>"
+      }
+    },
+    "instagram": {
+      "type": "instagram-gallery",
+      "settings": {
+        "eyebrow": "@vivalahome.store",
+        "title": "Visto en Instagram",
+        "subtitle": "Son vuestras fotos y vídeos: así lucen nuestras láminas cuando llegan a vuestras manos. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
+        "instagram_url": "https://www.instagram.com/vivalahome.store",
+        "columns": 6,
+        "background": "default"
+      },
+      "blocks": {
+        "foto_1": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/ECC08481-A155-4C38-A50E-1141BC671330.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3850372147470668852&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_2": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/094123fe66084a249edf742f5ce787af.mov",
+            "enlace": "https://www.instagram.com/reel/DWofTakDKy5/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_3": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/0cbc20e0-5b71-4707-bb77-adedcb1732ac.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3954772933400993938&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_4": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/c1295c5b56644f4283209856fd3099ab.mov",
+            "enlace": "https://www.instagram.com/reel/Dau__OURJk4/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_5": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/065453a5-68b1-4725-aa49-d760712f6c4a.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3953335224192736842&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_6": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/c90e1b7ef1814b45b304f81d42446219.mov",
+            "enlace": "https://www.instagram.com/reel/DcEPTv1AcD9/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_7": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/E8722423-0E60-4CD8-924B-B20D3A122948.jpg",
+            "enlace": "https://www.instagram.com/p/DZPvz9QjF9v/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_8": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/copy_7B5855E7-03B1-476E-A488-B95310A0410B.mov",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3854125653239287334&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_9": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/855F268F-0713-41B5-B8E6-A871AFE879AD.jpg",
+            "enlace": "https://www.instagram.com/p/DaFyMQpjGQk/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_10": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/B88930C7-F90A-4842-B898-5E1F8E3CFC89.mov",
+            "enlace": "https://www.instagram.com/reel/DbL_t0SxD3B/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_11": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/297A8ADB-988A-40B9-8628-12A70FB21197.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3849845511910346280&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_12": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/8a926983dd1048d8841c62d2e520031e.mov",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3909863916348153291&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_13": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/F95434CA-0879-4787-99D9-8231E6A18040.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3909867111680528825&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_14": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/lv_0_20260214101144.mov",
+            "enlace": "https://www.instagram.com/reel/DU6TtrkCNR6/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_15": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/431da1f7-d3e7-43d8-8d8d-6f2262f6fecb.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3982493473076688679&stkn=enVzZWdqbnR2ZnF6"
+          }
+        }
+      },
+      "block_order": [
+        "foto_1",
+        "foto_2",
+        "foto_3",
+        "foto_4",
+        "foto_5",
+        "foto_6",
+        "foto_7",
+        "foto_8",
+        "foto_9",
+        "foto_10",
+        "foto_11",
+        "foto_12",
+        "foto_13",
+        "foto_14",
+        "foto_15"
+      ]
+    }
+  },
+  "order": [
+    "hero",
+    "gallery",
+    "sizes",
+    "name",
+    "faq",
+    "instagram"
+  ]
+}

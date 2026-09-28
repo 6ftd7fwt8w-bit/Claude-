@@ -1,0 +1,76 @@
+{%- comment -%}
+  Portada con vídeo vertical (tipo reel) junto al texto. El vídeo se reproduce en bucle y sin sonido.
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign v_src = ''
+  if s.video != blank
+    for src in s.video.sources
+      if src.format == 'mp4' and src.height == 720
+        assign v_src = src.url
+      endif
+    endfor
+    if v_src == ''
+      for src in s.video.sources
+        if src.format == 'mp4'
+          assign v_src = src.url
+        endif
+      endfor
+    endif
+  endif
+-%}
+<section class="section bg-{{ s.background }} video-feature">
+  <div class="page-width video-feature__inner{% if s.video_first %} video-feature__inner--reverse{% endif %}">
+    <div class="video-feature__text">
+      {%- if s.tag != blank -%}<span class="tag-highlight script">{{ s.tag }}</span>{%- endif -%}
+      {%- if s.heading != blank -%}<h1 class="display video-feature__heading">{{ s.heading }}</h1>{%- endif -%}
+      {%- if s.text != blank -%}<div class="rte video-feature__body">{{ s.text }}</div>{%- endif -%}
+      {%- if s.points != blank -%}
+        <ul class="video-feature__points">
+          {%- assign pts = s.points | newline_to_br | split: '<br />' -%}
+          {%- for pt in pts -%}{%- assign t = pt | strip -%}{%- if t != blank -%}<li>{% render 'icon', name: 'star' %}<span>{{ t }}</span></li>{%- endif -%}{%- endfor -%}
+        </ul>
+      {%- endif -%}
+      <div class="video-feature__actions">
+        {%- if s.button_label != blank -%}<a class="button" href="{{ s.button_link | default: '#' }}">{{ s.button_label }}</a>{%- endif -%}
+        {%- if s.link_label != blank -%}<a class="link-underline" href="{{ s.link_url | default: '#' }}">{{ s.link_label }}</a>{%- endif -%}
+      </div>
+    </div>
+    <div class="video-feature__media">
+      {%- if v_src != '' -%}
+        <video src="{{ v_src }}" autoplay muted loop playsinline preload="metadata"
+          poster="{% if s.poster != blank %}{{ s.poster | image_url: width: 800 }}{% else %}{{ s.video.preview_image | image_url: width: 800 }}{% endif %}"
+          aria-label="{{ s.heading | escape }}"></video>
+      {%- elsif s.poster != blank -%}
+        {{ s.poster | image_url: width: 900 | image_tag: loading: 'eager', alt: s.heading }}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Vídeo vertical y texto",
+  "settings": [
+    { "type": "video", "id": "video", "label": "Vídeo (vertical)" },
+    { "type": "image_picker", "id": "poster", "label": "Imagen mientras carga" },
+    { "type": "checkbox", "id": "video_first", "label": "Vídeo a la izquierda", "default": false },
+    { "type": "text", "id": "tag", "label": "Etiqueta" },
+    { "type": "text", "id": "heading", "label": "Título", "default": "Título" },
+    { "type": "richtext", "id": "text", "label": "Texto" },
+    { "type": "textarea", "id": "points", "label": "Puntos destacados", "info": "Uno por línea" },
+    { "type": "text", "id": "button_label", "label": "Botón" },
+    { "type": "url", "id": "button_link", "label": "Enlace del botón" },
+    { "type": "text", "id": "link_label", "label": "Enlace secundario" },
+    { "type": "url", "id": "link_url", "label": "Destino del enlace secundario" },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "default"
+    }
+  ],
+  "presets": [{ "name": "Vídeo vertical y texto" }]
+}
+{% endschema %}

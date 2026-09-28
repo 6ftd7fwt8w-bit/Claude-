@@ -45,7 +45,8 @@
     "pack_offer_title": "3 kids prints = the third one free",
     "pack_offer_need_one": "Just 1 more print and it’s free.",
     "pack_offer_need_many": "Add {{ count }} more prints and the third is free.",
-    "pack_offer_got": "Done! You save {{ amount }}."
+    "pack_offer_got": "Done! You save {{ amount }}.",
+    "canvas_badge": "Also on XL canvas"
   },
   "cart": {
     "title": "Your cart",

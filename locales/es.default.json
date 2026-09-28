@@ -45,7 +45,8 @@
     "pack_offer_title": "3 láminas infantiles = la tercera gratis",
     "pack_offer_need_one": "Te falta solo 1 lámina para llevártela gratis.",
     "pack_offer_need_many": "Añade {{ count }} láminas más y la tercera te sale gratis.",
-    "pack_offer_got": "¡Conseguido! Te ahorras {{ amount }}."
+    "pack_offer_got": "¡Conseguido! Te ahorras {{ amount }}.",
+    "canvas_badge": "También en lienzo XL"
   },
   "cart": {
     "title": "Tu carrito",

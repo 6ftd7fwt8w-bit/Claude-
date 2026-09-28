@@ -75,8 +75,13 @@
     <!-- ============ 1. TAMAÑO ============ -->
     <fieldset class="vlh-field">
       <legend>Tamaño</legend>
+      {%- comment -%} Los tamaños cuyo nombre contiene "Lienzo" se muestran aparte, como Lienzo XL {%- endcomment -%}
+      {%- assign vlh_hay_lienzo = false -%}
+      {%- for t in vlh_tamanos -%}{%- if t contains 'Lienzo' -%}{%- assign vlh_hay_lienzo = true -%}{%- endif -%}{%- endfor -%}
+      {%- if vlh_hay_lienzo -%}<p class="vlh-size-group__title">Lámina <span>papel de algodón verjurado 300 g</span></p>{%- endif -%}
       <div class="vlh-radio-cards" id="vlh-tamano-group">
         {% for tamano_valor in vlh_tamanos %}
+          {% if tamano_valor contains 'Lienzo' %}{% continue %}{% endif %}
           {% assign vlh_medida = '' %}
           {% if tamano_valor contains 'A4' %}
             {% assign vlh_medida = '21 × 29,7 cm' %}
@@ -102,7 +107,33 @@
           </label>
         {% endfor %}
       </div>
-      <p class="vlh-hint" id="vlh-tamano-valentina-nota" hidden>El Pack Valentina se presenta siempre en A3 con marco. Si quieres A4, primero tienes que desmarcar el Pack Valentina más abajo.</p>
+      {%- if vlh_hay_lienzo -%}
+        <div class="vlh-canvas">
+          <div class="vlh-canvas__head">
+            {%- if canvas_image != blank -%}
+              <button type="button" class="vlh-canvas__thumb" data-lightbox-images='{{ canvas_image | image_url: width: 1400 | json | prepend: '[' | append: ']' | escape }}' aria-label="Ver detalle del lienzo">
+                {{ canvas_image | image_url: width: 160 | image_tag: loading: 'lazy', width: 64, height: 64, alt: 'Detalle de la esquina del lienzo' }}
+              </button>
+            {%- endif -%}
+            <div>
+              <p class="vlh-size-group__title">Lienzo XL <span class="vlh-canvas__new">Nuevo</span></p>
+              <p class="vlh-canvas__text">{{ canvas_text | default: 'Listo para colgar · bastidor de madera · tela 100 % algodón' }}</p>
+            </div>
+          </div>
+          <div class="vlh-radio-cards vlh-radio-cards--canvas">
+            {% for tamano_valor in vlh_tamanos %}
+              {% unless tamano_valor contains 'Lienzo' %}{% continue %}{% endunless %}
+              <label class="vlh-radio-card">
+                <input type="radio" name="vlh-tamano" value="{{ tamano_valor | escape }}" data-lienzo required>
+                <span class="vlh-radio-card__title">{{ tamano_valor | remove: 'Lienzo' | remove: 'cm' | replace: 'x', ' × ' | strip }} cm</span>
+                <span class="vlh-radio-card__medida">Lienzo</span>
+                <span class="vlh-radio-card__price" data-tamano-precio>—</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      {%- endif -%}
+      <p class="vlh-hint" id="vlh-tamano-valentina-nota" hidden>El Pack Valentina se presenta siempre en A3 con marco. Si quieres otro tamaño o un lienzo, primero desmarca el Pack Valentina más abajo.</p>
     </fieldset>
 
     <!-- ============ 2. SEGUNDA VARIANTE (solo si el producto la tiene) ============ -->
@@ -153,6 +184,7 @@
         <span class="vlh-accordion__value vlh-accordion__value--empty" id="vlh-pack-summary">+</span>
       </summary>
       <div class="vlh-accordion__body">
+      <p class="vlh-hint vlh-canvas-note" data-canvas-note hidden>Has elegido un lienzo: llega montado en bastidor, listo para colgar, así que no lleva pack de regalo. Si lo quieres con pack, elige A4 o A3.</p>
       <div class="vlh-radio-cards vlh-radio-cards--packs" id="vlh-pack-group">
         <label class="vlh-radio-card vlh-radio-card--pack">
           <input type="radio" name="vlh-pack" value="no" checked>
@@ -227,6 +259,7 @@
       </summary>
       <div class="vlh-accordion__body">
         <p class="vlh-hint" id="vlh-marco-obligatorio-nota" style="margin-top:0;" hidden>El Pack Valentina se presenta siempre enmarcado — elige el acabado que completará tu pedido.</p>
+        <p class="vlh-hint vlh-canvas-note" data-canvas-note hidden>El lienzo llega montado en bastidor de madera, listo para colgar: no necesita marco.</p>
         <div class="vlh-radio-cards" id="vlh-marco-color-group"></div>
         <details class="vlh-details">
           <summary>¿Cómo se envía tu pedido?</summary>
@@ -411,6 +444,19 @@
   .vlh-radio-card input { position: absolute; top: 8px; right: 8px; margin: 0; }
   .vlh-radio-card:has(input:checked) { border-color: var(--vlh-terracota); border-width: 1.5px; }
   .vlh-radio-card:has(input:disabled) { opacity: .4; cursor: not-allowed; }
+  /* Tamaños: grupos Lámina / Lienzo XL */
+  .vlh-size-group__title { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+  .vlh-size-group__title span { font-weight: 400; letter-spacing: .04em; text-transform: none; color: #7b7168; margin-left: 6px; }
+  .vlh-canvas { margin-top: 18px; padding: 14px; border: 1px solid var(--vlh-mist); background: rgba(255,255,255,.45); }
+  .vlh-canvas__head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .vlh-canvas__head .vlh-size-group__title { margin: 0 0 2px; }
+  .vlh-canvas__thumb { flex: none; width: 64px; height: 64px; padding: 0; border: 1px solid var(--vlh-mist); background: none; cursor: zoom-in; overflow: hidden; }
+  .vlh-canvas__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vlh-canvas__new { display: inline-block; margin-left: 6px !important; padding: 2px 7px; background: var(--color-highlight, #F2D16B); color: var(--vlh-tinta) !important; font-size: 10px; font-weight: 600 !important; letter-spacing: .1em !important; text-transform: uppercase !important; }
+  .vlh-canvas__text { margin: 0; font-size: 12.5px; color: #7b7168; line-height: 1.45; }
+  .vlh-radio-cards--canvas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .vlh-radio-cards--canvas .vlh-radio-card { min-width: 0; }
+  .vlh-canvas-note { margin: 0 0 12px; padding: 10px 12px; background: rgba(168,148,120,.12); color: var(--vlh-tinta); }
   .vlh-radio-card__title { font-weight: 600; font-size: 14px; line-height: 1.3; }
   .vlh-radio-card__medida { font-size: 11px; color: #8a7d6e; }
   .vlh-radio-card__price { font-size: 12px; color: #6b6055; }
@@ -575,8 +621,12 @@
   function getCheckedRadio(list) {
     return [...list].find(i => i.checked) || null;
   }
+  function isLienzo() {
+    return (getSelectedTamano() || '').indexOf('Lienzo') !== -1;
+  }
   function getTamanoCategoria() {
     const tamano = getSelectedTamano() || '';
+    if (tamano.indexOf('Lienzo') !== -1) return null;
     if (tamano.indexOf('A4') !== -1) return 'A4';
     if (tamano.indexOf('A3') !== -1) return 'A3';
     return null;
@@ -624,6 +674,22 @@
 
   let vlhEraValentina = false;
 
+  // Lienzo: llega en bastidor listo para colgar -> sin marco ni packs
+  function syncLienzoRules() {
+    const lienzo = isLienzo();
+    els.packInputs.forEach(input => {
+      if (input.value === 'no') return;
+      input.disabled = lienzo;
+      input.closest('label').classList.toggle('is-disabled', lienzo);
+      if (lienzo && input.checked) {
+        input.checked = false;
+        const no = [...els.packInputs].find(i => i.value === 'no');
+        if (no) no.checked = true;
+      }
+    });
+    form.querySelectorAll('[data-canvas-note]').forEach(n => { n.hidden = !lienzo; });
+  }
+
   function syncPackUI() {
     els.packRegaloDesc.hidden = !isRegalo();
     els.packValentinaDesc.hidden = !isValentina();
@@ -650,6 +716,7 @@
     return els.marcoColorGroup.querySelector('input[name="vlh-marco-color"]:checked') || null;
   }
   function renderMarcoColors() {
+    if (isLienzo()) { els.marcoColorGroup.innerHTML = ''; return; }
     const colors = getMarcoColorsForSize();
     const valentina = isValentina();
     if (!colors.length) {
@@ -678,7 +745,7 @@
     if (els.marcoSummary) {
       const marco = getSelectedMarco();
       const tieneMarco = marco && marco.dataset.label && marco.dataset.label !== 'Sin marco';
-      els.marcoSummary.textContent = tieneMarco ? marco.dataset.label : '+';
+      els.marcoSummary.textContent = isLienzo() ? 'No necesita' : (tieneMarco ? marco.dataset.label : '+');
       els.marcoSummary.classList.toggle('vlh-accordion__value--empty', !tieneMarco);
     }
   }
@@ -731,7 +798,7 @@
     const variante = getVarianteActual();
     if (variante) {
       total += variante.price;
-      lines.push([`Ilustración ${variante.tamano}${variante.mascotas ? ' (' + variante.mascotas + ')' : ''}`, variante.price]);
+      lines.push([`${isLienzo() ? '' : 'Ilustración '}${variante.tamano}${variante.mascotas ? ' (' + variante.mascotas + ')' : ''}`, variante.price]);
     }
 
     const pack = getCheckedRadio(els.packInputs);
@@ -763,9 +830,19 @@
 
   function syncAll() {
     if (els.errorEl) els.errorEl.hidden = true;
-    const pasos = [syncPreciosVariante, syncValentinaRules, syncPackUI, syncMarco, syncComposicion, syncFotosUI, calcTotal];
+    const pasos = [syncPreciosVariante, syncValentinaRules, syncLienzoRules, syncPackUI, syncMarco, syncComposicion, syncFotosUI, calcTotal];
     pasos.forEach((fn) => { try { fn(); } catch (e) { console.error('Error en ' + fn.name + ':', e); } });
   }
+
+  // Enlaces de campaña: ?tamano=70x100 preselecciona ese tamaño (p. ej. un lienzo)
+  try {
+    const pedido = new URLSearchParams(window.location.search).get('tamano');
+    if (pedido) {
+      const clave = pedido.toLowerCase().replace(/\s/g, '');
+      const input = [...els.tamanoInputs].find(i => i.value.toLowerCase().replace(/\s/g, '').indexOf(clave) !== -1);
+      if (input) input.checked = true;
+    }
+  } catch (e) {}
 
   initFechaEstimada();
   form.addEventListener('change', syncAll);

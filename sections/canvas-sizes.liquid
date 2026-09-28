@@ -1,0 +1,53 @@
+{%- comment -%} Guía de tamaños con rectángulos a escala {%- endcomment -%}
+<section class="section bg-{{ section.settings.background }} canvas-sizes">
+  <div class="page-width">
+    {%- if section.settings.title != blank -%}<h2 class="section-title">{{ section.settings.title }}</h2>{%- endif -%}
+    {%- if section.settings.subtitle != blank -%}<p class="section-subtitle">{{ section.settings.subtitle }}</p>{%- endif -%}
+    <div class="canvas-sizes__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign w = block.settings.width | times: 1.6
+          assign h = block.settings.height | times: 1.6
+        -%}
+        <div class="canvas-sizes__item" {{ block.shopify_attributes }}>
+          <div class="canvas-sizes__stage">
+            <div class="canvas-sizes__rect{% if block.settings.canvas %} is-canvas{% endif %}" style="width: {{ w }}px; height: {{ h }}px;"></div>
+          </div>
+          <p class="canvas-sizes__label">{{ block.settings.label }}</p>
+          <p class="canvas-sizes__dims">{{ block.settings.width }} × {{ block.settings.height }} cm</p>
+          {%- if block.settings.text != blank -%}<p class="canvas-sizes__text">{{ block.settings.text }}</p>{%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+    {%- if section.settings.note != blank -%}<p class="canvas-sizes__note">{{ section.settings.note }}</p>{%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Guía de tamaños",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Título", "default": "Elige el tamaño" },
+    { "type": "text", "id": "subtitle", "label": "Subtítulo" },
+    { "type": "text", "id": "note", "label": "Nota" },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "alt"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "size", "name": "Tamaño",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Nombre", "default": "Lienzo" },
+        { "type": "number", "id": "width", "label": "Ancho (cm)", "default": 60 },
+        { "type": "number", "id": "height", "label": "Alto (cm)", "default": 90 },
+        { "type": "checkbox", "id": "canvas", "label": "Es lienzo", "default": true },
+        { "type": "text", "id": "text", "label": "Texto" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Guía de tamaños" }]
+}
+{% endschema %}

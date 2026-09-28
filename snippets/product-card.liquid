@@ -26,6 +26,10 @@
       <span class="card__badge card__badge--sale">{{ 'products.sale' | t }}</span>
     {%- elsif product.available == false -%}
       <span class="card__badge">{{ 'products.sold_out' | t }}</span>
+    {%- else -%}
+      {%- assign has_canvas = false -%}
+      {%- for v in product.variants -%}{%- if v.option1 contains 'Lienzo' -%}{%- assign has_canvas = true -%}{%- break -%}{%- endif -%}{%- endfor -%}
+      {%- if has_canvas -%}<span class="card__badge card__badge--new">{{ 'products.canvas_badge' | t }}</span>{%- endif -%}
     {%- endif -%}
     {%- if img -%}
       {{ img | image_url: width: 900 | image_tag:
