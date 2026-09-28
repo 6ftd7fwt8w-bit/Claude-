@@ -359,6 +359,18 @@
     ]
   },
   {
+    "name": "Buscadores (SEO)",
+    "settings": [
+      {
+        "type": "textarea",
+        "id": "shop_description",
+        "label": "Descripción de la tienda",
+        "info": "Texto que muestran Google y las redes al compartir la portada. Si lo dejas vacío se usa el de Tienda online → Preferencias.",
+        "default": "Ilustraciones personalizadas a partir de tus fotos, en lámina o lienzo, para parejas, mascotas y familias. El regalo perfecto para bodas, aniversarios y momentos especiales. Envíos a toda España"
+      }
+    ]
+  },
+  {
     "name": "Redes sociales",
     "settings": [
       {

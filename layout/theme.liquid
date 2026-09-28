@@ -21,11 +21,19 @@
       {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
-    {% if page_description %}
-      <meta name="description" content="{{ page_description | escape }}">
+    {%- liquid
+      assign vlh_description = page_description
+      if settings.shop_description != blank
+        if page_description == blank or page_description == shop.description
+          assign vlh_description = settings.shop_description
+        endif
+      endif
+    -%}
+    {% if vlh_description %}
+      <meta name="description" content="{{ vlh_description | escape }}">
     {% endif %}
 
-    {% render 'meta-tags' %}
+    {% render 'meta-tags', description: vlh_description %}
 
     {%- case settings.font_pairing -%}
       {%- when 'montserrat' -%}
