@@ -53,7 +53,7 @@
         <div class="facets__filters">
           {%- for filter in collection.filters -%}
             <details>
-              <summary>{{ filter.label }}{% if filter.active_values.size > 0 %} ({{ filter.active_values.size }}){% endif %}</summary>
+              <summary>{% render 'vlh-tr', t: filter.label %}{% if filter.active_values.size > 0 %} ({{ filter.active_values.size }}){% endif %}</summary>
               <div class="facets__panel">
                 {%- case filter.type -%}
                   {%- when 'price_range' -%}
@@ -69,7 +69,7 @@
                       <label>
                         <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}" {% if value.active %}checked{% endif %}
                           {% if value.count == 0 and value.active == false %}disabled{% endif %} data-autosubmit>
-                        {{ value.label }} <span class="muted">({{ value.count }})</span>
+                        {% render 'vlh-tr', t: value.label %} <span class="muted">({{ value.count }})</span>
                       </label>
                     {%- endfor -%}
                 {%- endcase -%}
@@ -83,7 +83,7 @@
           {%- assign current_sort = collection.sort_by | default: collection.default_sort_by -%}
           <select name="sort_by" id="SortBy" data-autosubmit>
             {%- for option in collection.sort_options -%}
-              <option value="{{ option.value }}" {% if option.value == current_sort %}selected{% endif %}>{{ option.name }}</option>
+              <option value="{{ option.value }}" {% if option.value == current_sort %}selected{% endif %}>{% render 'vlh-tr', t: option.name %}</option>
             {%- endfor -%}
           </select>
         </div>
@@ -94,11 +94,11 @@
         {%- for filter in collection.filters -%}
           {%- for value in filter.active_values -%}
             {%- assign active_count = active_count | plus: 1 -%}
-            <a class="pill" href="{{ value.url_to_remove }}">{{ value.label }} &times;</a>
+            <a class="pill" href="{{ value.url_to_remove }}">{% render 'vlh-tr', t: value.label %} &times;</a>
           {%- endfor -%}
           {%- if filter.type == 'price_range' and filter.min_value.value != nil or filter.type == 'price_range' and filter.max_value.value != nil -%}
             {%- assign active_count = active_count | plus: 1 -%}
-            <a class="pill" href="{{ filter.url_to_remove }}">{{ filter.label }} &times;</a>
+            <a class="pill" href="{{ filter.url_to_remove }}">{% render 'vlh-tr', t: filter.label %} &times;</a>
           {%- endif -%}
         {%- endfor -%}
       {%- endcapture -%}
