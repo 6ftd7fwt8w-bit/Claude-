@@ -1,0 +1,14 @@
+# Viva la Home — notas para trabajar en este tema
+
+## Imágenes generadas (Higgsfield u otras)
+- **Marcos:** siempre como los que se venden en la tienda: marco fino de **madera marrón/natural** o **blanco**, **sin paspartú** (la lámina llega hasta el borde del marco). Referencias: fotos de los productos "Extra: Marco A4" / "Extra: Marco A3".
+- Usar como referencia las ilustraciones reales de los productos y reproducirlas sin cambios.
+- Paleta: crema, arena, avena; luz natural suave; estilo catálogo, sin textos ni logos.
+
+## Textos
+- No decir "trazo a trazo" ni "la dibujamos nosotras" (usamos varias herramientas).
+- Lo que sí hacen a mano: diseñar las ilustraciones, imprimir, enmarcar y montar los packs regalo (telas, ramitos).
+- Papel: algodón verjurado 300 g.
+
+## Flujo
+- Los cambios van al tema borrador "Viva Galería (borrador)", nunca al tema publicado.
