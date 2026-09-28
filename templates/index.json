@@ -216,7 +216,7 @@
         "tile_1": {
           "type": "tile",
           "settings": {
-            "title": "Láminas personalizadas",
+            "title": "Ilustraciones personalizadas",
             "subtitle": "Tu foto favorita, convertida en ilustración",
             "zoom": 120,
             "zoom_origin": "50% 0%",
@@ -424,7 +424,7 @@
       "settings": {
         "eyebrow": "@vivalahome.store",
         "title": "Visto en Instagram",
-        "subtitle": "Son vuestras fotos y vídeos: así lucen nuestras láminas cuando llegan a vuestras manos. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
+        "subtitle": "Son vuestras fotos y vídeos: así lucen nuestras ilustraciones cuando llegan a vuestras manos. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
         "instagram_url": "https://www.instagram.com/vivalahome.store",
         "columns": 6,
         "background": "default"

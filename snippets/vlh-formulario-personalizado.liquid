@@ -332,7 +332,7 @@
       <div class="vlh-accordion__body">
         <p class="vlh-hint" style="margin-top:0;">Nombres, una fecha, una frase, el fondo o los colores que prefieras… <span class="vlh-opcional">(opcional)</span></p>
         <textarea id="vlh-descripcion" rows="3" placeholder="Ej: Quiero añadir el texto 'Marta &amp; Pablo · 12.06.2026'. Quiero que el fondo sea sencillo, en tonos verdes, con alguna flor."></textarea>
-        <p class="vlh-hint">No necesitas describirlo todo — trabajaremos con cariño tomando como referencia las fotografías que nos envíes, cuidando cada detalle para que la lámina quede elegante y preciosa. Los aspectos que no nos indiques quedarán a criterio de nuestro equipo de diseño, que siempre busca el resultado más armonioso.</p>
+        <p class="vlh-hint">No necesitas describirlo todo — trabajaremos con cariño tomando como referencia las fotografías que nos envíes, cuidando cada detalle para que la ilustración quede elegante y preciosa. Los aspectos que no nos indiques quedarán a criterio de nuestro equipo de diseño, que siempre busca el resultado más armonioso.</p>
       </div>
     </details>
 
@@ -1156,7 +1156,7 @@
       mainData.append('properties[Fecha de entrega estimada]', els.fechaEstimadaEl.dataset.rango || '');
 
       if (els.descripcion.value.trim()) {
-        mainData.append('properties[Cómo quiere su lámina]', els.descripcion.value.trim());
+        mainData.append('properties[Cómo quiere su ilustración]', els.descripcion.value.trim());
       }
       if ((isRegalo() || isValentina()) && els.mensajePack.value.trim()) {
         mainData.append('properties[Mensaje para la tapa del pack]', els.mensajePack.value.trim());
@@ -1170,7 +1170,7 @@
       const mainRes = await fetch('/cart/add.js', { method: 'POST', body: mainData });
       if (!mainRes.ok) {
         const err = await mainRes.json().catch(() => ({}));
-        throw new Error(err.description || 'No se pudo añadir la lámina al carrito.');
+        throw new Error(err.description || 'No se pudo añadir la ilustración al carrito.');
       }
 
       const addons = collectAddons();
