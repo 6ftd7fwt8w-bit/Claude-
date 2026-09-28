@@ -79,6 +79,15 @@
       {%- assign vlh_hay_lienzo = false -%}
       {%- for t in vlh_tamanos -%}{%- if t contains 'Lienzo' -%}{%- assign vlh_hay_lienzo = true -%}{%- endif -%}{%- endfor -%}
       {%- if vlh_hay_lienzo -%}
+      <button type="button" class="vlh-guide-link vlh-guide-link--all" data-size-guide-open>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="1.5"/><path d="M6 7v4M10 7v3M14 7v4M18 7v3"/></svg>
+        Ver todos los tamaños a escala <span>(láminas y lienzos)</span>
+      </button>
+      <dialog class="vlh-guide-dialog" data-size-guide aria-label="Guía de tamaños">
+        <button type="button" class="vlh-guide-dialog__close" data-size-guide-close aria-label="Cerrar">&times;</button>
+        <p class="vlh-guide-dialog__title">¿Qué tamaño elijo?</p>
+        {% render 'size-guide', art: guide_art, art_a3: guide_art_a3 %}
+      </dialog>
       <div class="vlh-canvas">
         <div class="vlh-canvas__head">
           <div>
@@ -127,14 +136,8 @@
             <div>
               <p class="vlh-size-group__title">Lienzo XL <span class="vlh-canvas__new">Nuevo</span></p>
               <p class="vlh-canvas__text">{{ canvas_text | default: 'Listo para colgar · bastidor de madera · tela 100 % algodón' }}</p>
-              <button type="button" class="vlh-guide-link" data-size-guide-open>Ver tamaños a escala</button>
             </div>
           </div>
-          <dialog class="vlh-guide-dialog" data-size-guide aria-label="Guía de tamaños">
-            <button type="button" class="vlh-guide-dialog__close" data-size-guide-close aria-label="Cerrar">&times;</button>
-            <p class="vlh-guide-dialog__title">¿Qué tamaño elijo?</p>
-            {% render 'size-guide', art: guide_art, art_a3: guide_art_a3 %}
-          </dialog>
           <div class="vlh-radio-cards vlh-radio-cards--canvas">
             {% for tamano_valor in vlh_tamanos %}
               {% unless tamano_valor contains 'Lienzo' %}{% continue %}{% endunless %}
@@ -472,6 +475,9 @@
   .vlh-canvas .vlh-radio-cards { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
   .vlh-canvas .vlh-radio-card { min-width: 0; }
   .vlh-guide-link { margin-top: 6px; padding: 0; border: 0; background: none; font: inherit; font-size: 12.5px; color: var(--vlh-tinta); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .vlh-guide-link--all { display: inline-flex; align-items: center; gap: 8px; margin: 2px 0 0; font-size: 13px; }
+  .vlh-guide-link--all svg { flex: none; }
+  .vlh-guide-link--all span { color: #7b7168; text-decoration: none; }
   .vlh-guide-dialog { width: min(920px, 94vw); max-height: 92vh; padding: 28px 24px 22px; border: 0; background: var(--vlh-crema); color: var(--vlh-tinta); overflow: auto; }
   .vlh-guide-dialog::backdrop { background: rgba(35,31,28,.55); }
   .vlh-guide-dialog__title { margin: 0 0 16px; text-align: center; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
