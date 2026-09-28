@@ -58,6 +58,14 @@
       <div class="product__info">
         {%- for block in section.blocks -%}
           {%- case block.type -%}
+            {%- when 'breadcrumb' -%}
+              {%- assign crumb = block.settings.collection | default: collection | default: product.collections.first -%}
+              {%- if crumb -%}
+                <a href="{{ crumb.url }}" class="product__crumb" {{ block.shopify_attributes }}>
+                  {% render 'icon', name: 'chevron-left' %}<span>{{ block.settings.label | default: crumb.title }}</span>
+                </a>
+              {%- endif -%}
+
             {%- when 'title' -%}
               <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title | split: ' | ' | first }}</h1>
 
@@ -155,7 +163,7 @@
               </a>
 
             {%- when 'back_link' -%}
-              {%- assign back = collection | default: product.collections.first -%}
+              {%- assign back = block.settings.collection | default: collection | default: product.collections.first -%}
               {%- if back -%}
                 <a href="{{ back.url }}" class="button button--outline button--full" data-back-link {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
               {%- endif -%}
@@ -177,6 +185,10 @@
 {
   "name": "Producto",
   "blocks": [
+    { "type": "breadcrumb", "name": "Enlace a la colección", "limit": 1, "settings": [
+      { "type": "collection", "id": "collection", "label": "Colección", "info": "Si está vacío, la colección desde la que se llegó" },
+      { "type": "text", "id": "label", "label": "Texto", "info": "Si está vacío, el nombre de la colección" }
+    ] },
     { "type": "title", "name": "Título", "limit": 1 },
     { "type": "price", "name": "Precio", "limit": 1 },
     { "type": "text", "name": "Texto", "settings": [{ "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Texto breve</p>" }] },
@@ -223,7 +235,7 @@
         { "type": "text", "id": "message", "label": "Mensaje", "default": "¡Hola! Tengo una duda sobre" }
       ]
     },
-    { "type": "back_link", "name": "Botón volver a colección", "limit": 1, "settings": [{ "type": "text", "id": "label", "label": "Texto", "default": "Ver más láminas" }] },
+    { "type": "back_link", "name": "Botón volver a colección", "limit": 1, "settings": [{ "type": "text", "id": "label", "label": "Texto", "default": "Ver más láminas" }, { "type": "collection", "id": "collection", "label": "Colección", "info": "Si está vacío, la colección desde la que se llegó" }] },
     { "type": "custom_liquid", "name": "Liquid personalizado", "settings": [{ "type": "liquid", "id": "custom_liquid", "label": "Código" }] }
   ]
 }

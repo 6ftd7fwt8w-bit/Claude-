@@ -912,3 +912,10 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .cart-trust__line svg { width: 13px; height: 13px; }
 .cart-trust__icons { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
 .cart-trust__icons svg { width: 34px; height: 22px; }
+
+/* Enlace de vuelta a la colección (encima del título) */
+.product__crumb { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px; font-size: 12px; letter-spacing: .08em; color: var(--color-muted); text-decoration: none; transition: color .2s ease; }
+.product__crumb:hover { color: var(--color-text); }
+.product__crumb svg { width: 14px; height: 14px; transition: transform .2s ease; }
+.product__crumb:hover svg { transform: translateX(-3px); }
+.product__crumb span { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }

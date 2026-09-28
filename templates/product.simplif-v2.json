@@ -5,23 +5,37 @@
       "settings": {},
       "blocks": {
         "block_1": {
+          "type": "breadcrumb",
+          "settings": {
+            "collection": "laminas-personalizadas",
+            "label": "Todas las láminas personalizadas"
+          }
+        },
+        "block_2": {
           "type": "title",
           "settings": {}
         },
-        "block_2": {
+        "block_3": {
           "type": "price",
           "settings": {}
         },
-        "block_3": {
+        "block_4": {
           "type": "personalization_form",
           "settings": {}
         },
-        "block_4": {
+        "block_5": {
           "type": "whatsapp",
           "settings": {
             "label": "¿Dudas? Escríbenos por WhatsApp",
             "number": "34604524295",
             "message": "¡Hola! Tengo una duda sobre"
+          }
+        },
+        "block_6": {
+          "type": "back_link",
+          "settings": {
+            "label": "Ver más láminas personalizadas",
+            "collection": "laminas-personalizadas"
           }
         }
       },
@@ -29,7 +43,9 @@
         "block_1",
         "block_2",
         "block_3",
-        "block_4"
+        "block_4",
+        "block_5",
+        "block_6"
       ]
     },
     "description": {
