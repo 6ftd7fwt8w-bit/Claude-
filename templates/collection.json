@@ -26,9 +26,8 @@
           "type": "banner",
           "settings": {
             "collection": "infantil",
-            "image": "shopify://shop_images/vlh-portada-infantil-v2.jpg",
+            "image": "shopify://shop_images/vlh-portada-infantil-v3.jpg",
             "image_mobile": "shopify://shop_images/vlh-portada-infantil-movil-v2.jpg",
-            "text_position": "left",
             "eyebrow": "Para soñar despiertos",
             "text": "Animales tiernos, cielos estrellados y frases que hacen sonreír. Combínalas en sets para su habitación."
           }
