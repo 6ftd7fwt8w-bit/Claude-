@@ -330,17 +330,11 @@
       </div>
     </details>
 
-    <!-- ============ 8. FECHA DE ENTREGA ESTIMADA ============ -->
-    <p class="vlh-hint" id="vlh-fecha-estimada" style="font-weight:600;color:var(--vlh-tinta, inherit);"></p>
-    <p class="vlh-reassure">✓ Te enseñamos el diseño antes de imprimirlo · hasta 3 ajustes incluidos</p>
-    <details class="vlh-details">
-      <summary>¿Cómo funciona?</summary>
-      <p class="vlh-hint" style="margin-top:0;">A los 5-7 días de tu pedido te contactaremos para mostrarte el diseño y confirmarlo contigo — podrás solicitar hasta 3 ajustes antes de que preparemos la versión final.</p>
-    </details>
-    <details class="vlh-details">
-      <summary>¿Lo necesitas antes?</summary>
-      <p class="vlh-hint" style="margin-top:0;"><a href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener" style="color:var(--vlh-terracota);font-weight:600;">Escríbenos por WhatsApp</a> antes de realizar el pedido y comprobamos disponibilidad.</p>
-    </details>
+    <!-- ============ 8. ENTREGA Y REVISIÓN (resumido) ============ -->
+    <ul class="vlh-perks">
+      <li><span aria-hidden="true">📦</span><span>Entrega estimada <strong id="vlh-fecha-estimada"></strong> · <a href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener">¿Lo necesitas antes?</a></span></li>
+      <li><span aria-hidden="true">✓</span><span>Te enseñamos el diseño antes de prepararlo · hasta 3 ajustes incluidos</span></li>
+    </ul>
 
     <!-- ============ RESUMEN DE PRECIO ============ -->
     <div class="vlh-summary">
@@ -349,7 +343,7 @@
         <span><span class="vlh-summary__old" id="vlh-total-old" hidden></span><span class="vlh-summary__value" id="vlh-total-price">—</span></span>
       </div>
       <ul class="vlh-summary__breakdown" id="vlh-breakdown"></ul>
-      <p class="vlh-summary__envio">Los gastos de envío se calculan en el checkout, según tu dirección.</p>
+      <p class="vlh-summary__envio">Envío calculado al pagar</p>
     </div>
 
     <!-- ============ CÓDIGO DE DESCUENTO ============ -->
@@ -388,7 +382,7 @@
     <button type="submit" class="vlh-submit" id="vlh-submit-btn">
       <span class="vlh-submit__text">Añadir al carrito</span>
     </button>
-    <p class="vlh-hint" style="text-align:center;">Pago seguro · Creado especialmente para ti</p>
+    <p class="vlh-secure"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> Pago 100 % seguro</p>
   </form>
 </div>
 </div>
@@ -541,7 +535,7 @@
   .vlh-composicion__price { color: #6b6055; white-space: nowrap; }
   .vlh-details--mini { border: 0; padding: 4px 0 0 28px; margin: 0; }
   .vlh-details--mini summary { font-size: 11px; }
-  .vlh-coupon { margin: -8px 0 22px; }
+  .vlh-coupon { margin: 0 0 18px; }
   .vlh-coupon__box summary { cursor: pointer; list-style: none; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; color: var(--vlh-tinta); }
   .vlh-coupon__box summary::-webkit-details-marker { display: none; }
   .vlh-coupon__row { display: flex; gap: 8px; margin-top: 10px; }
@@ -562,7 +556,12 @@
   @keyframes vlhPop { 0% { transform: scale(.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
   @keyframes vlhShine { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
   @media (prefers-reduced-motion: reduce) { .vlh-coupon__win, .vlh-coupon__shine { animation: none; } }
-  .vlh-reassure { margin: 8px 0 4px; font-size: 13px; color: var(--vlh-tinta); }
+  .vlh-perks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; line-height: 1.45; color: var(--vlh-tinta); }
+  .vlh-perks li { display: flex; gap: 8px; }
+  .vlh-perks li > span:first-child { flex: none; width: 18px; text-align: center; }
+  .vlh-perks strong { font-weight: 600; }
+  .vlh-perks a { color: inherit; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+  .vlh-secure { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 10px 0 0; font-size: 12px; color: #8a7d6e; }
   .vlh-notes .vlh-accordion__body textarea { width: 100%; }
   .vlh-radio-card__badge {
     font-size: 10px; color: var(--vlh-terracota); font-weight: 600;
@@ -605,7 +604,7 @@
   .vlh-summary {
     border-top: 1px solid var(--vlh-tinta);
     border-bottom: 1px solid var(--vlh-tinta);
-    padding: 20px 0; margin: 24px 0;
+    padding: 16px 0; margin: 22px 0 18px;
   }
   .vlh-summary__row--total { display: flex; justify-content: space-between; align-items: baseline; }
   .vlh-summary__label {
@@ -618,7 +617,7 @@
   }
   .vlh-summary__breakdown { list-style: none; margin: 12px 0 0; padding: 0; font-size: 13px; opacity: .75; }
   .vlh-summary__breakdown li { display: flex; justify-content: space-between; padding: 3px 0; }
-  .vlh-summary__envio { font-size: 12px; opacity: .65; margin: 14px 0 0; }
+  .vlh-summary__envio { font-size: 12px; opacity: .65; margin: 4px 0 0; text-align: right; }
 
   .vlh-submit {
     width: 100%; background: var(--vlh-tinta); color: var(--vlh-crema);
@@ -891,7 +890,10 @@
     const hoy = new Date();
     const desde = new Date(hoy); desde.setDate(desde.getDate() + 15);
     const hasta = new Date(hoy); hasta.setDate(hasta.getDate() + 20);
-    els.fechaEstimadaEl.textContent = `📦 Tu fecha de entrega estimada será entre el ${formatFecha(desde)} y el ${formatFecha(hasta)}.`;
+    const mes = (d) => d.toLocaleDateString('es-ES', { month: 'long' });
+    els.fechaEstimadaEl.textContent = desde.getMonth() === hasta.getMonth()
+      ? `del ${desde.getDate()} al ${hasta.getDate()} de ${mes(hasta)}`
+      : `del ${desde.getDate()} de ${mes(desde)} al ${hasta.getDate()} de ${mes(hasta)}`;
     els.fechaEstimadaEl.dataset.rango = `${formatFecha(desde)} - ${formatFecha(hasta)}`;
   }
 
@@ -997,7 +999,8 @@
     els.totalPriceEl.closest('.vlh-summary').classList.toggle('has-discount', ahorro > 0);
     let html = lines.map(([label, cents]) => `<li><span>${label}</span><span>${money(cents)}</span></li>`).join('');
     if (ahorro) html += `<li class="is-discount"><span>Descuento ${coupon.code} (−${coupon.percent} %)</span><span>−${money(ahorro)}</span></li>`;
-    els.breakdownEl.innerHTML = html;
+    els.breakdownEl.innerHTML = (lines.length > 1 || ahorro) ? html : '';
+    els.breakdownEl.hidden = !(lines.length > 1 || ahorro);
     if (coupon && els.couponDetail) {
       els.couponDetail.innerHTML = ahorro
         ? `Código <b>${coupon.code}</b> aplicado · te ahorras <strong>${money(ahorro)}</strong>`

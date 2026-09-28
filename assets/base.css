@@ -455,6 +455,9 @@ body.overflow-hidden { overflow: hidden; }
   .product__gallery .media, .product__gallery .media:first-child { flex: 0 0 86%; scroll-snap-align: center; aspect-ratio: 4 / 5; }
 }
 .product__info { position: sticky; top: 100px; min-width: 0; }
+.product__info > a.button[data-back-link] { width: auto; min-height: 0; padding: 0 0 2px; border: 0; border-bottom: 1px solid currentColor; background: none; color: var(--color-text); font-size: 12px; letter-spacing: .2em; display: table; }
+.product__info > a.button[data-back-link]::after { content: " →"; }
+.product__info > a.button[data-back-link]:hover { background: none; color: var(--color-text); opacity: .7; }
 .product__info > * + * { margin-top: 18px; }
 .product__title { font-size: calc(clamp(26px, 2.6vw, 36px) * var(--heading-scale)); font-weight: 300; }
 .product__price { font-size: 20px; font-weight: 400; letter-spacing: .02em; }
