@@ -14,9 +14,9 @@
         "slide_3": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/vlh-hero-lienzos-fallera-v2.jpg",
+            "image": "shopify://shop_images/vlh-hero-lienzos-fallera-v3.jpg",
             "image_mobile": "shopify://shop_images/vlh-hero-lienzos-fallera-movil-v2.jpg",
-            "focal": "center center",
+            "focal": "center 30%",
             "overlay": 0,
             "tag": "Nuevo · Lienzos XL",
             "heading": "Tu retrato de fallera",
