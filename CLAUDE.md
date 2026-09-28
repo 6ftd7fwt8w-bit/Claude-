@@ -3,6 +3,7 @@
 ## Imágenes generadas (Higgsfield u otras)
 - **Marcos:** siempre como los que se venden en la tienda: marco fino de **madera marrón/natural** o **blanco**, **sin paspartú** (la lámina llega hasta el borde del marco). Referencias: fotos de los productos "Extra: Marco A4" / "Extra: Marco A3".
 - Usar como referencia las ilustraciones reales de los productos y reproducirlas sin cambios.
+- **Si las láminas o los packs tienen que salir exactos, no generarlos con IA**: usar la foto real del producto (ampliar solo los laterales con outpaint y volver a pegar encima la foto original) o componer la portada con las fotos reales sobre fondo crema.
 - Paleta: crema, arena, avena; luz natural suave; estilo catálogo, sin textos ni logos.
 
 ## Textos

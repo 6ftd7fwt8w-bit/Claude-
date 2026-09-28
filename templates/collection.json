@@ -32,11 +32,22 @@
             "eyebrow": "Para soñar despiertos",
             "text": "Animales tiernos, cielos estrellados y frases que hacen sonreír. Combínalas en sets para su habitación."
           }
+        },
+        "banner_3": {
+          "type": "banner",
+          "settings": {
+            "collection": "packs-regalo",
+            "image": "shopify://shop_images/vlh-portada-packs.jpg",
+            "image_mobile": "shopify://shop_images/vlh-portada-packs-movil.jpg",
+            "eyebrow": "Listos para regalar",
+            "text": "Tu lámina presentada con mimo, montada por nosotras y con una tarjeta con tu mensaje."
+          }
         }
       },
       "block_order": [
         "banner_1",
-        "banner_2"
+        "banner_2",
+        "banner_3"
       ]
     },
     "instagram": {
