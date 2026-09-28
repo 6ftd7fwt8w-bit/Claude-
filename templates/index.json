@@ -14,13 +14,13 @@
         "slide_3": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/vlh-hero-lienzos-fallera.jpg",
-            "image_mobile": "shopify://shop_images/vlh-hero-lienzos-fallera-movil.jpg",
+            "image": "shopify://shop_images/vlh-hero-lienzos-fallera-v2.jpg",
+            "image_mobile": "shopify://shop_images/vlh-hero-lienzos-fallera-movil-v2.jpg",
             "focal": "center center",
             "overlay": 0,
             "tag": "Nuevo · Lienzos XL",
-            "heading": "Tu fallera, en gran formato",
-            "text": "Tu ilustración en lienzo de hasta 80×120 cm, montado en bastidor y listo para colgar.",
+            "heading": "Tu retrato de fallera",
+            "text": "Ilustrado a partir de tu foto e impreso en lienzo de hasta 80×120 cm, montado en bastidor y listo para colgar.",
             "button_label": "Descubre los lienzos",
             "button_link": "/pages/lienzos-xl-fallera",
             "align": "right",
@@ -140,6 +140,7 @@
             "title": "Lienzos de fallera",
             "subtitle": "Nuevo · hasta 80×120 cm",
             "pos_x": 50,
+            "pos_y": 16,
             "link": "/pages/lienzos-xl-fallera",
             "image": "shopify://shop_images/vlh-fallera-abrazo.jpg"
           }

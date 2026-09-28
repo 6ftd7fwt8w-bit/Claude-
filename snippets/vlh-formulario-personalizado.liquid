@@ -78,7 +78,15 @@
       {%- comment -%} Los tamaños cuyo nombre contiene "Lienzo" se muestran aparte, como Lienzo XL {%- endcomment -%}
       {%- assign vlh_hay_lienzo = false -%}
       {%- for t in vlh_tamanos -%}{%- if t contains 'Lienzo' -%}{%- assign vlh_hay_lienzo = true -%}{%- endif -%}{%- endfor -%}
-      {%- if vlh_hay_lienzo -%}<p class="vlh-size-group__title">Lámina <span>papel de algodón verjurado 300 g</span></p>{%- endif -%}
+      {%- if vlh_hay_lienzo -%}
+      <div class="vlh-canvas">
+        <div class="vlh-canvas__head">
+          <div>
+            <p class="vlh-size-group__title">Lámina</p>
+            <p class="vlh-canvas__text">Papel de algodón verjurado 300 g · marco y pack regalo opcionales</p>
+          </div>
+        </div>
+      {%- endif -%}
       <div class="vlh-radio-cards" id="vlh-tamano-group">
         {% for tamano_valor in vlh_tamanos %}
           {% if tamano_valor contains 'Lienzo' %}{% continue %}{% endif %}
@@ -107,6 +115,7 @@
           </label>
         {% endfor %}
       </div>
+      {%- if vlh_hay_lienzo -%}</div>{%- endif -%}
       {%- if vlh_hay_lienzo -%}
         <div class="vlh-canvas">
           <div class="vlh-canvas__head">
