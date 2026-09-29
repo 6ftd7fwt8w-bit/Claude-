@@ -29,7 +29,11 @@
           assign photo = lead.media.last.preview_image | default: lead.featured_image
           assign set_total = 0
           assign set_min = 999999
+          assign set_art = nil
           for p in block.settings.products
+            if set_art == nil and p.featured_image
+              assign set_art = p.featured_image
+            endif
             assign set_total = set_total | plus: p.price_min
             if p.price_min < set_min
               assign set_min = p.price_min
@@ -65,7 +69,7 @@
                 <button type="button" class="set-size is-active" data-set-size="A4" aria-pressed="true">A4 · 21 × 29,7 cm</button>
                 <button type="button" class="set-size" data-set-size="A3" aria-pressed="false">A3 · 29,7 × 42 cm</button>
               </div>
-              <button type="button" class="guide-open guide-open--set" data-guide-open data-guide-art="{{ block.settings.products.first.featured_image | image_url: width: 500 }}">📏 Ver A4 y A3 a escala <span>(junto a una chica de 1,65 m)</span></button>
+              <button type="button" class="guide-open guide-open--set" data-guide-open {% if set_art %}data-guide-art="{{ set_art | image_url: width: 500 }}"{% endif %}>📏 Ver A4 y A3 a escala <span>(junto a una chica de 1,65 m)</span></button>
               <ul class="set-sheet__items">
                 {%- for p in block.settings.products -%}
                   {%- liquid
@@ -105,7 +109,12 @@
     assign guide_art = blank
     for block in blocks
       if block.type == 'set' and block.settings.collection.handle == collection.handle and block.settings.products.count > 0
-        assign guide_art = block.settings.products.first.featured_image
+        for p in block.settings.products
+          if p.featured_image
+            assign guide_art = p.featured_image
+            break
+          endif
+        endfor
         break
       endif
     endfor
