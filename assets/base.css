@@ -1053,3 +1053,13 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .cart-free-note li { display: inline-flex; align-items: center; gap: 6px; }
 .cart-free-note__check { width: 16px; height: 16px; border-radius: 50%; background: #2f8a45; color: #fff; display: inline-grid; place-items: center; font-size: 10px; font-weight: 700; flex: none; }
 .cart-free-note__small { margin: 0 0 14px; font-size: 11px; color: var(--color-muted); }
+/* Desglose del total en la cesta */
+.cart-breakdown { margin: 4px 0 8px; padding: 12px 14px; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; }
+.cart-breakdown__row { display: flex; justify-content: space-between; gap: 12px; font-size: 13.5px; margin-bottom: 6px; color: var(--color-muted); }
+.cart-breakdown__row.is-saving { color: #1f6b33; font-weight: 500; }
+.cart-breakdown__row s { color: var(--color-muted); font-weight: 400; margin-right: 4px; }
+.cart-breakdown__row b { text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
+.cart-breakdown__total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--color-border); font-size: 15px; }
+.cart-breakdown__total strong { font-size: 20px; font-weight: 600; }
+.cart-breakdown__saved { margin: 8px 0 0; padding: 6px 10px; background: #e7f3e3; color: #24522d; font-size: 12.5px; text-align: center; border-radius: 99px; }
+.cart-breakdown__saved strong { color: #1f6b33; }
