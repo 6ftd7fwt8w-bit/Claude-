@@ -33,6 +33,17 @@
       endif
     endfor
   endif
+  comment
+    Láminas infantiles: sus fotos son cuadradas, así que la tarjeta es cuadrada (sin recortes)
+  endcomment
+  if ratio == blank
+    for c in product.collections
+      if c.handle == 'infantil'
+        assign ratio = '1 / 1'
+        break
+      endif
+    endfor
+  endif
   assign cover_class = ''
   if settings.card_ratio == 'adapt'
     assign cover_class = ' card__img--cover'
