@@ -1066,3 +1066,21 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .cart-free-note--inside { margin: 10px 0 0; justify-content: center; }
 .cart-breakdown__row .cart-free-note__check { vertical-align: -3px; }
 .cart-free-note__small { text-align: center; }
+
+/* Botón flotante de la cesta: cuenta atrás + envío gratis */
+.cart-fab { position: fixed; left: 16px; bottom: 16px; z-index: 91; display: flex; align-items: center; gap: 10px; max-width: min(340px, calc(100vw - 32px)); padding: 10px 34px 10px 10px; background: #2f6b3a; color: #fff; border-radius: 16px; box-shadow: 0 14px 34px rgba(20,50,25,.32); text-decoration: none; animation: badge-in .6s cubic-bezier(.2,.7,.2,1) both; }
+.cart-fab[hidden] { display: none; }
+.cart-fab__icon { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 50%; background: #f7dd8a; font-size: 19px; animation: badge-pop 3s ease-in-out infinite; }
+.cart-fab__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; font-size: 12.5px; line-height: 1.35; }
+.cart-fab__line[hidden], .cart-fab__track[hidden] { display: none; }
+.cart-fab__line b { color: #f7dd8a; font-weight: 700; }
+.cart-fab__time { font-variant-numeric: tabular-nums; font-size: 14px; }
+.cart-fab__track { display: block; height: 4px; margin-top: 2px; border-radius: 99px; background: rgba(255,255,255,.25); overflow: hidden; }
+.cart-fab__track span { display: block; height: 100%; width: 0; background: #f7dd8a; border-radius: inherit; transition: width .5s ease; }
+.cart-fab__close { position: absolute; top: 4px; right: 6px; background: none; border: 0; color: #fff; opacity: .75; font-size: 20px; line-height: 1; cursor: pointer; padding: 4px; }
+.cart-fab.is-urgent { background: #b8432a; }
+.cart-fab.is-urgent .cart-fab__time { animation: deal-shake 2.4s ease-in-out infinite; display: inline-block; }
+body.has-cart-fab .welcome-badge { display: none !important; }
+body.overflow-hidden .cart-fab { opacity: 0; pointer-events: none; }
+@media (max-width: 749px) { .cart-fab { left: 10px; right: 10px; bottom: 10px; max-width: none; } body.has-sticky-buy .cart-fab { bottom: 78px; } }
+@media (prefers-reduced-motion: reduce) { .cart-fab, .cart-fab__icon, .cart-fab__time { animation: none !important; } }
