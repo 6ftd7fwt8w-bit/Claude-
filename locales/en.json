@@ -64,6 +64,7 @@
     "taxes_shipping": "Taxes included. Shipping calculated at checkout.",
     "view_cart": "View cart",
     "deal_title_percent": "Great! You've unlocked {{ percent }}% off",
+    "deal_title_percent_ship": "Great! {{ percent }}% off + free shipping",
     "deal_title": "Great! Your discount is applied",
     "deal_saving_html": "You save <strong>{{ amount }}</strong> on this order",
     "discount_remove": "Remove code",

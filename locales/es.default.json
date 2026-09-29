@@ -64,6 +64,7 @@
     "taxes_shipping": "Impuestos incluidos. Gastos de envío calculados al finalizar la compra.",
     "view_cart": "Ver carrito",
     "deal_title_percent": "¡Genial! Has conseguido un {{ percent }} % de descuento",
+    "deal_title_percent_ship": "¡Genial! {{ percent }} % de descuento + envío gratis",
     "deal_title": "¡Genial! Tu descuento está aplicado",
     "deal_saving_html": "Te ahorras <strong>{{ amount }}</strong> en este pedido",
     "discount_remove": "Quitar código",

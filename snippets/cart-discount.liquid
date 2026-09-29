@@ -43,13 +43,13 @@
   if saving_cents < cart.total_discount
     assign saving_cents = cart.total_discount
   endif
-  assign saving_formatted = saving_cents | money
   assign ship_threshold = settings.free_shipping_threshold | times: 100
   assign ship_free = false
   if ship_threshold > 0 and cart.item_count > 0 and cart.total_price >= ship_threshold
     assign ship_free = true
   endif
   assign ship_saving = settings.free_shipping_saving | default: 0 | times: 100 | round
+  assign shipping_label = 'cart.free_shipping_deal' | t | upcase
   assign show_cross = false
   if w_applied > 0 and x_applied == 0 and x_code != blank and settings.cross_collection != blank
     assign show_cross = true
@@ -61,34 +61,44 @@
       <span class="deal-card__shine" aria-hidden="true"></span>
       <span class="deal-card__icon" aria-hidden="true">{% render 'icon', name: 'gift' %}</span>
       <div class="deal-card__body">
+        {%- liquid
+          # Ahorro total de la tarjeta: descuentos + envío gratis (como si fuera otro cupón)
+          assign total_saving = saving_cents
+          if ship_free
+            assign total_saving = total_saving | plus: ship_saving
+          endif
+          assign total_saving_formatted = total_saving | money
+        -%}
         <strong class="deal-card__title">
           {%- if saving_cents == 0 -%}
             {{ 'cart.free_shipping_title' | t }}
           {%- elsif codes_list.size > 1 -%}
             {{ 'cart.deal_title_max' | t }}
+          {%- elsif codes_list.first == w_code and ship_free -%}
+            {{ 'cart.deal_title_percent_ship' | t: percent: settings.welcome_percent }}
           {%- elsif codes_list.first == w_code -%}
             {{ 'cart.deal_title_percent' | t: percent: settings.welcome_percent }}
           {%- else -%}
             {{ 'cart.deal_title' | t }}
           {%- endif -%}
         </strong>
-        {%- if saving_cents == 0 -%}
-        {%- elsif codes_list.size > 1 -%}
+        {%- if codes_list.size > 1 -%}
           {%- assign codes_joined = codes_list | join: ' + ' -%}
-          <span class="deal-card__text">{{ 'cart.deal_max_html' | t: codes: codes_joined, amount: saving_formatted }}</span>
-        {%- else -%}
-          <span class="deal-card__text">{{ 'cart.deal_saving_html' | t: amount: saving_formatted }}</span>
+          {%- if ship_free -%}{%- assign codes_joined = codes_joined | append: ' + ' | append: shipping_label -%}{%- endif -%}
+          <span class="deal-card__text">{{ 'cart.deal_max_html' | t: codes: codes_joined, amount: total_saving_formatted }}</span>
+        {%- elsif total_saving > 0 -%}
+          <span class="deal-card__text">{{ 'cart.deal_saving_html' | t: amount: total_saving_formatted }}</span>
         {%- endif -%}
         {%- if codes_list.first == w_code and codes_list.size == 1 and settings.welcome_collection != blank and compact != true -%}
           <a class="deal-card__more" href="{{ settings.welcome_collection.url }}">{{ 'cart.deal_more' | t: percent: settings.welcome_percent }} <span aria-hidden="true">&rarr;</span></a>
-        {%- endif -%}
-        {%- if ship_free -%}
-          <span class="deal-card__ship">🚚 <b>{{ 'cart.free_shipping_deal' | t }}</b>{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}{% if ship_saving > 0 %}{% assign ship_saving_formatted = ship_saving | money %} · {{ 'cart.free_shipping_deal_saving_html' | t: amount: ship_saving_formatted }}{% endif %}</span>
         {%- endif -%}
         <span class="deal-card__codes">
           {%- for c in codes_list -%}
             <span class="deal-card__code">{{ c }} <button type="button" data-discount-remove="{{ c | escape }}" aria-label="{{ 'cart.discount_remove' | t }}">&times;</button></span>
           {%- endfor -%}
+          {%- if ship_free -%}
+            <span class="deal-card__code deal-card__code--ship">🚚 {{ shipping_label }}{% if ship_saving > 0 %} −{{ ship_saving | money }}{% endif %}</span>
+          {%- endif -%}
         </span>
       </div>
     </div>

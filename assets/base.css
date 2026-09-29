@@ -1048,3 +1048,4 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .cart-shipping-bar.is-free .cart-shipping-bar__text { margin: 0; }
 .cart-shipping-bar.is-free .cart-shipping-bar__track { display: none; }
 .deal-card__ship { font-size: 12.5px; line-height: 1.45; }
+.deal-card__code--ship { border-style: solid; background: rgba(47,107,58,.1); border-color: rgba(47,107,58,.35); color: #24522d; }
