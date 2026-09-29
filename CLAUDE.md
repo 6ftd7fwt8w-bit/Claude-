@@ -22,4 +22,4 @@
 - Campaña: página /pages/lienzos-xl-fallera (plantilla page.lienzos-fallera), reel vlh-reel-lienzos-fallera.mov. Título de campaña: «Tu retrato de fallera».
 
 ## Flujo
-- Los cambios van al tema borrador "Viva Galería (borrador)", nunca al tema publicado.
+- El tema publicado es "Viva Galería (borrador)" (190987731017). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – cambios pendientes" (191056576585).
