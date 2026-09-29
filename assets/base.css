@@ -1049,3 +1049,7 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .cart-shipping-bar.is-free .cart-shipping-bar__track { display: none; }
 .deal-card__ship { font-size: 12.5px; line-height: 1.45; }
 .deal-card__code--ship { border-style: solid; background: rgba(47,107,58,.1); border-color: rgba(47,107,58,.35); color: #24522d; }
+.cart-free-note { list-style: none; margin: 2px 0 4px; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: #24522d; }
+.cart-free-note li { display: inline-flex; align-items: center; gap: 6px; }
+.cart-free-note__check { width: 16px; height: 16px; border-radius: 50%; background: #2f8a45; color: #fff; display: inline-grid; place-items: center; font-size: 10px; font-weight: 700; flex: none; }
+.cart-free-note__small { margin: 0 0 14px; font-size: 11px; color: var(--color-muted); }
