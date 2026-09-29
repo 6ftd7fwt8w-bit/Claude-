@@ -1000,3 +1000,30 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .card__deal strong { display: block; color: #b0431f; font-size: 12px; letter-spacing: .02em; }
 .card__deal-price { color: #b0431f; }
 .cart-discount__msg a { text-decoration: underline; text-underline-offset: 3px; font-weight: 600; white-space: nowrap; }
+
+/* Cuenta atrás del descuento en la cesta */
+.deal-timer { margin: 0 0 12px; padding: 12px 14px 12px; background: linear-gradient(135deg, #eef7ec, #dff0da); border: 1px solid #bfdcb7; color: #24522d; text-align: center; }
+.deal-timer[hidden] { display: none; }
+.deal-timer__head { margin: 0 0 8px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.deal-timer__dot { width: 8px; height: 8px; border-radius: 50%; background: #2f8a45; box-shadow: 0 0 0 0 rgba(47,138,69,.6); animation: deal-pulse 1.6s ease-out infinite; }
+@keyframes deal-pulse { 0% { box-shadow: 0 0 0 0 rgba(47,138,69,.55); } 100% { box-shadow: 0 0 0 10px rgba(47,138,69,0); } }
+.deal-timer__clock { display: flex; justify-content: center; gap: 8px; }
+.deal-timer__unit { min-width: 58px; padding: 6px 6px 4px; background: #2f6b3a; color: #fff; border-radius: 6px; display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.deal-timer__unit[hidden] { display: none; }
+.deal-timer__unit b { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.deal-timer__unit small { margin-top: 3px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+.deal-timer__note { margin: 9px 0 0; font-size: 12.5px; line-height: 1.45; color: #3f5a42; }
+.deal-timer__note b { color: #24522d; }
+.deal-timer.is-urgent .deal-timer__unit { background: #c2452a; animation: deal-shake 2.4s ease-in-out infinite; }
+@keyframes deal-shake { 0%, 90%, 100% { transform: none; } 93% { transform: translateX(-2px); } 96% { transform: translateX(2px); } }
+@media (prefers-reduced-motion: reduce) { .deal-timer__dot, .deal-timer.is-urgent .deal-timer__unit { animation: none; } }
+
+/* Aviso «¡Enhorabuena!» al aplicarse el código */
+.deal-toast { position: fixed; z-index: 1000; left: 50%; bottom: 20px; width: min(420px, calc(100vw - 32px)); display: flex; gap: 12px; align-items: flex-start; padding: 14px 40px 14px 14px; background: #2f6b3a; color: #fff; box-shadow: 0 14px 40px rgba(20,50,25,.35); border-radius: 10px; transform: translate(-50%, 140%); transition: transform .45s cubic-bezier(.2,.9,.3,1.2); }
+.deal-toast.is-open { transform: translate(-50%, 0); }
+.deal-toast__icon { font-size: 26px; line-height: 1; animation: badge-pop 1.2s ease-in-out 2; }
+.deal-toast__body { display: flex; flex-direction: column; gap: 3px; font-size: 13px; line-height: 1.45; }
+.deal-toast__body strong { font-size: 14.5px; }
+.deal-toast__cta { margin-top: 4px; color: #f7dd8a; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.deal-toast__cta[hidden] { display: none; }
+.deal-toast__close { position: absolute; top: 6px; right: 8px; background: none; border: 0; color: #fff; font-size: 22px; line-height: 1; cursor: pointer; opacity: .8; }

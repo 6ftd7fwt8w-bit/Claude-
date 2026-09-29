@@ -80,6 +80,18 @@
         </span>
       </div>
     </div>
+    {%- if w_applied > 0 -%}
+      {%- comment -%} Cuenta atrás del código de bienvenida (la rellena theme.js) {%- endcomment -%}
+      <div class="deal-timer" data-deal-timer hidden>
+        <p class="deal-timer__head"><span class="deal-timer__dot" aria-hidden="true"></span>{{ 'cart.timer_head' | t }}</p>
+        <div class="deal-timer__clock" aria-live="off">
+          <span class="deal-timer__unit" data-deal-h-wrap><b data-deal-h>0</b><small>h</small></span>
+          <span class="deal-timer__unit"><b data-deal-m>00</b><small>min</small></span>
+          <span class="deal-timer__unit"><b data-deal-s>00</b><small>seg</small></span>
+        </div>
+        <p class="deal-timer__note">{{ 'cart.timer_note_html' | t }}</p>
+      </div>
+    {%- endif -%}
     <div class="cart-totals muted" style="font-size:13px"><span>{{ 'cart.before' | t }}</span><s>{{ cart.original_total_price | money }}</s></div>
   {%- endif -%}
 

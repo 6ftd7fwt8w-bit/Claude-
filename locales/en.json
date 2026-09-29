@@ -81,6 +81,11 @@
     "discount_label_more": "Have another code? It adds to your discount",
     "timer_before": "Complete your order within",
     "timer_after": "to keep your {{ percent }}% applied",
+    "timer_head": "⏳ Your discount expires in",
+    "timer_note_html": "Complete your order before <b data-deal-end>--:--</b> to keep your discount.",
+    "toast_title": "Congratulations! You have a discount code available",
+    "toast_text": "{{ code }} is already applied to your cart: you save {{ percent }}%.",
+    "toast_cta": "View my cart",
     "secure_payment": "100% secure payment · Encrypted data"
   },
   "collections": {

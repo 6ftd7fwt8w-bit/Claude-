@@ -518,6 +518,63 @@
   };
   paintCartHints();
   discountListeners.push(paintCartHints);
+
+  /* Descuento aplicado: aviso de enhorabuena + cuenta atrás en la cesta ------- */
+  (function () {
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var ensureTimer = function (ds) {
+      // El código se aplicó sin pasar por el pop-up: empezamos su cuenta atrás ahora (solo si nunca tuvo una)
+      if (!ds || !(ds.applied > 0) || welcome.status === 'accepted') return;
+      var pop = $('[data-welcome]');
+      var minutes = (pop && parseInt(pop.getAttribute('data-minutes'), 10)) || 90;
+      welcome = { status: 'accepted', at: Date.now(), expires: Date.now() + minutes * 60000, code: ds.code };
+      writeWelcome(welcome);
+    };
+    var toast = function (ds) {
+      if (!ds || !(ds.applied > 0) || !welcomeActive() || welcome.toasted) return;
+      welcome.toasted = true; writeWelcome(welcome);
+      var el = document.createElement('div');
+      el.className = 'deal-toast'; el.setAttribute('role', 'status');
+      el.innerHTML = '<span class="deal-toast__icon" aria-hidden="true">🎉</span><div class="deal-toast__body"><strong></strong><span></span>' +
+        '<a class="deal-toast__cta"></a></div><button type="button" class="deal-toast__close" aria-label="Cerrar">&times;</button>';
+      el.querySelector('strong').textContent = theme.strings.dealToastTitle || '';
+      el.querySelector('.deal-toast__body span').textContent = theme.strings.dealToastText || '';
+      var cta = el.querySelector('.deal-toast__cta');
+      cta.textContent = (theme.strings.dealToastCta || '') + ' →'; cta.href = theme.routes.cart || '/cart';
+      var drawer = document.getElementById('CartDrawer');
+      if (drawer && drawer.classList.contains('is-open')) cta.hidden = true;
+      var hide = function () { el.classList.remove('is-open'); setTimeout(function () { el.remove(); }, 400); };
+      el.querySelector('.deal-toast__close').addEventListener('click', hide);
+      document.body.appendChild(el);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.add('is-open'); }); });
+      setTimeout(hide, 9000);
+    };
+    var tick = function () {
+      var ds = discountState;
+      var on = ds && ds.applied > 0 && welcomeActive();
+      var left = on ? Math.max(0, welcome.expires - Date.now()) : 0;
+      $$('[data-deal-timer]').forEach(function (el) {
+        el.hidden = !(left > 0);
+        if (!(left > 0)) return;
+        var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), sec = Math.floor(left % 60000 / 1000);
+        var hw = $('[data-deal-h-wrap]', el); if (hw) hw.hidden = h === 0;
+        $('[data-deal-h]', el).textContent = h;
+        $('[data-deal-m]', el).textContent = pad(m);
+        $('[data-deal-s]', el).textContent = pad(sec);
+        el.classList.toggle('is-urgent', left < 10 * 60000);
+        var end = $('[data-deal-end]', el);
+        if (end) end.textContent = new Date(welcome.expires).toLocaleTimeString((ds && ds.locale) || 'es', { hour: '2-digit', minute: '2-digit' });
+      });
+      if (welcome.status === 'accepted' && welcome.expires <= Date.now() && !welcome.cleared && ds && ds.applied > 0) {
+        welcome.cleared = true; writeWelcome(welcome);
+        removeCode(welcome.code || ds.code || '').then(afterCartChange);
+      }
+    };
+    var onState = function (ds) { ensureTimer(ds); toast(ds); tick(); };
+    onState(discountState);
+    discountListeners.push(onState);
+    setInterval(tick, 1000);
+  })();
   document.addEventListener('submit', function (e) {
     var form = e.target.closest('[data-discount-form]');
     if (!form) return;

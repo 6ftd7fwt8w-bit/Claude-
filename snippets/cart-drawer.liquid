@@ -13,7 +13,6 @@
           {% render 'cart-discount', form_id: 'drawer', compact: true %}
         </div>
         <div class="drawer__footer">
-          <p class="cart-timer" data-cart-timer hidden>{% render 'icon', name: 'gift' %}<span>{{ 'cart.timer_before' | t }} <b data-welcome-timer>--:--</b> {{ 'cart.timer_after' | t: percent: settings.welcome_percent }}</span></p>
           {% render 'cart-summary', form_id: 'drawer', hide_discount: true %}
           <form action="{{ routes.cart_url }}" method="post">
             <button type="submit" name="checkout" class="button button--full">{% render 'icon', name: 'lock' %}{{ 'cart.checkout' | t }}</button>

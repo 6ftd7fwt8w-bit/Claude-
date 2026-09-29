@@ -127,7 +127,10 @@
           discountInvalid: {{ 'cart.discount_invalid' | t | json }},
           discountPending: {{ 'cart.discount_pending' | t | json }},
           discountValidFor: {{ 'cart.discount_valid_for' | t | json }},
-          discountSee: {{ 'cart.discount_see' | t | json }}
+          discountSee: {{ 'cart.discount_see' | t | json }},
+          dealToastTitle: {{ 'cart.toast_title' | t | json }},
+          dealToastText: {{ 'cart.toast_text' | t: code: settings.welcome_code, percent: settings.welcome_percent | json }},
+          dealToastCta: {{ 'cart.toast_cta' | t | json }}
         }
       };
     </script>
