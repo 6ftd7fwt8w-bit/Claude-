@@ -1,5 +1,5 @@
 {%- comment -%}
-  Galería "Visto en Instagram": cada bloque es una foto o un vídeo corto
+  Galería "Visto en Instagram": cada bloque es una foto o un vídeo corto (se usa la versión 480p y se carga al verse)
   (el vídeo se reproduce en bucle, sin sonido) con enlace al post.
 {%- endcomment -%}
 <section class="section section--tight bg-{{ section.settings.background }}" style="padding-bottom:0">
@@ -23,7 +23,6 @@
       <a class="gallery__item" href="{{ block.settings.enlace | default: section.settings.instagram_url | default: '#' }}" target="_blank" rel="noopener" {{ block.shopify_attributes }}>
         {%- if block.settings.video != blank -%}
           {%- liquid
-            # Versión ligera del vídeo (mp4 de 480p, ~0,5 MB); se carga solo al verse (theme.js)
             assign vid = block.settings.video
             assign vsrc = ''
             assign vfallback = ''
