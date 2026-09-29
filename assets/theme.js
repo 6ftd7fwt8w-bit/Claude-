@@ -519,6 +519,23 @@
   paintCartHints();
   discountListeners.push(paintCartHints);
 
+  /* Precarga de las fotos ampliadas (miniaturas de ejemplo, packs...) para que se abran al instante */
+  (function () {
+    var done = {};
+    var prefetch = function (el) {
+      var list; try { list = JSON.parse(el.getAttribute('data-lightbox-images') || '[]'); } catch (e) { return; }
+      list.forEach(function (src) { if (!done[src]) { done[src] = 1; var im = new Image(); im.decoding = 'async'; im.src = src; } });
+    };
+    ['pointerenter', 'touchstart', 'focusin'].forEach(function (ev) {
+      document.addEventListener(ev, function (e) {
+        var el = e.target && e.target.closest && e.target.closest('[data-lightbox-images]');
+        if (el) prefetch(el);
+      }, { passive: true, capture: true });
+    });
+    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 1500); };
+    window.addEventListener('load', function () { idle(function () { $$('.vlh-canvas__thumb[data-lightbox-images]').forEach(prefetch); }); });
+  })();
+
   /* Envío gratis: franja bajo la cabecera con lo que falta ----------------------- */
   (function () {
     var fs = theme.freeShipping || {};

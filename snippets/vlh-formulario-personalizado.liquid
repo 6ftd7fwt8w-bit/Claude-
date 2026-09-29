@@ -92,8 +92,8 @@
       <div class="vlh-canvas">
         <div class="vlh-canvas__head">
           {%- if lamina_image != blank -%}
-            <button type="button" class="vlh-canvas__thumb" data-lightbox-images='{{ lamina_image | image_url: width: 1400 | json | prepend: '[' | append: ']' | escape }}' data-lightbox-title="Así es una lámina" aria-label="Ver cómo queda una lámina">
-              {{ lamina_image | image_url: width: 200 | image_tag: loading: 'lazy', width: 64, height: 80, alt: 'Ejemplo de lámina' }}
+            <button type="button" class="vlh-canvas__thumb" data-lightbox-images='{{ lamina_image | image_url: width: 1100 | json | prepend: '[' | append: ']' | escape }}' data-lightbox-title="Así es una lámina" aria-label="Ver cómo queda una lámina">
+              {{ lamina_image | image_url: width: 160 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '80, 160', sizes: '64px', width: 64, height: 80, alt: 'Ejemplo de lámina' }}
               <span class="vlh-canvas__zoom" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8M10.5 7.5v6M7.5 10.5h6"/></svg></span>
             </button>
           {%- endif -%}
@@ -136,9 +136,9 @@
         <div class="vlh-canvas">
           <div class="vlh-canvas__head">
             {%- if canvas_image != blank -%}
-              {%- capture canvas_imgs -%}[{{ canvas_image | image_url: width: 1400 | json }}{%- if canvas_detail != blank -%},{{ canvas_detail | image_url: width: 1400 | json }}{%- endif -%}]{%- endcapture -%}
+              {%- capture canvas_imgs -%}[{{ canvas_image | image_url: width: 1100 | json }}{%- if canvas_detail != blank -%},{{ canvas_detail | image_url: width: 1100 | json }}{%- endif -%}]{%- endcapture -%}
               <button type="button" class="vlh-canvas__thumb" data-lightbox-images='{{ canvas_imgs | escape }}' data-lightbox-title="Así es un lienzo" aria-label="Ver cómo queda un lienzo">
-                {{ canvas_image | image_url: width: 200 | image_tag: loading: 'lazy', width: 64, height: 80, alt: 'Ejemplo de lienzo' }}
+                {{ canvas_image | image_url: width: 160 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '80, 160', sizes: '64px', width: 64, height: 80, alt: 'Ejemplo de lienzo' }}
                 <span class="vlh-canvas__zoom" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8M10.5 7.5v6M7.5 10.5h6"/></svg></span>
               </button>
             {%- endif -%}
