@@ -215,19 +215,6 @@
           "type": "set",
           "settings": {
             "collection": "infantil",
-            "name": "Un pequeño mundo por descubrir",
-            "photo_product": "lamina-decorativa-infantil-duermete-mi-vida-vivalahome-copia",
-            "products": [
-              "lamina-decorativa-infantil-duermete-mi-vida-vivalahome-copia",
-              "lamina-decorativa-infantil-la-luz-que-te-guia-vivalahome-copia",
-              "lamina-decorativa-infantil-cucu-te-veo-vivalahome-copia"
-            ]
-          }
-        },
-        "banner_18": {
-          "type": "set",
-          "settings": {
-            "collection": "infantil",
             "name": "Amigos del bosque",
             "photo_product": "lamina-decorativa-infantil-mi-pequeno-hogar-vivalahome-copia",
             "products": [
@@ -237,7 +224,7 @@
             ]
           }
         },
-        "banner_19": {
+        "banner_18": {
           "type": "set",
           "settings": {
             "collection": "infantil",
@@ -250,7 +237,7 @@
             ]
           }
         },
-        "banner_20": {
+        "banner_19": {
           "type": "set",
           "settings": {
             "collection": "infantil",
@@ -263,7 +250,7 @@
             ]
           }
         },
-        "banner_21": {
+        "banner_20": {
           "type": "set",
           "settings": {
             "collection": "infantil",
@@ -276,7 +263,7 @@
             ]
           }
         },
-        "banner_22": {
+        "banner_21": {
           "type": "set",
           "settings": {
             "collection": "infantil",
@@ -289,7 +276,7 @@
             ]
           }
         },
-        "banner_23": {
+        "banner_22": {
           "type": "set",
           "settings": {
             "collection": "infantil",
@@ -302,7 +289,7 @@
             ]
           }
         },
-        "banner_24": {
+        "banner_23": {
           "type": "themes",
           "settings": {
             "collection": "infantil",
@@ -311,7 +298,7 @@
             "themes": "tema-dulces-suenos|🌙 Dulces sueños\ntema-bosque|🦊 Animales del bosque\ntema-reyes|👑 Reyes y princesas\ntema-aventuras|⛵ Mar y aventuras\ntema-frases|😄 Frases con humor\ntema-palabras|✨ Palabras bonitas"
           }
         },
-        "banner_25": {
+        "banner_24": {
           "type": "featured",
           "settings": {
             "collection": "laminas-personalizadas",
@@ -322,7 +309,7 @@
             ]
           }
         },
-        "banner_26": {
+        "banner_25": {
           "type": "featured",
           "settings": {
             "collection": "infantil",
@@ -335,7 +322,7 @@
             ]
           }
         },
-        "banner_27": {
+        "banner_26": {
           "type": "featured",
           "settings": {
             "collection": "packs-regalo",
@@ -372,8 +359,7 @@
         "banner_23",
         "banner_24",
         "banner_25",
-        "banner_26",
-        "banner_27"
+        "banner_26"
       ]
     },
     "instagram": {
