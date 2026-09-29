@@ -3,9 +3,24 @@
   <div class="drawer__body">
     {% render 'cart-items' %}
     {% render 'cart-discount', form_id: 'drawer', compact: true %}
+    <div class="drawer__summary">{% render 'cart-summary', form_id: 'drawer', hide_discount: true %}</div>
   </div>
   <div class="drawer__footer">
-    {% render 'cart-summary', form_id: 'drawer', hide_discount: true %}
+    {%- liquid
+      assign drawer_saved = cart.original_total_price | minus: cart.total_price
+      if settings.free_shipping_threshold > 0
+        assign ship_limit = settings.free_shipping_threshold | times: 100
+        if cart.total_price >= ship_limit
+          assign ship_add = settings.free_shipping_saving | default: 0 | times: 100 | round
+          assign drawer_saved = drawer_saved | plus: ship_add
+        endif
+      endif
+    -%}
+    <div class="drawer__total">
+      <span>{% if drawer_saved > 0 %}{{ 'cart.breakdown_total' | t }}{% else %}{{ 'cart.subtotal' | t }}{% endif %}</span>
+      <strong>{{ cart.total_price | money }}</strong>
+    </div>
+    {%- if drawer_saved > 0 -%}{%- assign drawer_saved_formatted = drawer_saved | money -%}<p class="drawer__saved">🎉 {{ 'cart.breakdown_saved_html' | t: amount: drawer_saved_formatted }}</p>{%- endif -%}
     <form action="{{ routes.cart_url }}" method="post">
       <button type="submit" name="checkout" class="button button--full">{% render 'icon', name: 'lock' %}{{ 'cart.checkout' | t }}</button>
     </form>

@@ -1091,3 +1091,17 @@ body.overflow-hidden .cart-fab { opacity: 0; pointer-events: none; }
 .ship-strip.is-free .ship-strip__timer b { color: #f7dd8a; }
 .ship-strip.is-urgent .ship-strip__timer b { color: #c2452a; animation: deal-shake 2.4s ease-in-out infinite; display: inline-block; }
 @media (max-width: 749px) { .ship-strip.has-timer .ship-strip__timer { flex-basis: 100%; justify-content: center; border-right: 0; padding-right: 0; margin: 0; } }
+
+/* Cesta lateral: el resumen va con los productos (se desplaza) y abajo solo queda el total y el botón */
+.drawer__summary { margin-top: 14px; }
+.drawer__summary .cart-breakdown { margin-bottom: 4px; }
+.drawer__footer { padding-top: 12px; padding-bottom: 12px; }
+.drawer__total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; font-size: 14px; }
+.drawer__total strong { font-size: 18px; font-weight: 600; }
+.drawer__saved { margin: 0 0 10px; font-size: 12px; color: #1f6b33; }
+.drawer__saved strong { color: #1f6b33; }
+.drawer__footer .cart-trust { margin-top: 8px; }
+@media (max-width: 749px) {
+  .drawer__footer .cart-trust__icons, .drawer__footer .payment-icons { display: none; }
+  .drawer__links { margin-top: 8px; }
+}
