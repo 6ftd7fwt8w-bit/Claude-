@@ -999,3 +999,4 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .card__deal { margin-top: 8px; padding: 8px 10px; border: 1px dashed #d9a441; background: rgba(242,209,107,.22); font-size: 12px; line-height: 1.45; }
 .card__deal strong { display: block; color: #b0431f; font-size: 12px; letter-spacing: .02em; }
 .card__deal-price { color: #b0431f; }
+.cart-discount__msg a { text-decoration: underline; text-underline-offset: 3px; font-weight: 600; white-space: nowrap; }

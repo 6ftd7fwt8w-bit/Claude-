@@ -72,6 +72,8 @@
     "discount_waiting_link": "Elegir mi ilustración",
     "discount_invalid": "Este código no existe o no se aplica a los productos de tu carrito.",
     "discount_pending": "Código guardado. Se aplicará en cuanto añadas un producto válido.",
+    "discount_valid_for": "Código guardado. Es válido para %s:",
+    "discount_see": "Ver",
     "added_note": "¡Añadido a tu carrito!",
     "deal_more": "Tu {{ percent }} % se aplica a cada ilustración personalizada: cuantas más añadas, más ahorras. Añadir otra",
     "deal_title_max": "¡No hay quien dé más!",

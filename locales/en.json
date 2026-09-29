@@ -72,6 +72,8 @@
     "discount_waiting_link": "Choose my illustration",
     "discount_invalid": "This code doesn't exist or doesn't apply to the items in your cart.",
     "discount_pending": "Code saved. It will apply as soon as you add an eligible item.",
+    "discount_valid_for": "Code saved. Valid for %s:",
+    "discount_see": "See",
     "added_note": "Added to your cart!",
     "deal_more": "Your {{ percent }}% applies to every personalised illustration: the more you add, the more you save. Add another",
     "deal_title_max": "Unbeatable!",

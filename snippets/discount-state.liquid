@@ -53,6 +53,7 @@
     "code": {{ settings.welcome_code | strip | json }},
     "percent": {{ settings.welcome_percent | json }},
     "collectionUrl": {{ settings.welcome_collection.url | default: routes.all_products_collection_url | json }},
+    "collectionTitle": {{ settings.welcome_collection.title | default: '' | downcase | json }},
     "applied": {{ w_applied | json }},
     "qualifying": {{ w_qualifying | json }},
     "totalDiscount": {{ cart.total_discount | json }},
@@ -61,6 +62,7 @@
     "crossCode": {{ settings.cross_code | strip | json }},
     "crossApplied": {{ x_applied | json }},
     "crossUrl": {{ settings.cross_collection.url | default: '' | json }},
+    "crossTitle": {{ settings.cross_collection.title | default: '' | downcase | json }},
     "itemCount": {{ cart.item_count | json }},
     "currency": {{ cart.currency.iso_code | json }},
     "locale": {{ request.locale.iso_code | json }}

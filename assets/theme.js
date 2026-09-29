@@ -537,6 +537,17 @@
       msg.hidden = false;
       msg.classList.toggle('is-error', !known);
       msg.textContent = known ? theme.strings.discountPending : theme.strings.discountInvalid;
+      if (known) {
+        // Dice para qué productos vale el código y enlaza a su colección
+        var isCross = !sameCode(code, ds.code) && sameCode(code, ds.crossCode);
+        var cTitle = isCross ? ds.crossTitle : ds.collectionTitle;
+        var cUrl = isCross ? ds.crossUrl : ds.collectionUrl;
+        if (cTitle && cUrl && theme.strings.discountValidFor) {
+          msg.textContent = theme.strings.discountValidFor.replace('%s', cTitle) + ' ';
+          var a = document.createElement('a'); a.href = cUrl; a.textContent = theme.strings.discountSee || 'Ver';
+          msg.appendChild(a);
+        }
+      }
       if (!known) removeCode(code);
       else { refreshDiscount(); paintCrossCards(); }
     }).catch(function () { btn.disabled = false; });
