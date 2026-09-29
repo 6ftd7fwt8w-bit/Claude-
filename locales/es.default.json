@@ -62,6 +62,7 @@
     "remove": "Eliminar",
     "subtotal": "Subtotal",
     "taxes_shipping": "Impuestos incluidos. Gastos de envío calculados al finalizar la compra.",
+    "shipping_at_checkout": "Gastos de envío calculados al finalizar la compra.",
     "breakdown_products": "Importe de los productos",
     "breakdown_discounts": "Descuentos",
     "breakdown_shipping": "Envío",

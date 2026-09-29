@@ -41,22 +41,26 @@
       <div class="cart-breakdown__row is-saving"><span>{{ 'cart.breakdown_discounts' | t }}</span><span>−{{ disc_cents | money }}</span></div>
     {%- endif -%}
     {%- if ship_is_free -%}
-      <div class="cart-breakdown__row is-saving"><span>{{ 'cart.breakdown_shipping' | t }}{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</span><span>{% if ship_cents > 0 %}<s>{{ ship_cents | money }}</s> {% endif %}<b>{{ 'cart.breakdown_free' | t }}</b></span></div>
+      <div class="cart-breakdown__row is-saving"><span>{{ 'cart.breakdown_shipping' | t }}{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</span><span>{% if ship_cents > 0 %}<s>{{ ship_cents | money }}</s> {% endif %}<span class="cart-free-note__check" aria-hidden="true">✓</span> <b>{{ 'cart.breakdown_free' | t }}</b></span></div>
     {%- endif -%}
     <div class="cart-breakdown__total"><span>{{ 'cart.breakdown_total' | t }}</span><strong>{{ cart.total_price | money_with_currency }}</strong></div>
+    <ul class="cart-free-note cart-free-note--inside">
+      <li><span class="cart-free-note__check" aria-hidden="true">✓</span>{{ 'cart.free_note_taxes' | t }}</li>
+      {%- if ship_is_free -%}
+        <li><span class="cart-free-note__check" aria-hidden="true">✓</span>{{ 'cart.free_note_shipping' | t }}{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</li>
+        <li><span class="cart-free-note__check" aria-hidden="true">✓</span><strong>{{ 'cart.free_note_final' | t }}</strong></li>
+      {%- endif -%}
+    </ul>
     {%- assign saved_formatted = saved_cents | money -%}
     <p class="cart-breakdown__saved">🎉 {{ 'cart.breakdown_saved_html' | t: amount: saved_formatted }}</p>
   </div>
 {%- else -%}
   <div class="cart-totals"><span>{{ 'cart.subtotal' | t }}</span><strong>{{ cart.total_price | money_with_currency }}</strong></div>
 {%- endif -%}
-{%- if settings.free_shipping_threshold > 0 and cart.item_count > 0 and remaining <= 0 -%}
-  <ul class="cart-free-note">
-    <li><span class="cart-free-note__check" aria-hidden="true">✓</span>{{ 'cart.free_note_taxes' | t }}</li>
-    <li><span class="cart-free-note__check" aria-hidden="true">✓</span>{{ 'cart.free_note_shipping' | t }}{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</li>
-    <li><span class="cart-free-note__check" aria-hidden="true">✓</span><strong>{{ 'cart.free_note_final' | t }}</strong></li>
-  </ul>
+{%- if ship_is_free -%}
   <p class="cart-free-note__small">{{ 'cart.free_note_outside' | t }}</p>
+{%- elsif cart.item_count > 0 and saved_cents > 0 -%}
+  <p class="muted" style="font-size:12px;margin-bottom:14px">{{ 'cart.shipping_at_checkout' | t }}</p>
 {%- else -%}
   <p class="muted" style="font-size:12px;margin-bottom:14px">{{ 'cart.taxes_shipping' | t }}</p>
 {%- endif -%}

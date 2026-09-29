@@ -1063,3 +1063,6 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .cart-breakdown__total strong { font-size: 20px; font-weight: 600; }
 .cart-breakdown__saved { margin: 8px 0 0; padding: 6px 10px; background: #e7f3e3; color: #24522d; font-size: 12.5px; text-align: center; border-radius: 99px; }
 .cart-breakdown__saved strong { color: #1f6b33; }
+.cart-free-note--inside { margin: 10px 0 0; justify-content: center; }
+.cart-breakdown__row .cart-free-note__check { vertical-align: -3px; }
+.cart-free-note__small { text-align: center; }

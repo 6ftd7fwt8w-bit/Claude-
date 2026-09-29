@@ -62,6 +62,7 @@
     "remove": "Remove",
     "subtotal": "Subtotal",
     "taxes_shipping": "Taxes included. Shipping calculated at checkout.",
+    "shipping_at_checkout": "Shipping calculated at checkout.",
     "breakdown_products": "Products",
     "breakdown_discounts": "Discounts",
     "breakdown_shipping": "Shipping",
