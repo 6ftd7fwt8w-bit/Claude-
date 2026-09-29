@@ -1199,3 +1199,7 @@ body.set-open { overflow: hidden; }
 .next-prod--set { padding-left: 12px; }
 .set-sheet__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 @media (max-width: 380px) { .next-prod__img { display: none; } .next-prod { padding-left: 12px; } }
+.load-more.is-auto [data-load-more-btn] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; padding: 0; border: 0; }
+.load-more.is-auto { position: relative; }
+.load-more.is-auto.is-loading .load-more__bar span { animation: lm-pulse 1s ease-in-out infinite alternate; }
+@keyframes lm-pulse { from { opacity: 1; } to { opacity: .35; } }

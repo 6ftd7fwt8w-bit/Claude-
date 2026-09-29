@@ -942,15 +942,13 @@
     $$('.facets details[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
   });
 
-  /* Ver más (colecciones) ------------------------------------------------ */
-  document.addEventListener('click', function (e) {
-    var btn = e.target.closest && e.target.closest('[data-load-more-btn]');
-    if (!btn) return;
+  /* Ver más (colecciones): carga automática al acercarse al final (scroll infinito); el enlace queda solo como respaldo sin JS */
+  var loadMore = function (btn) {
     var wrap = btn.closest('[data-load-more]');
     var grid = document.querySelector('[data-product-grid]');
-    if (!wrap || !grid) return;
-    e.preventDefault();
+    if (!wrap || !grid || btn.classList.contains('is-loading')) return false;
     btn.classList.add('is-loading');
+    wrap.classList.add('is-loading');
     fetch(btn.href).then(function (r) { return r.text(); }).then(function (html) {
       var doc = new DOMParser().parseFromString(html, 'text/html');
       var freshGrid = doc.querySelector('[data-product-grid]');
@@ -965,8 +963,27 @@
         if (bar) wrap.querySelector('[data-load-more-bar]').style.width = bar.style.width;
         if (next) { btn.href = next.href; btn.classList.remove('is-loading'); } else { btn.remove(); }
       } else { btn.remove(); }
+      wrap.classList.remove('is-loading');
+      // Si aún se ve el final (pantallas grandes), sigue cargando
+      if (document.body.contains(btn) && wrap.getBoundingClientRect().top < window.innerHeight + 600) loadMore(btn);
     }).catch(function () { window.location.href = btn.href; });
+    return true;
+  };
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('[data-load-more-btn]');
+    if (btn && loadMore(btn)) e.preventDefault();
   });
+  (function () {
+    var wrap = document.querySelector('[data-load-more]');
+    if (!wrap || !wrap.querySelector('[data-load-more-btn]') || !('IntersectionObserver' in window)) return;
+    wrap.classList.add('is-auto');
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        var btn = wrap.querySelector('[data-load-more-btn]');
+        if (en.isIntersecting && btn) loadMore(btn);
+      });
+    }, { rootMargin: '0px 0px 900px 0px' }).observe(wrap);
+  })();
 
   /* Hacen pack (recomendaciones complementarias) ------------------------ */
   $$('[data-pack-recs]').forEach(function (sec) {
