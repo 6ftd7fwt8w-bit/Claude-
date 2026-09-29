@@ -60,6 +60,14 @@
       </a>
     </div>
   </header>
+  {%- if settings.free_shipping_threshold > 0 -%}
+    {%- comment -%} Aviso de envío gratis (lo rellena theme.js con el total de la cesta) {%- endcomment -%}
+    <a href="{{ routes.cart_url }}" class="ship-strip" data-ship-strip{% if settings.cart_type == 'drawer' %} data-drawer-open="CartDrawer"{% endif %} hidden>
+      <span class="ship-strip__icon" aria-hidden="true">🚚</span>
+      <span class="ship-strip__text" data-ship-text></span>
+      <span class="ship-strip__track" aria-hidden="true"><span data-ship-fill></span></span>
+    </a>
+  {%- endif -%}
 </div>
 
 <div class="drawer drawer--left" id="MenuDrawer" aria-hidden="true">

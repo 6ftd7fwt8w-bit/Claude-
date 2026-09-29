@@ -12,18 +12,24 @@
         "announcement_1": {
           "type": "announcement",
           "settings": {
+            "text": "🚚 Envío gratis en pedidos desde 60 € (península)"
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
             "text": "Nuevo: lienzos XL de fallera, listos para colgar",
             "link": "/pages/lienzos-xl-fallera"
           }
         },
-        "announcement_2": {
+        "announcement_3": {
           "type": "announcement",
           "settings": {
             "text": "3x2 en láminas infantiles con el código PEQUES3X2",
             "link": "shopify://collections/infantil"
           }
         },
-        "announcement_3": {
+        "announcement_4": {
           "type": "announcement",
           "settings": {
             "text": "Ilustramos historias · Diseñamos regalos · Creamos hogar"
@@ -33,7 +39,8 @@
       "block_order": [
         "announcement_1",
         "announcement_2",
-        "announcement_3"
+        "announcement_3",
+        "announcement_4"
       ]
     },
     "header": {

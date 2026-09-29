@@ -356,12 +356,13 @@
 
     <!-- ============ RESUMEN DE PRECIO ============ -->
     <div class="vlh-summary">
+      <p class="vlh-ship" id="vlh-ship" data-threshold="{{ settings.free_shipping_threshold | times: 100 }}" data-zone="{{ settings.free_shipping_zone | escape }}" hidden></p>
       <div class="vlh-summary__row vlh-summary__row--total">
         <span class="vlh-summary__label">Total</span>
         <span><span class="vlh-summary__old" id="vlh-total-old" hidden></span><span class="vlh-summary__value" id="vlh-total-price">—</span></span>
       </div>
       <ul class="vlh-summary__breakdown" id="vlh-breakdown"></ul>
-      <p class="vlh-summary__envio">Envío calculado al pagar</p>
+      <p class="vlh-summary__envio" id="vlh-envio">Envío calculado al pagar</p>
     </div>
 
     <!-- ============ CÓDIGO DE DESCUENTO ============ -->
@@ -661,6 +662,12 @@
   }
   .vlh-summary__breakdown { list-style: none; margin: 12px 0 0; padding: 0; font-size: 13px; opacity: .75; }
   .vlh-summary__breakdown li { display: flex; justify-content: space-between; padding: 3px 0; }
+  .vlh-ship { display: flex; gap: 8px; align-items: center; margin: 0 0 10px; padding: 9px 12px; font-size: 13px; line-height: 1.4; background: #eef7ec; border: 1px solid #cfe3ca; color: #24522d; }
+  .vlh-ship[hidden] { display: none; }
+  .vlh-ship strong { color: #1f6b33; }
+  .vlh-ship.is-free { background: #2f6b3a; border-color: #2f6b3a; color: #fff; font-weight: 600; animation: vlh-ship-pop .5s ease; }
+  .vlh-ship small { font-weight: 400; opacity: .8; }
+  @keyframes vlh-ship-pop { 0% { transform: scale(.97); opacity: .4; } 100% { transform: none; opacity: 1; } }
   .vlh-summary__envio { font-size: 12px; opacity: .65; margin: 4px 0 0; text-align: right; }
 
   .vlh-submit {
@@ -992,6 +999,29 @@
     } catch (e) {}
   }
 
+  // Envío gratis: suma lo que ya hay en la cesta + este pedido
+  let cartTotal = 0, lastFinal = 0;
+  const shipEl = document.getElementById('vlh-ship');
+  const envioEl = document.getElementById('vlh-envio');
+  function paintShip(final) {
+    lastFinal = final;
+    if (!shipEl) return;
+    const limit = parseInt(shipEl.dataset.threshold, 10) || 0;
+    if (!limit || !final) { shipEl.hidden = true; return; }
+    const zone = shipEl.dataset.zone ? ` <small>(${shipEl.dataset.zone})</small>` : '';
+    const left = limit - (cartTotal + final);
+    const wasFree = shipEl.classList.contains('is-free');
+    shipEl.hidden = false;
+    shipEl.classList.toggle('is-free', left <= 0);
+    shipEl.innerHTML = left <= 0
+      ? `<span aria-hidden="true">🎉</span><span>¡Enhorabuena! Envío gratuito para tu pedido${zone}</span>`
+      : `<span aria-hidden="true">🚚</span><span>Añade <strong>${money(left)}</strong> más para disfrutar de envío gratis${zone}</span>`;
+    if (left <= 0 && !wasFree) { shipEl.style.animation = 'none'; void shipEl.offsetWidth; shipEl.style.animation = ''; }
+    if (envioEl) envioEl.textContent = left <= 0 ? 'Envío gratis' + (shipEl.dataset.zone ? ' (' + shipEl.dataset.zone + ')' : '') : 'Envío calculado al pagar';
+  }
+  fetch('/cart.js', { headers: { Accept: 'application/json' } }).then(r => r.json()).then(c => { cartTotal = c.total_price || 0; paintShip(lastFinal); }).catch(() => {});
+  document.addEventListener('vlh:cart-state', (e) => { cartTotal = (e.detail && e.detail.total) || 0; paintShip(lastFinal); });
+
   function calcTotal() {
     let total = 0;
     const lines = [];
@@ -1031,6 +1061,7 @@
       ahorro = Math.round(variante.price * coupon.percent / 100);
     }
     const final = total - ahorro;
+    paintShip(final);
     els.totalPriceEl.textContent = money(final);
     if (els.totalOldEl) {
       els.totalOldEl.hidden = !ahorro;

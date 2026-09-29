@@ -3,13 +3,19 @@
   assign remaining = threshold | minus: cart.total_price
 -%}
 {%- if settings.free_shipping_threshold > 0 and cart.item_count > 0 -%}
-  <div class="cart-shipping-bar">
-    {%- if remaining > 0 -%}
-      {%- assign remaining_formatted = remaining | money -%}
-      {{ 'cart.free_shipping_remaining_html' | t: amount: remaining_formatted }}
-    {%- else -%}
-      {{ 'cart.free_shipping_reached' | t }}
-    {%- endif -%}
+  <div class="cart-shipping-bar{% if remaining <= 0 %} is-free{% endif %}">
+    <p class="cart-shipping-bar__text">
+      <span class="cart-shipping-bar__icon" aria-hidden="true">{% if remaining > 0 %}🚚{% else %}🎉{% endif %}</span>
+      <span>
+      {%- if remaining > 0 -%}
+        {%- assign remaining_formatted = remaining | money -%}
+        {{ 'cart.free_shipping_remaining_html' | t: amount: remaining_formatted }}
+      {%- else -%}
+        {{ 'cart.free_shipping_reached' | t }}
+      {%- endif -%}
+      {%- if settings.free_shipping_zone != blank %} <small>({{ settings.free_shipping_zone }})</small>{%- endif -%}
+      </span>
+    </p>
     {%- assign pct = cart.total_price | times: 100 | divided_by: threshold | at_most: 100 -%}
     <div class="cart-shipping-bar__track"><div class="cart-shipping-bar__fill" style="width: {{ pct }}%"></div></div>
   </div>

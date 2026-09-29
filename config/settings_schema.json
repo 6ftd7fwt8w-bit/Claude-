@@ -238,6 +238,20 @@
         "default": 0
       },
       {
+        "type": "text",
+        "id": "free_shipping_zone",
+        "label": "Zona del envío gratis",
+        "info": "Se muestra junto al aviso, p. ej. península",
+        "default": "península"
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_saving",
+        "label": "Precio del envío que te ahorras (€)",
+        "info": "Para mostrar el ahorro en la tarjeta de descuentos de la cesta",
+        "default": 6.9
+      },
+      {
         "type": "checkbox",
         "id": "cart_show_note",
         "label": "Permitir nota de pedido",

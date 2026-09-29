@@ -1027,3 +1027,24 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .deal-toast__cta { margin-top: 4px; color: #f7dd8a; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .deal-toast__cta[hidden] { display: none; }
 .deal-toast__close { position: absolute; top: 6px; right: 8px; background: none; border: 0; color: #fff; font-size: 22px; line-height: 1; cursor: pointer; opacity: .8; }
+
+/* Envío gratis */
+.ship-strip { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; padding: 7px 16px 8px; background: #e7f3e3; color: #24522d; font-size: 12.5px; line-height: 1.35; text-align: center; border-top: 1px solid #cfe3ca; }
+.ship-strip[hidden] { display: none; }
+.ship-strip strong { color: #1f6b33; font-weight: 700; }
+.ship-strip__icon { font-size: 15px; line-height: 1; }
+.ship-strip__track { flex: 0 0 90px; height: 5px; border-radius: 99px; background: #cfe3ca; overflow: hidden; }
+.ship-strip__track span { display: block; height: 100%; width: 0; background: #2f8a45; border-radius: inherit; transition: width .5s ease; }
+.ship-strip.is-free { background: #2f6b3a; color: #fff; border-top-color: #2f6b3a; font-weight: 600; }
+.ship-strip.is-free .ship-strip__track { display: none; }
+.cart-shipping-bar { margin: 0 0 12px; padding: 10px 12px; background: #eef7ec; border: 1px solid #cfe3ca; color: #24522d; font-size: 13px; }
+.cart-shipping-bar.is-free { background: #2f6b3a; border-color: #2f6b3a; color: #fff; }
+.cart-shipping-bar__text { display: flex; gap: 8px; align-items: center; margin: 0 0 8px; line-height: 1.4; }
+.cart-shipping-bar__text strong { color: #1f6b33; }
+.cart-shipping-bar__text small { opacity: .75; }
+.cart-shipping-bar__icon { font-size: 16px; }
+.cart-shipping-bar__track { height: 6px; border-radius: 99px; background: #cfe3ca; overflow: hidden; }
+.cart-shipping-bar__fill { height: 100%; background: #2f8a45; border-radius: inherit; transition: width .5s ease; }
+.cart-shipping-bar.is-free .cart-shipping-bar__text { margin: 0; }
+.cart-shipping-bar.is-free .cart-shipping-bar__track { display: none; }
+.deal-card__ship { font-size: 12.5px; line-height: 1.45; }

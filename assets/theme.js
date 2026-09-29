@@ -519,6 +519,39 @@
   paintCartHints();
   discountListeners.push(paintCartHints);
 
+  /* Envío gratis: franja bajo la cabecera con lo que falta ----------------------- */
+  (function () {
+    var fs = theme.freeShipping || {};
+    var paintShip = function (ds) {
+      if (!ds) return;
+      var total = ds.total || 0, count = ds.itemCount || 0, limit = fs.threshold || 0;
+      document.dispatchEvent(new CustomEvent('vlh:cart-state', { detail: { total: total, count: count } }));
+      $$('[data-ship-strip]').forEach(function (el) {
+        el.hidden = !(limit > 0 && count > 0);
+        if (el.hidden) return;
+        var left = limit - total;
+        var txt = $('[data-ship-text]', el);
+        el.classList.toggle('is-free', left <= 0);
+        if (left > 0) {
+          var parts = (theme.strings.shipRemaining || '').split('[amount]');
+          txt.innerHTML = '';
+          parts.forEach(function (p, i) {
+            var tmp = document.createElement('span'); tmp.innerHTML = p;
+            while (tmp.firstChild) txt.appendChild(tmp.firstChild);
+            if (i < parts.length - 1) { var b = document.createElement('strong'); b.textContent = formatMoney(left); txt.appendChild(b); }
+          });
+        } else {
+          txt.textContent = theme.strings.shipReached || '';
+        }
+        $('.ship-strip__icon', el).textContent = left > 0 ? '🚚' : '🎉';
+        var fill = $('[data-ship-fill]', el);
+        if (fill) fill.style.width = Math.min(100, Math.round(total * 100 / limit)) + '%';
+      });
+    };
+    paintShip(discountState);
+    discountListeners.push(paintShip);
+  })();
+
   /* Descuento aplicado: aviso de enhorabuena + cuenta atrás en la cesta ------- */
   (function () {
     var pad = function (n) { return (n < 10 ? '0' : '') + n; };
