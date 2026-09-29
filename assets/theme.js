@@ -462,14 +462,14 @@
             clearInterval(iv);
             badge.hidden = true;
             $$('[data-cart-timer]').forEach(function (el) { el.hidden = true; });
-            if (!welcome.cleared) { welcome.cleared = true; writeWelcome(welcome); removeCode(welcome.code || (discountState && discountState.code) || ''); }
+            if (!welcome.cleared) { welcome.cleared = true; welcome.clearedAt = Date.now(); writeWelcome(welcome); removeCode(welcome.code || (discountState && discountState.code) || ''); }
           }
         };
         iv = setInterval(tick, 1000);
         tick();
       };
       if (welcomeActive()) runBadge();
-      else if (welcome.status === 'accepted' && !welcome.cleared) { welcome.cleared = true; writeWelcome(welcome); removeCode(welcome.code || (discountState && discountState.code) || ''); }
+      else if (welcome.status === 'accepted' && !welcome.cleared) { welcome.cleared = true; welcome.clearedAt = Date.now(); writeWelcome(welcome); removeCode(welcome.code || (discountState && discountState.code) || ''); }
     }
 
     // Pop-up
@@ -523,8 +523,10 @@
   (function () {
     var pad = function (n) { return (n < 10 ? '0' : '') + n; };
     var ensureTimer = function (ds) {
-      // El código se aplicó sin pasar por el pop-up: empezamos su cuenta atrás ahora (solo si nunca tuvo una)
-      if (!ds || !(ds.applied > 0) || welcome.status === 'accepted') return;
+      // El código está aplicado sin cuenta atrás activa: empezamos una ahora.
+      // Si su plazo anterior acaba de vencer (se está quitando el código), esperamos.
+      if (!ds || !(ds.applied > 0) || welcomeActive()) return;
+      if (welcome.status === 'accepted' && !(welcome.cleared && (!welcome.clearedAt || Date.now() - welcome.clearedAt > 60000))) return;
       var pop = $('[data-welcome]');
       var minutes = (pop && parseInt(pop.getAttribute('data-minutes'), 10)) || 90;
       welcome = { status: 'accepted', at: Date.now(), expires: Date.now() + minutes * 60000, code: ds.code };
@@ -566,7 +568,7 @@
         if (end) end.textContent = new Date(welcome.expires).toLocaleTimeString((ds && ds.locale) || 'es', { hour: '2-digit', minute: '2-digit' });
       });
       if (welcome.status === 'accepted' && welcome.expires <= Date.now() && !welcome.cleared && ds && ds.applied > 0) {
-        welcome.cleared = true; writeWelcome(welcome);
+        welcome.cleared = true; welcome.clearedAt = Date.now(); writeWelcome(welcome);
         removeCode(welcome.code || ds.code || '').then(afterCartChange);
       }
     };
