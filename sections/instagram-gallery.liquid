@@ -37,7 +37,7 @@
               endif
             endfor
             if vsrc == ''
-              assign vsrc = vfallback
+              assign vsrc = vfallback | replace: 'HD-1080p-7.2Mbps', 'SD-480p-1.5Mbps' | replace: 'HD-720p-4.5Mbps', 'SD-480p-1.5Mbps'
             endif
           -%}
           <video class="ig-video" muted loop playsinline preload="none" disablepictureinpicture
