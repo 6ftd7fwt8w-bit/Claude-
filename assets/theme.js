@@ -524,8 +524,7 @@
     var sheets = $$('[data-set-sheet]');
     if (!sheets.length) return;
     var paint = function (sh) {
-      var size = sh._size || 'A4';
-      var items = $$('[data-set-item]', sh), prices = items.map(function (it) { return parseInt(it.getAttribute('data-' + size.toLowerCase() + '-price'), 10) || 0; });
+      var items = $$('[data-set-item]', sh), prices = items.map(function (it) { return parseInt(it.getAttribute('data-' + (it._size || 'A4').toLowerCase() + '-price'), 10) || 0; });
       var total = prices.reduce(function (a, b) { return a + b; }, 0);
       var min = Math.min.apply(null, prices), freeIdx = prices.indexOf(min), hasCode = !!sh.getAttribute('data-code') && items.length >= 3;
       items.forEach(function (it, i) {
@@ -539,11 +538,24 @@
     };
     sheets.forEach(function (sh) {
       paint(sh);
+      var setItemSize = function (it, size) {
+        it._size = size;
+        $$('[data-item-size]', it).forEach(function (x) { var on = x.getAttribute('data-item-size') === size; x.classList.toggle('is-active', on); x.setAttribute('aria-pressed', on); });
+      };
+      // Marca el botón general solo si las 3 van del mismo tamaño
+      var syncAll = function () {
+        var sizes = $$('[data-set-item]', sh).map(function (it) { return it._size || 'A4'; });
+        var same = sizes.every(function (z) { return z === sizes[0]; }) ? sizes[0] : null;
+        sh._size = same;
+        $$('[data-set-size]', sh).forEach(function (x) { var on = x.getAttribute('data-set-size') === same; x.classList.toggle('is-active', on); x.setAttribute('aria-pressed', on); });
+      };
+      sh._applySize = function (size) { $$('[data-set-item]', sh).forEach(function (it) { setItemSize(it, size); }); syncAll(); paint(sh); };
       $$('[data-set-size]', sh).forEach(function (b) {
-        b.addEventListener('click', function () {
-          sh._size = b.getAttribute('data-set-size');
-          $$('[data-set-size]', sh).forEach(function (x) { var on = x === b; x.classList.toggle('is-active', on); x.setAttribute('aria-pressed', on); });
-          paint(sh);
+        b.addEventListener('click', function () { sh._applySize(b.getAttribute('data-set-size')); });
+      });
+      $$('[data-set-item]', sh).forEach(function (it) {
+        $$('[data-item-size]', it).forEach(function (b) {
+          b.addEventListener('click', function () { setItemSize(it, b.getAttribute('data-item-size')); syncAll(); paint(sh); });
         });
       });
       var close = function () { if (sh.open) sh.close(); document.body.classList.remove('set-open'); };
@@ -552,8 +564,7 @@
       sh.addEventListener('close', function () { document.body.classList.remove('set-open'); });
       var add = $('[data-set-add]', sh), msg = $('[data-set-msg]', sh);
       add.addEventListener('click', function () {
-        var size = (sh._size || 'A4').toLowerCase();
-        var items = $$('[data-set-item]', sh).map(function (it) { return { id: parseInt(it.getAttribute('data-' + size), 10), quantity: 1 }; });
+        var items = $$('[data-set-item]', sh).map(function (it) { return { id: parseInt(it.getAttribute('data-' + (it._size || 'A4').toLowerCase()), 10), quantity: 1 }; });
         add.disabled = true; msg.hidden = true;
         fetch((theme.routes.cartAdd || '/cart/add') + '.js', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ items: items }) })
           .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
@@ -575,8 +586,7 @@
       if (sheets.length < 2) { nx.hidden = true; return; }
       nx.addEventListener('click', function () {
         var next = sheets[(i + 1) % sheets.length];
-        next._size = sh._size; paint(next);
-        $$('[data-set-size]', next).forEach(function (x) { var on = x.getAttribute('data-set-size') === (next._size || 'A4'); x.classList.toggle('is-active', on); x.setAttribute('aria-pressed', on); });
+        if (sh._size && next._applySize) next._applySize(sh._size);
         sh.close(); next.showModal(); document.body.classList.add('set-open');
         var panel = $('.set-sheet__panel', next); if (panel) panel.scrollTop = 0;
       });

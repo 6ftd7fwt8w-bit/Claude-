@@ -65,7 +65,8 @@
                   <span class="next-prod__arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
                 </button>
               </div>
-              <div class="set-sheet__sizes" role="radiogroup" aria-label="Tamaño">
+              <p class="set-sheet__sizes-label">Tamaño para las 3 <span>(o elige cada una abajo)</span></p>
+              <div class="set-sheet__sizes" role="radiogroup" aria-label="Tamaño para las 3">
                 <button type="button" class="set-size is-active" data-set-size="A4" aria-pressed="true">A4 · 21 × 29,7 cm</button>
                 <button type="button" class="set-size" data-set-size="A3" aria-pressed="false">A3 · 29,7 × 42 cm</button>
               </div>
@@ -85,7 +86,12 @@
                   -%}
                   <li class="set-item" data-set-item data-a4="{{ v_a4.id }}" data-a4-price="{{ v_a4.price }}" data-a3="{{ v_a3.id }}" data-a3-price="{{ v_a3.price }}">
                     <a href="{{ p.url }}" class="set-item__img">{{ p.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', width: 64, height: 80, alt: p.title }}</a>
-                    <span class="set-item__name">{{ p.title | split: '–' | last | split: '|' | first | strip }}</span>
+                    <span class="set-item__name">{{ p.title | split: '–' | last | split: '|' | first | strip }}
+                      <span class="set-item__sizes" role="group" aria-label="Tamaño de esta lámina">
+                        <button type="button" class="set-item__size is-active" data-item-size="A4" aria-pressed="true">A4</button>
+                        <button type="button" class="set-item__size" data-item-size="A3" aria-pressed="false">A3</button>
+                      </span>
+                    </span>
                     <span class="set-item__price" data-set-item-price>{{ v_a4.price | money }}</span>
                   </li>
                 {%- endfor -%}
