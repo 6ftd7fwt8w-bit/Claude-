@@ -46,7 +46,7 @@
           "type": "featured",
           "settings": {
             "collection": "laminas-personalizadas",
-            "label": "Muy pedido",
+            "label": "Superventas",
             "products": [
               "ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales",
               "sin-titulo-28ago_16-34-27"
@@ -57,7 +57,7 @@
           "type": "featured",
           "settings": {
             "collection": "infantil",
-            "label": "Muy pedido",
+            "label": "Superventas",
             "products": [
               "lamina-decorativa-infantil-bonito-vivalahome-copia",
               "lamina-decorativa-infantil-el-sueno-del-bosque-vivalahome-copia",
@@ -70,7 +70,7 @@
           "type": "featured",
           "settings": {
             "collection": "packs-regalo",
-            "label": "Muy pedido",
+            "label": "Superventas",
             "products": [
               "vlh-extra-pack-valentina"
             ]
