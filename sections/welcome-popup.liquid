@@ -1,7 +1,7 @@
 {%- comment -%}
   Pop-up de bienvenida con código de descuento (código, colección y % en Configuración del tema → Descuento de bienvenida).
   - Aparece una vez por visitante (se vuelve a mostrar tras X días si lo cierra sin aceptar).
-  - Al aceptar, guarda el código en el carrito (/discount/CODIGO) y redirige a la colección.
+  - Al aceptar, guarda el código en el carrito (/discount/CODIGO) y deja al cliente en la misma página (p. ej. la portada).
   - Pastilla inferior con dos estados reales (calculados por Shopify):
       · esperando: aún no hay productos de la colección en el carrito
       · aplicado: el código ya descuenta dinero → muestra el ahorro
@@ -11,7 +11,7 @@
   assign s = section.settings
   assign w_code = settings.welcome_code | strip
   assign redirect_path = s.link | default: settings.welcome_collection.url | default: routes.all_products_collection_url
-  assign apply_url = routes.root_url | append: '/discount/' | append: w_code | replace: '//', '/' | append: '?redirect=' | append: redirect_path
+  assign apply_url = routes.root_url | append: '/discount/' | append: w_code | replace: '//', '/' | append: '?redirect=' | append: request.path
 -%}
 {%- if s.enabled and w_code != blank -%}
 <div class="welcome" data-welcome
@@ -79,7 +79,7 @@
     { "type": "text", "id": "code_label", "label": "Texto sobre el código", "default": "Tu código" },
     { "type": "paragraph", "content": "El código, la colección y el % se configuran en Configuración del tema → Descuento de bienvenida." },
     { "type": "text", "id": "button_label", "label": "Botón", "default": "¡Sí, lo quiero!" },
-    { "type": "url", "id": "link", "label": "Página a la que lleva", "info": "Si está vacío, lleva a la colección del descuento" },
+    { "type": "url", "id": "link", "label": "Enlace de la pastilla del descuento", "info": "Si está vacío, lleva a la colección del descuento. Al aceptar el pop-up, el cliente se queda en la página en la que estaba." },
     { "type": "text", "id": "decline_label", "label": "Texto para rechazar", "default": "Ahora no, gracias" },
     { "type": "text", "id": "small_print", "label": "Letra pequeña", "default": "Válido una vez por cliente en ilustraciones personalizadas." },
     { "type": "header", "content": "Comportamiento" },
