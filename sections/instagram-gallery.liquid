@@ -23,19 +23,17 @@
       <a class="gallery__item" href="{{ block.settings.enlace | default: section.settings.instagram_url | default: '#' }}" target="_blank" rel="noopener" {{ block.shopify_attributes }}>
         {%- if block.settings.video != blank -%}
           {%- liquid
-            # Versión ligera del vídeo (mp4 más pequeño de al menos 400 px de ancho); se carga solo al verse (theme.js)
+            # Versión ligera del vídeo (mp4 de 480p, ~0,5 MB); se carga solo al verse (theme.js)
             assign vid = block.settings.video
             assign vsrc = ''
-            assign vbest = 99999
             assign vfallback = ''
             for s in vid.sources
               if s.format == 'mp4'
                 if vfallback == ''
                   assign vfallback = s.url
                 endif
-                if s.width >= 400 and s.width < vbest
+                if s.url contains 'SD-480p'
                   assign vsrc = s.url
-                  assign vbest = s.width
                 endif
               endif
             endfor
