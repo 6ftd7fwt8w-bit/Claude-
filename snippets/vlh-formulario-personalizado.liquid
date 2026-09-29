@@ -169,8 +169,10 @@
     <fieldset class="vlh-field">
       <legend>{{ product.options[1] }}</legend>
       <div class="vlh-radio-list" id="vlh-mascotas-group">
+        {%- assign vlh_mas_total = vlh_mascotas_valores.size -%}
+        {%- assign vlh_mas_visibles = vlh_mas_total | plus: 1 | divided_by: 2 -%}
         {% for mascotas_valor in vlh_mascotas_valores %}
-          <label class="vlh-radio-row">
+          <label class="vlh-radio-row{% if vlh_mas_total > 3 and forloop.index > vlh_mas_visibles %} vlh-radio-row--more{% endif %}">
             <input
               type="radio"
               name="vlh-mascotas"
@@ -182,6 +184,10 @@
             <span class="vlh-radio-row__price" data-mascotas-precio>{% if forloop.first %}sin coste extra{% endif %}</span>
           </label>
         {% endfor %}
+        {%- if vlh_mas_total > 3 -%}
+          {%- assign vlh_mas_resto = vlh_mas_total | minus: vlh_mas_visibles -%}
+          <button type="button" class="vlh-more-toggle" id="vlh-mascotas-more" aria-expanded="false">Ver más opciones ({{ vlh_mas_resto }}) <span aria-hidden="true">▾</span></button>
+        {%- endif -%}
       </div>
     </fieldset>
     {% endif %}
@@ -322,7 +328,7 @@
         <div class="vlh-radio-cards" id="vlh-marco-color-group"></div>
         <details class="vlh-details">
           <summary>¿Cómo se envía tu pedido?</summary>
-          <p class="vlh-hint" style="margin-top:0;" id="vlh-envio-nota">Si tu pedido no incluye marco ni ningún pack, se envía en sobre rígido. Si incluye marco o algún pack, se envía en caja kraft.</p>
+          <p class="vlh-hint" style="margin-top:0;" id="vlh-envio-nota">Si tu pedido no incluye marco ni ningún pack, se envía en sobre rígido. Si eliges marco, la lámina va ya enmarcada y lista para colgar, y la enviamos en un packaging especial protector. Si incluye algún pack, se envía en caja kraft.</p>
         </details>
       </div>
     </details>
@@ -630,6 +636,9 @@
 
   .vlh-subpanel { margin-top: 16px; padding: 18px; background: var(--vlh-crema); }
   .vlh-radio-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .vlh-radio-list:not(.is-open) .vlh-radio-row--more:not(:has(input:checked)) { display: none; }
+  .vlh-more-toggle { align-self: flex-start; margin-top: 2px; padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--vlh-tinta); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .vlh-radio-list.is-open .vlh-more-toggle span { display: inline-block; transform: rotate(180deg); }
   .vlh-radio-row { display: flex; align-items: center; gap: 8px; cursor: pointer; }
   .vlh-radio-row input { accent-color: var(--vlh-terracota); }
   .vlh-radio-row__price { margin-left: auto; color: #6b6055; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
@@ -1096,6 +1105,14 @@
   } catch (e) {}
 
   // Guía de tamaños (ventana)
+  const masMore = form.querySelector('#vlh-mascotas-more');
+  if (masMore) masMore.addEventListener('click', () => {
+    const list = masMore.closest('.vlh-radio-list');
+    const open = list.classList.toggle('is-open');
+    masMore.setAttribute('aria-expanded', open);
+    masMore.firstChild.textContent = open ? 'Ver menos ' : masMore.dataset.label || masMore.firstChild.textContent;
+  });
+  if (masMore) masMore.dataset.label = masMore.firstChild.textContent;
   const guide = form.querySelector('[data-size-guide]');
   if (guide) {
     form.querySelector('[data-size-guide-open]').addEventListener('click', () => { if (guide.showModal) guide.showModal(); else guide.setAttribute('open', ''); });
