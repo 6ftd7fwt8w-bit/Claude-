@@ -57,6 +57,7 @@
                 <button type="button" class="set-size is-active" data-set-size="A4" aria-pressed="true">A4 · 21 × 29,7 cm</button>
                 <button type="button" class="set-size" data-set-size="A3" aria-pressed="false">A3 · 29,7 × 42 cm</button>
               </div>
+              <button type="button" class="guide-open guide-open--set" data-guide-open>📏 Ver A4 y A3 a escala <span>(junto a una chica de 1,65 m)</span></button>
               <ul class="set-sheet__items">
                 {%- for p in block.settings.products -%}
                   {%- liquid
@@ -92,6 +93,20 @@
       {%- endif -%}
     {%- endfor -%}
   </div>
+  {%- liquid
+    assign guide_art = blank
+    for block in blocks
+      if block.type == 'set' and block.settings.collection.handle == collection.handle and block.settings.products.count > 0
+        assign guide_art = block.settings.products.first.featured_image
+        break
+      endif
+    endfor
+  -%}
+  <dialog class="guide-dialog" data-guide aria-label="Comparativa de tamaños A4 y A3">
+    <button type="button" class="guide-dialog__close" data-guide-close aria-label="Cerrar">&times;</button>
+    <p class="guide-dialog__title">¿A4 o A3?</p>
+    {% render 'size-guide', art: guide_art, laminas_only: true %}
+  </dialog>
 {%- else -%}
   <p class="cart-empty">Pronto tendrás aquí nuestros sets.</p>
 {%- endif -%}

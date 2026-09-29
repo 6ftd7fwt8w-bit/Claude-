@@ -989,6 +989,16 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .size-guide .sg-name { font: 600 12px var(--font-body); letter-spacing: .08em; text-transform: uppercase; fill: var(--color-text); }
 .size-guide__caption { margin: 14px auto 0; text-align: center; font-size: 13px; color: var(--color-muted); }
 @media (max-width: 749px) { .size-guide .sg-dim { font-size: 19px; } .size-guide .sg-name { font-size: 18px; letter-spacing: .02em; } .size-guide { margin: 0 -16px; } }
+.size-guide--laminas { max-width: 420px; }
+.size-guide--laminas .sg-dim, .size-guide--laminas .sg-name { font-size: 11px; letter-spacing: .04em; }
+@media (max-width: 749px) { .size-guide--laminas { margin: 0 auto; } .size-guide--laminas .sg-dim, .size-guide--laminas .sg-name { font-size: 11px; } }
+.guide-open { display: inline-flex; align-items: center; gap: 8px; margin: -4px 0 16px; padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--color-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.guide-open svg { flex: none; }
+.guide-open span { color: var(--color-muted); text-decoration: none; }
+.guide-dialog { width: min(520px, 94vw); max-height: 92vh; padding: 28px 20px 22px; border: 0; background: var(--color-bg); color: var(--color-text); overflow: auto; }
+.guide-dialog::backdrop { background: rgba(35,31,28,.55); }
+.guide-dialog__title { margin: 0 0 10px; text-align: center; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
+.guide-dialog__close { position: absolute; top: 8px; right: 12px; border: 0; background: none; font-size: 28px; line-height: 1; cursor: pointer; color: var(--color-text); }
 
 /* Productos destacados en colecciones (🔥) */
 .card--hot .card__media { box-shadow: 0 0 0 2px #e8743b; }
@@ -1178,3 +1188,4 @@ body.overflow-hidden .cart-fab { opacity: 0; pointer-events: none; }
 .set-sheet__total strong { font-size: 20px; color: #1f6b33; }
 .set-sheet__msg { margin: 8px 0 0; font-size: 12.5px; color: var(--color-sale); }
 body.set-open { overflow: hidden; }
+.guide-open--set { margin: 10px 0 4px; font-size: 12.5px; }

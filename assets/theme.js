@@ -1098,3 +1098,15 @@
 
   window.vivaToast = toast;
 })();
+
+/* Comparativa A4/A3 a escala en las fichas de láminas */
+document.addEventListener('click', (e) => {
+  const open = e.target.closest('[data-guide-open]');
+  if (open) {
+    const dlg = open.parentElement.querySelector('[data-guide]') || document.querySelector('[data-guide]');
+    if (dlg) { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); }
+    return;
+  }
+  const dlg = e.target.closest('[data-guide]');
+  if (dlg && (e.target.closest('[data-guide-close]') || e.target === dlg)) { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+});

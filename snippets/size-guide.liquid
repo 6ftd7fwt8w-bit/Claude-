@@ -2,6 +2,7 @@
   Guía visual de tamaños a escala (1 cm = 2 px): chica de 1,65 m y, apoyadas en el suelo a su lado,
   lámina A4, lámina A3, lienzo 70×100 y lienzo 80×120, todas con la misma ilustración.
   Parámetros: art (imagen de la ilustración, sin fondo de habitación)
+             laminas_only (true: solo lámina A4 y A3, en un encuadre más estrecho, para las láminas infantiles)
 {%- endcomment -%}
 {%- liquid
   assign art_url = ''
@@ -9,17 +10,24 @@
     assign art_url = art | image_url: width: 500
   endif
   assign uid = 'sg' | append: art_url.size
+  assign floor_end = 636
+  assign pieces = '130;42;59;Lámina A4;21 × 29,7 cm;0;28|214;59;84;Lámina A3;29,7 × 42 cm;0;52|308;140;200;Lienzo 70×100;70 × 100 cm;1;0|472;160;240;Lienzo 80×120;80 × 120 cm;1;0'
+  if laminas_only
+    assign uid = uid | append: 'l'
+    assign floor_end = 296
+    assign pieces = '124;42;59;Lámina A4;21 × 29,7 cm;0;28|204;59;84;Lámina A3;29,7 × 42 cm;0;52'
+  endif
 -%}
-<figure class="size-guide">
-  <svg viewBox="0 0 640 450" role="img" aria-labelledby="{{ uid }}-t">
-    <title id="{{ uid }}-t">Comparativa de tamaños junto a una chica de 1,65 m: lámina A4 de 21 × 29,7 cm, lámina A3 de 29,7 × 42 cm, lienzo de 70 × 100 cm y lienzo de 80 × 120 cm</title>
+<figure class="size-guide{% if laminas_only %} size-guide--laminas{% endif %}">
+  <svg viewBox="{% if laminas_only %}0 14 300 380{% else %}0 0 640 450{% endif %}" role="img" aria-labelledby="{{ uid }}-t">
+    <title id="{{ uid }}-t">{% if laminas_only %}Comparativa de tamaños junto a una chica de 1,65 m: lámina A4 de 21 × 29,7 cm y lámina A3 de 29,7 × 42 cm{% else %}Comparativa de tamaños junto a una chica de 1,65 m: lámina A4 de 21 × 29,7 cm, lámina A3 de 29,7 × 42 cm, lienzo de 70 × 100 cm y lienzo de 80 × 120 cm{% endif %}</title>
     <defs>
       <filter id="{{ uid }}-sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="2" dy="3" stdDeviation="3" flood-color="#5a4632" flood-opacity=".22"/></filter>
       <marker id="{{ uid }}-ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#8a7a68"/></marker>
     </defs>
 
     {%- comment -%} Suelo: solo una línea {%- endcomment -%}
-    <line x1="4" y1="380" x2="636" y2="380" stroke="#CDBFAE" stroke-width="1.5"/>
+    <line x1="4" y1="380" x2="{{ floor_end }}" y2="380" stroke="#CDBFAE" stroke-width="1.5"/>
 
     {%- comment -%} Chica de 165 cm = 330 px (cabeza en y=50, pies en y=380) {%- endcomment -%}
     <g fill="#C9B6A0">
@@ -38,7 +46,7 @@
     <text x="8" y="36" class="sg-dim">1,65 m</text>
 
     {%- comment -%} Piezas apoyadas en el suelo: [x; ancho; alto; nombre; medidas; lienzo; alto de la etiqueta sobre la pieza (0 = debajo del suelo)] {%- endcomment -%}
-    {%- assign pieces = '130;42;59;Lámina A4;21 × 29,7 cm;0;28|214;59;84;Lámina A3;29,7 × 42 cm;0;52|308;140;200;Lienzo 70×100;70 × 100 cm;1;0|472;160;240;Lienzo 80×120;80 × 120 cm;1;0' | split: '|' -%}
+    {%- assign pieces = pieces | split: '|' -%}
     {%- for pc in pieces -%}
       {%- liquid
         assign f = pc | split: ';'
@@ -71,5 +79,9 @@
       <text x="{{ cx }}" y="{{ ly2 }}" class="sg-dim" text-anchor="middle">{{ f[4] }}</text>
     {%- endfor -%}
   </svg>
-  <figcaption class="size-guide__caption">A escala, junto a una chica de 1,65 m. Los lienzos llegan montados en bastidor, listos para colgar.</figcaption>
+  {%- if laminas_only -%}
+    <figcaption class="size-guide__caption">A escala, junto a una chica de 1,65 m. La A3 tiene el doble de superficie que la A4: luce más en paredes grandes o sobre la cama; la A4 es ideal para estanterías, cómodas o combinar en sets.</figcaption>
+  {%- else -%}
+    <figcaption class="size-guide__caption">A escala, junto a una chica de 1,65 m. Los lienzos llegan montados en bastidor, listos para colgar.</figcaption>
+  {%- endif -%}
 </figure>

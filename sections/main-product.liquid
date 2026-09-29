@@ -100,6 +100,27 @@
                       </div>
                     </fieldset>
                   {%- endfor -%}
+                  {%- liquid
+                    assign sizes_joined = product.options_with_values | map: 'values' | join: '|'
+                    assign show_lamina_guide = false
+                    if sizes_joined contains 'A4' and sizes_joined contains 'A3'
+                      assign show_lamina_guide = true
+                    endif
+                    if sizes_joined contains 'ienzo'
+                      assign show_lamina_guide = false
+                    endif
+                  -%}
+                  {%- if show_lamina_guide -%}
+                    <button type="button" class="guide-open" data-guide-open>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="1"/><path d="M7 8v3M11 8v4M15 8v3M19 8v2"/></svg>
+                      Ver A4 y A3 a escala <span>(junto a una chica de 1,65 m)</span>
+                    </button>
+                    <dialog class="guide-dialog" data-guide aria-label="Comparativa de tamaños A4 y A3">
+                      <button type="button" class="guide-dialog__close" data-guide-close aria-label="Cerrar">&times;</button>
+                      <p class="guide-dialog__title">¿A4 o A3?</p>
+                      {% render 'size-guide', art: product.featured_image, laminas_only: true %}
+                    </dialog>
+                  {%- endif -%}
                   <script type="application/json" data-variants-json>{{ product.variants | json }}</script>
                 </div>
               {%- endunless -%}
