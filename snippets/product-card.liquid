@@ -74,7 +74,7 @@
       {%- assign deal_price = 100 | minus: pct | times: product.price_min | divided_by: 100 -%}
       <div class="card__deal">
         <strong>🍀 ¡Estás de suerte!</strong>
-        <span>Con <b>{{ settings.welcome_code }}</b>{% if product.price_varies %} desde{% endif %} <b class="card__deal-price">{{ deal_price | money }}</b> · por tiempo limitado</span>
+        <span>Con el código de descuento <b>{{ settings.welcome_code }}</b>,{% if product.price_varies %} desde{% endif %} <b class="card__deal-price">{{ deal_price | money }}</b> · por tiempo limitado</span>
       </div>
     {%- endif -%}
   </div>
