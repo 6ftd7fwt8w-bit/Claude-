@@ -41,12 +41,49 @@
             "eyebrow": "Listos para regalar",
             "text": "Creados a mano, con apliques textiles, flores preservadas, mensaje personalizado y la lámina envuelta en papel de seda o kraft texturizado. Listos para abrir y sorprender a lo grande."
           }
+        },
+        "banner_4": {
+          "type": "featured",
+          "settings": {
+            "collection": "laminas-personalizadas",
+            "label": "Muy pedido",
+            "products": [
+              "ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales",
+              "sin-titulo-28ago_16-34-27"
+            ]
+          }
+        },
+        "banner_5": {
+          "type": "featured",
+          "settings": {
+            "collection": "infantil",
+            "label": "Muy pedido",
+            "products": [
+              "lamina-decorativa-infantil-bonito-vivalahome-copia",
+              "lamina-decorativa-infantil-el-sueno-del-bosque-vivalahome-copia",
+              "lamina-decorativa-infantil-dulce-lunita-vivalahome-copia-1",
+              "lamina-decorativa-infantil-el-castillo-de-los-suenos-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_6": {
+          "type": "featured",
+          "settings": {
+            "collection": "packs-regalo",
+            "label": "Muy pedido",
+            "products": [
+              "vlh-extra-pack-valentina"
+            ]
+          }
         }
       },
       "block_order": [
         "banner_1",
         "banner_2",
-        "banner_3"
+        "banner_3",
+        "banner_4",
+        "banner_5",
+        "banner_6"
       ]
     },
     "instagram": {

@@ -108,7 +108,41 @@
 
       {%- if collection.products.size > 0 -%}
         <div class="product-grid" style="--cols: {{ section.settings.columns }}" data-product-grid data-total="{{ paginate.items }}">
+          {%- comment -%} Productos destacados: se muestran primero (solo sin filtros ni otro orden) con la etiqueta 🔥 {%- endcomment -%}
+          {%- liquid
+            assign hot = nil
+            for block in section.blocks
+              if block.type == 'featured' and block.settings.collection.handle == collection.handle and block.settings.products != blank
+                assign hot = block
+                break
+              endif
+            endfor
+            if hot
+              for filter in collection.filters
+                if filter.active_values.size > 0 or filter.min_value.value != blank or filter.max_value.value != blank
+                  assign hot = nil
+                  break
+                endif
+              endfor
+              if collection.sort_by != blank and collection.sort_by != collection.default_sort_by
+                assign hot = nil
+              endif
+            endif
+            assign hot_ids = ''
+            if hot
+              for p in hot.settings.products
+                assign hot_ids = hot_ids | append: ',' | append: p.id | append: ','
+              endfor
+            endif
+          -%}
+          {%- if hot and paginate.current_page == 1 -%}
+            {%- for product in hot.settings.products -%}
+              {% render 'product-card', product: product, lazy: false, hot: hot.settings.label %}
+            {%- endfor -%}
+          {%- endif -%}
           {%- for product in collection.products -%}
+            {%- assign pid = ',' | append: product.id | append: ',' -%}
+            {%- if hot_ids contains pid -%}{%- continue -%}{%- endif -%}
             {%- if forloop.index <= 4 -%}{% render 'product-card', product: product, lazy: false %}{%- else -%}{% render 'product-card', product: product %}{%- endif -%}
           {%- endfor -%}
         </div>
@@ -163,6 +197,15 @@
     { "type": "text", "id": "all_handles", "label": "Mostrar en estas colecciones", "info": "Identificadores separados por comas, p. ej. bosque-encantado, estrellas-y-suenos" }
   ],
   "blocks": [
+    {
+      "type": "featured",
+      "name": "Destacados de una colección",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Colección" },
+        { "type": "product_list", "id": "products", "label": "Productos (salen los primeros)", "limit": 8 },
+        { "type": "text", "id": "label", "label": "Etiqueta", "default": "Muy pedido", "info": "Se muestra con un fueguito 🔥 sobre la foto" }
+      ]
+    },
     {
       "type": "banner",
       "name": "Portada de una colección",
