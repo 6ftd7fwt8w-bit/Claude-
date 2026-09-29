@@ -605,60 +605,25 @@
         removeCode(welcome.code || ds.code || '').then(afterCartChange);
       }
     };
-    /* Botón flotante: cuenta atrás del descuento + lo que falta para el envío gratis */
-    var fab = null, fabClosed = false;
-    try { fabClosed = sessionStorage.getItem('vlh_fab_closed') === '1'; } catch (e) {}
-    var buildFab = function () {
-      fab = document.createElement('a');
-      fab.className = 'cart-fab'; fab.hidden = true;
-      fab.href = theme.routes.cart || '/cart';
-      if (document.getElementById('CartDrawer') && theme.cartType === 'drawer') fab.setAttribute('data-drawer-open', 'CartDrawer');
-      fab.innerHTML = '<span class="cart-fab__icon" aria-hidden="true">🎁</span><span class="cart-fab__body">' +
-        '<span class="cart-fab__line cart-fab__line--timer" data-fab-timer hidden><span aria-hidden="true">⏳</span> <b class="cart-fab__time" data-fab-time></b> <span data-fab-timer-text></span></span>' +
-        '<span class="cart-fab__line" data-fab-ship hidden></span>' +
-        '<span class="cart-fab__track" data-fab-track hidden><span data-fab-fill></span></span></span>' +
-        '<button type="button" class="cart-fab__close" aria-label="Cerrar">&times;</button>';
-      fab.querySelector('.cart-fab__close').addEventListener('click', function (e) {
-        e.preventDefault(); e.stopPropagation();
-        fabClosed = true; fab.hidden = true; document.body.classList.remove('has-cart-fab');
-        try { sessionStorage.setItem('vlh_fab_closed', '1'); } catch (err) {}
-      });
-      document.body.appendChild(fab);
-    };
+    /* Franja de arriba: añade la cuenta atrás del descuento junto a lo que falta para el envío gratis */
     var paintFab = function () {
       var ds = discountState;
-      var onCart = /\/cart(\/|$|\?)/.test(location.pathname);
-      var count = ds ? ds.itemCount || 0 : 0;
-      var limit = (theme.freeShipping || {}).threshold || 0;
-      var timerOn = ds && ds.applied > 0 && welcomeActive() && welcome.expires > Date.now();
-      var show = !fabClosed && !onCart && count > 0 && (timerOn || limit > 0);
-      if (!show) { if (fab) fab.hidden = true; document.body.classList.remove('has-cart-fab'); return; }
-      if (!fab) buildFab();
-      fab.hidden = false; document.body.classList.add('has-cart-fab');
-      var tl = $('[data-fab-timer]', fab);
-      tl.hidden = !timerOn;
-      if (timerOn) {
-        var left = welcome.expires - Date.now();
+      var timerOn = !!(ds && ds.applied > 0 && welcomeActive());
+      var left = timerOn ? welcome.expires - Date.now() : 0;
+      var p2 = function (n) { return (n < 10 ? '0' : '') + n; };
+      $$('[data-ship-strip]').forEach(function (el) {
+        var t = $('[data-strip-timer]', el);
+        if (!t) return;
+        t.hidden = !timerOn;
+        el.classList.toggle('has-timer', timerOn);
+        el.classList.toggle('is-urgent', timerOn && left < 10 * 60000);
+        if (!timerOn) return;
         var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), sec = Math.floor(left % 60000 / 1000);
-        var p2 = function (n) { return (n < 10 ? '0' : '') + n; };
-        $('[data-fab-time]', fab).textContent = (h ? h + ':' + p2(m) : m) + ':' + p2(sec);
-        $('[data-fab-timer-text]', fab).textContent = theme.strings.fabTimer || '';
-        fab.classList.toggle('is-urgent', left < 10 * 60000);
-      }
-      var sl = $('[data-fab-ship]', fab), tr = $('[data-fab-track]', fab);
-      if (limit > 0) {
-        var rest = limit - (ds.total || 0);
-        sl.hidden = false; tr.hidden = rest <= 0;
-        if (rest > 0) {
-          var parts = (theme.strings.fabShip || '').split('[amount]');
-          sl.textContent = '🚚 ' + parts[0];
-          var b = document.createElement('b'); b.textContent = formatMoney(rest); sl.appendChild(b);
-          if (parts[1]) sl.appendChild(document.createTextNode(parts[1]));
-          $('[data-fab-fill]', fab).style.width = Math.min(100, Math.round((ds.total || 0) * 100 / limit)) + '%';
-        } else {
-          sl.textContent = '🎉 ' + (theme.strings.fabShipFree || '');
-        }
-      } else { sl.hidden = true; tr.hidden = true; }
+        $('[data-strip-time]', t).textContent = (h ? h + ':' + p2(m) : m) + ':' + p2(sec);
+        $('[data-strip-timer-text]', t).textContent = theme.strings.fabTimer || '';
+      });
+      var stripShown = $$('[data-ship-strip]').some(function (el) { return !el.hidden; });
+      document.body.classList.toggle('has-cart-fab', stripShown && timerOn);
     };
 
     var onState = function (ds) { ensureTimer(ds); toast(ds); tick(); paintFab(); };

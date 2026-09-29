@@ -1084,3 +1084,10 @@ body.has-cart-fab .welcome-badge { display: none !important; }
 body.overflow-hidden .cart-fab { opacity: 0; pointer-events: none; }
 @media (max-width: 749px) { .cart-fab { left: 10px; right: 10px; bottom: 10px; max-width: none; } body.has-sticky-buy .cart-fab { bottom: 78px; } }
 @media (prefers-reduced-motion: reduce) { .cart-fab, .cart-fab__icon, .cart-fab__time { animation: none !important; } }
+.ship-strip__timer { display: inline-flex; align-items: center; gap: 5px; padding-right: 10px; margin-right: 2px; border-right: 1px solid #cfe3ca; }
+.ship-strip__timer[hidden] { display: none; }
+.ship-strip__timer b { font-variant-numeric: tabular-nums; font-size: 14px; color: #1f6b33; }
+.ship-strip.is-free .ship-strip__timer { border-right-color: rgba(255,255,255,.35); }
+.ship-strip.is-free .ship-strip__timer b { color: #f7dd8a; }
+.ship-strip.is-urgent .ship-strip__timer b { color: #c2452a; animation: deal-shake 2.4s ease-in-out infinite; display: inline-block; }
+@media (max-width: 749px) { .ship-strip.has-timer .ship-strip__timer { flex-basis: 100%; justify-content: center; border-right: 0; padding-right: 0; margin: 0; } }
