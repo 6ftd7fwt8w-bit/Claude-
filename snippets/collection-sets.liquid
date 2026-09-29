@@ -1,0 +1,97 @@
+{%- comment -%}
+  Vista «Sets de 3» de una colección (plantilla collection.sets): cada set es un bloque «set» de la sección
+  de colección con nombre, producto de la foto (se usa su última foto, la del set) y las 3 láminas.
+  Al tocar un set se abre un panel con las 3 láminas, elección de tamaño y «Añadir las 3».
+  Parámetros: blocks (section.blocks)
+{%- endcomment -%}
+{%- liquid
+  assign set_code = settings.cross_code | strip
+  assign has_sets = false
+  for block in blocks
+    if block.type == 'set' and block.settings.collection.handle == collection.handle and block.settings.products.count > 0
+      assign has_sets = true
+      break
+    endif
+  endfor
+-%}
+{%- if has_sets -%}
+  <div class="set-intro">
+    <p class="set-intro__title">🧩 Sets de 3 láminas que combinan</p>
+    {%- if set_code != blank -%}
+      <p class="set-intro__deal">🍀 <strong>¡Estás de suerte! 3x2</strong> · con el código <b>{{ set_code }}</b> te regalamos la tercera. Se aplica solo al añadir el set.</p>
+    {%- endif -%}
+  </div>
+  <div class="set-grid">
+    {%- for block in blocks -%}
+      {%- if block.type == 'set' and block.settings.collection.handle == collection.handle and block.settings.products.count > 0 -%}
+        {%- liquid
+          assign lead = block.settings.photo_product | default: block.settings.products.first
+          assign photo = lead.media.last.preview_image | default: lead.featured_image
+          assign set_total = 0
+          assign set_min = 999999
+          for p in block.settings.products
+            assign set_total = set_total | plus: p.price_min
+            if p.price_min < set_min
+              assign set_min = p.price_min
+            endif
+          endfor
+          assign set_pay = set_total | minus: set_min
+        -%}
+        <button type="button" class="set-card" data-set-open="set-{{ block.id }}" {{ block.shopify_attributes }}>
+          <span class="set-card__media">
+            {{ photo | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 990px) 25vw, 50vw', alt: block.settings.name }}
+            <span class="set-card__badge">3x2</span>
+          </span>
+          <span class="set-card__name">Set «{{ block.settings.name }}»</span>
+          <span class="set-card__price">3 láminas · <s>{{ set_total | money }}</s> <b>{{ set_pay | money }}</b></span>
+        </button>
+
+        <dialog class="set-sheet" id="set-{{ block.id }}" data-set-sheet data-code="{{ set_code | escape }}">
+          <div class="set-sheet__panel">
+            <button type="button" class="set-sheet__close" data-set-close aria-label="Cerrar">&times;</button>
+            <div class="set-sheet__media">{{ photo | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 420px, 100vw', alt: block.settings.name }}</div>
+            <div class="set-sheet__body">
+              <p class="set-sheet__eyebrow">Set de 3 láminas</p>
+              <h3 class="set-sheet__title">«{{ block.settings.name }}»</h3>
+              <div class="set-sheet__sizes" role="radiogroup" aria-label="Tamaño">
+                <button type="button" class="set-size is-active" data-set-size="A4" aria-pressed="true">A4 · 21 × 29,7 cm</button>
+                <button type="button" class="set-size" data-set-size="A3" aria-pressed="false">A3 · 29,7 × 42 cm</button>
+              </div>
+              <ul class="set-sheet__items">
+                {%- for p in block.settings.products -%}
+                  {%- liquid
+                    assign v_a4 = p.variants.first
+                    assign v_a3 = p.variants.first
+                    for v in p.variants
+                      if v.title contains 'A4'
+                        assign v_a4 = v
+                      elsif v.title contains 'A3'
+                        assign v_a3 = v
+                      endif
+                    endfor
+                  -%}
+                  <li class="set-item" data-set-item data-a4="{{ v_a4.id }}" data-a4-price="{{ v_a4.price }}" data-a3="{{ v_a3.id }}" data-a3-price="{{ v_a3.price }}">
+                    <a href="{{ p.url }}" class="set-item__img">{{ p.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', width: 64, height: 80, alt: p.title }}</a>
+                    <span class="set-item__name">{{ p.title | split: '–' | last | split: '|' | first | strip }}</span>
+                    <span class="set-item__price" data-set-item-price>{{ v_a4.price | money }}</span>
+                  </li>
+                {%- endfor -%}
+              </ul>
+              {%- if set_code != blank -%}
+                <p class="set-sheet__deal"><span aria-hidden="true">🎉</span> <span>¡Enhorabuena! Con el código <b>{{ set_code }}</b> la lámina más barata te sale <b>gratis</b>. Se aplica automáticamente al añadir el set.</span></p>
+              {%- endif -%}
+              <div class="set-sheet__total">
+                <span>Total del set</span>
+                <span><s data-set-old></s> <strong data-set-total></strong></span>
+              </div>
+              <button type="button" class="button button--full set-sheet__add" data-set-add>Añadir las 3 al carrito</button>
+              <p class="set-sheet__msg" data-set-msg hidden></p>
+            </div>
+          </div>
+        </dialog>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- else -%}
+  <p class="cart-empty">Pronto tendrás aquí nuestros sets.</p>
+{%- endif -%}

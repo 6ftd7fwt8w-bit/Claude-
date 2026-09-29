@@ -519,6 +519,57 @@
   paintCartHints();
   discountListeners.push(paintCartHints);
 
+  /* Sets de 3 láminas: panel con tamaño, total con 3x2 y «Añadir las 3» */
+  (function () {
+    var sheets = $$('[data-set-sheet]');
+    if (!sheets.length) return;
+    var paint = function (sh) {
+      var size = sh._size || 'A4';
+      var items = $$('[data-set-item]', sh), prices = items.map(function (it) { return parseInt(it.getAttribute('data-' + size.toLowerCase() + '-price'), 10) || 0; });
+      var total = prices.reduce(function (a, b) { return a + b; }, 0);
+      var min = Math.min.apply(null, prices), freeIdx = prices.indexOf(min), hasCode = !!sh.getAttribute('data-code') && items.length >= 3;
+      items.forEach(function (it, i) {
+        var el = $('[data-set-item-price]', it);
+        var free = hasCode && i === freeIdx;
+        it.classList.toggle('is-free', free);
+        el.textContent = free ? 'GRATIS' : formatMoney(prices[i]);
+      });
+      $('[data-set-old]', sh).textContent = hasCode ? formatMoney(total) : '';
+      $('[data-set-total]', sh).textContent = formatMoney(hasCode ? total - min : total);
+    };
+    sheets.forEach(function (sh) {
+      paint(sh);
+      $$('[data-set-size]', sh).forEach(function (b) {
+        b.addEventListener('click', function () {
+          sh._size = b.getAttribute('data-set-size');
+          $$('[data-set-size]', sh).forEach(function (x) { var on = x === b; x.classList.toggle('is-active', on); x.setAttribute('aria-pressed', on); });
+          paint(sh);
+        });
+      });
+      var close = function () { if (sh.open) sh.close(); document.body.classList.remove('set-open'); };
+      $('[data-set-close]', sh).addEventListener('click', close);
+      sh.addEventListener('click', function (e) { if (e.target === sh) close(); });
+      sh.addEventListener('close', function () { document.body.classList.remove('set-open'); });
+      var add = $('[data-set-add]', sh), msg = $('[data-set-msg]', sh);
+      add.addEventListener('click', function () {
+        var size = (sh._size || 'A4').toLowerCase();
+        var items = $$('[data-set-item]', sh).map(function (it) { return { id: parseInt(it.getAttribute('data-' + size), 10), quantity: 1 }; });
+        add.disabled = true; msg.hidden = true;
+        fetch((theme.routes.cartAdd || '/cart/add') + '.js', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ items: items }) })
+          .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+          .then(function () { var code = sh.getAttribute('data-code'); return code ? addCode(code).catch(function () {}) : null; })
+          .then(function () { close(); add.disabled = false; if (window.vivaCartAdded) window.vivaCartAdded(); })
+          .catch(function () { add.disabled = false; msg.hidden = false; msg.textContent = 'No se ha podido añadir el set. Inténtalo de nuevo.'; });
+      });
+    });
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('[data-set-open]');
+      if (!b) return;
+      var sh = document.getElementById(b.getAttribute('data-set-open'));
+      if (sh && sh.showModal) { sh.showModal(); document.body.classList.add('set-open'); }
+    });
+  })();
+
   /* Vídeos de la galería: se descargan y reproducen solo cuando están en pantalla */
   (function () {
     var vids = $$('video[data-lazy-video]');

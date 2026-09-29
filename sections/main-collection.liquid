@@ -52,7 +52,18 @@
       {%- if block.type == 'themes' and block.settings.collection.handle == collection.handle and block.settings.themes != blank -%}
         {%- comment -%} Botones de temática: filtran la colección por etiqueta (etiqueta|texto por línea) {%- endcomment -%}
         <nav class="theme-pills" aria-label="{{ block.settings.title | default: 'Temáticas' | escape }}" {{ block.shopify_attributes }}>
-          <a href="{{ collection.url }}" class="theme-pill{% if current_tags == blank or current_tags.size == 0 %} is-active{% endif %}">{{ block.settings.all_label | default: 'Todas' }}</a>
+          {%- liquid
+            assign all_active = true
+            if template.suffix == 'sets'
+              assign all_active = false
+            elsif current_tags != blank and current_tags.size > 0
+              assign all_active = false
+            endif
+          -%}
+          <a href="{{ collection.url }}" class="theme-pill{% if all_active %} is-active{% endif %}">{{ block.settings.all_label | default: 'Todas' }}</a>
+          {%- if block.settings.sets_label != blank -%}
+            <a href="{{ collection.url }}?view=sets" class="theme-pill theme-pill--sets{% if template.suffix == 'sets' %} is-active{% endif %}">{{ block.settings.sets_label }}</a>
+          {%- endif -%}
           {%- assign theme_lines = block.settings.themes | newline_to_br | split: '<br />' -%}
           {%- for line in theme_lines -%}
             {%- assign parts = line | strip | split: '|' -%}
@@ -65,6 +76,9 @@
         {%- break -%}
       {%- endif -%}
     {%- endfor -%}
+    {%- if template.suffix == 'sets' -%}
+      {% render 'collection-sets', blocks: section.blocks, collection: collection %}
+    {%- else -%}
     {%- paginate collection.products by section.settings.per_page -%}
       <form class="facets" data-facets-form>
         <div class="facets__filters">
@@ -199,6 +213,7 @@
         </div>
       {%- endif -%}
     {%- endpaginate -%}
+    {%- endif -%}
   </div>
 </section>
 
@@ -223,7 +238,18 @@
       "settings": [
         { "type": "collection", "id": "collection", "label": "Colección" },
         { "type": "text", "id": "all_label", "label": "Texto del primer botón", "default": "Todas" },
+        { "type": "text", "id": "sets_label", "label": "Botón «ver por sets»", "info": "Lleva a la vista de sets (plantilla de colección «sets»). Vacío = sin botón", "default": "🧩 Sets de 3" },
         { "type": "textarea", "id": "themes", "label": "Temáticas", "info": "Una por línea: etiqueta|texto. Ej.: tema-bosque|🦊 Animales del bosque. Los productos se marcan con esa etiqueta en Shopify." }
+      ]
+    },
+    {
+      "type": "set",
+      "name": "Set de láminas",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Colección" },
+        { "type": "text", "id": "name", "label": "Nombre del set", "default": "La reina de la casa" },
+        { "type": "product", "id": "photo_product", "label": "Producto de la foto", "info": "Se usa su última foto (la del set de 3 láminas)" },
+        { "type": "product_list", "id": "products", "label": "Láminas del set", "limit": 3 }
       ]
     },
     {
