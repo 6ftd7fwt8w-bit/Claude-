@@ -1,7 +1,8 @@
 {%- comment -%}
   Tarjeta de producto. Parámetros: product, lazy (bool), show_quick_add (bool),
   image_pos ('last' = usa la última foto como principal), ratio (p. ej. '1 / 1'), price_suffix (texto tras el precio),
-  hot (texto de la etiqueta 🔥 de producto destacado; si el código de bienvenida vale para el producto, muestra el precio con descuento)
+  hot (texto de la etiqueta 🔥 de producto destacado).
+  Si el código de bienvenida vale para el producto, muestra el precio con descuento
 {%- endcomment -%}
 {%- liquid
   assign img = product.featured_media.preview_image
@@ -15,7 +16,7 @@
     assign loading = 'eager'
   endif
   assign deal = false
-  if hot != blank and settings.welcome_code != blank and settings.welcome_collection != blank
+  if settings.welcome_code != blank and settings.welcome_collection != blank
     for c in product.collections
       if c.handle == settings.welcome_collection.handle
         assign deal = true
