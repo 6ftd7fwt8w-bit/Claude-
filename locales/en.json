@@ -78,7 +78,7 @@
     "deal_more": "Your {{ percent }}% applies to every personalised illustration: the more you add, the more you save. Add another",
     "deal_title_max": "Unbeatable!",
     "deal_max_html": "You've combined {{ codes }} · Maximum saving: <strong>{{ amount }}</strong>",
-    "discount_label_more": "Have another code? It adds to your discount",
+    "discount_label_more": "Have another discount code?",
     "timer_before": "Complete your order within",
     "timer_after": "to keep your {{ percent }}% applied",
     "timer_head": "⏳ Your discount expires in",
