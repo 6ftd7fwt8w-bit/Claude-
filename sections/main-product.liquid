@@ -70,15 +70,71 @@
               <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title | split: ' | ' | first }}</h1>
 
             {%- when 'price' -%}
-              <div {{ block.shopify_attributes }}>
-                <div class="product__price" data-product-price>
-                  {%- if product.price_varies and product.selected_variant == blank -%}
-                    {% render 'price', product: product, show_from: true %}
-                  {%- else -%}
-                    {% render 'price', product: product, variant: current_variant %}
-                  {%- endif -%}
+              {%- comment -%} Siguiente producto de la colección (la de origen o, si no hay, la principal del producto), en bucle {%- endcomment -%}
+              {%- liquid
+                assign nav_col = collection
+                if nav_col == blank
+                  for c in product.collections
+                    if c.handle == 'infantil' or c.handle == 'laminas-personalizadas' or c.handle == 'packs-regalo'
+                      assign nav_col = c
+                      break
+                    endif
+                  endfor
+                endif
+                if nav_col == blank
+                  assign nav_col = product.collections.first
+                endif
+                assign next_p = nil
+              -%}
+              {%- if nav_col != blank and nav_col.products_count > 1 -%}
+                {%- paginate nav_col.products by 250 -%}
+                  {%- liquid
+                    assign first_p = nil
+                    assign found = false
+                    for p in nav_col.products
+                      if forloop.first
+                        assign first_p = p
+                      endif
+                      if found
+                        assign next_p = p
+                        break
+                      endif
+                      if p.id == product.id
+                        assign found = true
+                      endif
+                    endfor
+                    if found and next_p == nil and first_p.id != product.id
+                      assign next_p = first_p
+                    endif
+                  -%}
+                {%- endpaginate -%}
+              {%- endif -%}
+              <div class="product__price-row" {{ block.shopify_attributes }}>
+                <div>
+                  <div class="product__price" data-product-price>
+                    {%- if product.price_varies and product.selected_variant == blank -%}
+                      {% render 'price', product: product, show_from: true %}
+                    {%- else -%}
+                      {% render 'price', product: product, variant: current_variant %}
+                    {%- endif -%}
+                  </div>
+                  {%- if cart.taxes_included -%}<div class="product__tax">{{ 'products.tax_included' | t }}</div>{%- endif -%}
                 </div>
-                {%- if cart.taxes_included -%}<div class="product__tax">{{ 'products.tax_included' | t }}</div>{%- endif -%}
+                {%- if next_p -%}
+                  {%- liquid
+                    assign next_label = 'Siguiente lámina'
+                    if nav_col.handle contains 'pack'
+                      assign next_label = 'Siguiente pack'
+                    elsif nav_col.handle contains 'personalizad'
+                      assign next_label = 'Siguiente ilustración'
+                    endif
+                  -%}
+                  <a class="next-prod" href="{{ next_p.url | within: nav_col }}" rel="next" data-next-prod title="{{ next_p.title | split: ' | ' | first | escape }}">
+                    {%- if next_p.featured_image -%}{{ next_p.featured_image | image_url: width: 96 | image_tag: loading: 'lazy', width: 34, height: 34, alt: '', class: 'next-prod__img' }}{%- endif -%}
+                    <span class="next-prod__txt">{{ next_label }}</span>
+                    <span class="next-prod__arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                  </a>
+                {%- endif -%}
               </div>
 
             {%- when 'text' -%}

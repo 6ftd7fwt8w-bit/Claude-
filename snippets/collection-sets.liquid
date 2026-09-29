@@ -51,13 +51,21 @@
             <button type="button" class="set-sheet__close" data-set-close aria-label="Cerrar">&times;</button>
             <div class="set-sheet__media">{{ photo | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 420px, 100vw', alt: block.settings.name }}</div>
             <div class="set-sheet__body">
-              <p class="set-sheet__eyebrow">Set de 3 láminas</p>
-              <h3 class="set-sheet__title">«{{ block.settings.name }}»</h3>
+              <div class="set-sheet__head">
+                <div>
+                  <p class="set-sheet__eyebrow">Set de 3 láminas</p>
+                  <h3 class="set-sheet__title">«{{ block.settings.name }}»</h3>
+                </div>
+                <button type="button" class="next-prod next-prod--set" data-set-next>
+                  <span class="next-prod__txt">Siguiente set</span>
+                  <span class="next-prod__arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </button>
+              </div>
               <div class="set-sheet__sizes" role="radiogroup" aria-label="Tamaño">
                 <button type="button" class="set-size is-active" data-set-size="A4" aria-pressed="true">A4 · 21 × 29,7 cm</button>
                 <button type="button" class="set-size" data-set-size="A3" aria-pressed="false">A3 · 29,7 × 42 cm</button>
               </div>
-              <button type="button" class="guide-open guide-open--set" data-guide-open>📏 Ver A4 y A3 a escala <span>(junto a una chica de 1,65 m)</span></button>
+              <button type="button" class="guide-open guide-open--set" data-guide-open data-guide-art="{{ block.settings.products.first.featured_image | image_url: width: 500 }}">📏 Ver A4 y A3 a escala <span>(junto a una chica de 1,65 m)</span></button>
               <ul class="set-sheet__items">
                 {%- for p in block.settings.products -%}
                   {%- liquid

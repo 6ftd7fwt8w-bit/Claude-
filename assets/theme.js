@@ -568,6 +568,19 @@
       var sh = document.getElementById(b.getAttribute('data-set-open'));
       if (sh && sh.showModal) { sh.showModal(); document.body.classList.add('set-open'); }
     });
+    /* «Siguiente set»: cierra el panel y abre el del siguiente set (en bucle) */
+    sheets.forEach(function (sh, i) {
+      var nx = $('[data-set-next]', sh);
+      if (!nx) return;
+      if (sheets.length < 2) { nx.hidden = true; return; }
+      nx.addEventListener('click', function () {
+        var next = sheets[(i + 1) % sheets.length];
+        next._size = sh._size; paint(next);
+        $$('[data-set-size]', next).forEach(function (x) { var on = x.getAttribute('data-set-size') === (next._size || 'A4'); x.classList.toggle('is-active', on); x.setAttribute('aria-pressed', on); });
+        sh.close(); next.showModal(); document.body.classList.add('set-open');
+        var panel = $('.set-sheet__panel', next); if (panel) panel.scrollTop = 0;
+      });
+    });
   })();
 
   /* Vídeos de la galería: se descargan y reproducen solo cuando están en pantalla */
@@ -1104,9 +1117,25 @@ document.addEventListener('click', (e) => {
   const open = e.target.closest('[data-guide-open]');
   if (open) {
     const dlg = open.parentElement.querySelector('[data-guide]') || document.querySelector('[data-guide]');
+    const art = open.getAttribute('data-guide-art');
+    if (dlg && art) dlg.querySelectorAll('image').forEach((im) => im.setAttribute('href', art));
     if (dlg) { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); }
     return;
   }
   const dlg = e.target.closest('[data-guide]');
   if (dlg && (e.target.closest('[data-guide-close]') || e.target === dlg)) { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
 });
+
+/* «Siguiente lámina»: precarga la ficha siguiente al acercar el dedo o el ratón */
+document.addEventListener('pointerover', (e) => {
+  const a = e.target.closest && e.target.closest('a[data-next-prod]');
+  if (!a || a._pf) return;
+  a._pf = true;
+  const l = document.createElement('link'); l.rel = 'prefetch'; l.href = a.href; document.head.appendChild(l);
+}, { passive: true });
+document.addEventListener('touchstart', (e) => {
+  const a = e.target.closest && e.target.closest('a[data-next-prod]');
+  if (!a || a._pf) return;
+  a._pf = true;
+  const l = document.createElement('link'); l.rel = 'prefetch'; l.href = a.href; document.head.appendChild(l);
+}, { passive: true });
