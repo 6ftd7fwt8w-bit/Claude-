@@ -73,7 +73,14 @@
         assign ih = m | times: 2 | minus: ph | times: -1
       -%}
       <g filter="url(#{{ uid }}-sh)"><rect x="{{ px }}" y="{{ py }}" width="{{ pw }}" height="{{ ph }}" fill="{% if is_canvas == '1' %}#fbf8f3{% else %}#ffffff{% endif %}"/></g>
-      {%- if art_url != '' -%}<image href="{{ art_url }}" x="{{ ix }}" y="{{ iy }}" width="{{ iw }}" height="{{ ih }}" preserveAspectRatio="xMidYMid slice"/>{%- endif -%}
+      {%- if art_url != '' -%}
+        {%- if laminas_only -%}
+          {%- comment -%} Fotos de producto = mockup cuadrado con la lámina enmarcada en el centro: se recorta solo la lámina {%- endcomment -%}
+          <svg x="{{ ix }}" y="{{ iy }}" width="{{ iw }}" height="{{ ih }}" viewBox="265 150 470 710" preserveAspectRatio="xMidYMid slice"><image href="{{ art_url }}" width="1000" height="1000"/></svg>
+        {%- else -%}
+          <image href="{{ art_url }}" x="{{ ix }}" y="{{ iy }}" width="{{ iw }}" height="{{ ih }}" preserveAspectRatio="xMidYMid slice"/>
+        {%- endif -%}
+      {%- endif -%}
       {%- if is_canvas == '1' -%}<rect x="{{ px | plus: pw }}" y="{{ py | plus: 3 }}" width="4" height="{{ ph | minus: 3 }}" fill="#d9cbb8"/>{%- endif -%}
       <text x="{{ cx }}" y="{{ ly }}" class="sg-name" text-anchor="middle">{{ f[3] }}</text>
       <text x="{{ cx }}" y="{{ ly2 }}" class="sg-dim" text-anchor="middle">{{ f[4] }}</text>
