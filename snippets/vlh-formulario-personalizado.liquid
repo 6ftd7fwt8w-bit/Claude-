@@ -99,7 +99,7 @@
           {%- endif -%}
           <div>
             <p class="vlh-size-group__title">Lámina</p>
-            <p class="vlh-canvas__text">Papel de algodón verjurado 300 g · marco y pack regalo opcionales</p>
+            <p class="vlh-canvas__text">Papel de algodón verjurado 300 g · Marco y pack regalo opcionales: perfecto para regalar y sorprender, o para un rincón especial de la casa.</p>
           </div>
         </div>
       {%- endif -%}
@@ -144,7 +144,7 @@
             {%- endif -%}
             <div>
               <p class="vlh-size-group__title">Lienzo XL <span class="vlh-canvas__new">Nuevo</span></p>
-              <p class="vlh-canvas__text">{{ canvas_text | default: 'Listo para colgar · bastidor de madera · tela 100 % algodón' }}</p>
+              <p class="vlh-canvas__text">{{ canvas_text | default: 'Listo para colgar · bastidor de madera · tela 100 % algodón. Arte que hace única tu estancia.' }}</p>
             </div>
           </div>
           <div class="vlh-radio-cards vlh-radio-cards--canvas">
@@ -228,7 +228,13 @@
     </div>
 
     {%- if vlh_hay_lienzo -%}
-    <p class="vlh-lamina-only" data-canvas-note hidden>🎁 🖼️ Pack regalo y marco disponibles para <strong>láminas A4 y A3</strong>. Tu lienzo llega listo para colgar.</p>
+    <div class="vlh-trust vlh-canvas-note" data-canvas-note hidden>
+      <span class="vlh-trust__check" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      <div>
+        <p class="vlh-trust__title">¡Enhorabuena! Tu lienzo llega listo para colgar</p>
+        <p class="vlh-trust__text">Pack regalo y marcos disponibles únicamente para láminas A4 y A3.</p>
+      </div>
+    </div>
     {%- endif -%}
     <div data-lamina-extras>
 
@@ -562,6 +568,8 @@
   .vlh-help { flex: none; width: 20px; height: 20px; margin-top: 0; padding: 0; border: 1px solid #cbbfae; border-radius: 50%; background: #fff; color: #6b6055; font: 600 11px/1 var(--font-body); cursor: pointer; }
   .vlh-help[aria-expanded="true"] { background: var(--vlh-tinta); border-color: var(--vlh-tinta); color: #fff; }
   .vlh-tip { flex: 1 1 100%; margin: 6px 0 2px 27px; padding: 8px 10px; background: var(--vlh-crema); border-left: 2px solid #cbbfae; font-size: 12.5px; line-height: 1.45; color: #5d5248; }
+  .vlh-canvas-note { margin: 0 0 22px; }
+  .vlh-canvas-note[hidden] { display: none; }
   .vlh-trust { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; padding: 12px 14px; background: #eef5ec; border: 1px solid #cfe3ca; }
   .vlh-trust__check { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #2f6b3a; color: #fff; }
   .vlh-trust__title { margin: 0; font-size: 14px; font-weight: 600; color: #24522d; }
