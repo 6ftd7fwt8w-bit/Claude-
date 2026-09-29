@@ -36,8 +36,9 @@
               endif
             endfor
             if v_large == ''
-              assign v_large = v_small
+              assign v_large = v_small | replace: 'HD-1080p-7.2Mbps', 'HD-720p-4.5Mbps'
             endif
+            assign v_small = v_small | replace: 'HD-1080p-7.2Mbps', 'SD-480p-1.5Mbps' | replace: 'HD-720p-4.5Mbps', 'SD-480p-1.5Mbps'
             assign v_end = s.video_start | plus: s.video_duration
             assign poster = s.video.preview_image | image_url: width: 1200
             if s.image != blank
