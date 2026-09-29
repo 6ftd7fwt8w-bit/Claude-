@@ -22,7 +22,30 @@
     {%- for block in section.blocks -%}
       <a class="gallery__item" href="{{ block.settings.enlace | default: section.settings.instagram_url | default: '#' }}" target="_blank" rel="noopener" {{ block.shopify_attributes }}>
         {%- if block.settings.video != blank -%}
-          {{ block.settings.video | video_tag: image_size: '600x800', autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'metadata' }}
+          {%- liquid
+            # Versión ligera del vídeo (mp4 más pequeño de al menos 400 px de ancho); se carga solo al verse (theme.js)
+            assign vid = block.settings.video
+            assign vsrc = ''
+            assign vbest = 99999
+            assign vfallback = ''
+            for s in vid.sources
+              if s.format == 'mp4'
+                if vfallback == ''
+                  assign vfallback = s.url
+                endif
+                if s.width >= 400 and s.width < vbest
+                  assign vsrc = s.url
+                  assign vbest = s.width
+                endif
+              endif
+            endfor
+            if vsrc == ''
+              assign vsrc = vfallback
+            endif
+          -%}
+          <video class="ig-video" muted loop playsinline preload="none" disablepictureinpicture
+            poster="{{ vid.preview_image | image_url: width: 480 }}" data-lazy-video="{{ vsrc }}"
+            width="{{ vid.preview_image.width | default: 600 }}" height="{{ vid.preview_image.height | default: 800 }}" aria-hidden="true"></video>
         {%- elsif block.settings.imagen != blank -%}
           {{ block.settings.imagen | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 990px) 17vw, 40vw', alt: block.settings.alt | default: section.settings.title }}
         {%- else -%}

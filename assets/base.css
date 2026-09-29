@@ -1128,3 +1128,4 @@ body.overflow-hidden .cart-fab { opacity: 0; pointer-events: none; }
 .theme-pill:hover { border-color: var(--color-text); transform: translateY(-1px); }
 .theme-pill.is-active { background: var(--color-text); border-color: var(--color-text); color: var(--color-bg); }
 @media (min-width: 990px) { .theme-pills { flex-wrap: wrap; justify-content: center; overflow: visible; } }
+.gallery__item video.ig-video { background: var(--color-bg-alt); display: block; }

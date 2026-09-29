@@ -519,6 +519,21 @@
   paintCartHints();
   discountListeners.push(paintCartHints);
 
+  /* Vídeos de la galería: se descargan y reproducen solo cuando están en pantalla */
+  (function () {
+    var vids = $$('video[data-lazy-video]');
+    if (!vids.length) return;
+    var start = function (v) {
+      if (!v.getAttribute('src')) { v.src = v.getAttribute('data-lazy-video'); }
+      var p = v.play(); if (p && p.catch) p.catch(function () {});
+    };
+    if (!('IntersectionObserver' in window)) { vids.forEach(start); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) start(e.target); else if (!e.target.paused) e.target.pause(); });
+    }, { rootMargin: '150px 200px' });
+    vids.forEach(function (v) { io.observe(v); });
+  })();
+
   /* Precarga de las fotos ampliadas (miniaturas de ejemplo, packs...) para que se abran al instante */
   (function () {
     var done = {};
