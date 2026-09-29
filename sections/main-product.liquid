@@ -5,12 +5,95 @@
 -%}
 <section class="section" style="padding-top:28px">
   <div class="page-width">
-    <nav class="breadcrumbs" aria-label="breadcrumbs">
-      <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
-      {%- if collection -%} / <a href="{{ collection.url }}">{{ collection.title }}</a>
-      {%- elsif product.collections.first -%} / <a href="{{ product.collections.first.url }}">{{ product.collections.first.title }}</a>{%- endif -%}
-      / <span>{{ product.title | split: ' | ' | first }}</span>
-    </nav>
+    {%- comment -%} Anterior / siguiente producto de la colección (la de origen o, si no hay, la principal del producto), en bucle {%- endcomment -%}
+    {%- liquid
+      assign nav_col = collection
+      if nav_col == blank
+        for c in product.collections
+          if c.handle == 'infantil' or c.handle == 'laminas-personalizadas' or c.handle == 'packs-regalo'
+            assign nav_col = c
+            break
+          endif
+        endfor
+      endif
+      if nav_col == blank
+        assign nav_col = product.collections.first
+      endif
+      assign next_p = nil
+      assign prev_p = nil
+    -%}
+    {%- if nav_col != blank and nav_col.products_count > 1 -%}
+      {%- paginate nav_col.products by 250 -%}
+        {%- liquid
+          assign first_p = nil
+          assign last_p = nil
+          assign found = false
+          for p in nav_col.products
+            if forloop.first
+              assign first_p = p
+            endif
+            if found
+              assign next_p = p
+              break
+            endif
+            if p.id == product.id
+              assign found = true
+              assign prev_p = last_p
+            endif
+            assign last_p = p
+          endfor
+          if found
+            if next_p == nil
+              assign next_p = first_p
+            endif
+            if prev_p == nil
+              assign prev_p = nav_col.products.last
+            endif
+          else
+            assign next_p = nil
+          endif
+          if next_p.id == product.id
+            assign next_p = nil
+          endif
+          if prev_p.id == product.id
+            assign prev_p = nil
+          endif
+        -%}
+      {%- endpaginate -%}
+    {%- endif -%}
+    {%- if next_p or prev_p -%}
+      {%- liquid
+        assign nav_word = 'lámina'
+        if nav_col.handle contains 'pack'
+          assign nav_word = 'pack'
+        elsif nav_col.handle contains 'personalizad'
+          assign nav_word = 'ilustración'
+        endif
+      -%}
+      <nav class="prod-nav" aria-label="Navegación entre productos">
+        {%- if prev_p -%}
+          <a class="next-prod next-prod--prev" href="{{ prev_p.url | within: nav_col }}" rel="prev" data-next-prod title="{{ prev_p.title | split: ' | ' | first | escape }}">
+            <span class="next-prod__arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span>
+            {%- if prev_p.featured_image -%}{{ prev_p.featured_image | image_url: width: 96 | image_tag: loading: 'lazy', width: 34, height: 34, alt: '', class: 'next-prod__img' }}{%- endif -%}
+            <span class="next-prod__txt">Anterior<span class="next-prod__word"> {{ nav_word }}</span></span>
+          </a>
+        {%- else -%}<span></span>{%- endif -%}
+        {%- if next_p -%}
+          <a class="next-prod" href="{{ next_p.url | within: nav_col }}" rel="next" data-next-prod title="{{ next_p.title | split: ' | ' | first | escape }}">
+            <span class="next-prod__txt">Siguiente<span class="next-prod__word"> {{ nav_word }}</span></span>
+            {%- if next_p.featured_image -%}{{ next_p.featured_image | image_url: width: 96 | image_tag: loading: 'lazy', width: 34, height: 34, alt: '', class: 'next-prod__img' }}{%- endif -%}
+            <span class="next-prod__arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </a>
+        {%- endif -%}
+      </nav>
+    {%- else -%}
+      <nav class="breadcrumbs" aria-label="breadcrumbs">
+        <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
+        {%- if collection -%} / <a href="{{ collection.url }}">{{ collection.title }}</a>
+        {%- elsif product.collections.first -%} / <a href="{{ product.collections.first.url }}">{{ product.collections.first.title }}</a>{%- endif -%}
+        / <span>{{ product.title | split: ' | ' | first }}</span>
+      </nav>
+    {%- endif -%}
 
     <div class="product" data-product data-section="{{ section.id }}">
       <div class="product__gallery" data-gallery>
@@ -70,45 +153,6 @@
               <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title | split: ' | ' | first }}</h1>
 
             {%- when 'price' -%}
-              {%- comment -%} Siguiente producto de la colección (la de origen o, si no hay, la principal del producto), en bucle {%- endcomment -%}
-              {%- liquid
-                assign nav_col = collection
-                if nav_col == blank
-                  for c in product.collections
-                    if c.handle == 'infantil' or c.handle == 'laminas-personalizadas' or c.handle == 'packs-regalo'
-                      assign nav_col = c
-                      break
-                    endif
-                  endfor
-                endif
-                if nav_col == blank
-                  assign nav_col = product.collections.first
-                endif
-                assign next_p = nil
-              -%}
-              {%- if nav_col != blank and nav_col.products_count > 1 -%}
-                {%- paginate nav_col.products by 250 -%}
-                  {%- liquid
-                    assign first_p = nil
-                    assign found = false
-                    for p in nav_col.products
-                      if forloop.first
-                        assign first_p = p
-                      endif
-                      if found
-                        assign next_p = p
-                        break
-                      endif
-                      if p.id == product.id
-                        assign found = true
-                      endif
-                    endfor
-                    if found and next_p == nil and first_p.id != product.id
-                      assign next_p = first_p
-                    endif
-                  -%}
-                {%- endpaginate -%}
-              {%- endif -%}
               <div class="product__price-row" {{ block.shopify_attributes }}>
                 <div>
                   <div class="product__price" data-product-price>
@@ -120,21 +164,6 @@
                   </div>
                   {%- if cart.taxes_included -%}<div class="product__tax">{{ 'products.tax_included' | t }}</div>{%- endif -%}
                 </div>
-                {%- if next_p -%}
-                  {%- liquid
-                    assign next_label = 'Siguiente lámina'
-                    if nav_col.handle contains 'pack'
-                      assign next_label = 'Siguiente pack'
-                    elsif nav_col.handle contains 'personalizad'
-                      assign next_label = 'Siguiente ilustración'
-                    endif
-                  -%}
-                  <a class="next-prod" href="{{ next_p.url | within: nav_col }}" rel="next" data-next-prod title="{{ next_p.title | split: ' | ' | first | escape }}">
-                    {%- if next_p.featured_image -%}{{ next_p.featured_image | image_url: width: 96 | image_tag: loading: 'lazy', width: 34, height: 34, alt: '', class: 'next-prod__img' }}{%- endif -%}
-                    <span class="next-prod__txt">{{ next_label }}</span>
-                    <span class="next-prod__arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-                  </a>
-                {%- endif -%}
               </div>
 
             {%- when 'text' -%}

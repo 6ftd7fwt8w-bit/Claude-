@@ -1203,3 +1203,7 @@ body.set-open { overflow: hidden; }
 .load-more.is-auto { position: relative; }
 .load-more.is-auto.is-loading .load-more__bar span { animation: lm-pulse 1s ease-in-out infinite alternate; }
 @keyframes lm-pulse { from { opacity: 1; } to { opacity: .35; } }
+.prod-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.next-prod--prev { padding: 4px 4px 4px 4px; padding-right: 12px; }
+.next-prod--prev:hover .next-prod__arrow { transform: translateX(-2px); }
+@media (max-width: 480px) { .next-prod__word { display: none; } .next-prod { font-size: 13px; } }
