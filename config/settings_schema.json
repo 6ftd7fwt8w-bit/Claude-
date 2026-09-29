@@ -331,6 +331,13 @@
         "id": "cross_go",
         "label": "Enlace cuando ya lo ha guardado",
         "default": "Elegir"
+      },
+      {
+        "type": "text",
+        "id": "cross_card",
+        "label": "Aviso en las tarjetas de la colección",
+        "info": "Se muestra bajo cada producto de esa colección. [code] = código",
+        "default": "Con el código de descuento [code], llévate 3 láminas y paga solo 2"
       }
     ]
   },

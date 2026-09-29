@@ -1120,3 +1120,11 @@ body.overflow-hidden .cart-fab { opacity: 0; pointer-events: none; }
 .cart-discount--compact .cross-teaser { padding: 7px 10px; margin: 6px 0 8px; gap: 4px 8px; font-size: 12px; line-height: 1.4; }
 .cart-discount--compact .cross-teaser__text { min-width: 0; }
 .cart-discount--compact .cross-teaser__link { font-size: 11px; }
+
+/* Botones de temática en colecciones */
+.theme-pills { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 14px; margin-bottom: 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.theme-pills::-webkit-scrollbar { display: none; }
+.theme-pill { flex: none; padding: 9px 16px; border: 1px solid var(--color-border); border-radius: 999px; background: #fff; font-size: 13px; line-height: 1; white-space: nowrap; color: var(--color-text); transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+.theme-pill:hover { border-color: var(--color-text); transform: translateY(-1px); }
+.theme-pill.is-active { background: var(--color-text); border-color: var(--color-text); color: var(--color-bg); }
+@media (min-width: 990px) { .theme-pills { flex-wrap: wrap; justify-content: center; overflow: visible; } }

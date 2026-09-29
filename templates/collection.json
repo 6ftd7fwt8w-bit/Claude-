@@ -43,6 +43,14 @@
           }
         },
         "banner_4": {
+          "type": "themes",
+          "settings": {
+            "collection": "infantil",
+            "all_label": "Todas",
+            "themes": "tema-dulces-suenos|🌙 Dulces sueños\ntema-bosque|🦊 Animales del bosque\ntema-reyes|👑 Reyes y princesas\ntema-aventuras|⛵ Mar y aventuras\ntema-frases|😄 Frases con humor\ntema-palabras|✨ Palabras bonitas"
+          }
+        },
+        "banner_5": {
           "type": "featured",
           "settings": {
             "collection": "laminas-personalizadas",
@@ -53,7 +61,7 @@
             ]
           }
         },
-        "banner_5": {
+        "banner_6": {
           "type": "featured",
           "settings": {
             "collection": "infantil",
@@ -66,7 +74,7 @@
             ]
           }
         },
-        "banner_6": {
+        "banner_7": {
           "type": "featured",
           "settings": {
             "collection": "packs-regalo",
@@ -83,7 +91,8 @@
         "banner_3",
         "banner_4",
         "banner_5",
-        "banner_6"
+        "banner_6",
+        "banner_7"
       ]
     },
     "instagram": {

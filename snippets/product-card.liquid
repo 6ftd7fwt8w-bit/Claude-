@@ -24,6 +24,15 @@
       endif
     endfor
   endif
+  assign cross_deal = false
+  if deal == false and settings.cross_code != blank and settings.cross_collection != blank and settings.cross_card != blank
+    for c in product.collections
+      if c.handle == settings.cross_collection.handle
+        assign cross_deal = true
+        break
+      endif
+    endfor
+  endif
   assign cover_class = ''
   if settings.card_ratio == 'adapt'
     assign cover_class = ' card__img--cover'
@@ -76,6 +85,12 @@
       <div class="card__deal">
         <strong>🍀 ¡Estás de suerte!</strong>
         <span>Con el código de descuento <b>{{ settings.welcome_code }}</b>,{% if product.price_varies %} desde{% endif %} <b class="card__deal-price">{{ deal_price | money }}</b> · por tiempo limitado</span>
+      </div>
+    {%- elsif cross_deal -%}
+      {%- assign cross_code_html = '<b>' | append: settings.cross_code | append: '</b>' -%}
+      <div class="card__deal">
+        <strong>🍀 ¡Estás de suerte! 3x2</strong>
+        <span>{{ settings.cross_card | escape | replace: '[code]', cross_code_html }}</span>
       </div>
     {%- endif -%}
   </div>

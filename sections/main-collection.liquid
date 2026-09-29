@@ -48,6 +48,23 @@
 
 <section class="section" style="padding-top:24px">
   <div class="page-width">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'themes' and block.settings.collection.handle == collection.handle and block.settings.themes != blank -%}
+        {%- comment -%} Botones de temática: filtran la colección por etiqueta (etiqueta|texto por línea) {%- endcomment -%}
+        <nav class="theme-pills" aria-label="{{ block.settings.title | default: 'Temáticas' | escape }}" {{ block.shopify_attributes }}>
+          <a href="{{ collection.url }}" class="theme-pill{% if current_tags == blank or current_tags.size == 0 %} is-active{% endif %}">{{ block.settings.all_label | default: 'Todas' }}</a>
+          {%- assign theme_lines = block.settings.themes | newline_to_br | split: '<br />' -%}
+          {%- for line in theme_lines -%}
+            {%- assign parts = line | strip | split: '|' -%}
+            {%- if parts.size > 1 -%}
+              {%- assign t_tag = parts[0] | strip -%}
+              <a href="{{ collection.url }}/{{ t_tag | handle }}" class="theme-pill{% if current_tags contains t_tag %} is-active{% endif %}">{{ parts[1] | strip }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </nav>
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
     {%- paginate collection.products by section.settings.per_page -%}
       <form class="facets" data-facets-form>
         <div class="facets__filters">
@@ -127,6 +144,9 @@
               if collection.sort_by != blank and collection.sort_by != collection.default_sort_by
                 assign hot = nil
               endif
+              if current_tags != blank and current_tags.size > 0
+                assign hot = nil
+              endif
             endif
             assign hot_ids = ''
             if hot
@@ -197,6 +217,15 @@
     { "type": "text", "id": "all_handles", "label": "Mostrar en estas colecciones", "info": "Identificadores separados por comas, p. ej. bosque-encantado, estrellas-y-suenos" }
   ],
   "blocks": [
+    {
+      "type": "themes",
+      "name": "Botones de temática",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Colección" },
+        { "type": "text", "id": "all_label", "label": "Texto del primer botón", "default": "Todas" },
+        { "type": "textarea", "id": "themes", "label": "Temáticas", "info": "Una por línea: etiqueta|texto. Ej.: tema-bosque|🦊 Animales del bosque. Los productos se marcan con esa etiqueta en Shopify." }
+      ]
+    },
     {
       "type": "featured",
       "name": "Destacados 🔥",
