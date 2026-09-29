@@ -28,8 +28,12 @@
         {%- if s.title != blank -%}<h2 class="section-title">{{ s.title }}</h2>{%- endif -%}
         {%- if s.subtitle != blank -%}<p class="section-subtitle">{{ s.subtitle }}</p>{%- endif -%}
         <div class="pack" data-pack>
-          <div class="pack__grid" data-pack-grid>
-            {% render 'pack-item', product: product, current: true %}
+          <div class="pack__scroller" data-scroller>
+            <div class="pack__grid" data-pack-grid data-scroller-track>
+              {% render 'pack-item', product: product, current: true %}
+            </div>
+            <button type="button" class="pack__nav pack__nav--prev" data-scroller-prev aria-label="Láminas anteriores" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+            <button type="button" class="pack__nav pack__nav--next" data-scroller-next aria-label="Ver más láminas" hidden><span>Ver más</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
           </div>
           <div class="pack__buy">
             {%- if in_cross -%}

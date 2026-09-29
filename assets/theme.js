@@ -1166,3 +1166,28 @@ document.addEventListener('touchstart', (e) => {
   a._pf = true;
   const l = document.createElement('link'); l.rel = 'prefetch'; l.href = a.href; document.head.appendChild(l);
 }, { passive: true });
+
+/* «Combínala con…» en móvil: flechas para desplazar la fila de láminas */
+document.querySelectorAll('[data-scroller]').forEach((wrap) => {
+  const track = wrap.querySelector('[data-scroller-track]');
+  const prev = wrap.querySelector('[data-scroller-prev]');
+  const next = wrap.querySelector('[data-scroller-next]');
+  if (!track || !next) return;
+  const update = () => {
+    const max = track.scrollWidth - track.clientWidth;
+    const scrollable = max > 8 && getComputedStyle(track).overflowX !== 'visible';
+    next.hidden = !scrollable || track.scrollLeft >= max - 8;
+    if (prev) prev.hidden = !scrollable || track.scrollLeft <= 8;
+  };
+  const step = (dir) => {
+    const item = track.children[0];
+    const w = item ? item.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0) : track.clientWidth * 0.8;
+    track.scrollBy({ left: dir * w, behavior: 'smooth' });
+  };
+  next.addEventListener('click', () => step(1));
+  if (prev) prev.addEventListener('click', () => step(-1));
+  track.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  new MutationObserver(update).observe(track, { childList: true });
+  update();
+});
