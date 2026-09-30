@@ -13,8 +13,10 @@
                 <source media="(max-width: 749px)" sizes="100vw"
                   srcset="{{ block.settings.image_mobile | image_url: width: 600 }} 600w, {{ block.settings.image_mobile | image_url: width: 900 }} 900w, {{ block.settings.image_mobile | image_url: width: 1200 }} 1200w">
               {%- endif -%}
+              {%- assign slide_alt = block.settings.image.alt | default: block.settings.heading | strip_html -%}
               {{ block.settings.image | image_url: width: 2400 | image_tag:
                 loading: loading, fetchpriority: 'high', widths: '750, 1100, 1500, 1920, 2400', sizes: '100vw',
+                alt: slide_alt,
                 style: focal_style }}
             </picture>
           {%- else -%}

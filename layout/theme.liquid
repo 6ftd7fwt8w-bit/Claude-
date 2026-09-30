@@ -14,11 +14,16 @@
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
     {%- endif -%}
 
+    {%- liquid
+      assign vlh_title = page_title | split: ' | ' | first | strip
+      assign vlh_title_dc = vlh_title | downcase
+      assign vlh_shop_dc = shop.name | downcase
+    -%}
     <title>
-      {{ page_title }}
+      {{ vlh_title }}
       {%- if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif -%}
       {%- if current_page != 1 %} &ndash; {{ 'general.page' | t: page: current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- unless vlh_title_dc contains vlh_shop_dc %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
     {%- liquid
@@ -34,6 +39,41 @@
     {% endif %}
 
     {% render 'meta-tags', description: vlh_description %}
+
+    {%- if request.page_type == 'index' -%}
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": {{ shop.url | append: '/#organization' | json }},
+              "name": {{ shop.name | json }},
+              "url": {{ shop.url | json }},
+              {%- if settings.logo != blank %}
+              "logo": {{ settings.logo | image_url: width: 600 | prepend: 'https:' | json }},
+              {%- endif %}
+              "email": {{ shop.email | json }},
+              "sameAs": ["https://www.instagram.com/vivalahome.store/"]
+            },
+            {
+              "@type": "WebSite",
+              "@id": {{ shop.url | append: '/#website' | json }},
+              "name": {{ shop.name | json }},
+              "alternateName": ["Viva la Home", "Vivalahome", "vivalahome.store"],
+              "url": {{ shop.url | json }},
+              "inLanguage": {{ request.locale.iso_code | json }},
+              "publisher": { "@id": {{ shop.url | append: '/#organization' | json }} },
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {{ shop.url | append: routes.search_url | append: '?q={search_term_string}' | json }},
+                "query-input": "required name=search_term_string"
+              }
+            }
+          ]
+        }
+      </script>
+    {%- endif -%}
 
     {%- case settings.font_pairing -%}
       {%- when 'montserrat' -%}
@@ -89,6 +129,9 @@
     {% sections 'header-group' %}
 
     <main id="MainContent" class="main" role="main" tabindex="-1">
+      {%- if request.page_type == 'index' -%}
+        <h1 class="visually-hidden">{{ shop.name }} · Ilustraciones personalizadas a partir de tu foto y láminas infantiles</h1>
+      {%- endif -%}
       {{ content_for_layout }}
     </main>
 

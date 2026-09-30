@@ -1,4 +1,8 @@
 {%- liquid
+  assign split_alt1 = section.settings.image.alt | default: section.settings.heading | strip_html
+  assign split_alt2 = section.settings.image_2.alt | default: section.settings.heading | strip_html
+-%}
+{%- liquid
   assign s = section.settings
   assign split = '1fr 1.45fr'
   if s.image_width == 'half'
@@ -55,11 +59,11 @@
             assign pic2_style = 'aspect-ratio: ' | append: s.image_2.aspect_ratio
           -%}
           <div class="split__pair" style="grid-template-columns: {{ s.image.aspect_ratio }}fr {{ s.image_2.aspect_ratio }}fr;">
-            {{ s.image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '400, 600, 800, 1000', sizes: '(min-width: 750px) 30vw, 50vw', style: pic1_style }}
-            {{ s.image_2 | image_url: width: 1000 | image_tag: loading: 'eager', widths: '400, 600, 800, 1000', sizes: '(min-width: 750px) 30vw, 50vw', style: pic2_style }}
+            {{ s.image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '400, 600, 800, 1000', sizes: '(min-width: 750px) 30vw, 50vw', style: pic1_style, alt: split_alt1 }}
+            {{ s.image_2 | image_url: width: 1000 | image_tag: loading: 'eager', widths: '400, 600, 800, 1000', sizes: '(min-width: 750px) 30vw, 50vw', style: pic2_style, alt: split_alt2 }}
           </div>
         {%- elsif s.image != blank -%}
-          {{ s.image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '600, 900, 1200, 1500, 1800', sizes: '(min-width: 750px) 60vw, 100vw' }}
+          {{ s.image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '600, 900, 1200, 1500, 1800', sizes: '(min-width: 750px) 60vw, 100vw', alt: split_alt1 }}
         {%- else -%}
           {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
         {%- endif -%}
