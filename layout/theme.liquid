@@ -66,7 +66,7 @@
               "publisher": { "@id": {{ shop.url | append: '/#organization' | json }} },
               "potentialAction": {
                 "@type": "SearchAction",
-                "target": "{{ shop.url }}{{ routes.search_url }}?q={{ '{' }}search_term_string{{ '}' }}",
+                "target": "{{ shop.url }}{{ routes.search_url }}?q=\u007Bsearch_term_string\u007D",
                 "query-input": "required name=search_term_string"
               }
             }
