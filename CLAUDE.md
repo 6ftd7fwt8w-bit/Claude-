@@ -22,8 +22,8 @@
 - Campaña: página /pages/lienzos-xl-fallera (plantilla page.lienzos-fallera), reel vlh-reel-lienzos-fallera.mov. Título de campaña: «Tu retrato de fallera».
 
 ## Flujo
-- El tema publicado es "Viva Galería – cambios pendientes" (191056576585). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – SEO" (191079350345).
+- El tema publicado es "Viva Galería – SEO" (191079350345). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. No hay borrador abierto (crear uno nuevo para el siguiente cambio).
 
 ## SEO
 - Títulos y descripciones SEO rellenados en todos los productos y colecciones (sept. 2026). Productos nuevos: rellenar también «Vista previa del motor de búsqueda».
-- Las láminas infantiles tienen handles desordenados (p. ej. «Ríe» en .../salta-vivalahome-copia). Si se cambian, hacerlo con redirección (redirectNewHandle) y actualizar a la vez los handles en templates/index.json, collection.json y collection.sets.json (sets_def.py).
+- Cambio de handles aplazado (la dueña prefiere esperar a ver cómo indexa). Las láminas infantiles tienen handles desordenados (p. ej. «Ríe» en .../salta-vivalahome-copia). Si se cambian, hacerlo con redirección (redirectNewHandle) y actualizar a la vez los handles en templates/index.json, collection.json y collection.sets.json (sets_def.py).
