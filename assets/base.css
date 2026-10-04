@@ -622,16 +622,22 @@ body.overflow-hidden { overflow: hidden; }
 .welcome__close { position: absolute; top: 12px; right: 12px; z-index: 2; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: rgba(247,243,238,.85); }
 .welcome__close svg { width: 18px; height: 18px; }
 @media (max-width: 749px) {
-  .welcome { align-items: end; padding: 0; }
-  .welcome__dialog { grid-template-columns: 1fr; width: 100%; max-height: 92vh; transform: translateY(40px); }
-  .welcome__media { min-height: 0; aspect-ratio: 16 / 10; }
-  .welcome__body { padding: 26px 24px 28px; }
-  .welcome__tag { font-size: 18px; margin-bottom: 12px; }
-  .welcome__title { font-size: calc(27px * var(--heading-scale)); }
-  .welcome__text { font-size: 14px; }
-  .welcome__code { margin: 18px 0 16px; padding: 10px 22px; }
-  .welcome__code-value { font-size: 20px; }
-  .welcome__cta { max-width: none; }
+  /* Móvil: tarjeta compacta centrada (no a pantalla completa) para que no parezca un bloqueo */
+  .welcome { padding: 20px; }
+  .welcome__overlay { background: rgba(35, 31, 28, .3); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .welcome__dialog { grid-template-columns: 1fr; width: min(330px, 100%); max-height: calc(100vh - 40px); border-radius: 4px; transform: translateY(16px) scale(.98); }
+  .welcome__media { min-height: 0; height: 104px; }
+  .welcome__body { padding: 16px 20px 18px; }
+  .welcome__tag { font-size: 16px; margin-bottom: 6px; }
+  .welcome__title { font-size: calc(21px * var(--heading-scale)); margin-bottom: 8px; }
+  .welcome__text { font-size: 13px; line-height: 1.45; }
+  .welcome__code { margin: 12px 0 12px; padding: 6px 18px; }
+  .welcome__code-label { font-size: 9px; }
+  .welcome__code-value { font-size: 17px; }
+  .welcome__cta { max-width: none; min-height: 44px; padding-top: 10px; padding-bottom: 10px; }
+  .welcome__decline { margin-top: 10px; }
+  .welcome__small { margin-top: 10px; font-size: 10px; }
+  .welcome__close { top: 8px; right: 8px; width: 32px; height: 32px; }
 }
 
 .welcome-badge {
