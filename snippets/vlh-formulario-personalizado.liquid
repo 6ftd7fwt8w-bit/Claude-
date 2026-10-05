@@ -922,7 +922,11 @@
       els.marcoColorGroup.innerHTML = `<p class="vlh-hint" style="color:#b32020;margin:0;">No hay acabados de marco disponibles para ${getSelectedTamano()} ahora mismo. Contáctanos antes de completar el pedido.</p>`;
       return;
     }
-    const previousLabel = getSelectedMarco()?.dataset.label || null;
+    // Si cambia de "con pack" (marco incluido) a "sin pack" o al revés, no arrastramos
+    // la elección anterior: sin pack vuelve a "Sin marco" para no cobrar un marco sin querer.
+    const cambioModo = els.marcoColorGroup.dataset.incluido !== String(incluido);
+    els.marcoColorGroup.dataset.incluido = String(incluido);
+    const previousLabel = cambioModo ? null : (getSelectedMarco()?.dataset.label || null);
     const opciones = incluido ? colors : [{ id: '', price: 0, label: 'Sin marco' }, ...colors];
     els.marcoColorGroup.innerHTML = opciones.map((c, i) => {
       const esSinMarco = c.label === 'Sin marco';
