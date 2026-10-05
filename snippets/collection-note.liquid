@@ -30,42 +30,19 @@
   <div class="collection-note">
     {%- if note_welcome or note_cross -%}
     <div class="collection-note__card collection-note__card--deal">
-      <svg class="collection-note__sprig" width="120" height="18" viewBox="0 0 120 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" aria-hidden="true">
-        <path d="M2 9h44M74 9h44"/>
-        <path d="M50 9c4-1 7-3 10-6M60 9c3-1 6-1 10 0M50 9c4 1 7 3 10 6"/>
-        <path d="M55 6.5c-1.6-2.4-1-4.4.8-5.5 1 2.2.6 4-.8 5.5ZM55 11.5c-1.6 2.4-1 4.4.8 5.5 1-2.2.6-4-.8-5.5ZM63 4.2c.2-2.6 1.8-3.8 3.9-3.7-.3 2.3-1.7 3.5-3.9 3.7ZM63 13.8c.2 2.6 1.8 3.8 3.9 3.7-.3-2.3-1.7-3.5-3.9-3.7Z" fill="currentColor" stroke="none"/>
-      </svg>
       {%- if note_welcome -%}
-        <p class="collection-note__lead">¡Enhorabuena!</p>
-        <p class="collection-note__text">Tu código de descuento <span class="collection-note__code">{{ settings.welcome_code }}</span> está activo en esta sesión.</p>
-        {%- liquid
-          assign note_pct = settings.welcome_percent | default: 10
-          assign note_max = 0
-          for p in collection.products limit: 50
-            if p.price_max > note_max
-              assign note_max = p.price_max
-            endif
-          endfor
-          assign note_ahorro = note_max | times: note_pct | divided_by: 100
-        -%}
-        <p class="collection-note__small">Aplícalo antes de finalizar tu pedido o en el carrito y disfruta de un {{ note_pct }}&nbsp;% de descuento adicional{% if note_ahorro > 0 %}: <strong class="collection-note__save">hasta {{ note_ahorro | money }} menos en tu ilustración</strong>{% endif %}. Disponible por tiempo limitado.</p>
+        <p class="collection-note__text">Código <span class="collection-note__code">{{ settings.welcome_code }}</span> activo · <strong>{{ settings.welcome_percent | default: 10 }}&nbsp;% de descuento</strong> en tu ilustración</p>
       {%- else -%}
-        <p class="collection-note__lead">¡Enhorabuena!</p>
-        <p class="collection-note__text">Elige tres láminas y la tercera te la regalamos con el código <span class="collection-note__code">{{ settings.cross_code }}</span></p>
-        <p class="collection-note__small">Aplícalo antes de finalizar tu pedido o en el carrito. Disponible por tiempo limitado.</p>
+        <p class="collection-note__text">Código <span class="collection-note__code">{{ settings.cross_code }}</span> activo · <strong>3x2</strong> en láminas infantiles</p>
       {%- endif -%}
+      <p class="collection-note__small">Aplícalo al realizar el pedido.</p>
     </div>
     {%- endif -%}
     {%- if note_canvas -%}
-    <div class="collection-note__card collection-note__card--canvas">
-      <svg class="collection-note__icon" width="34" height="34" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" aria-hidden="true">
-        <path d="M6 9l22-4v28l-22 2z"/><path d="M28 5l5 3v26l-5-1"/><path d="M10 27l6-7 4 4 3-3 4 5" stroke-linecap="round"/><circle cx="21" cy="14" r="1.8"/>
-      </svg>
-      <div>
-        <p class="collection-note__canvas-title">También en lienzo XL</p>
-        <p class="collection-note__small">Selecciona el tamaño «Lienzo XL» al personalizar tu ilustración: tela de algodón en bastidor, lista para colgar.</p>
-      </div>
-    </div>
+    <p class="collection-note__canvas">
+      <svg class="collection-note__icon" width="18" height="18" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l22-4v28l-22 2z"/><path d="M28 5l5 3v26l-5-1"/><path d="M10 27l6-7 4 4 3-3 4 5" stroke-linecap="round"/></svg>
+      <span><strong>También en lienzo XL:</strong> selecciónalo al configurar tu lámina.</span>
+    </p>
     {%- endif -%}
   </div>
 {%- endif -%}
