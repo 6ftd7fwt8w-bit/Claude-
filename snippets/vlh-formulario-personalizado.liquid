@@ -336,6 +336,7 @@
             <p class="vlh-trust__text" id="vlh-marco-incluido-text">Solo tienes que elegir el color. Te llegará ya enmarcada y lista para colgar.</p>
           </div>
         </div>
+        <p class="vlh-hint vlh-marco-depth" id="vlh-marco-depth" hidden><strong>✦ Marco efecto profundidad.</strong> En A3 la lámina queda ligeramente hundida dentro del marco, con un acabado más elegante y premium.</p>
         <div class="vlh-radio-cards" id="vlh-marco-color-group"></div>
         <details class="vlh-details">
           <summary>¿Cómo se envía tu pedido?</summary>
@@ -590,6 +591,8 @@
   .vlh-canvas-note[hidden] { display: none; }
   .vlh-trust { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; padding: 12px 14px; background: #eef5ec; border: 1px solid #cfe3ca; }
   .vlh-marco-incluido { margin: 0 0 12px; }
+  .vlh-marco-depth { margin: 0 0 10px; }
+  .vlh-marco-depth strong { font-weight: 500; letter-spacing: .02em; }
   .vlh-trust__check { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #2f6b3a; color: #fff; }
   .vlh-trust__title { margin: 0; font-size: 14px; font-weight: 600; color: #24522d; }
   .vlh-trust__text { margin: 2px 0 0; font-size: 12.5px; line-height: 1.45; color: #3f5a42; }
@@ -934,9 +937,13 @@
     return els.marcoColorGroup.querySelector('input[name="vlh-marco-color"]:checked') || null;
   }
   function renderMarcoColors() {
-    if (isLienzo()) { els.marcoColorGroup.innerHTML = ''; return; }
+    if (isLienzo()) { els.marcoColorGroup.innerHTML = ''; const dn = document.getElementById('vlh-marco-depth'); if (dn) dn.hidden = true; return; }
     const colors = getMarcoColorsForSize();
     const incluido = hasPack();
+    // Los marcos A3 tienen efecto profundidad (los A4 no)
+    const profundidad = getTamanoCategoria() === 'A3';
+    const depthNote = document.getElementById('vlh-marco-depth');
+    if (depthNote) depthNote.hidden = !profundidad || !colors.length;
     if (!colors.length) {
       els.marcoColorGroup.innerHTML = `<p class="vlh-hint" style="color:#b32020;margin:0;">No hay acabados de marco disponibles para ${getSelectedTamano()} ahora mismo. Contáctanos antes de completar el pedido.</p>`;
       return;
@@ -958,6 +965,7 @@
             ${checked ? 'checked' : ''}>
           ${c.image ? `<img class="vlh-radio-card__img" src="${c.image}" alt="${c.label}" loading="lazy" width="56" height="56">` : ''}
           <span class="vlh-radio-card__title">${c.label}</span>
+          ${profundidad && !esSinMarco ? '<span class="vlh-radio-card__badge vlh-badge-depth">Efecto profundidad</span>' : ''}
           <span class="vlh-radio-card__price">${incluido ? (getPackSuplemento(c.label) > 0 ? '+ ' + money(getPackSuplemento(c.label)) : 'incluido en el pack') : (c.price > 0 ? '+ ' + money(c.price) : 'incluido')}</span>
         </label>`;
     }).join('');
