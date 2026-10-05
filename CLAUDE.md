@@ -15,6 +15,10 @@
 - Por persona, sin suplementos por tipo: A4 1 persona 46 € (retrato, bebé, comunión, tradición, mascota), 2 → 51 (pareja, boda), 3-4 → 61, 5-6 → 71, 7-8 → 81, 9 o más → 91 (+5 € por persona, tramo al número más alto). Mascotas igual (1, 2, 3-4, 5 o más). Paisaje 50.
 - A3 = A4 + 10; lienzos = A4 + 63 / + 93.
 
+## Packs regalo (desde oct. 2026)
+- Los packs incluyen marco: Pack Regalo A4 25 € / A3 29 € (variantes «Tamaño» A4/A3 del producto vlh-extra-pack-regalo), Pack Valentina 64 € (siempre A3).
+- Con pack, el formulario no añade el producto de marco: solo pide el color (blanco / madera clara) y lo guarda como propiedad «Marco (incluido en el pack)» en la ilustración, con aviso verde «¡Genial! Tu pack regalo ya incluye marco».
+
 ## Lienzos XL
 - Tamaños (variantes de las 9 ilustraciones personalizadas): "Lienzo 70x100 cm" (proporción como A3) y "Lienzo 80x120 cm". Precio = precio A4 (misma 2ª opción) + 63 / + 93 € (desde sept. 2026: láminas personalizadas +3 € y lienzos +6 € para cubrir el envío gratis desde 60 € en península). El 60x90 se eliminó por ser casi igual que el 70x100.
 - Tela 100 % algodón en bastidor, listo para colgar. Al elegir lienzo el formulario desactiva marco y packs regalo.
