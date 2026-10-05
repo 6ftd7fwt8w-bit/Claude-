@@ -212,7 +212,8 @@
           <button type="button" class="vlh-help" data-help aria-expanded="false" aria-label="¿Qué es esto?">?</button>
           <p class="vlh-tip" hidden>Haz el pedido ahora y envíanos la foto cuando la tengas, por WhatsApp o email, indicando tu número de pedido. <strong>Ten en cuenta que la fecha de entrega estimada empieza a contar cuando recibamos la foto</strong>, así que puede retrasarse según lo que tardes en enviárnosla.</p>
         </div>
-        {% if p_composicion %}
+        {%- comment -%} Solo en productos donde se elige el número de personas o mascotas {%- endcomment -%}
+        {% if p_composicion and product.options.size > 1 %}
         <div class="vlh-opt-row">
           <label class="vlh-opt">
             <input type="checkbox" name="vlh-composicion" value="si"
