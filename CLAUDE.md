@@ -29,7 +29,7 @@
 - Campaña: página /pages/lienzos-xl-fallera (plantilla page.lienzos-fallera), reel vlh-reel-lienzos-fallera.mov. Título de campaña: «Tu retrato de fallera».
 
 ## Flujo
-- El tema publicado es "Viva Galería – colección elegante" (191179948105). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – combinar fotos" (191180406857), con «Combinar varias fotos» solo en productos con personas/mascotas (pendiente de publicar).
+- El tema publicado es "Viva Galería – combinar fotos" (191180406857). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – pack regalo texto" (191181357129), con el texto del Pack Regalo (enmarcada y papel premium con lazada) (pendiente de publicar).
 
 ## SEO
 - Títulos y descripciones SEO rellenados en todos los productos y colecciones (sept. 2026). Productos nuevos: rellenar también «Vista previa del motor de búsqueda».
