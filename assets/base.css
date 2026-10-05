@@ -1239,6 +1239,7 @@ body.set-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .collection-note__card--deal { animation: none; } }
 .collection-note__text { margin: 0; font-size: 14px; line-height: 1.5; color: var(--color-text); }
 .collection-note__text strong { font-weight: 600; }
+.collection-note__save { white-space: nowrap; color: #b0431f; font-weight: 600; }
 .collection-note__code { display: inline-block; padding: 1px 7px 2px 9px; background: var(--color-text); color: var(--color-bg); font-weight: 500; letter-spacing: .16em; font-size: 12.5px; line-height: 1.3; }
 .collection-note__small { margin: 2px 0 0; font-size: 12px; line-height: 1.4; color: var(--color-muted); }
 .collection-note__canvas { margin: 0; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font-size: 13px; line-height: 1.4; color: var(--color-muted); }

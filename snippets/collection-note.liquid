@@ -31,7 +31,17 @@
     {%- if note_welcome or note_cross -%}
     <div class="collection-note__card collection-note__card--deal">
       {%- if note_welcome -%}
-        <p class="collection-note__text">Código <span class="collection-note__code">{{ settings.welcome_code }}</span> activo · <strong>{{ settings.welcome_percent | default: 10 }}&nbsp;% de descuento</strong> en tu ilustración</p>
+        {%- liquid
+          assign note_pct = settings.welcome_percent | default: 10
+          assign note_max = 0
+          for p in collection.products limit: 50
+            if p.price_max > note_max
+              assign note_max = p.price_max
+            endif
+          endfor
+          assign note_ahorro = note_max | times: note_pct | divided_by: 100
+        -%}
+        <p class="collection-note__text">Código <span class="collection-note__code">{{ settings.welcome_code }}</span> activo · <strong>{{ note_pct }}&nbsp;% de descuento</strong> en tu ilustración{% if note_ahorro > 0 %} <span class="collection-note__save">(ahorra hasta {{ note_ahorro | money }})</span>{% endif %}</p>
       {%- else -%}
         <p class="collection-note__text">Código <span class="collection-note__code">{{ settings.cross_code }}</span> activo · <strong>3x2</strong> en láminas infantiles</p>
       {%- endif -%}
