@@ -1,7 +1,8 @@
 {%- comment -%}
   Tarjeta de producto. Parámetros: product, lazy (bool), show_quick_add (bool),
   image_pos ('last' = usa la última foto como principal), ratio (p. ej. '1 / 1'), price_suffix (texto tras el precio),
-  hot (texto de la etiqueta 🔥 de producto destacado).
+  hot (texto de la etiqueta de producto destacado),
+  in_collection (true en la rejilla de una colección: el descuento y «también en lienzo XL» se muestran una sola vez bajo la descripción de la colección).
   Si el código de bienvenida vale para el producto, muestra el precio con descuento
 {%- endcomment -%}
 {%- liquid
@@ -54,7 +55,7 @@
     {%- if ratio != blank %} style="aspect-ratio: {{ ratio }}"{% elsif settings.card_ratio == 'adapt' and img %} style="aspect-ratio: {{ img.aspect_ratio }}"{% endif %}
     aria-label="{{ product.title | escape }}">
     {%- if hot != blank -%}
-      <span class="card__hot"><span class="card__hot-flame" aria-hidden="true">🔥</span>{{ hot }}</span>
+      <span class="card__hot"><svg class="card__hot-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.5c.6 4.6 2.3 6.9 5.2 8.1-2.9 1.2-4.6 3.5-5.2 8.1-.6-4.6-2.3-6.9-5.2-8.1C9.7 8.4 11.4 6.1 12 1.5Z"/><path d="M19 15.5c.25 1.9.95 2.85 2.15 3.35-1.2.5-1.9 1.45-2.15 3.35-.25-1.9-.95-2.85-2.15-3.35 1.2-.5 1.9-1.45 2.15-3.35Z"/></svg>{{ hot }}</span>
     {%- endif -%}
     {%- if product.compare_at_price > product.price and product.available -%}
       <span class="card__badge card__badge--sale">{{ 'products.sale' | t }}</span>
@@ -63,7 +64,7 @@
     {%- else -%}
       {%- assign has_canvas = false -%}
       {%- for v in product.variants -%}{%- if v.option1 contains 'Lienzo' -%}{%- assign has_canvas = true -%}{%- break -%}{%- endif -%}{%- endfor -%}
-      {%- if has_canvas -%}<span class="card__badge card__badge--new">{{ 'products.canvas_badge' | t }}</span>{%- endif -%}
+      {%- if has_canvas and in_collection != true -%}<span class="card__badge card__badge--new">{{ 'products.canvas_badge' | t }}</span>{%- endif -%}
     {%- endif -%}
     {%- if img -%}
       {{ img | image_url: width: 900 | image_tag:
@@ -90,7 +91,8 @@
     {%- if settings.card_show_vendor -%}<div class="card__vendor">{{ product.vendor }}</div>{%- endif -%}
     <a href="{{ product.url }}" class="card__title">{{ product.title | split: ' | ' | first | escape }}</a>
     <div class="card__price">{% render 'price', product: product, show_from: settings.card_from_price %}{% if price_suffix != blank %} <span class="card__price-suffix">{{ price_suffix }}</span>{% endif %}</div>
-    {%- if deal -%}
+    {%- if in_collection -%}
+    {%- elsif deal -%}
       {%- assign pct = settings.welcome_percent | default: 10 -%}
       {%- assign deal_price = 100 | minus: pct | times: product.price_min | divided_by: 100 -%}
       <div class="card__deal">

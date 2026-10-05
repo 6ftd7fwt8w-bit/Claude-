@@ -1,0 +1,47 @@
+{%- comment -%}
+  Nota bajo la descripción de la colección (en vez de repetirla en cada tarjeta):
+  - código de bienvenida si la colección es la del descuento de bienvenida
+  - 3x2 si es la colección del código cruzado (infantil)
+  - «también en lienzo XL» si algún producto de la colección tiene variante de lienzo
+{%- endcomment -%}
+{%- liquid
+  assign note_welcome = false
+  if settings.welcome_code != blank and settings.welcome_collection != blank and settings.welcome_collection.handle == collection.handle
+    assign note_welcome = true
+  endif
+  assign note_cross = false
+  if note_welcome == false and settings.cross_code != blank and settings.cross_collection != blank and settings.cross_collection.handle == collection.handle
+    assign note_cross = true
+  endif
+  assign note_canvas = false
+  for p in collection.products limit: 50
+    for v in p.variants
+      if v.option1 contains 'Lienzo'
+        assign note_canvas = true
+        break
+      endif
+    endfor
+    if note_canvas
+      break
+    endif
+  endfor
+-%}
+{%- if note_welcome or note_cross or note_canvas -%}
+  <div class="collection-note">
+    <svg class="collection-note__sprig" width="120" height="18" viewBox="0 0 120 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" aria-hidden="true">
+      <path d="M2 9h44M74 9h44"/>
+      <path d="M50 9c4-1 7-3 10-6M60 9c3-1 6-1 10 0M50 9c4 1 7 3 10 6"/>
+      <path d="M55 6.5c-1.6-2.4-1-4.4.8-5.5 1 2.2.6 4-.8 5.5ZM55 11.5c-1.6 2.4-1 4.4.8 5.5 1-2.2.6-4-.8-5.5ZM63 4.2c.2-2.6 1.8-3.8 3.9-3.7-.3 2.3-1.7 3.5-3.9 3.7ZM63 13.8c.2 2.6 1.8 3.8 3.9 3.7-.3-2.3-1.7-3.5-3.9-3.7Z" fill="currentColor" stroke="none"/>
+    </svg>
+    {%- if note_welcome -%}
+      <p class="collection-note__lead">Un detalle de bienvenida</p>
+      <p class="collection-note__text">En tu primer pedido, un {{ settings.welcome_percent | default: 10 }}&nbsp;% de descuento con el código <span class="collection-note__code">{{ settings.welcome_code }}</span></p>
+    {%- elsif note_cross -%}
+      <p class="collection-note__lead">Para llenar su habitación de cuentos</p>
+      <p class="collection-note__text">Elige tres láminas y la tercera te la regalamos con el código <span class="collection-note__code">{{ settings.cross_code }}</span></p>
+    {%- endif -%}
+    {%- if note_canvas -%}
+      <p class="collection-note__canvas">También en lienzo XL, en tela de algodón y listo para colgar</p>
+    {%- endif -%}
+  </div>
+{%- endif -%}

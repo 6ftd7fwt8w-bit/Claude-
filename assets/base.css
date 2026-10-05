@@ -1007,11 +1007,9 @@ button[name="checkout"] svg { width: 14px; height: 14px; }
 .guide-dialog__close { position: absolute; top: 8px; right: 12px; border: 0; background: none; font-size: 28px; line-height: 1; cursor: pointer; color: var(--color-text); }
 
 /* Productos destacados en colecciones (🔥) */
-.card--hot .card__media { box-shadow: 0 0 0 2px #e8743b; }
-.card__hot { position: absolute; bottom: 10px; left: 10px; z-index: 3; display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px 5px 8px; border-radius: 999px; background: linear-gradient(135deg, #f0913f, #d9482b); color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 4px 12px rgba(217,72,43,.35); }
-.card__hot-flame { display: inline-block; font-size: 13px; line-height: 1; transform-origin: 50% 90%; animation: vlh-flame 1.4s ease-in-out infinite; }
-@keyframes vlh-flame { 0%, 100% { transform: scale(1) rotate(-4deg); } 50% { transform: scale(1.18) rotate(4deg); } }
-@media (prefers-reduced-motion: reduce) { .card__hot-flame { animation: none; } }
+.card--hot .card__media { box-shadow: inset 0 0 0 1px rgba(168,148,120,.55); }
+.card__hot { position: absolute; bottom: 10px; left: 10px; z-index: 3; display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px 6px 9px; background: rgba(247,243,238,.94); color: var(--color-text); border: 1px solid rgba(168,148,120,.6); font-family: var(--font-serif); font-style: italic; font-size: 14px; line-height: 1; letter-spacing: .01em; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+.card__hot-icon { flex: none; color: var(--color-accent); }
 .card__deal { margin-top: 8px; padding: 8px 10px; border: 1px dashed #d9a441; background: rgba(242,209,107,.22); font-size: 12px; line-height: 1.45; }
 .card__deal strong { display: block; color: #b0431f; font-size: 12px; letter-spacing: .02em; }
 .card__deal-price { color: #b0431f; }
@@ -1229,3 +1227,14 @@ body.set-open { overflow: hidden; }
 }
 @keyframes pack-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
 @media (prefers-reduced-motion: reduce) { .pack__nav--next { animation: none; } }
+
+/* Nota bajo la descripción de la colección: bienvenida, 3x2 y lienzo XL (una sola vez, no en cada tarjeta) */
+.collection-note { margin: 22px auto 0; max-width: 460px; text-align: center; color: var(--color-text); }
+.collection-note__sprig { display: block; margin: 0 auto 10px; color: var(--color-accent); }
+.collection-note__lead { margin: 0 0 4px; font-family: var(--font-serif); font-style: italic; font-size: 21px; line-height: 1.2; color: var(--color-text); }
+.collection-note__text { margin: 0; font-size: 14px; line-height: 1.6; color: var(--color-muted); }
+.collection-note__code { display: inline-block; margin-left: 2px; padding: 1px 8px 2px; border-bottom: 1px solid var(--color-accent); color: var(--color-text); font-weight: 500; letter-spacing: .16em; }
+.collection-note__canvas { margin: 12px 0 0; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-muted); }
+.collection-note__canvas::before, .collection-note__canvas::after { content: '·'; margin: 0 .7em; color: var(--color-accent); }
+.collection-banner--left .collection-note, .collection-banner--right .collection-note { margin-left: 0; text-align: left; }
+.collection-banner--left .collection-note__sprig, .collection-banner--right .collection-note__sprig { margin-left: 0; }

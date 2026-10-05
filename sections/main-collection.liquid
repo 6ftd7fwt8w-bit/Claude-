@@ -28,6 +28,7 @@
       {%- elsif collection.description != blank and section.settings.show_description -%}
         <div class="collection-banner__text rte">{{ collection.description }}</div>
       {%- endif -%}
+      {% render 'collection-note', collection: collection %}
     </div>
   </div>
 {%- else -%}
@@ -42,6 +43,7 @@
     {%- if collection.description != blank and section.settings.show_description -%}
       <div class="collection-hero__desc rte">{{ collection.description }}</div>
     {%- endif -%}
+    {% render 'collection-note', collection: collection %}
   </div>
 </div>
 {%- endif -%}
@@ -171,13 +173,13 @@
           -%}
           {%- if hot and paginate.current_page == 1 -%}
             {%- for product in hot.settings.products -%}
-              {% render 'product-card', product: product, lazy: false, hot: hot.settings.label %}
+              {% render 'product-card', product: product, lazy: false, hot: hot.settings.label, in_collection: true %}
             {%- endfor -%}
           {%- endif -%}
           {%- for product in collection.products -%}
             {%- assign pid = ',' | append: product.id | append: ',' -%}
             {%- if hot_ids contains pid -%}{%- continue -%}{%- endif -%}
-            {%- if forloop.index <= 4 -%}{% render 'product-card', product: product, lazy: false %}{%- else -%}{% render 'product-card', product: product %}{%- endif -%}
+            {%- if forloop.index <= 4 -%}{% render 'product-card', product: product, lazy: false, in_collection: true %}{%- else -%}{% render 'product-card', product: product, in_collection: true %}{%- endif -%}
           {%- endfor -%}
         </div>
       {%- else -%}
