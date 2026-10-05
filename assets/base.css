@@ -1229,12 +1229,21 @@ body.set-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .pack__nav--next { animation: none; } }
 
 /* Nota bajo la descripción de la colección: bienvenida, 3x2 y lienzo XL (una sola vez, no en cada tarjeta) */
-.collection-note { margin: 22px auto 0; max-width: 460px; text-align: center; color: var(--color-text); }
-.collection-note__sprig { display: block; margin: 0 auto 10px; color: var(--color-accent); }
-.collection-note__lead { margin: 0 0 4px; font-family: var(--font-serif); font-style: italic; font-size: 21px; line-height: 1.2; color: var(--color-text); }
-.collection-note__text { margin: 0; font-size: 14px; line-height: 1.6; color: var(--color-muted); }
-.collection-note__code { display: inline-block; margin-left: 2px; padding: 1px 8px 2px; border-bottom: 1px solid var(--color-accent); color: var(--color-text); font-weight: 500; letter-spacing: .16em; }
-.collection-note__canvas { margin: 12px 0 0; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-muted); }
-.collection-note__canvas::before, .collection-note__canvas::after { content: '·'; margin: 0 .7em; color: var(--color-accent); }
-.collection-banner--left .collection-note, .collection-banner--right .collection-note { margin-left: 0; text-align: left; }
-.collection-banner--left .collection-note__sprig, .collection-banner--right .collection-note__sprig { margin-left: 0; }
+.collection-note { margin: 24px auto 0; max-width: 520px; display: grid; gap: 12px; text-align: center; color: var(--color-text); }
+.collection-note__card { position: relative; padding: 18px 20px 20px; background: #fffdf9; border: 1px solid rgba(168,148,120,.55); box-shadow: 0 8px 24px rgba(35,31,28,.06); }
+.collection-note__card--deal::before { content: ''; position: absolute; inset: 5px; border: 1px dashed rgba(168,148,120,.45); pointer-events: none; }
+.collection-note__sprig { display: block; margin: 0 auto 8px; color: var(--color-accent); }
+.collection-note__lead { margin: 0 0 6px; font-family: var(--font-serif); font-style: italic; font-size: 26px; line-height: 1.1; color: var(--color-text); }
+.collection-note__text { margin: 0; font-size: 15px; line-height: 1.6; color: var(--color-text); }
+.collection-note__code { display: inline-block; margin: 0 2px; padding: 3px 10px 4px 12px; background: var(--color-text); color: var(--color-bg); font-weight: 500; letter-spacing: .2em; font-size: 14px; line-height: 1.2; }
+.collection-note__small { margin: 8px 0 0; font-size: 13px; line-height: 1.55; color: var(--color-muted); }
+.collection-note__card--canvas { display: flex; align-items: center; gap: 14px; text-align: left; background: var(--color-bg-alt); box-shadow: none; }
+.collection-note__card--canvas .collection-note__small { margin-top: 2px; }
+.collection-note__icon { flex: none; color: var(--color-accent); }
+.collection-note__canvas-title { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--color-text); }
+.collection-banner--left .collection-note, .collection-banner--right .collection-note { margin-left: 0; }
+@media (max-width: 749px) {
+  .collection-note__card { padding: 16px 16px 18px; }
+  .collection-note__lead { font-size: 23px; }
+  .collection-note__text { font-size: 14px; }
+}
