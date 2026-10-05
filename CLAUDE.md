@@ -16,7 +16,7 @@
 - A3 = A4 + 10; lienzos = A4 + 63 / + 93.
 
 ## Packs regalo (desde oct. 2026)
-- Los packs incluyen marco blanco; en madera clara +4 €. Pack Regalo (variantes Tamaño × Marco): A4 blanco 25 / madera 29, A3 blanco 29 / madera 33. Pack Valentina (variante Marco, siempre A3): blanco 64 / madera 68.
+- Los packs incluyen marco blanco; en madera clara +2 € en A4 y +4 € en A3. Pack Regalo (variantes Tamaño × Marco): A4 blanco 25 / madera 27, A3 blanco 29 / madera 33. Pack Valentina (variante Marco, siempre A3): blanco 64 / madera 68.
 - Con pack, el formulario no añade el producto de marco: elige la variante del pack según tamaño y color del marco, y guarda el color como propiedad «Marco (incluido en el pack)» en la ilustración, con aviso verde «¡Genial! Tu pack regalo ya incluye marco».
 
 ## Lienzos XL
