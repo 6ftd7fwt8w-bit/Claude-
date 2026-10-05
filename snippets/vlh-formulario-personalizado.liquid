@@ -333,15 +333,16 @@
       </details>
       {% endif %}
 
-      <p class="vlh-hint" id="vlh-tamano-valentina-nota-pack" hidden>Este pack se presenta siempre en A3 y enmarcado — hemos ajustado el tamaño automáticamente.</p>
-
-      <div class="vlh-subpanel" id="vlh-pack-mensaje-panel" hidden>
-        <p class="vlh-hint" style="margin-top:0;">Mensaje personalizado para el interior de la tapa (máx. 10 palabras)</p>
-        <input type="text" id="vlh-mensaje-pack" maxlength="80" placeholder="Ej: Con todo mi cariño para ti">
-        <p class="vlh-hint" id="vlh-mensaje-pack-contador" style="text-align:right;margin-top:4px;">0 / 10 palabras</p>
-      </div>
       </div>
     </details>
+
+    <!-- Fuera del desplegable: al elegir pack el desplegable se cierra solo y esto sigue visible -->
+    <p class="vlh-hint vlh-pack-after" id="vlh-tamano-valentina-nota-pack" hidden>Este pack se presenta siempre en A3 y enmarcado — hemos ajustado el tamaño automáticamente.</p>
+    <div class="vlh-subpanel vlh-pack-after" id="vlh-pack-mensaje-panel" hidden>
+      <p class="vlh-hint" style="margin-top:0;">Mensaje personalizado para el interior de la tapa (máx. 10 palabras)</p>
+      <input type="text" id="vlh-mensaje-pack" maxlength="80" placeholder="Ej: Con todo mi cariño para ti">
+      <p class="vlh-hint" id="vlh-mensaje-pack-contador" style="text-align:right;margin-top:4px;">0 / 10 palabras</p>
+    </div>
 
     <!-- ============ 4. MARCO ============ -->
     <details class="vlh-field vlh-accordion" id="vlh-marco-field">
@@ -636,6 +637,7 @@
   .vlh-canvas-note[hidden] { display: none; }
   .vlh-trust { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; padding: 12px 14px; background: #eef5ec; border: 1px solid #cfe3ca; }
   .vlh-marco-incluido { margin: 0 0 12px; }
+  .vlh-pack-after { margin: -6px 0 16px; }
   .vlh-marco-depth { margin: 0 0 10px; }
   .vlh-marco-depth strong { font-weight: 500; letter-spacing: .02em; }
   .vlh-trust__check { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #2f6b3a; color: #fff; }
@@ -1281,6 +1283,18 @@
 
   initFechaEstimada();
   form.addEventListener('change', syncAll);
+  // Al elegir una opción de regalo (o «No, gracias»), se cierra su desplegable
+  els.packInputs.forEach(input => {
+    input.addEventListener('change', () => {
+      const acordeon = input.closest('details');
+      if (!acordeon) return;
+      setTimeout(() => {
+        acordeon.open = false;
+        const sum = acordeon.querySelector('summary');
+        if (sum && sum.getBoundingClientRect().top < 0) sum.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 180);
+    });
+  });
   els.mensajePack.addEventListener('input', () => {
     const palabras = els.mensajePack.value.split(/\s+/).filter(Boolean);
     if (palabras.length > 10) els.mensajePack.value = palabras.slice(0, 10).join(' ');
