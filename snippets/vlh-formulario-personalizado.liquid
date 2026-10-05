@@ -257,22 +257,12 @@
           <span class="vlh-radio-card__title">No, gracias</span>
         </label>
         {% if p_pack_regalo %}
-        {%- liquid
-          assign pr_a4 = p_pack_regalo.selected_or_first_available_variant
-          assign pr_a3 = p_pack_regalo.selected_or_first_available_variant
-          for v in p_pack_regalo.variants
-            if v.title contains 'A3'
-              assign pr_a3 = v
-            elsif v.title contains 'A4'
-              assign pr_a4 = v
-            endif
-          endfor
-        -%}
+        {%- assign pr_a4 = p_pack_regalo.selected_or_first_available_variant -%}
+        {%- capture pr_vars -%}[{%- for v in p_pack_regalo.variants -%}{"id":{{ v.id }},"price":{{ v.price }},"o":{{ v.options | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
         <label class="vlh-radio-card vlh-radio-card--pack">
           <input type="radio" name="vlh-pack" value="regalo"
             data-variant-id="{{ pr_a4.id }}" data-price-cents="{{ pr_a4.price }}"
-            data-variant-a4="{{ pr_a4.id }}" data-price-a4="{{ pr_a4.price }}"
-            data-variant-a3="{{ pr_a3.id }}" data-price-a3="{{ pr_a3.price }}">
+            data-variants='{{ pr_vars | escape }}'>
           {% if p_pack_regalo.featured_image %}
             <img class="vlh-radio-card__img vlh-radio-card__img--pack" src="{{ p_pack_regalo.featured_image | image_url: width: 600 }}" alt="Pack regalo" loading="lazy" width="300" height="375">
             {%- if p_pack_regalo.images.size > 0 -%}
@@ -286,10 +276,12 @@
         </label>
         {% endif %}
         {% if p_pack_valentina %}
+        {%- capture pv_vars -%}[{%- for v in p_pack_valentina.variants -%}{"id":{{ v.id }},"price":{{ v.price }},"o":{{ v.options | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
         <label class="vlh-radio-card vlh-radio-card--pack" id="vlh-pack-valentina-card">
           <input type="radio" name="vlh-pack" value="valentina" id="vlh-pack-valentina-input"
             data-variant-id="{{ p_pack_valentina.selected_or_first_available_variant.id }}"
-            data-price-cents="{{ p_pack_valentina.selected_or_first_available_variant.price }}">
+            data-price-cents="{{ p_pack_valentina.selected_or_first_available_variant.price }}"
+            data-variants='{{ pv_vars | escape }}'>
           {% if p_pack_valentina.featured_image %}
             <img class="vlh-radio-card__img vlh-radio-card__img--pack" src="{{ p_pack_valentina.featured_image | image_url: width: 600 }}" alt="Pack Valentina" loading="lazy" width="300" height="375">
             {%- if p_pack_valentina.images.size > 0 -%}
@@ -298,7 +290,7 @@
             {%- endif -%}
           {% endif %}
           <span class="vlh-radio-card__title">Pack Valentina</span>
-          <span class="vlh-radio-card__price">+ {{ p_pack_valentina.selected_or_first_available_variant.price | money }}</span>
+          <span class="vlh-radio-card__price" id="vlh-pack-valentina-price">+ {{ p_pack_valentina.selected_or_first_available_variant.price | money }}</span>
           <span class="vlh-radio-card__badge" id="vlh-pack-valentina-badge">Marco incluido · en A3</span>
         </label>
         {% endif %}
@@ -341,7 +333,7 @@
           <span class="vlh-trust__check" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
           <div>
             <p class="vlh-trust__title" id="vlh-marco-incluido-title">¡Genial! Tu pack regalo ya incluye marco</p>
-            <p class="vlh-trust__text">Solo tienes que elegir el color. Te llegará ya enmarcada y lista para colgar.</p>
+            <p class="vlh-trust__text" id="vlh-marco-incluido-text">Solo tienes que elegir el color. Te llegará ya enmarcada y lista para colgar.</p>
           </div>
         </div>
         <div class="vlh-radio-cards" id="vlh-marco-color-group"></div>
@@ -843,15 +835,42 @@
     return isRegalo() || isValentina();
   }
 
-  // Pack Regalo: precio y variante según el tamaño (A4 / A3)
+  // Packs: cada variante combina tamaño (A4/A3, solo Pack Regalo) y color del marco
+  // incluido (Blanco incluido; Madera clara con suplemento, ya sumado en el precio de la variante).
+  const MARCO_BASE = 'Blanco';
+  function packVariants(input) {
+    try { return JSON.parse(input.dataset.variants || '[]'); } catch (e) { return []; }
+  }
+  function packVariant(input, color) {
+    const vs = packVariants(input);
+    if (!vs.length) return null;
+    const size = getTamanoCategoria();
+    const okSize = (v) => !v.o.some(o => o === 'A4' || o === 'A3') || v.o.indexOf(size || 'A4') !== -1;
+    return vs.find(v => okSize(v) && v.o.indexOf(color) !== -1)
+      || vs.find(v => okSize(v) && v.o.indexOf(MARCO_BASE) !== -1)
+      || vs.find(okSize) || vs[0];
+  }
+  function getPackInput() {
+    return getCheckedRadio(els.packInputs);
+  }
+  function getPackSuplemento(color) {
+    const input = getPackInput();
+    if (!input || input.value === 'no') return 0;
+    const base = packVariant(input, MARCO_BASE);
+    const v = packVariant(input, color);
+    return base && v ? Math.max(0, v.price - base.price) : 0;
+  }
   function syncPackPrecio() {
-    const input = [...els.packInputs].find(i => i.value === 'regalo');
-    if (!input) return;
-    const a3 = getTamanoCategoria() === 'A3' && input.dataset.variantA3;
-    input.dataset.variantId = a3 ? input.dataset.variantA3 : input.dataset.variantA4;
-    input.dataset.priceCents = a3 ? input.dataset.priceA3 : input.dataset.priceA4;
-    const el = document.getElementById('vlh-pack-regalo-price');
-    if (el) el.textContent = '+ ' + money(parseInt(input.dataset.priceCents, 10));
+    els.packInputs.forEach(input => {
+      if (input.value === 'no' || !input.dataset.variants) return;
+      const base = packVariant(input, MARCO_BASE);
+      const marco = getSelectedMarco();
+      const color = input.checked && marco ? marco.dataset.label : MARCO_BASE;
+      const v = packVariant(input, color);
+      if (v) { input.dataset.variantId = v.id; input.dataset.priceCents = v.price; }
+      const el = document.getElementById(input.value === 'regalo' ? 'vlh-pack-regalo-price' : 'vlh-pack-valentina-price');
+      if (el && base) el.textContent = '+ ' + money(base.price);
+    });
   }
 
   function syncValentinaRules() {
@@ -939,7 +958,7 @@
             ${checked ? 'checked' : ''}>
           ${c.image ? `<img class="vlh-radio-card__img" src="${c.image}" alt="${c.label}" loading="lazy" width="56" height="56">` : ''}
           <span class="vlh-radio-card__title">${c.label}</span>
-          <span class="vlh-radio-card__price">${incluido ? 'incluido en el pack' : (c.price > 0 ? '+ ' + money(c.price) : 'incluido')}</span>
+          <span class="vlh-radio-card__price">${incluido ? (getPackSuplemento(c.label) > 0 ? '+ ' + money(getPackSuplemento(c.label)) : 'incluido en el pack') : (c.price > 0 ? '+ ' + money(c.price) : 'incluido')}</span>
         </label>`;
     }).join('');
   }
@@ -948,10 +967,17 @@
     els.marcoObligatorioNota.hidden = !hasPack();
     const tituloIncluido = document.getElementById('vlh-marco-incluido-title');
     if (tituloIncluido) tituloIncluido.textContent = isValentina() ? '¡Genial! Tu Pack Valentina ya incluye marco' : '¡Genial! Tu pack regalo ya incluye marco';
+    const textoIncluido = document.getElementById('vlh-marco-incluido-text');
+    if (textoIncluido && hasPack()) {
+      const extras = getMarcoColorsForSize().filter(c => getPackSuplemento(c.label) > 0);
+      textoIncluido.textContent = extras.length
+        ? `El marco blanco va incluido; en ${extras.map(c => c.label.toLowerCase()).join(' o ')} tiene un suplemento de ${money(getPackSuplemento(extras[0].label))}. Te llegará ya enmarcada y lista para colgar.`
+        : 'Solo tienes que elegir el color. Te llegará ya enmarcada y lista para colgar.';
+    }
     if (els.marcoSummary) {
       const marco = getSelectedMarco();
       const tieneMarco = marco && marco.dataset.label && marco.dataset.label !== 'Sin marco';
-      els.marcoSummary.textContent = isLienzo() ? 'No necesita' : (tieneMarco ? (hasPack() ? 'Incluido · ' + marco.dataset.label : marco.dataset.label) : '+');
+      els.marcoSummary.textContent = isLienzo() ? 'No necesita' : (tieneMarco ? (hasPack() && !getPackSuplemento(marco.dataset.label) ? 'Incluido · ' + marco.dataset.label : marco.dataset.label) : '+');
       els.marcoSummary.classList.toggle('vlh-accordion__value--empty', !tieneMarco);
     }
   }
@@ -1086,7 +1112,9 @@
     if (pack && pack.dataset.priceCents) {
       const cents = parseInt(pack.dataset.priceCents, 10);
       total += cents;
-      lines.push([pack.value === 'regalo' ? 'Pack Regalo' : 'Pack Valentina', cents]);
+      const marcoPack = getSelectedMarco();
+      const extraMarco = marcoPack && getPackSuplemento(marcoPack.dataset.label) > 0 ? ` (marco ${marcoPack.dataset.label.toLowerCase()})` : '';
+      lines.push([(pack.value === 'regalo' ? 'Pack Regalo' : 'Pack Valentina') + extraMarco, cents]);
     }
 
     const marco = getSelectedMarco();
@@ -1131,7 +1159,7 @@
 
   function syncAll() {
     if (els.errorEl) els.errorEl.hidden = true;
-    const pasos = [syncPreciosVariante, syncValentinaRules, syncLienzoRules, syncPackPrecio, syncPackUI, syncMarco, syncComposicion, syncFotosUI, calcTotal];
+    const pasos = [syncPreciosVariante, syncValentinaRules, syncLienzoRules, syncPackPrecio, syncPackUI, syncMarco, syncPackPrecio, syncComposicion, syncFotosUI, calcTotal];
     pasos.forEach((fn) => { try { fn(); } catch (e) { console.error('Error en ' + fn.name + ':', e); } });
   }
 
