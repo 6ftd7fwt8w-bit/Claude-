@@ -1231,6 +1231,13 @@ body.set-open { overflow: hidden; }
 /* Nota bajo la descripción de la colección: bienvenida, 3x2 y lienzo XL (una sola vez, no en cada tarjeta) */
 .collection-note { margin: 24px auto 0; max-width: 520px; display: grid; gap: 12px; text-align: center; color: var(--color-text); }
 .collection-note__card { position: relative; padding: 18px 20px 20px; background: #fffdf9; border: 1px solid rgba(168,148,120,.55); box-shadow: 0 8px 24px rgba(35,31,28,.06); }
+.collection-note__card--deal { animation: vlh-note-pulse 3.2s ease-in-out infinite; }
+@keyframes vlh-note-pulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(35,31,28,.06), 0 0 0 0 rgba(242,209,107,0); background-color: #fffdf9; }
+  50% { box-shadow: 0 8px 24px rgba(35,31,28,.06), 0 0 0 6px rgba(242,209,107,.28); background-color: #fff8e6; }
+}
+@media (prefers-reduced-motion: reduce) { .collection-note__card--deal { animation: none; } }
+.collection-note__save { color: var(--color-text); font-weight: 600; white-space: nowrap; }
 .collection-note__card--deal::before { content: ''; position: absolute; inset: 5px; border: 1px dashed rgba(168,148,120,.45); pointer-events: none; }
 .collection-note__sprig { display: block; margin: 0 auto 8px; color: var(--color-accent); }
 .collection-note__lead { margin: 0 0 6px; font-family: var(--font-serif); font-style: italic; font-size: 26px; line-height: 1.1; color: var(--color-text); }

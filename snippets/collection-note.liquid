@@ -38,7 +38,17 @@
       {%- if note_welcome -%}
         <p class="collection-note__lead">¡Enhorabuena!</p>
         <p class="collection-note__text">Tu código de descuento <span class="collection-note__code">{{ settings.welcome_code }}</span> está activo en esta sesión.</p>
-        <p class="collection-note__small">Aplícalo antes de finalizar tu pedido o en el carrito y disfruta de un {{ settings.welcome_percent | default: 10 }}&nbsp;% de descuento adicional, disponible por tiempo limitado.</p>
+        {%- liquid
+          assign note_pct = settings.welcome_percent | default: 10
+          assign note_max = 0
+          for p in collection.products limit: 50
+            if p.price_max > note_max
+              assign note_max = p.price_max
+            endif
+          endfor
+          assign note_ahorro = note_max | times: note_pct | divided_by: 100
+        -%}
+        <p class="collection-note__small">Aplícalo antes de finalizar tu pedido o en el carrito y disfruta de un {{ note_pct }}&nbsp;% de descuento adicional{% if note_ahorro > 0 %}: <strong class="collection-note__save">hasta {{ note_ahorro | money }} menos en tu ilustración</strong>{% endif %}. Disponible por tiempo limitado.</p>
       {%- else -%}
         <p class="collection-note__lead">¡Enhorabuena!</p>
         <p class="collection-note__text">Elige tres láminas y la tercera te la regalamos con el código <span class="collection-note__code">{{ settings.cross_code }}</span></p>
