@@ -19,6 +19,9 @@
 - Los packs incluyen marco blanco; en madera clara +2 € en A4 y +4 € en A3. Pack Regalo (variantes Tamaño × Marco): A4 blanco 28 / madera 30, A3 blanco 32 / madera 36. Pack Valentina (variante Marco, siempre A3): blanco 67 / madera 71.
 - Con pack, el formulario no añade el producto de marco: elige la variante del pack según tamaño y color del marco, y guarda el color como propiedad «Marco (incluido en el pack)» en la ilustración, con aviso verde «¡Genial! Tu pack regalo ya incluye marco».
 
+## Marcos sueltos (sin pack)
+- Extra: Marco A4: blanco 16 / madera clara 18. Extra: Marco A3 (efecto profundidad): blanco 21 / madera clara 25. La diferencia madera–blanco coincide con el suplemento en los packs (+2 A4, +4 A3).
+
 ## Lienzos XL
 - Tamaños (variantes de las 9 ilustraciones personalizadas): "Lienzo 70x100 cm" (proporción como A3) y "Lienzo 80x120 cm". Precio = precio A4 (misma 2ª opción) + 63 / + 93 € (desde sept. 2026: láminas personalizadas +3 € y lienzos +6 € para cubrir el envío gratis desde 60 € en península). El 60x90 se eliminó por ser casi igual que el 70x100.
 - Tela 100 % algodón en bastidor, listo para colgar. Al elegir lienzo el formulario desactiva marco y packs regalo.
