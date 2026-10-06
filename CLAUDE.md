@@ -25,6 +25,7 @@
 ## Descuento de bienvenida HOLA10
 - 10 % en la colección laminas-personalizadas, una vez por cliente. Fecha de fin en Shopify: 31/10/2026 23:59 (hora de España).
 - Ajustes del tema «welcome_until» (texto «31 de octubre») y «welcome_end» (2026-10-31): muestran «Solo hasta el …» en pop-up, colección, tarjetas y lienzo express, y a partir del día siguiente ocultan esos avisos solos. El anuncio de la barra superior tiene «Mostrar hasta» 2026-10-31.
+- En el formulario de personalizadas HOLA10 se aplica solo (resumen de precio con el descuento y aviso «Descuento aplicado automáticamente»); si la clienta pulsa «Quitar», no se vuelve a aplicar en esa visita.
 - Si se alarga la oferta: cambiar la fecha en el descuento de Shopify, en esos dos ajustes y en el anuncio.
 
 ## Lienzos XL
@@ -34,7 +35,7 @@
 - Campaña: página /pages/lienzos-xl-fallera (plantilla page.lienzos-fallera), reel vlh-reel-lienzos-fallera.mov. Título de campaña: «Tu retrato de fallera». Debajo del vídeo, sección «Lienzo express» (sections/lienzo-express.liquid): precios con HOLA10, botón «Crear mi lienzo» y formulario corto (tamaño, personas, fotos) que añade la variante de lienzo del producto de tradición y aplica el código.
 
 ## Flujo
-- El tema publicado es "Viva Galería – flechas fotos móvil" (191181815881). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – lienzo express" (191204851785), con el bloque de precios y el lienzo express en /pages/lienzos-xl-fallera (pendiente de publicar). Las plantillas JSON se editan partiendo de la versión del tema publicado (la dueña también las cambia en el editor).
+- El tema publicado es "Viva Galería – lienzo express" (191204851785). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – HOLA10 automático" (191215697993), con el código de bienvenida aplicado solo en el formulario (pendiente de publicar). Las plantillas JSON se editan partiendo de la versión del tema publicado (la dueña también las cambia en el editor).
 
 ## SEO
 - Títulos y descripciones SEO rellenados en todos los productos y colecciones (sept. 2026). Productos nuevos: rellenar también «Vista previa del motor de búsqueda».
