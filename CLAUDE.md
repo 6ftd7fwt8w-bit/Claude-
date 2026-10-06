@@ -26,10 +26,10 @@
 - Tamaños (variantes de las 9 ilustraciones personalizadas): "Lienzo 70x100 cm" (proporción como A3) y "Lienzo 80x120 cm". Precio = precio A4 (misma 2ª opción) + 63 / + 93 € (desde sept. 2026: láminas personalizadas +3 € y lienzos +6 € para cubrir el envío gratis desde 60 € en península). El 60x90 se eliminó por ser casi igual que el 70x100.
 - Tela 100 % algodón en bastidor, listo para colgar. Al elegir lienzo el formulario desactiva marco y packs regalo.
 - Plazo y envío: igual que las personalizadas. Infantiles: sin lienzo de momento.
-- Campaña: página /pages/lienzos-xl-fallera (plantilla page.lienzos-fallera), reel vlh-reel-lienzos-fallera.mov. Título de campaña: «Tu retrato de fallera».
+- Campaña: página /pages/lienzos-xl-fallera (plantilla page.lienzos-fallera), reel vlh-reel-lienzos-fallera.mov. Título de campaña: «Tu retrato de fallera». Debajo del vídeo, sección «Lienzo express» (sections/lienzo-express.liquid): precios con HOLA10, botón «Crear mi lienzo» y formulario corto (tamaño, personas, fotos) que añade la variante de lienzo del producto de tradición y aplica el código.
 
 ## Flujo
-- El tema publicado es "Viva Galería – pack regalo texto" (191181357129). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – flechas fotos móvil" (191181815881), con las flechas del carrusel de fotos en móvil (pendiente de publicar).
+- El tema publicado es "Viva Galería – flechas fotos móvil" (191181815881). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – lienzo express" (191204851785), con el bloque de precios y el lienzo express en /pages/lienzos-xl-fallera (pendiente de publicar). Las plantillas JSON se editan partiendo de la versión del tema publicado (la dueña también las cambia en el editor).
 
 ## SEO
 - Títulos y descripciones SEO rellenados en todos los productos y colecciones (sept. 2026). Productos nuevos: rellenar también «Vista previa del motor de búsqueda».
