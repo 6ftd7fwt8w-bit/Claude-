@@ -411,6 +411,13 @@
     {%- liquid
       assign vlh_w_code = settings.welcome_code | strip | upcase
       assign vlh_w_ok = true
+      if settings.welcome_end != blank
+        assign vlh_today = 'now' | date: '%Y%m%d' | plus: 0
+        assign vlh_last = settings.welcome_end | remove: '-' | plus: 0
+        if vlh_today > vlh_last
+          assign vlh_w_ok = false
+        endif
+      endif
       if settings.welcome_collection != blank
         assign vlh_col_handles = product.collections | map: 'handle'
         unless vlh_col_handles contains settings.welcome_collection.handle
@@ -430,11 +437,13 @@
         <p class="vlh-coupon__msg" id="vlh-coupon-msg" hidden></p>
       </details>
       <div class="vlh-coupon__win" id="vlh-coupon-win" hidden>
-        <span class="vlh-coupon__shine" aria-hidden="true"></span>
-        <p class="vlh-coupon__kicker">🎉 ¡Mejor oferta desbloqueada!</p>
-        <p class="vlh-coupon__big">Nadie da más</p>
-        <p class="vlh-coupon__detail" id="vlh-coupon-detail"></p>
-        <button type="button" class="vlh-coupon__remove" id="vlh-coupon-remove">Quitar código</button>
+        <span class="vlh-coupon__check" aria-hidden="true">✓</span>
+        <div class="vlh-coupon__body">
+          <p class="vlh-coupon__kicker">Descuento aplicado automáticamente</p>
+          <p class="vlh-coupon__detail" id="vlh-coupon-detail"></p>
+          {%- if settings.welcome_until != blank -%}<p class="vlh-coupon__until">⏳ Solo hasta el {{ settings.welcome_until }}</p>{%- endif -%}
+        </div>
+        <button type="button" class="vlh-coupon__remove" id="vlh-coupon-remove">Quitar</button>
       </div>
     </div>
 
@@ -658,13 +667,16 @@
   .vlh-coupon__row button { padding: 0 18px; border: 1px solid var(--vlh-tinta); background: var(--vlh-tinta); color: var(--vlh-crema); font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
   .vlh-coupon__msg { margin: 8px 0 0; font-size: 13px; color: #b32020; }
   .vlh-coupon__msg.is-ok { color: #2f6b3a; }
-  .vlh-coupon__win { position: relative; overflow: hidden; padding: 16px 18px; text-align: center; background: linear-gradient(135deg, #F2D16B 0%, #F7E3A1 45%, #EFC75A 100%); color: #2C2218; box-shadow: 0 10px 26px rgba(201,168,76,.35); animation: vlhPop .5s cubic-bezier(.2,1.4,.4,1); }
-  .vlh-coupon__shine { position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.65) 50%, transparent 70%); transform: translateX(-100%); animation: vlhShine 2.6s ease-in-out .3s infinite; pointer-events: none; }
-  .vlh-coupon__kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-  .vlh-coupon__big { margin: 2px 0 4px; font-family: var(--font-serif); font-size: 30px; line-height: 1.1; }
-  .vlh-coupon__detail { margin: 0; font-size: 14px; }
-  .vlh-coupon__detail strong { font-size: 16px; }
-  .vlh-coupon__remove { margin-top: 8px; padding: 0; border: 0; background: none; font: inherit; font-size: 11px; text-decoration: underline; cursor: pointer; color: #5a4a36; }
+  .vlh-coupon__win { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #fff8e6; border: 1px dashed rgba(168,148,120,.8); color: #2C2218; animation: vlhPop .4s ease; }
+  .vlh-coupon__win[hidden] { display: none; }
+  .vlh-coupon__check { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: #2f6b3a; color: #fff; font-size: 14px; font-weight: 700; }
+  .vlh-coupon__body { flex: 1; min-width: 0; }
+  .vlh-coupon__kicker { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #2f6b3a; }
+  .vlh-coupon__detail { margin: 2px 0 0; font-size: 14px; line-height: 1.4; }
+  .vlh-coupon__detail b { letter-spacing: .08em; }
+  .vlh-coupon__detail strong { color: #2f6b3a; }
+  .vlh-coupon__until { margin: 3px 0 0; font-size: 12px; font-weight: 600; color: #b0431f; }
+  .vlh-coupon__remove { flex: none; align-self: flex-start; padding: 0; border: 0; background: none; font: inherit; font-size: 11px; text-decoration: underline; cursor: pointer; color: #8a7d6e; }
   .vlh-summary__old { margin-right: 8px; font-size: 18px; color: #a8a096; text-decoration: line-through; font-family: var(--font-serif); }
   .vlh-summary__breakdown li.is-discount { color: #2f6b3a; font-weight: 600; opacity: 1; }
   .vlh-summary.has-discount .vlh-summary__value { color: #2f6b3a; }
@@ -1128,15 +1140,17 @@
       setCoupon(els.couponInput.value);
     });
     els.couponInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); els.couponApply.click(); } });
-    els.couponRemove.addEventListener('click', clearCoupon);
-    // Si ya aceptó el código de bienvenida (pop-up), lo aplicamos directamente
-    try {
-      const w = JSON.parse(localStorage.getItem('vlh_welcome') || '{}');
-      if (WELCOME_CODE && w.status === 'accepted' && w.expires > Date.now()) {
-        els.couponInput.value = WELCOME_CODE;
-        setCoupon(WELCOME_CODE, true);
-      }
-    } catch (e) {}
+    els.couponRemove.addEventListener('click', () => {
+      try { sessionStorage.setItem('vlh_coupon_off', '1'); } catch (e) {}
+      clearCoupon();
+    });
+    // El código de bienvenida se aplica solo (salvo que lo haya quitado en esta visita)
+    let quitado = false;
+    try { quitado = sessionStorage.getItem('vlh_coupon_off') === '1'; } catch (e) {}
+    if (WELCOME_CODE && !quitado) {
+      els.couponInput.value = WELCOME_CODE;
+      setCoupon(WELCOME_CODE, true);
+    }
   }
 
   // Envío gratis: suma lo que ya hay en la cesta + este pedido
@@ -1216,7 +1230,7 @@
     els.breakdownEl.hidden = !(lines.length > 1 || ahorro);
     if (coupon && els.couponDetail) {
       els.couponDetail.innerHTML = ahorro
-        ? `Código <b>${coupon.code}</b> aplicado · te ahorras <strong>${money(ahorro)}</strong>`
+        ? `Código <b>${coupon.code}</b> (−${coupon.percent} %) · te ahorras <strong>${money(ahorro)}</strong>`
         : `Código <b>${coupon.code}</b> guardado: se aplicará en el carrito`;
     }
   }
