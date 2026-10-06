@@ -1148,8 +1148,11 @@
     let quitado = false;
     try { quitado = sessionStorage.getItem('vlh_coupon_off') === '1'; } catch (e) {}
     if (WELCOME_CODE && !quitado) {
+      // Sin recalcular aquí: el primer syncAll() ya pinta el total con el descuento
       els.couponInput.value = WELCOME_CODE;
-      setCoupon(WELCOME_CODE, true);
+      coupon = { code: WELCOME_CODE, percent: WELCOME_PCT };
+      els.couponWin.hidden = false;
+      els.couponBox.hidden = true;
     }
   }
 
