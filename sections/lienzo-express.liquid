@@ -1,0 +1,218 @@
+{%- comment -%}
+  Lienzo express (página de lienzos falleros): precios con el descuento de bienvenida,
+  ventajas, botón grande «Crear mi lienzo» y un formulario corto (tamaño, personas, fotos)
+  que añade la ilustración en lienzo al carrito y aplica el código.
+  Precios y variantes salen del producto elegido (opción 1 = tamaño «Lienzo …», opción 2 = personas).
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign p = s.product | default: all_products['ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales']
+  assign code = settings.welcome_code | strip
+  assign pct = settings.welcome_percent | default: 10
+  if s.apply_code == false or code == blank
+    assign pct = 0
+  endif
+  assign tamanos = ''
+  assign personas = ''
+  for v in p.variants
+    if v.option1 contains 'Lienzo'
+      unless tamanos contains v.option1
+        assign tamanos = tamanos | append: v.option1 | append: '|'
+      endunless
+      unless personas contains v.option2
+        assign personas = personas | append: v.option2 | append: '|'
+      endunless
+    endif
+  endfor
+  assign tamanos = tamanos | split: '|'
+  assign personas = personas | split: '|'
+-%}
+{%- if p and tamanos.size > 0 -%}
+<section class="section bg-{{ s.background }} lx" id="crear-lienzo" data-lx data-pct="{{ pct }}" data-code="{{ code | escape }}">
+  <div class="page-width">
+    <div class="lx__card">
+      {%- if s.title != blank -%}<h2 class="lx__title">{{ s.title }}</h2>{%- endif -%}
+      <ul class="lx__prices">
+        {%- for t in tamanos -%}
+          {%- assign base = nil -%}
+          {%- for v in p.variants -%}{%- if v.option1 == t -%}{%- assign base = v -%}{%- break -%}{%- endif -%}{%- endfor -%}
+          {%- assign desc = 100 | minus: pct | times: base.price | divided_by: 100 -%}
+          <li>
+            <span class="lx__size">{{ t | remove: 'Lienzo ' | remove: ' cm' | replace: 'x', '×' }} cm</span>
+            <span class="lx__dot" aria-hidden="true">·</span>
+            {%- if pct > 0 -%}<s class="lx__old">{{ base.price | money }}</s>{%- endif -%}
+            <strong class="lx__new">{{ desc | money }}</strong>
+          </li>
+        {%- endfor -%}
+      </ul>
+      {%- if s.note != blank -%}<p class="lx__note">{{ s.note | replace: '[code]', code }}</p>{%- endif -%}
+      {%- if s.points != blank -%}
+        <ul class="lx__points">
+          {%- assign pts = s.points | newline_to_br | split: '<br />' -%}
+          {%- for pt in pts -%}{%- assign t = pt | strip -%}{%- if t != blank -%}<li>{{ t }}</li>{%- endif -%}{%- endfor -%}
+        </ul>
+      {%- endif -%}
+      <button type="button" class="button lx__cta" data-lx-open aria-expanded="false" aria-controls="lx-form-{{ section.id }}">{{ s.button_label }}</button>
+      {%- if s.price_from_note != blank -%}<p class="lx__from">{{ s.price_from_note }}</p>{%- endif -%}
+    </div>
+
+    <form class="lx__form" id="lx-form-{{ section.id }}" data-lx-form hidden novalidate>
+      <p class="lx__form-title">Tu lienzo express</p>
+
+      <fieldset class="lx__step">
+        <legend><span class="lx__num">1</span> Tamaño del lienzo</legend>
+        <div class="lx__opts lx__opts--size">
+          {%- for t in tamanos -%}
+            <label class="lx__opt">
+              <input type="radio" name="lx-tamano" value="{{ t | escape }}"{% if forloop.first %} checked{% endif %}>
+              <span class="lx__opt-title">{{ t | remove: 'Lienzo ' | remove: ' cm' | replace: 'x', '×' }} cm</span>
+              <span class="lx__opt-price" data-lx-size-price="{{ t | escape }}"></span>
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+
+      <fieldset class="lx__step">
+        <legend><span class="lx__num">2</span> ¿Cuántas personas salen?</legend>
+        <div class="lx__opts lx__opts--people">
+          {%- for pe in personas -%}
+            <label class="lx__chip">
+              <input type="radio" name="lx-personas" value="{{ pe | escape }}"{% if forloop.first %} checked{% endif %}>
+              <span>{{ pe }}</span>
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+
+      <fieldset class="lx__step">
+        <legend><span class="lx__num">3</span> Tus fotos</legend>
+        <label class="lx__drop" data-lx-drop>
+          <input type="file" name="lx-fotos" accept="image/*" multiple data-lx-files>
+          <span class="lx__drop-text" data-lx-drop-text>Toca para añadir tus fotos</span>
+        </label>
+        <label class="lx__check"><input type="checkbox" data-lx-later> Enviaré la foto más tarde (por WhatsApp o email)</label>
+        <textarea class="lx__detail" rows="2" maxlength="300" placeholder="Opcional: nombre, cargo, año o cualquier detalle" data-lx-detail></textarea>
+      </fieldset>
+
+      <p class="lx__review">✓ Te contactaremos para revisar el diseño contigo antes de imprimir.</p>
+
+      <div class="lx__total">
+        <span>Total</span>
+        <span>{%- if pct > 0 -%}<s class="lx__old" data-lx-total-old></s> {% endif -%}<strong data-lx-total></strong></span>
+      </div>
+      {%- if pct > 0 -%}<p class="lx__total-note">Con el código {{ code }} aplicado{% if s.free_shipping %} · Envío gratis{% endif %}</p>{%- endif -%}
+      <p class="lx__error" data-lx-error hidden></p>
+      <button type="submit" class="button button--full lx__submit" data-lx-submit>Añadir al carrito</button>
+    </form>
+  </div>
+
+  <script type="application/json" data-lx-variants>[
+    {%- assign first = true -%}
+    {%- for v in p.variants -%}{%- if v.option1 contains 'Lienzo' -%}{%- unless first -%},{%- endunless -%}{"id":{{ v.id }},"price":{{ v.price }},"t":{{ v.option1 | json }},"p":{{ v.option2 | json }}}{%- assign first = false -%}{%- endif -%}{%- endfor -%}
+  ]</script>
+</section>
+
+<script>
+(function () {
+  var root = document.querySelector('[data-lx]');
+  if (!root || root.dataset.ready) return;
+  root.dataset.ready = '1';
+  var form = root.querySelector('[data-lx-form]');
+  var openBtn = root.querySelector('[data-lx-open]');
+  var vars = []; try { vars = JSON.parse(root.querySelector('[data-lx-variants]').textContent); } catch (e) {}
+  var pct = parseInt(root.dataset.pct, 10) || 0;
+  var code = root.dataset.code || '';
+  var money = function (c) { return (c / 100).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' }); };
+  var disc = function (c) { return Math.round(c * (100 - pct) / 100); };
+  var val = function (n) { var i = form.querySelector('input[name="' + n + '"]:checked'); return i ? i.value : null; };
+  var find = function (t, p) { return vars.find(function (v) { return v.t === t && v.p === p; }); };
+
+  function sync() {
+    var t = val('lx-tamano'), p = val('lx-personas');
+    form.querySelectorAll('[data-lx-size-price]').forEach(function (el) {
+      var v = find(el.getAttribute('data-lx-size-price'), p);
+      el.innerHTML = v ? (pct ? '<s>' + money(v.price) + '</s> ' : '') + money(disc(v.price)) : '';
+    });
+    var v = find(t, p);
+    if (v) {
+      root.querySelector('[data-lx-total]').textContent = money(disc(v.price));
+      var old = root.querySelector('[data-lx-total-old]'); if (old) old.textContent = money(v.price);
+    }
+    var files = form.querySelector('[data-lx-files]').files;
+    root.querySelector('[data-lx-drop-text]').textContent = files && files.length ? (files.length === 1 ? '1 foto añadida' : files.length + ' fotos añadidas') + ' · toca para cambiarlas' : 'Toca para añadir tus fotos';
+    root.querySelector('[data-lx-drop]').classList.toggle('is-filled', !!(files && files.length));
+  }
+  form.addEventListener('change', sync);
+  sync();
+
+  openBtn.addEventListener('click', function () {
+    form.hidden = false;
+    openBtn.setAttribute('aria-expanded', 'true');
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  if (location.hash === '#crear-lienzo') { form.hidden = false; openBtn.setAttribute('aria-expanded', 'true'); }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var err = root.querySelector('[data-lx-error]');
+    err.hidden = true;
+    var v = find(val('lx-tamano'), val('lx-personas'));
+    var files = form.querySelector('[data-lx-files]').files;
+    var later = form.querySelector('[data-lx-later]').checked;
+    if (!v) { err.textContent = 'Elige el tamaño y el número de personas.'; err.hidden = false; return; }
+    if (!later && (!files || !files.length)) { err.textContent = 'Añade al menos una foto, o marca «Enviaré la foto más tarde».'; err.hidden = false; return; }
+    var btn = root.querySelector('[data-lx-submit]');
+    btn.disabled = true; btn.textContent = 'Añadiendo…';
+    try {
+      var hoy = new Date(), d1 = new Date(hoy), d2 = new Date(hoy);
+      d1.setDate(d1.getDate() + 15); d2.setDate(d2.getDate() + 20);
+      var f = function (d) { return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }); };
+      var fd = new FormData();
+      fd.append('id', v.id);
+      fd.append('quantity', 1);
+      fd.append('properties[Pedido]', 'Lienzo express');
+      fd.append('properties[¿Tiene la foto?]', later ? 'La enviará más adelante' : 'Sí, adjunta');
+      fd.append('properties[Fecha de entrega estimada]', f(d1) + ' - ' + f(d2));
+      var det = form.querySelector('[data-lx-detail]').value.trim();
+      if (det) fd.append('properties[Cómo quiere su ilustración]', det);
+      if (!later) Array.prototype.forEach.call(files, function (file, i) { fd.append('properties[Foto ' + (i + 1) + ']', file); });
+      var res = await fetch('/cart/add.js', { method: 'POST', body: fd });
+      if (!res.ok) { var j = await res.json().catch(function () { return {}; }); throw new Error(j.description || 'No se pudo añadir al carrito.'); }
+      if (pct && code) {
+        try {
+          if (window.vivaAddDiscountCode) await window.vivaAddDiscountCode(code);
+          else await fetch('/cart/update.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ discount: code }) });
+        } catch (e2) {}
+      }
+      if (window.vivaCartAdded) { window.vivaCartAdded(); btn.disabled = false; btn.textContent = 'Añadir al carrito'; }
+      else window.location.href = '/cart';
+    } catch (e3) {
+      err.textContent = e3.message; err.hidden = false;
+      btn.disabled = false; btn.textContent = 'Añadir al carrito';
+    }
+  });
+})();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Lienzo express",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Producto (con variantes de lienzo)" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Lienzos falleros XL" },
+    { "type": "checkbox", "id": "apply_code", "label": "Mostrar precios con el código de bienvenida y aplicarlo al añadir", "default": true },
+    { "type": "text", "id": "note", "label": "Nota bajo los precios", "default": "10 % dto. con [code] (solo durante octubre) · Envío gratis", "info": "[code] = código de bienvenida" },
+    { "type": "textarea", "id": "points", "label": "Ventajas (una por línea)", "default": "Diseño personalizado\nRevisamos contigo antes de imprimir\nBastidor incluido · listo para colgar" },
+    { "type": "text", "id": "button_label", "label": "Botón", "default": "Crear mi lienzo" },
+    { "type": "text", "id": "price_from_note", "label": "Texto bajo el botón", "default": "Precios para 1 persona · el precio se ajusta según el número de personas" },
+    { "type": "checkbox", "id": "free_shipping", "label": "Indicar envío gratis en el total", "default": true },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "alt"
+    }
+  ],
+  "presets": [{ "name": "Lienzo express" }]
+}
+{% endschema %}

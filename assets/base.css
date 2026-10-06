@@ -1254,3 +1254,54 @@ body.set-open { overflow: hidden; }
 .collection-note__canvas strong { color: var(--color-text); font-weight: 600; }
 .collection-note__icon { flex: none; color: var(--color-accent); }
 .collection-banner--left .collection-note, .collection-banner--right .collection-note { margin-left: 0; }
+
+/* Lienzo express (página de lienzos falleros) */
+.lx__card { max-width: 560px; margin: 0 auto; padding: 34px 28px 30px; text-align: center; background: var(--color-bg); border: 1px solid rgba(168,148,120,.5); box-shadow: 0 10px 30px rgba(35,31,28,.06); }
+.lx__title { margin: 0 0 18px; font-size: 13px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; }
+.lx__prices { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 6px; }
+.lx__prices li { display: flex; align-items: baseline; justify-content: center; gap: 10px; font-size: 17px; }
+.lx__size { font-family: var(--font-serif); font-size: 22px; }
+.lx__dot { color: var(--color-accent); }
+.lx__old { color: var(--color-muted); font-size: .85em; }
+.lx__new { font-size: 21px; font-weight: 600; }
+.lx__note { display: inline-block; margin: 0 0 18px; padding: 5px 12px; background: rgba(242,209,107,.32); font-size: 13px; letter-spacing: .02em; }
+.lx__points { list-style: none; margin: 0 auto 24px; padding: 0; display: inline-grid; gap: 6px; text-align: left; font-size: 14.5px; }
+.lx__points li { position: relative; padding-left: 22px; }
+.lx__points li::before { content: '✓'; position: absolute; left: 0; color: var(--color-accent); font-weight: 700; }
+.lx__cta { width: 100%; min-height: 62px; font-size: 15px; letter-spacing: .26em; }
+.lx__from { margin: 10px 0 0; font-size: 12px; color: var(--color-muted); }
+.lx__form { max-width: 560px; margin: 18px auto 0; padding: 26px 24px 24px; background: #fff; border: 1px solid rgba(168,148,120,.5); scroll-margin-top: 90px; }
+.lx__form[hidden] { display: none; }
+.lx__form-title { margin: 0 0 16px; text-align: center; font-family: var(--font-serif); font-style: italic; font-size: 24px; }
+.lx__step { margin: 0 0 18px; padding: 0; border: 0; }
+.lx__step legend { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+.lx__num { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--color-text); color: var(--color-bg); font-size: 11px; letter-spacing: 0; }
+.lx__opts--size { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lx__opt { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px 10px 12px; border: 1px solid var(--color-border); cursor: pointer; text-align: center; }
+.lx__opt input, .lx__chip input { position: absolute; opacity: 0; pointer-events: none; }
+.lx__opt:has(input:checked) { border-color: var(--color-text); box-shadow: inset 0 0 0 1px var(--color-text); }
+.lx__opt-title { font-family: var(--font-serif); font-size: 20px; }
+.lx__opt-price { font-size: 13px; }
+.lx__opt-price s { color: var(--color-muted); }
+.lx__opts--people { display: flex; flex-wrap: wrap; gap: 8px; }
+.lx__chip { position: relative; cursor: pointer; }
+.lx__chip span { display: inline-block; padding: 9px 14px; border: 1px solid var(--color-border); font-size: 13.5px; }
+.lx__chip input:checked + span { border-color: var(--color-text); background: var(--color-text); color: var(--color-bg); }
+.lx__drop { position: relative; display: grid; place-items: center; min-height: 74px; padding: 14px; border: 1px dashed rgba(168,148,120,.8); background: var(--color-bg); cursor: pointer; text-align: center; font-size: 14px; }
+.lx__drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.lx__drop.is-filled { border-style: solid; border-color: var(--color-text); }
+.lx__check { display: flex; align-items: center; gap: 8px; margin: 10px 0; font-size: 13px; color: var(--color-muted); }
+.lx__detail { width: 100%; padding: 10px 12px; border: 1px solid var(--color-border); font: inherit; font-size: 14px; resize: vertical; }
+.lx__review { margin: 0 0 16px; padding: 10px 12px; background: #eef5ec; border: 1px solid #cfe3ca; font-size: 13.5px; }
+.lx__total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--color-border); font-size: 15px; }
+.lx__total strong { font-size: 22px; }
+.lx__total-note { margin: 2px 0 12px; text-align: right; font-size: 12px; color: var(--color-muted); }
+.lx__error { margin: 0 0 10px; color: #b32020; font-size: 13.5px; }
+.lx__submit { min-height: 54px; }
+@media (max-width: 749px) {
+  .lx__card { padding: 26px 18px 22px; }
+  .lx__prices li { font-size: 15px; gap: 7px; }
+  .lx__size { font-size: 19px; }
+  .lx__new { font-size: 18px; }
+  .lx__form { padding: 22px 16px 18px; }
+}
