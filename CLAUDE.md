@@ -23,7 +23,7 @@
 - Extra: Marco A4: blanco 16 / madera clara 18. Extra: Marco A3 (efecto profundidad): blanco 21 / madera clara 25. La diferencia madera–blanco coincide con el suplemento en los packs (+2 A4, +4 A3).
 
 ## Descuento de bienvenida HOLA10
-- 10 % en la colección laminas-personalizadas, una vez por cliente. Fecha de fin en Shopify: 31/10/2026 23:59 (hora de España).
+- 10 % en la colección laminas-personalizadas, sin límite por cliente (se quitó el «una vez por cliente» para que lo que muestra la web coincida siempre con el pago). Fecha de fin en Shopify: 31/10/2026 23:59 (hora de España).
 - Ajustes del tema «welcome_until» (texto «31 de octubre») y «welcome_end» (2026-10-31): muestran «Solo hasta el …» en pop-up, colección, tarjetas y lienzo express, y a partir del día siguiente ocultan esos avisos solos. El anuncio de la barra superior tiene «Mostrar hasta» 2026-10-31.
 - En el formulario de personalizadas HOLA10 se aplica solo (resumen de precio con el descuento y aviso «Descuento aplicado automáticamente»); si la clienta pulsa «Quitar», no se vuelve a aplicar en esa visita.
 - Si se alarga la oferta: cambiar la fecha en el descuento de Shopify, en esos dos ajustes y en el anuncio.
