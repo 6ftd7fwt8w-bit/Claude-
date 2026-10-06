@@ -22,6 +22,11 @@
 ## Marcos sueltos (sin pack)
 - Extra: Marco A4: blanco 16 / madera clara 18. Extra: Marco A3 (efecto profundidad): blanco 21 / madera clara 25. La diferencia madera–blanco coincide con el suplemento en los packs (+2 A4, +4 A3).
 
+## Descuento de bienvenida HOLA10
+- 10 % en la colección laminas-personalizadas, una vez por cliente. Fecha de fin en Shopify: 31/10/2026 23:59 (hora de España).
+- Ajustes del tema «welcome_until» (texto «31 de octubre») y «welcome_end» (2026-10-31): muestran «Solo hasta el …» en pop-up, colección, tarjetas y lienzo express, y a partir del día siguiente ocultan esos avisos solos. El anuncio de la barra superior tiene «Mostrar hasta» 2026-10-31.
+- Si se alarga la oferta: cambiar la fecha en el descuento de Shopify, en esos dos ajustes y en el anuncio.
+
 ## Lienzos XL
 - Tamaños (variantes de las 9 ilustraciones personalizadas): "Lienzo 70x100 cm" (proporción como A3) y "Lienzo 80x120 cm". Precio = precio A4 (misma 2ª opción) + 63 / + 93 € (desde sept. 2026: láminas personalizadas +3 € y lienzos +6 € para cubrir el envío gratis desde 60 € en península). El 60x90 se eliminó por ser casi igual que el 70x100.
 - Tela 100 % algodón en bastidor, listo para colgar. Al elegir lienzo el formulario desactiva marco y packs regalo.
