@@ -10,10 +10,24 @@
         "text": "<p>Transformamos tu foto de fallera en una ilustración preciosa, con un diseño elegante y cuidado hasta el último detalle. Te llega en un lienzo de gran formato, montado en bastidor y listo para colgar.</p>",
         "points": "Lienzos de 70×100 y 80×120 cm\nTela 100 % algodón montada en bastidor\nListo para colgar, sin necesidad de marco\nTe enseñamos el diseño antes de preparar tu lienzo",
         "button_label": "Crear mi lienzo",
-        "button_link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
+        "button_link": "#crear-lienzo",
         "link_label": "¿Dudas? Escríbenos por WhatsApp",
         "link_url": "https://wa.me/34604524295?text=Hola!%20Tengo%20una%20duda%20sobre%20los%20lienzos%20de%20fallera",
         "background": "default"
+      }
+    },
+    "express": {
+      "type": "lienzo-express",
+      "settings": {
+        "product": "ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales",
+        "title": "Lienzos falleros XL",
+        "apply_code": true,
+        "note": "10 % dto. con [code] (solo durante octubre) · Envío gratis",
+        "points": "Diseño personalizado\nRevisamos contigo antes de imprimir\nBastidor incluido · listo para colgar",
+        "button_label": "Crear mi lienzo",
+        "price_from_note": "Precios para 1 persona · el precio se ajusta según el número de personas",
+        "free_shipping": true,
+        "background": "alt"
       }
     },
     "gallery": {
@@ -245,6 +259,7 @@
   },
   "order": [
     "hero",
+    "express",
     "gallery",
     "sizes",
     "name",
