@@ -40,8 +40,8 @@
           <li>
             <span class="lx__size">{{ t | remove: 'Lienzo ' | remove: ' cm' | replace: 'x', '×' }} cm</span>
             <span class="lx__dot" aria-hidden="true">·</span>
-            {%- if pct > 0 -%}<s class="lx__old">{{ base.price | money }}</s>{%- endif -%}
-            <strong class="lx__new">{{ desc | money }}</strong>
+            {%- if pct > 0 -%}<s class="lx__old">{{ base.price | money_without_currency }}&nbsp;€</s>{%- endif -%}
+            <strong class="lx__new">{{ desc | money_without_currency }}&nbsp;€</strong>
           </li>
         {%- endfor -%}
       </ul>
