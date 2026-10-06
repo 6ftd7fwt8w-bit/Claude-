@@ -1,13 +1,21 @@
+{%- assign ann_today = 'now' | date: '%Y%m%d' | plus: 0 -%}
 <div class="announcement" style="--announcement-bg: {{ section.settings.bg }}; --announcement-fg: {{ section.settings.fg }};">
   <div class="announcement__track" data-announcement>
+    {%- assign ann_first = true -%}
     {%- for block in section.blocks -%}
-      <p class="announcement__item{% if forloop.first %} is-active{% endif %}" {{ block.shopify_attributes }}>
+      {%- comment -%} Anuncios con fecha de fin: se ocultan solos al día siguiente {%- endcomment -%}
+      {%- if block.settings.until != blank -%}
+        {%- assign ann_last = block.settings.until | remove: '-' | plus: 0 -%}
+        {%- if ann_today > ann_last -%}{%- continue -%}{%- endif -%}
+      {%- endif -%}
+      <p class="announcement__item{% if ann_first %} is-active{% endif %}{% if block.settings.urgent %} announcement__item--urgent{% endif %}" {{ block.shopify_attributes }}>
         {%- if block.settings.link != blank -%}
           <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
         {%- else -%}
           {{ block.settings.text }}
         {%- endif -%}
       </p>
+      {%- assign ann_first = false -%}
     {%- endfor -%}
   </div>
 </div>
@@ -27,7 +35,9 @@
       "name": "Anuncio",
       "settings": [
         { "type": "text", "id": "text", "label": "Texto", "default": "Nuevo: colección infantil" },
-        { "type": "url", "id": "link", "label": "Enlace" }
+        { "type": "url", "id": "link", "label": "Enlace" },
+        { "type": "text", "id": "until", "label": "Mostrar hasta (AAAA-MM-DD)", "info": "Opcional. Al día siguiente el anuncio se oculta solo." },
+        { "type": "checkbox", "id": "urgent", "label": "Destacar (oferta con fecha límite)", "default": false }
       ]
     }
   ],

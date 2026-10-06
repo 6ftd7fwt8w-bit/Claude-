@@ -9,6 +9,15 @@
         "fg": "#231F1C"
       },
       "blocks": {
+        "announcement_oferta": {
+          "type": "announcement",
+          "settings": {
+            "text": "⏳ Solo hasta el 31 de octubre: 10 % en tu ilustración personalizada con HOLA10",
+            "link": "shopify://collections/laminas-personalizadas",
+            "until": "2026-10-31",
+            "urgent": true
+          }
+        },
         "announcement_1": {
           "type": "announcement",
           "settings": {
@@ -24,6 +33,7 @@
         }
       },
       "block_order": [
+        "announcement_oferta",
         "announcement_1",
         "announcement_2"
       ]

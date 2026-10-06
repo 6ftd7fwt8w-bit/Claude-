@@ -289,6 +289,20 @@
         "default": 10
       },
       {
+        "type": "text",
+        "id": "welcome_until",
+        "label": "Válido hasta (texto que se muestra)",
+        "default": "31 de octubre",
+        "info": "Aparece como «Solo hasta el …» en el pop-up, la colección, las tarjetas y la página de lienzos. Déjalo vacío para no mostrar fecha."
+      },
+      {
+        "type": "text",
+        "id": "welcome_end",
+        "label": "Último día de la oferta (AAAA-MM-DD)",
+        "default": "2026-10-31",
+        "info": "A partir del día siguiente se ocultan solos los avisos del descuento. Pon también la fecha de fin en el descuento de Shopify."
+      },
+      {
         "type": "header",
         "content": "Oferta cruzada en el carrito"
       },

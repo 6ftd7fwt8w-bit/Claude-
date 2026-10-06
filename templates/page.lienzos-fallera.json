@@ -22,12 +22,13 @@
         "product": "ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales",
         "title": "Lienzos falleros XL",
         "apply_code": true,
-        "note": "10 % dto. con [code] (solo durante octubre) · Envío gratis",
+        "note": "10 % dto. con [code] · solo hasta el [until] · Envío gratis",
         "points": "Diseño personalizado\nRevisamos contigo antes de imprimir\nBastidor incluido · listo para colgar",
         "button_label": "Crear mi lienzo",
         "price_from_note": "Precios para 1 persona · el precio se ajusta según el número de personas",
         "free_shipping": true,
-        "background": "alt"
+        "background": "alt",
+        "note_after": "Envío gratis"
       }
     },
     "gallery": {

@@ -1305,3 +1305,9 @@ body.set-open { overflow: hidden; }
   .lx__new { font-size: 18px; }
   .lx__form { padding: 22px 16px 18px; }
 }
+
+.welcome__until { margin: -6px 0 14px; font-size: 13px; font-weight: 600; color: #b0431f; letter-spacing: .02em; }
+.collection-note__until { color: #b0431f; font-weight: 600; }
+.lx__note { font-weight: 500; }
+.lx__note--plain { background: none; }
+.announcement__item--urgent { font-weight: 600; letter-spacing: .03em; }

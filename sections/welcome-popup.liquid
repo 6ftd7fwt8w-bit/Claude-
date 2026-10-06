@@ -13,7 +13,17 @@
   assign redirect_path = s.link | default: settings.welcome_collection.url | default: routes.all_products_collection_url
   assign apply_url = routes.root_url | append: '/discount/' | append: w_code | replace: '//', '/' | append: '?redirect=' | append: request.path
 -%}
-{%- if s.enabled and w_code != blank -%}
+{%- liquid
+  assign w_expired = false
+  if settings.welcome_end != blank
+    assign w_today = 'now' | date: '%Y%m%d' | plus: 0
+    assign w_last = settings.welcome_end | remove: '-' | plus: 0
+    if w_today > w_last
+      assign w_expired = true
+    endif
+  endif
+-%}
+{%- if s.enabled and w_code != blank and w_expired == false -%}
 <div class="welcome" data-welcome
   data-code="{{ w_code | escape }}" data-apply-url="{{ apply_url }}"
   data-delay="{{ s.delay }}" data-minutes="{{ s.minutes }}" data-repeat-days="{{ s.repeat_days }}"
@@ -36,6 +46,7 @@
         <span class="welcome__code-label">{{ s.code_label }}</span>
         <span class="welcome__code-value">{{ w_code }}</span>
       </div>
+      {%- if settings.welcome_until != blank -%}<p class="welcome__until">⏳ Solo hasta el {{ settings.welcome_until }}</p>{%- endif -%}
       <a href="{{ apply_url }}" class="button button--full welcome__cta" data-welcome-accept>{{ s.button_label }}</a>
       <button type="button" class="welcome__decline" data-welcome-close>{{ s.decline_label }}</button>
       {%- if s.small_print != blank -%}<p class="welcome__small">{{ s.small_print }}</p>{%- endif -%}

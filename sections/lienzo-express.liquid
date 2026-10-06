@@ -5,11 +5,21 @@
   Precios y variantes salen del producto elegido (opción 1 = tamaño «Lienzo …», opción 2 = personas).
 {%- endcomment -%}
 {%- liquid
+  assign w_expired = false
+  if settings.welcome_end != blank
+    assign w_today = 'now' | date: '%Y%m%d' | plus: 0
+    assign w_last = settings.welcome_end | remove: '-' | plus: 0
+    if w_today > w_last
+      assign w_expired = true
+    endif
+  endif
+-%}
+{%- liquid
   assign s = section.settings
   assign p = s.product | default: all_products['ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales']
   assign code = settings.welcome_code | strip
   assign pct = settings.welcome_percent | default: 10
-  if s.apply_code == false or code == blank
+  if s.apply_code == false or code == blank or w_expired
     assign pct = 0
   endif
   assign tamanos = ''
@@ -45,7 +55,11 @@
           </li>
         {%- endfor -%}
       </ul>
-      {%- if s.note != blank -%}<p class="lx__note">{{ s.note | replace: '[code]', code }}</p>{%- endif -%}
+      {%- if pct > 0 and s.note != blank -%}
+        <p class="lx__note">{{ s.note | replace: '[code]', code | replace: '[until]', settings.welcome_until }}</p>
+      {%- elsif s.note_after != blank -%}
+        <p class="lx__note lx__note--plain">{{ s.note_after }}</p>
+      {%- endif -%}
       {%- if s.points != blank -%}
         <ul class="lx__points">
           {%- assign pts = s.points | newline_to_br | split: '<br />' -%}
@@ -202,7 +216,8 @@
     { "type": "product", "id": "product", "label": "Producto (con variantes de lienzo)" },
     { "type": "text", "id": "title", "label": "Título", "default": "Lienzos falleros XL" },
     { "type": "checkbox", "id": "apply_code", "label": "Mostrar precios con el código de bienvenida y aplicarlo al añadir", "default": true },
-    { "type": "text", "id": "note", "label": "Nota bajo los precios", "default": "10 % dto. con [code] (solo durante octubre) · Envío gratis", "info": "[code] = código de bienvenida" },
+    { "type": "text", "id": "note", "label": "Nota bajo los precios", "default": "10 % dto. con [code] · solo hasta el [until] · Envío gratis", "info": "[code] = código de bienvenida · [until] = fecha de fin (Configuración del tema)" },
+    { "type": "text", "id": "note_after", "label": "Nota cuando termina el descuento", "default": "Envío gratis" },
     { "type": "textarea", "id": "points", "label": "Ventajas (una por línea)", "default": "Diseño personalizado\nRevisamos contigo antes de imprimir\nBastidor incluido · listo para colgar" },
     { "type": "text", "id": "button_label", "label": "Botón", "default": "Crear mi lienzo" },
     { "type": "text", "id": "price_from_note", "label": "Texto bajo el botón", "default": "Precios para 1 persona · el precio se ajusta según el número de personas" },

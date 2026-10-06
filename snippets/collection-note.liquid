@@ -5,8 +5,18 @@
   - «también en lienzo XL» si algún producto de la colección tiene variante de lienzo
 {%- endcomment -%}
 {%- liquid
+  assign w_expired = false
+  if settings.welcome_end != blank
+    assign w_today = 'now' | date: '%Y%m%d' | plus: 0
+    assign w_last = settings.welcome_end | remove: '-' | plus: 0
+    if w_today > w_last
+      assign w_expired = true
+    endif
+  endif
+-%}
+{%- liquid
   assign note_welcome = false
-  if settings.welcome_code != blank and settings.welcome_collection != blank and settings.welcome_collection.handle == collection.handle
+  if settings.welcome_code != blank and settings.welcome_collection != blank and settings.welcome_collection.handle == collection.handle and w_expired == false
     assign note_welcome = true
   endif
   assign note_cross = false
@@ -45,7 +55,11 @@
       {%- else -%}
         <p class="collection-note__text">Código <span class="collection-note__code">{{ settings.cross_code }}</span> activo · <strong>3x2</strong> en láminas infantiles</p>
       {%- endif -%}
-      <p class="collection-note__small">Aplícalo al realizar el pedido.</p>
+      {%- if note_welcome and settings.welcome_until != blank -%}
+        <p class="collection-note__small"><strong class="collection-note__until">⏳ Solo hasta el {{ settings.welcome_until }}</strong> · aplícalo al realizar el pedido.</p>
+      {%- else -%}
+        <p class="collection-note__small">Aplícalo al realizar el pedido.</p>
+      {%- endif -%}
     </div>
     {%- endif -%}
     {%- if note_canvas -%}
