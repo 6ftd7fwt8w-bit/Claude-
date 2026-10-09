@@ -2,10 +2,30 @@
   style="--hero-height: {{ section.settings.height }}px; --hero-height-mobile: {{ section.settings.height_mobile }}px; --mobile-h: {{ section.settings.mobile_ratio }};">
   <div class="slideshow__track" data-slideshow-track>
     {%- for block in section.blocks -%}
-      <div class="slide{% if block.settings.light_text %} slide--light{% endif %}" {{ block.shopify_attributes }} data-slide
+      {%- assign reel = block.settings.reel | newline_to_br | split: '<br />' -%}
+      {%- assign reel_on = false -%}{%- if block.settings.reel != blank -%}{%- assign reel_on = true -%}{%- endif -%}
+      <div class="slide{% if block.settings.light_text %} slide--light{% endif %}{% if reel_on %} slide--reel{% endif %}" {{ block.shopify_attributes }} data-slide
         {% unless forloop.first %}aria-hidden="true"{% endunless %}>
         <div class="slide__media" style="--overlay: {{ block.settings.overlay | divided_by: 100.0 }}">
-          {%- if block.settings.image != blank -%}
+          {%- if reel_on -%}
+            {%- comment -%} Vídeos ligeros (Archivos de Shopify): sin src ni póster hasta que la página ha cargado; solo se reproducen los que se ven {%- endcomment -%}
+            <div class="reel" data-reel>
+              <div class="reel__track">
+                {%- for pass in (1..2) -%}
+                  {%- for name in reel -%}
+                    {%- assign file = name | strip -%}
+                    {%- if file != blank -%}
+                      {%- assign poster = file | split: '.' | first | append: '.jpg' -%}
+                      <div class="reel__item"{% if pass == 2 %} aria-hidden="true"{% endif %}>
+                        <video muted playsinline loop preload="none" disablepictureinpicture
+                          data-src="{{ file | file_url }}" data-poster="{{ poster | file_url }}"></video>
+                      </div>
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- elsif block.settings.image != blank -%}
             {%- assign loading = 'lazy' -%}{%- if forloop.first -%}{%- assign loading = 'eager' -%}{%- endif -%}
             {%- assign focal_style = 'object-position: ' | append: block.settings.focal -%}
             <picture>
@@ -82,6 +102,7 @@
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Imagen" },
         { "type": "image_picker", "id": "image_mobile", "label": "Imagen móvil (opcional)" },
+        { "type": "textarea", "id": "reel", "label": "Vídeos en fila (en lugar de la imagen)", "info": "Nombre de cada vídeo de Contenido → Archivos, uno por línea (ej.: vlh-hero-reel-1.mp4). Cada vídeo usa como miniatura la imagen con el mismo nombre en .jpg. Vacío = se muestra la imagen." },
         { "type": "text", "id": "focal", "label": "Punto focal (CSS)", "default": "center center", "info": "Ej: 30% center" },
         { "type": "range", "id": "overlay", "label": "Oscurecer imagen", "min": 0, "max": 60, "step": 5, "unit": "%", "default": 0 },
         { "type": "text", "id": "tag", "label": "Etiqueta (cursiva sobre fondo de color)", "default": "Nueva colección" },

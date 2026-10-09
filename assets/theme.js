@@ -228,6 +228,39 @@
     play();
   });
 
+  /* Hero: fila de vídeos. No se descarga nada hasta que la página ha cargado;
+     las miniaturas se piden cuando la diapositiva está cerca y cada vídeo solo
+     cuando se ve (y se pausa al salir de pantalla). */
+  var reels = $$('[data-reel]');
+  if (reels.length) {
+    var reelLite = window.matchMedia('(prefers-reduced-motion: reduce)').matches || (navigator.connection && navigator.connection.saveData);
+    var startReels = function () {
+      reels.forEach(function (reel) {
+        var slide = reel.closest('[data-slide]');
+        var vids = $$('video', reel);
+        if (!('IntersectionObserver' in window)) { vids.forEach(function (v) { v.poster = v.getAttribute('data-poster'); }); return; }
+        var posterIo = new IntersectionObserver(function (en) {
+          en.forEach(function (e) { if (e.isIntersecting) { e.target.poster = e.target.getAttribute('data-poster'); posterIo.unobserve(e.target); } });
+        }, { rootMargin: '0px 100%' });
+        vids.forEach(function (v) { posterIo.observe(v); });
+        if (reelLite) return;
+        var seen = new Map();
+        var active = function () { return !slide || slide.getAttribute('aria-hidden') !== 'true'; };
+        var sync = function (v) {
+          if (seen.get(v) && active()) {
+            if (!v.getAttribute('src')) { v.preload = 'auto'; v.src = v.getAttribute('data-src'); }
+            var p = v.play(); if (p && p.catch) p.catch(function () {});
+          } else if (!v.paused) { v.pause(); }
+        };
+        var io = new IntersectionObserver(function (en) { en.forEach(function (e) { seen.set(e.target, e.isIntersecting); sync(e.target); }); });
+        vids.forEach(function (v) { io.observe(v); });
+        if (slide) new MutationObserver(function () { vids.forEach(sync); }).observe(slide, { attributes: true, attributeFilter: ['aria-hidden'] });
+      });
+    };
+    var reelLater = function () { (window.requestIdleCallback || function (f) { setTimeout(f, 300); })(startReels, { timeout: 2500 }); };
+    if (document.readyState === 'complete') reelLater(); else window.addEventListener('load', reelLater);
+  }
+
   /* Carousels ------------------------------------------------------------ */
   function initCarousel(c) {
     if (c._init) return; c._init = true;

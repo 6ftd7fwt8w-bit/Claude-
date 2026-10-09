@@ -207,6 +207,20 @@ body.overflow-hidden { overflow: hidden; }
 .slide__fade { animation: fadeUp .9s ease both; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
+/* Diapositiva con fila de vídeos (estilo reel) */
+.slide--reel .slide__media { background: #EFE8DE; overflow: hidden; }
+.reel { position: absolute; inset: 0 42% 0 0; display: flex; align-items: center; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 80%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 80%, transparent 100%); }
+.reel__track { display: flex; gap: 16px; width: max-content; padding-left: 16px; animation: reel-move 70s linear infinite; }
+.reel__item { flex: none; height: calc(var(--hero-height, 620px) * .74); aspect-ratio: 9 / 16; border-radius: 16px; overflow: hidden; background: #E2D8CA; box-shadow: 0 14px 34px rgba(60,45,30,.14); }
+.reel__item:nth-child(even) { transform: translateY(22px); }
+.reel__item:nth-child(odd) { transform: translateY(-22px); }
+.reel__item video { display: block; width: 100%; height: 100%; object-fit: cover; }
+@keyframes reel-move { to { transform: translateX(-50%); } }
+.slideshow:has(.slide--reel[aria-hidden="false"]) .slideshow__dot { background: rgba(44,34,24,.25); }
+.slideshow:has(.slide--reel[aria-hidden="false"]) .slideshow__dot[aria-current="true"] { background: var(--color-text); }
+@media (prefers-reduced-motion: reduce) { .reel__track { animation: none; } }
+
 /* Hero en móvil: imagen arriba, texto debajo */
 @media (max-width: 749px) {
   .slideshow__arrow { width: 32px; height: 32px; }
@@ -223,6 +237,11 @@ body.overflow-hidden { overflow: hidden; }
   .slideshow--stack .button--light { background: var(--color-button); color: var(--color-button-text); border-color: var(--color-button); }
   .slideshow--stack .slideshow__arrow { top: calc(100vw * var(--mobile-h, 1.25) / 2); background: rgba(255,255,255,.85); color: var(--color-text); }
   .slideshow--stack .slideshow__dots { top: calc(100vw * var(--mobile-h, 1.25) - 20px); bottom: auto; }
+  .reel { inset: 0; -webkit-mask-image: none; mask-image: none; }
+  .reel__track { gap: 10px; padding-left: 10px; animation-duration: 55s; }
+  .reel__item { height: calc(100vw * var(--mobile-h, 1.25) * .8); border-radius: 12px; }
+  .reel__item:nth-child(even) { transform: translateY(12px); }
+  .reel__item:nth-child(odd) { transform: translateY(-12px); }
 }
 
 /* Trust / press strip --------------------------------------------------- */

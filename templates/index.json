@@ -57,12 +57,13 @@
             "tag": "Hecha con mimo para ti",
             "heading": "Tu historia, ilustrada",
             "text": "Partimos de tu foto y la convertimos en una ilustración única.",
-            "button_label": "Crear mi ilustración",
+            "button_label": "Ver láminas personalizadas",
             "button_link": "shopify://collections/laminas-personalizadas",
             "align": "right",
             "valign": "middle",
             "panel": false,
-            "light_text": false
+            "light_text": false,
+            "reel": "vlh-hero-reel-1.mp4\nvlh-hero-reel-2.mp4\nvlh-hero-reel-3.mp4\nvlh-hero-reel-4.mp4\nvlh-hero-reel-5.mp4\nvlh-hero-reel-6.mp4\nvlh-hero-reel-7.mp4\nvlh-hero-reel-8.mp4\nvlh-hero-reel-9.mp4\nvlh-hero-reel-10.mp4"
           }
         }
       },
