@@ -68,6 +68,7 @@
       {%- endif -%}
       <button type="button" class="button lx__cta" data-lx-open aria-expanded="false" aria-controls="lx-form-{{ section.id }}">{{ s.button_label }}</button>
       {%- if s.price_from_note != blank -%}<p class="lx__from">{{ s.price_from_note }}</p>{%- endif -%}
+      {%- if s.more_label != blank and s.more_link != blank -%}<a class="button button--outline lx__more" href="{{ s.more_link }}">{{ s.more_label }}</a>{%- endif -%}
     </div>
 
     <form class="lx__form" id="lx-form-{{ section.id }}" data-lx-form hidden novalidate>
@@ -221,6 +222,8 @@
     { "type": "textarea", "id": "points", "label": "Ventajas (una por línea)", "default": "Diseño personalizado\nRevisamos contigo antes de imprimir\nBastidor incluido · listo para colgar" },
     { "type": "text", "id": "button_label", "label": "Botón", "default": "Crear mi lienzo" },
     { "type": "text", "id": "price_from_note", "label": "Texto bajo el botón", "default": "Precios para 1 persona · el precio se ajusta según el número de personas" },
+    { "type": "text", "id": "more_label", "label": "Segundo botón", "default": "Ver más ejemplos de ilustraciones falleras y tamaños" },
+    { "type": "url", "id": "more_link", "label": "Enlace del segundo botón" },
     { "type": "checkbox", "id": "free_shipping", "label": "Indicar envío gratis en el total", "default": true },
     {
       "type": "select", "id": "background", "label": "Fondo",
