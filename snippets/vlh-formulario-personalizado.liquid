@@ -248,8 +248,9 @@
     <!-- ============ 3. ¿ES PARA REGALO? ============ -->
     <details class="vlh-field vlh-accordion">
       <summary>
-        <span class="vlh-accordion__title">Lo quiero para regalar 🎁</span>
+        <span class="vlh-accordion__title">Lo quiero para regalar 🎁<small class="vlh-accordion__sub">Packs con marco incluido, envoltorio y mensaje</small></span>
         <span class="vlh-accordion__value vlh-accordion__value--empty" id="vlh-pack-summary">+</span>
+        <span class="vlh-accordion__icon" aria-hidden="true"></span>
       </summary>
       <div class="vlh-accordion__body">
       <div class="vlh-radio-cards vlh-radio-cards--packs" id="vlh-pack-group">
@@ -349,8 +350,9 @@
     <!-- ============ 4. MARCO ============ -->
     <details class="vlh-field vlh-accordion" id="vlh-marco-field">
       <summary>
-        <span class="vlh-accordion__title">Lo quiero enmarcado 🖼️</span>
+        <span class="vlh-accordion__title">Lo quiero enmarcado 🖼️<small class="vlh-accordion__sub">Marco blanco o de madera, listo para colgar</small></span>
         <span class="vlh-accordion__value vlh-accordion__value--empty" id="vlh-marco-summary">+</span>
+        <span class="vlh-accordion__icon" aria-hidden="true"></span>
       </summary>
       <div class="vlh-accordion__body">
         <div class="vlh-trust vlh-marco-incluido" id="vlh-marco-obligatorio-nota" hidden>
@@ -374,8 +376,9 @@
     <!-- ============ 7. NOTAS PARA EL DISEÑADOR (plegado) ============ -->
     <details class="vlh-field vlh-accordion vlh-notes">
       <summary>
-        <span class="vlh-accordion__title">Añadir detalles para tu ilustración ✍️</span>
+        <span class="vlh-accordion__title">Añadir detalles para tu ilustración ✍️<small class="vlh-accordion__sub">Nombres, una fecha, una frase… (opcional)</small></span>
         <span class="vlh-accordion__value vlh-accordion__value--empty">+</span>
+        <span class="vlh-accordion__icon" aria-hidden="true"></span>
       </summary>
       <div class="vlh-accordion__body">
         <p class="vlh-hint" style="margin-top:0;">Nombres, una fecha, una frase, el fondo o los colores que prefieras… <span class="vlh-opcional">(opcional)</span></p>
@@ -496,9 +499,19 @@
     color: var(--vlh-tinta);
   }
   .vlh-accordion summary::-webkit-details-marker { display: none; }
-  .vlh-accordion__title { flex: 1; }
+  .vlh-accordion summary { padding: 14px 14px 14px 16px; border: 1px solid var(--vlh-mist); border-radius: 10px; background: #fff; -webkit-tap-highlight-color: transparent; transition: border-color .2s ease, box-shadow .2s ease; }
+  .vlh-accordion summary:hover { border-color: #cbbfae; box-shadow: 0 4px 14px rgba(44,34,24,.06); }
+  .vlh-accordion[open] > summary { border-color: #cbbfae; }
+  .vlh-accordion__title { flex: 1; line-height: 1.35; }
+  .vlh-accordion__sub { display: block; margin-top: 3px; font-size: 12.5px; font-weight: 400; letter-spacing: normal; text-transform: none; color: #7a6e62; }
+  .vlh-accordion__value--empty { display: none; }
+  .vlh-accordion__icon { position: relative; flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--vlh-tinta); }
+  .vlh-accordion__icon::before, .vlh-accordion__icon::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 1.5px; margin: -.75px 0 0 -6px; background: var(--vlh-tinta); transition: transform .25s ease; }
+  .vlh-accordion__icon::after { transform: rotate(90deg); }
+  .vlh-accordion[open] > summary .vlh-accordion__icon { background: var(--vlh-tinta); }
+  .vlh-accordion[open] > summary .vlh-accordion__icon::before, .vlh-accordion[open] > summary .vlh-accordion__icon::after { background: #fff; }
+  .vlh-accordion[open] > summary .vlh-accordion__icon::after { transform: rotate(0deg); }
   .vlh-accordion__value { font-family: var(--font-body); font-size: 13px; font-weight: 400; letter-spacing: normal; text-transform: none; color: var(--vlh-terracota); font-weight: 600; white-space: nowrap; }
-  .vlh-accordion__value--empty { font-size: 20px; font-weight: 300; line-height: 1; }
   .vlh-accordion__body { margin-top: 16px; }
   .vlh-lamina-form legend {
     font-family: var(--font-body);
