@@ -10,7 +10,7 @@
   assign parts = normalized | split: '<h3'
 -%}
 {%- if desc_html != blank or s.show_steps -%}
-<section class="section pdesc" style="padding-top:{% if s.show_steps %}24px{% else %}0{% endif %}">
+<section class="section pdesc" style="padding-top:{% if s.show_steps %}24px{% else %}0{% endif %};padding-bottom:16px">
   <div class="page-width page-width--narrow">
     {%- if s.show_steps -%}
       <div class="pdesc-steps">
