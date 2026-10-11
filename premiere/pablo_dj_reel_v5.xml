@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xmeml>
+<xmeml version="4">
+  <sequence id="seq1"><name>Pablo DJ Reel v5</name><duration>225</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+    <media>
+      <video><format><samplecharacteristics><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><width>1080</width><height>1920</height><pixelaspectratio>square</pixelaspectratio><fielddominance>none</fielddominance></samplecharacteristics></format>
+        <track>
+        <clipitem id="v0"><name>IMG_0430</name><enabled>TRUE</enabled><duration>244</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>0</start><end>28</end><in>30</in><out>58</out><file id="IMG_0430"><name>IMG_0430.MOV</name><pathurl>file://localhost/IMG_0430.MOV</pathurl><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><duration>244</duration>
+          <media><video><samplecharacteristics><width>1080</width><height>1920</height></samplecharacteristics></video></media></file>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>115</value></parameter></effect></filter></clipitem><clipitem id="v1"><name>IMG_0447</name><enabled>TRUE</enabled><duration>30</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>28</start><end>42</end><in>8</in><out>22</out><file id="IMG_0447"><name>IMG_0447.MOV</name><pathurl>file://localhost/IMG_0447.MOV</pathurl><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><duration>30</duration>
+          <media><video><samplecharacteristics><width>1080</width><height>1920</height></samplecharacteristics></video></media></file>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>109</value></parameter></effect></filter></clipitem><clipitem id="v2"><name>IMG_1361</name><enabled>TRUE</enabled><duration>125</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>42</start><end>56</end><in>94</in><out>108</out><file id="IMG_1361"><name>IMG_1361.MOV</name><pathurl>file://localhost/IMG_1361.MOV</pathurl><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><duration>125</duration>
+          <media><video><samplecharacteristics><width>1080</width><height>1920</height></samplecharacteristics></video></media></file>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>140</value></parameter></effect></filter></clipitem><clipitem id="v3"><name>IMG_0451</name><enabled>TRUE</enabled><duration>73</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>56</start><end>70</end><in>9</in><out>23</out><file id="IMG_0451"><name>IMG_0451.MOV</name><pathurl>file://localhost/IMG_0451.MOV</pathurl><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><duration>73</duration>
+          <media><video><samplecharacteristics><width>1080</width><height>1920</height></samplecharacteristics></video></media></file>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>109</value></parameter></effect></filter></clipitem><clipitem id="v4"><name>IMG_1359</name><enabled>TRUE</enabled><duration>148</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>70</start><end>84</end><in>51</in><out>65</out><file id="IMG_1359"><name>IMG_1359.MOV</name><pathurl>file://localhost/IMG_1359.MOV</pathurl><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><duration>148</duration>
+          <media><video><samplecharacteristics><width>1080</width><height>1920</height></samplecharacteristics></video></media></file>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>173</value></parameter></effect></filter></clipitem><clipitem id="v5"><name>IMG_0430</name><enabled>TRUE</enabled><duration>244</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>84</start><end>112</end><in>90</in><out>118</out><file id="IMG_0430"/>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>111</value></parameter></effect></filter></clipitem><clipitem id="v6"><name>IMG_0459</name><enabled>TRUE</enabled><duration>335</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>112</start><end>141</end><in>36</in><out>65</out><file id="IMG_0459"><name>IMG_0459.MOV</name><pathurl>file://localhost/IMG_0459.MOV</pathurl><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><duration>335</duration>
+          <media><video><samplecharacteristics><width>1080</width><height>1920</height></samplecharacteristics></video></media></file>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>114</value></parameter></effect></filter></clipitem><clipitem id="v7"><name>IMG_1359</name><enabled>TRUE</enabled><duration>148</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>141</start><end>155</end><in>78</in><out>92</out><file id="IMG_1359"/>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>173</value></parameter></effect></filter></clipitem><clipitem id="v8"><name>IMG_1361</name><enabled>TRUE</enabled><duration>125</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>155</start><end>169</end><in>106</in><out>120</out><file id="IMG_1361"/>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>141</value></parameter></effect></filter></clipitem><clipitem id="v9"><name>IMG_0430</name><enabled>TRUE</enabled><duration>244</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>169</start><end>197</end><in>150</in><out>178</out><file id="IMG_0430"/>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>109</value></parameter></effect></filter></clipitem><clipitem id="v10"><name>IMG_0446</name><enabled>TRUE</enabled><duration>254</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate>
+        <start>197</start><end>225</end><in>226</in><out>254</out><file id="IMG_0446"><name>IMG_0446.MOV</name><pathurl>file://localhost/IMG_0446.MOV</pathurl><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><duration>254</duration>
+          <media><video><samplecharacteristics><width>1080</width><height>1920</height></samplecharacteristics></video></media></file>
+        <filter><effect><name>Basic Motion</name><effectid>basic</effectid><effectcategory>motion</effectcategory><effecttype>motion</effecttype><mediatype>video</mediatype>
+          <parameter><parameterid>scale</parameterid><name>Scale</name><valuemin>0</valuemin><valuemax>1000</valuemax><value>116</value></parameter></effect></filter></clipitem>
+        </track></video>
+      <audio><numOutputChannels>2</numOutputChannels><track>
+        <clipitem id="a0"><name>pablo_audio_master</name><enabled>TRUE</enabled><duration>225</duration><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><start>0</start><end>225</end><in>0</in><out>225</out>
+        <file id="aud"><name>pablo_audio_master.wav</name><pathurl>file://localhost/pablo_audio_master.wav</pathurl><rate><timebase>30</timebase><ntsc>FALSE</ntsc></rate><duration>225</duration>
+          <media><audio><samplecharacteristics><depth>16</depth><samplerate>48000</samplerate></samplecharacteristics><channelcount>2</channelcount></audio></media></file>
+        <sourcetrack><mediatype>audio</mediatype><trackindex>1</trackindex></sourcetrack></clipitem>
+      </track></audio>
+    </media>
+    <markers><marker><name>beat 0</name><in>0</in><out>-1</out></marker><marker><name>beat 1</name><in>14</in><out>-1</out></marker><marker><name>beat 2</name><in>28</in><out>-1</out></marker><marker><name>beat 3</name><in>42</in><out>-1</out></marker><marker><name>beat 4</name><in>56</in><out>-1</out></marker><marker><name>beat 5</name><in>70</in><out>-1</out></marker><marker><name>beat 6</name><in>84</in><out>-1</out></marker><marker><name>beat 7</name><in>98</in><out>-1</out></marker><marker><name>beat 8</name><in>112</in><out>-1</out></marker><marker><name>beat 9</name><in>127</in><out>-1</out></marker><marker><name>beat 10</name><in>141</in><out>-1</out></marker><marker><name>beat 11</name><in>155</in><out>-1</out></marker><marker><name>beat 12</name><in>169</in><out>-1</out></marker><marker><name>beat 13</name><in>183</in><out>-1</out></marker><marker><name>beat 14</name><in>197</in><out>-1</out></marker><marker><name>beat 15</name><in>211</in><out>-1</out></marker></markers>
+  </sequence>
+</xmeml>
