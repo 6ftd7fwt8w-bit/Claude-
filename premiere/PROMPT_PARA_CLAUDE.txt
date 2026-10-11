@@ -1,0 +1,17 @@
+Tengo Premiere Pro abierto. En esta carpeta están:
+- pablo_dj_reel_v5.xml (línea de tiempo de un reel de DJ de 7,5 s, 1080x1920, 30 fps, 128 BPM)
+- pablo_audio_master.wav (audio masterizado)
+- LEEME.md (instrucciones)
+- mis vídeos originales IMG_0430, IMG_0446, IMG_0447, IMG_0451, IMG_0459, IMG_1359, IMG_1361
+
+Haz esto en Premiere:
+1. Importa pablo_dj_reel_v5.xml (Archivo > Importar) y vincula los medios a esta carpeta si los pide. Abre la secuencia "Pablo DJ Reel v5".
+2. Clip 7 (IMG_0459, de 3,75 a 4,69 s): velocidad 50 % sin rizo, y recórtalo para que acabe en 4,69 s.
+3. Clip 3 (IMG_1361, de 1,40 a 1,87 s): anima la Posición con fotogramas clave para que el altavoz no salga nunca en imagen (al inicio está a la izquierda y al final a la derecha).
+4. Revisa el encuadre de todos los planos de público (clips 3, 5, 8 y 9): que se vea la máxima gente posible y ningún altavoz.
+5. Clip 1: fotogramas clave de Escala de 130 a 110 con desaceleración temporal. Opcional: golpe de zoom suave (+3 %) en cada marcador de beat en los planos del DJ.
+6. Color con Lumetri en todos los clips: contraste +20, negros -20, saturación 110, viñeta -1. Iguala a ojo los planos que destaquen.
+7. Fundido a negro en los últimos 6 fotogramas.
+8. Sin texto ni glitches.
+9. Exporta en H.264, 1080x1920, 30 fps, VBR de 1 pasada a 18 Mbps, AAC a 320 kbps, como pablo_dj_reel_premiere.mp4 en esta carpeta.
+Enséñame capturas de cada paso importante.
