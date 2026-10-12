@@ -28,11 +28,10 @@
 - Extra: Marco A4: blanco 16 / madera clara 18. Extra: Marco A3 (efecto profundidad): blanco 21 / madera clara 25. La diferencia madera–blanco coincide con el suplemento en los packs (+2 A4, +4 A3).
 
 ## Descuento de bienvenida HOLA10
-- 10 % en la colección laminas-personalizadas, sin límite por cliente. Fecha de fin en Shopify: 31/10/2026 23:59 (hora de España); ajuste del tema «welcome_end» (2026-10-31) oculta el aviso a partir del día siguiente.
+- 10 % en la colección laminas-personalizadas, sin límite por cliente y sin fecha de fin (quitada el 12/10/2026, también vacíos «welcome_until» y «welcome_end» del tema). Si algún día tiene fin: ponerlo en el descuento de Shopify y en «welcome_end» (AAAA-MM-DD), que oculta el aviso a partir del día siguiente.
 - Desde el 12/10/2026 no se anuncia en ningún sitio (barra, colección, tarjetas, lienzo express, pop-up y su botón negro quitados). Solo hay un aviso inferior en el formulario de personalizadas al subir fotos o llegar al resumen de precio: «¿Nuevo por aquí? · Ahorra un 10 % en tu primera ilustración · Se aplica automáticamente, no necesitas código · Activar descuento · Válido 24 horas desde la activación · No, gracias».
 - Al activarlo, theme.js (window.vivaWelcome) guarda la hora en localStorage «vlh_welcome», añade HOLA10 a la cesta y lo quita a las 24 h. «No, gracias» no lo vuelve a ofrecer en 7 días; si ya lo activó, no se ofrece más.
 - Carrito: línea dorada «Descuento de bienvenida del 10 % · válido durante 24 h», desglose (importe, «Te ahorras X en este pedido · si finalizas el pedido antes de 24 h», envío gratis) y total. Sin campo de código (está en el checkout), sin cuenta atrás ni oferta cruzada.
-- Si se alarga la oferta: cambiar la fecha en el descuento de Shopify y en «welcome_end».
 
 ## Lienzos XL
 - Tamaños (variantes de las 9 ilustraciones personalizadas): "Lienzo 70x100 cm" (proporción como A3) y "Lienzo 80x120 cm". Precio = precio A4 (misma 2ª opción) + 63 / + 93 € (desde sept. 2026: láminas personalizadas +3 € y lienzos +6 € para cubrir el envío gratis desde 60 € en península). El 60x90 se eliminó por ser casi igual que el 70x100.

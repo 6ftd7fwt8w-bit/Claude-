@@ -38,6 +38,8 @@
     "welcome_code": "HOLA10",
     "welcome_collection": "laminas-personalizadas",
     "welcome_percent": 10,
+    "welcome_until": "",
+    "welcome_end": "",
     "cross_code": "PEQUES3X2",
     "cross_collection": "infantil",
     "cross_teaser": "¡Tenemos otro descuento para ti!",
