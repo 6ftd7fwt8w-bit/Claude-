@@ -1,10 +1,19 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
     "logo": "shopify://shop_images/lognobk.png",
     "logo_width": 140,
-    "favicon": "shopify://shop_images/VLH_logo_corona.png",
     "logo_text": "Viva la Home",
     "logo_tagline": "LÁMINAS & ILUSTRACIÓN",
+    "favicon": "shopify://shop_images/VLH_logo_corona.png",
     "color_background": "#F7F3EE",
     "color_background_alt": "#EFE8DE",
     "color_accent": "#A89478",
@@ -23,6 +32,8 @@
     "card_from_price": true,
     "card_show_vendor": false,
     "cart_type": "drawer",
+    "free_shipping_threshold": 60,
+    "cart_show_note": true,
     "welcome_code": "HOLA10",
     "welcome_collection": "laminas-personalizadas",
     "welcome_percent": 10,
@@ -32,12 +43,18 @@
     "cross_button": "Quiero verlo",
     "cross_pending": "[code] guardado: elige 3 láminas infantiles y te regalamos la tercera.",
     "cross_go": "Elegir",
-    "free_shipping_threshold": 60,
-    "cart_show_note": true,
     "social_instagram": "https://www.instagram.com/vivalahome.store",
+    "social_pinterest": "",
     "social_tiktok": "https://www.tiktok.com/@vivalahome1",
     "social_facebook": "https://www.facebook.com/share/1J3mJ9LVys/",
-    "social_pinterest": ""
+    "content_for_index": [],
+    "blocks": {
+      "15599951759576395258": {
+        "type": "shopify://apps/mida-replay-heatmaps/blocks/mida_recorder/e4c350c5-eabf-426d-8014-47ef50412bd0",
+        "disabled": false,
+        "settings": {}
+      }
+    }
   },
   "presets": {}
 }

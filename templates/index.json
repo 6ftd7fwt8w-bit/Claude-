@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
@@ -50,27 +59,28 @@
         "slide_2": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/vlh-hero-salon-pareja.png",
-            "image_mobile": "shopify://shop_images/vlh-hero-salon-pareja-movil.png",
-            "focal": "25% center",
+            "image": "shopify://shop_images/vlh-hero-cine-poster.jpg",
+            "image_mobile": "shopify://shop_images/vlh-hero-cine-poster-movil.jpg",
+            "focal": "center center",
             "overlay": 0,
             "tag": "Hecha con mimo para ti",
             "heading": "Tu historia, ilustrada",
             "text": "Partimos de tu foto y la convertimos en una ilustración única.",
-            "button_label": "Ver láminas personalizadas",
+            "button_label": "Ver ilustraciones personalizadas",
             "button_link": "shopify://collections/laminas-personalizadas",
             "align": "right",
             "valign": "middle",
             "panel": false,
             "light_text": false,
-            "reel": "vlh-hero-reel-1.mp4\nvlh-hero-reel-2.mp4\nvlh-hero-reel-3.mp4\nvlh-hero-reel-4.mp4\nvlh-hero-reel-5.mp4\nvlh-hero-reel-6.mp4\nvlh-hero-reel-7.mp4\nvlh-hero-reel-8.mp4\nvlh-hero-reel-9.mp4\nvlh-hero-reel-10.mp4"
+            "video": "shopify://files/videos/vlh-hero-cine-escritorio.mp4",
+            "video_mobile": "shopify://files/videos/vlh-hero-cine-movil.mp4"
           }
         }
       },
       "block_order": [
+        "slide_2",
         "slide_3",
-        "slide_1",
-        "slide_2"
+        "slide_1"
       ]
     },
     "strip": {
@@ -149,10 +159,10 @@
         "tile_2": {
           "type": "tile",
           "settings": {
-            "title": "Bosque encantado",
+            "title": "Regalos pareja",
             "subtitle": "",
-            "link": "shopify://collections/bosque-encantado",
-            "image": "shopify://shop_images/vlh-tendencia-bosque.png"
+            "link": "shopify://products/ilustracion-pareja",
+            "image": "shopify://shop_images/vlh-tendencia-pareja.jpg"
           }
         },
         "tile_3": {

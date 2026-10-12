@@ -1,31 +1,11 @@
-<section class="slideshow{% if section.settings.mobile_layout == 'stacked' %} slideshow--stack{% endif %}" data-slideshow data-autoplay="{{ section.settings.autoplay }}" data-speed="{{ section.settings.speed }}"
+<section class="slideshow{% if section.settings.mobile_layout == 'stacked' %} slideshow--stack{% endif %}" data-slideshow data-autoplay="false" data-vlh-autoplay="{{ section.settings.autoplay }}" data-speed="{{ section.settings.speed }}"
   style="--hero-height: {{ section.settings.height }}px; --hero-height-mobile: {{ section.settings.height_mobile }}px; --mobile-h: {{ section.settings.mobile_ratio }};">
   <div class="slideshow__track" data-slideshow-track>
     {%- for block in section.blocks -%}
-      {%- assign reel = block.settings.reel | newline_to_br | split: '<br />' -%}
-      {%- assign reel_on = false -%}{%- if block.settings.reel != blank -%}{%- assign reel_on = true -%}{%- endif -%}
-      <div class="slide{% if block.settings.light_text %} slide--light{% endif %}{% if reel_on %} slide--reel{% endif %}" {{ block.shopify_attributes }} data-slide
+      <div class="slide{% if block.settings.light_text %} slide--light{% endif %}" {{ block.shopify_attributes }} data-slide
         {% unless forloop.first %}aria-hidden="true"{% endunless %}>
         <div class="slide__media" style="--overlay: {{ block.settings.overlay | divided_by: 100.0 }}">
-          {%- if reel_on -%}
-            {%- comment -%} Vídeos ligeros (Archivos de Shopify): sin src ni póster hasta que la página ha cargado; solo se reproducen los que se ven {%- endcomment -%}
-            <div class="reel" data-reel>
-              <div class="reel__track">
-                {%- for pass in (1..2) -%}
-                  {%- for name in reel -%}
-                    {%- assign file = name | strip -%}
-                    {%- if file != blank -%}
-                      {%- assign poster = file | split: '.' | first | append: '.jpg' -%}
-                      <div class="reel__item"{% if pass == 2 %} aria-hidden="true"{% endif %}>
-                        <video muted playsinline loop preload="none" disablepictureinpicture
-                          data-src="{{ file | file_url }}" data-poster="{{ poster | file_url }}"></video>
-                      </div>
-                    {%- endif -%}
-                  {%- endfor -%}
-                {%- endfor -%}
-              </div>
-            </div>
-          {%- elsif block.settings.image != blank -%}
+          {%- if block.settings.image != blank -%}
             {%- assign loading = 'lazy' -%}{%- if forloop.first -%}{%- assign loading = 'eager' -%}{%- endif -%}
             {%- assign focal_style = 'object-position: ' | append: block.settings.focal -%}
             <picture>
@@ -41,6 +21,39 @@
             </picture>
           {%- else -%}
             {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+          {%- endif -%}
+          {%- liquid
+            assign v_desk = ''
+            assign v_desk_h = 0
+            assign v_mob = ''
+            assign v_mob_h = 0
+            if block.settings.video != blank
+              for src in block.settings.video.sources
+                if src.format == 'mp4' and src.height > v_desk_h
+                  assign v_desk = src.url
+                  assign v_desk_h = src.height
+                endif
+              endfor
+            endif
+            if block.settings.video_mobile != blank
+              for src in block.settings.video_mobile.sources
+                if src.format == 'mp4' and src.height > v_mob_h
+                  assign v_mob = src.url
+                  assign v_mob_h = src.height
+                endif
+              endfor
+            endif
+            if v_mob == ''
+              assign v_mob = v_desk
+            endif
+            if v_desk == ''
+              assign v_desk = v_mob
+            endif
+          -%}
+          {%- if v_desk != '' -%}
+            <video class="slide__video" muted loop playsinline preload="{% if forloop.first %}auto{% else %}none{% endif %}"
+              {% if forloop.first %}autoplay src="{{ v_mob }}"{% endif %}
+              data-desk="{{ v_desk }}" data-mob="{{ v_mob }}" aria-hidden="true"></video>
           {%- endif -%}
         </div>
         <div class="slide__content slide__content--{{ block.settings.align }} slide__content--{{ block.settings.valign }}">
@@ -66,6 +79,95 @@
     </div>
   {%- endif -%}
 </section>
+
+<style>
+  .slide__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+</style>
+<script>
+  (function () {
+    function init(show) {
+      if (!show || show.dataset.vlhInit) return;
+      show.dataset.vlhInit = '1';
+      var auto = show.dataset.vlhAutoplay === 'true';
+      var speed = (parseInt(show.getAttribute('data-speed'), 10) || 6) * 1000;
+      var slides = [].slice.call(show.querySelectorAll('[data-slide]'));
+      var next = show.querySelector('[data-slide-next]');
+      var mq = window.matchMedia('(max-width: 749px)');
+      var timer = null, hover = false;
+      var rotating = auto && next && slides.length > 1;
+      function srcFor(v) { return mq.matches ? v.dataset.mob : v.dataset.desk; }
+      function current() {
+        for (var k = 0; k < slides.length; k++) { if (slides[k].getAttribute('aria-hidden') !== 'true') return slides[k]; }
+        return slides[0];
+      }
+      function play(v) { var p = v.play(); if (p && p.then) p.then(function () { v._blocked = false; }, function () { v._blocked = true; }); }
+      slides.forEach(function (s) {
+        var v = s.querySelector('.slide__video');
+        if (!v) return;
+        if (rotating) {
+          v.loop = false;
+          v.addEventListener('ended', function () {
+            if (current() !== s) return;
+            if (hover) { v.currentTime = 0; play(v); } else { next.click(); }
+          });
+        }
+      });
+      function schedule(cur) {
+        clearTimeout(timer);
+        if (!rotating || hover) return;
+        var v = cur && cur.querySelector('.slide__video');
+        if (v) {
+          // El vídeo avanza solo al terminar ('ended'). Si el navegador no deja reproducirlo
+          // (p. ej. modo ahorro de batería), pasa a la siguiente a los pocos segundos.
+          var waited = 0;
+          timer = setTimeout(function check() {
+            if (current() !== cur || !v.paused || v.ended) return;
+            waited += 4000;
+            if (v._blocked || waited > 16000) { next.click(); return; }
+            timer = setTimeout(check, 4000);
+          }, 4000);
+          return;
+        }
+        timer = setTimeout(function () { next.click(); }, speed);
+      }
+      function sync() {
+        var cur = current();
+        slides.forEach(function (s) {
+          var v = s.querySelector('.slide__video');
+          if (!v) return;
+          if (s === cur) {
+            var src = srcFor(v);
+            if (v.getAttribute('src') !== src) { v.muted = true; v.setAttribute('src', src); v.load(); }
+            if (v.ended) v.currentTime = 0;
+            play(v);
+          } else if (!v.paused || v.currentTime > 0) {
+            v.pause();
+            try { v.currentTime = 0; } catch (e) {}
+          }
+        });
+        schedule(cur);
+      }
+      var last = null;
+      new MutationObserver(function () { var c = current(); if (c !== last) { last = c; sync(); } })
+        .observe(show, { subtree: true, attributes: true, attributeFilter: ['aria-hidden'] });
+      show.addEventListener('mouseenter', function () { hover = true; clearTimeout(timer); });
+      show.addEventListener('mouseleave', function () { hover = false; schedule(current()); });
+      ['touchstart', 'scroll'].forEach(function (ev) {
+        window.addEventListener(ev, function once() {
+          var v = current().querySelector('.slide__video');
+          if (v && v.paused && !v.ended) play(v);
+          window.removeEventListener(ev, once);
+        }, { passive: true });
+      });
+      last = current();
+      sync();
+    }
+    function boot(root) { [].forEach.call((root || document).querySelectorAll('[data-slideshow]'), init); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { boot(); });
+    else boot();
+    document.addEventListener('shopify:section:load', function (e) { boot(e.target); });
+  })();
+</script>
 
 {% schema %}
 {
@@ -102,7 +204,8 @@
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Imagen" },
         { "type": "image_picker", "id": "image_mobile", "label": "Imagen móvil (opcional)" },
-        { "type": "textarea", "id": "reel", "label": "Vídeos en fila (en lugar de la imagen)", "info": "Nombre de cada vídeo de Contenido → Archivos, uno por línea (ej.: vlh-hero-reel-1.mp4). Cada vídeo usa como miniatura la imagen con el mismo nombre en .jpg. Vacío = se muestra la imagen." },
+        { "type": "video", "id": "video", "label": "Vídeo (opcional)", "info": "Sustituye a la imagen. La imagen se ve mientras carga." },
+        { "type": "video", "id": "video_mobile", "label": "Vídeo móvil (opcional)" },
         { "type": "text", "id": "focal", "label": "Punto focal (CSS)", "default": "center center", "info": "Ej: 30% center" },
         { "type": "range", "id": "overlay", "label": "Oscurecer imagen", "min": 0, "max": 60, "step": 5, "unit": "%", "default": 0 },
         { "type": "text", "id": "tag", "label": "Etiqueta (cursiva sobre fondo de color)", "default": "Nueva colección" },
