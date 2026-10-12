@@ -55,5 +55,5 @@
     </div>
     <div class="cart-breakdown__total"><span>Total</span><strong>{{ cart.total_price | money_with_currency }}</strong></div>
   </div>
-  <p class="cart-free-note__small">Impuestos incluidos.{% if ship_is_free %} {{ 'cart.free_note_outside' | t }}{% endif %}</p>
+  <p class="cart-free-note__small">IVA incluido.{% if ship_is_free %} {{ 'cart.free_note_outside' | t }}{% endif %}</p>
 {%- endif -%}

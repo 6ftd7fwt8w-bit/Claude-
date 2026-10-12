@@ -407,7 +407,7 @@
         <span><span class="vlh-summary__old" id="vlh-total-old" hidden></span><span class="vlh-summary__value" id="vlh-total-price">—</span></span>
       </div>
       <ul class="vlh-summary__breakdown" id="vlh-breakdown"></ul>
-      <p class="vlh-summary__envio" id="vlh-envio">Envío calculado al pagar</p>
+      <p class="vlh-summary__envio" id="vlh-envio">IVA incluido · Envío calculado al pagar</p>
       <p class="vlh-perk" id="vlh-perk" hidden><span aria-hidden="true">✦</span> Descuento de bienvenida del {{ settings.welcome_percent | default: 10 }}&nbsp;% activado · <b>válido 24&nbsp;h</b></p>
     </div>
 
@@ -1185,7 +1185,7 @@
       shipEl.hidden = !final;
       shipEl.classList.add('is-free');
       shipEl.innerHTML = `<span aria-hidden="true">🚚</span><span>Envío gratis a toda la ${shipEl.dataset.zone || 'península'}</span>`;
-      if (envioEl) envioEl.textContent = 'Envío gratis' + (shipEl.dataset.zone ? ' (' + shipEl.dataset.zone + ')' : '');
+      if (envioEl) envioEl.textContent = 'IVA incluido · Envío gratis' + (shipEl.dataset.zone ? ' (' + shipEl.dataset.zone + ')' : '');
       return;
     }
     const limit = parseInt(shipEl.dataset.threshold, 10) || 0;
@@ -1198,7 +1198,7 @@
       ? `<span aria-hidden="true">🎉</span><span>¡Enhorabuena! Envío gratuito para tu pedido${zone}</span>`
       : `<span aria-hidden="true">🚚</span><span>Añade <strong>${money(left)}</strong> más para disfrutar de envío gratis${zone}</span>`;
     if (left <= 0 && !wasFree) { shipEl.style.animation = 'none'; void shipEl.offsetWidth; shipEl.style.animation = ''; }
-    if (envioEl) envioEl.textContent = left <= 0 ? 'Envío gratis' + (shipEl.dataset.zone ? ' (' + shipEl.dataset.zone + ')' : '') : 'Envío calculado al pagar';
+    if (envioEl) envioEl.textContent = 'IVA incluido · ' + (left <= 0 ? 'Envío gratis' + (shipEl.dataset.zone ? ' (' + shipEl.dataset.zone + ')' : '') : 'Envío calculado al pagar');
   }
   fetch('/cart.js', { headers: { Accept: 'application/json' } }).then(r => r.json()).then(c => { cartTotal = c.total_price || 0; paintShip(lastFinal); }).catch(() => {});
   document.addEventListener('vlh:cart-state', (e) => { cartTotal = (e.detail && e.detail.total) || 0; paintShip(lastFinal); });
