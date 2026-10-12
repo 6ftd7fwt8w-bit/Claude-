@@ -18,7 +18,7 @@
 
 ## Envío
 - Península: gratis en todos los pedidos (12/10/2026). En Shopify, zona «España»: tarifa «Estándar» 6,90 desactivada y «Envío gratuito» sin importe mínimo. Baleares 10,90 y Canarias 14,90 sin cambios.
-- Tema: ajuste «free_shipping_always» activado (no sale la barra de «añade X € más»; cesta y formulario dicen «Envío gratis (península)»). La política de envíos hay que cambiarla a mano (sin permiso write_legal_policies).
+- Tema: ajuste «free_shipping_always» activado (no sale la barra de «añade X € más»; el formulario dice «IVA incluido · Envío gratis (península)» y la cesta «IVA incluido»). La política de envíos hay que cambiarla a mano (sin permiso write_legal_policies).
 
 ## Packs regalo (desde oct. 2026)
 - Los packs incluyen marco blanco; en madera clara +2 € en A4 y +4 € en A3. Pack Regalo (variantes Tamaño × Marco): A4 blanco 28 / madera 30, A3 blanco 32 / madera 36. Pack Valentina (variante Marco, siempre A3): blanco 67 / madera 71.
@@ -30,6 +30,7 @@
 ## Descuento de bienvenida HOLA10
 - 10 % en la colección laminas-personalizadas, sin límite por cliente y sin fecha de fin (quitada el 12/10/2026, también vacíos «welcome_until» y «welcome_end» del tema). Si algún día tiene fin: ponerlo en el descuento de Shopify y en «welcome_end» (AAAA-MM-DD), que oculta el aviso a partir del día siguiente.
 - Desde el 12/10/2026 no se anuncia en ningún sitio (barra, colección, tarjetas, lienzo express, pop-up y su botón negro quitados). Solo hay un aviso inferior en el formulario de personalizadas al subir fotos o llegar al resumen de precio: «¿Nuevo por aquí? · Ahorra un 10 % en tu primera ilustración · Se aplica automáticamente, no necesitas código · Activar descuento · Válido 24 horas desde la activación · No, gracias».
+- El aviso sale abajo a la derecha en ordenador y como hoja inferior en móvil; espera a que se cierre el aviso de cookies de Shopify. Para probarlo hay que usar una ventana de incógnito (si ya se activó o rechazó, no vuelve a salir).
 - Al activarlo, theme.js (window.vivaWelcome) guarda la hora en localStorage «vlh_welcome», añade HOLA10 a la cesta y lo quita a las 24 h. «No, gracias» no lo vuelve a ofrecer en 7 días; si ya lo activó, no se ofrece más.
 - Carrito: línea dorada «Descuento de bienvenida del 10 % · válido durante 24 h», desglose (importe, «Te ahorras X en este pedido · si finalizas el pedido antes de 24 h», envío gratis) y total. Sin campo de código (está en el checkout), sin cuenta atrás ni oferta cruzada.
 
