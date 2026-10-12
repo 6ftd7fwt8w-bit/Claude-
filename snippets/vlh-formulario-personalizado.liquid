@@ -1136,7 +1136,8 @@
     const show = () => {
       // Espera a que se cierre el aviso de cookies de Shopify para no taparse
       const cookies = document.getElementById('shopify-pc__banner');
-      if (cookies && cookies.offsetParent !== null) { setTimeout(show, 1000); return; }
+      const cs = cookies && getComputedStyle(cookies);
+      if (cookies && cs.display !== 'none' && cs.visibility !== 'hidden' && cookies.getBoundingClientRect().height > 0) { setTimeout(show, 1000); return; }
       offerEl.hidden = false;
       document.body.classList.add('has-vlh-offer');
       requestAnimationFrame(() => requestAnimationFrame(() => offerEl.classList.add('is-open')));
