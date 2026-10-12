@@ -7,6 +7,7 @@
 - Paleta: crema, arena, avena; luz natural suave; estilo catálogo, sin textos ni logos.
 
 ## Textos
+- No decir «hasta 3 ajustes/cambios»: usar «Lo revisamos contigo para que quede perfecto» (cambiado en las descripciones, paso 3 de «Cómo funciona» y FAQ de lienzos; sigue en las condiciones del servicio, que hay que editar a mano).
 - No decir "trazo a trazo" ni "la dibujamos nosotras" (usamos varias herramientas).
 - Lo que sí hacen a mano: diseñar las ilustraciones, imprimir, enmarcar y montar los packs regalo (telas, ramitos).
 - Papel: algodón verjurado 300 g.
@@ -31,7 +32,7 @@
 - 10 % en la colección laminas-personalizadas, sin límite por cliente y sin fecha de fin (quitada el 12/10/2026, también vacíos «welcome_until» y «welcome_end» del tema). Si algún día tiene fin: ponerlo en el descuento de Shopify y en «welcome_end» (AAAA-MM-DD), que oculta el aviso a partir del día siguiente.
 - Desde el 12/10/2026 no se anuncia en ningún sitio (barra, colección, tarjetas, lienzo express, pop-up y su botón negro quitados). Solo hay un aviso inferior en el formulario de personalizadas al subir fotos o llegar al resumen de precio: «¿Nuevo por aquí? · Ahorra un 10 % en tu primera ilustración · Se aplica automáticamente, no necesitas código · Activar descuento · Válido 24 horas desde la activación · No, gracias».
 - El aviso sale abajo a la derecha en ordenador y como hoja inferior en móvil; espera a que se cierre el aviso de cookies de Shopify. Para probarlo hay que usar una ventana de incógnito (si ya se activó o rechazó, no vuelve a salir).
-- Al activarlo, theme.js (window.vivaWelcome) guarda la hora en localStorage «vlh_welcome», añade HOLA10 a la cesta y lo quita a las 24 h. «No, gracias» no lo vuelve a ofrecer en 7 días; si ya lo activó, no se ofrece más.
+- Al activarlo, theme.js (window.vivaWelcome) guarda la hora en localStorage «vlh_welcome», añade HOLA10 a la cesta y lo quita a las 24 h. «No, gracias» solo lo oculta en esa visita (sessionStorage «vlh_welcome_no»); se ofrece hasta la primera compra: se marca «purchased» si la cesta que tenía el descuento desaparece (Shopify la vacía al pagar) o si la clienta tiene sesión y pedidos (no se renderiza el aviso). Tras caducar las 24 h sin comprar, se vuelve a ofrecer.
 - Carrito: línea dorada «Descuento de bienvenida del 10 % · válido durante 24 h», desglose (importe, «Te ahorras X en este pedido · si finalizas el pedido antes de 24 h», envío gratis) y total. Sin campo de código (está en el checkout), sin cuenta atrás ni oferta cruzada.
 
 ## Lienzos XL
@@ -45,6 +46,10 @@
 
 ## Hero con vídeos
 - Probada una fila de clips (vlh-hero-reel-1…10 en Archivos, recortes en _media/hero-reel) pero el tema publicado usa otro planteamiento: vídeo único «cine» (vlh-hero-cine-escritorio.mp4 / -movil.mp4) en slide_2 con los ajustes «video»/«video_mobile» del slideshow.
+
+## Ficha de personalizadas (product.simplif-v2)
+- Bajo el formulario: «Cómo funciona» en una fila de 4 (móvil) y toda la descripción en un solo desplegable cerrado «Descripción y cómo trabajamos» (ajuste «merge» de product-description; los demás títulos h3 quedan dentro como apartados).
+- Después, «Nuestros clientes adoran sus ilustraciones ★★★★★» (ajuste «stars» de instagram-gallery) con el carrusel, que avanza solo por scroll y se puede arrastrar (theme.js).
 
 ## SEO
 - Títulos y descripciones SEO rellenados en todos los productos y colecciones (sept. 2026). Productos nuevos: rellenar también «Vista previa del motor de búsqueda».
