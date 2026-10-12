@@ -42,13 +42,14 @@
 - Campaña: página /pages/lienzos-xl-fallera (plantilla page.lienzos-fallera), reel vlh-reel-lienzos-fallera.mov. Título de campaña: «Tu retrato de fallera». Debajo del vídeo, sección «Lienzo express» (sections/lienzo-express.liquid): precios con HOLA10, botón «Crear mi lienzo» y formulario corto (tamaño, personas, fotos) que añade la variante de lienzo del producto de tradición y aplica el código.
 
 ## Flujo
-- El tema publicado es "Viva Galería – vídeo en hero" (191317540937; el hero de personalizadas usa un vídeo «cine» de Shopify con los ajustes video/video_mobile del slideshow, no la fila de vídeos). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – bienvenida 24 h y envío gratis" (191350407241), pendiente de publicar. Antes de empezar, comparar los checksums del tema publicado con el repo (la dueña y otras sesiones también lo cambian). Las plantillas JSON se editan partiendo de la versión del tema publicado.
+- El tema publicado es "Viva Galería – bienvenida 24 h y envío gratis" (191350407241; hero de personalizadas con vídeo «cine»). Nunca editarlo directamente: duplicarlo (themeDuplicate) a un borrador, subir ahí los cambios, verificarlos con preview_theme_id y que la dueña lo publique. Borrador actual: "Viva Galería – barra de compra" (191353094217), pendiente de publicar. Antes de empezar, comparar los checksums del tema publicado con el repo (la dueña y otras sesiones también lo cambian). Las plantillas JSON se editan partiendo de la versión del tema publicado.
 
 ## Hero con vídeos
 - Probada una fila de clips (vlh-hero-reel-1…10 en Archivos, recortes en _media/hero-reel) pero el tema publicado usa otro planteamiento: vídeo único «cine» (vlh-hero-cine-escritorio.mp4 / -movil.mp4) en slide_2 con los ajustes «video»/«video_mobile» del slideshow.
 
 ## Ficha de personalizadas (product.simplif-v2)
 - Bajo el formulario: «Cómo funciona» en una fila de 4 (móvil) y toda la descripción en un solo desplegable cerrado «Descripción y cómo trabajamos» (ajuste «merge» de product-description; los demás títulos h3 quedan dentro como apartados).
+- Barra fija de compra (theme.js, móvil abajo y ordenador flotante centrada): aparece al bajar por debajo del botón «Añadir al carrito»; con el descuento activo enseña precio tachado, precio nuevo en verde y «−10 % · válido 24 h» con un punto dorado que late; el botón tiene un brillo suave cada pocos segundos. Se oculta mientras está abierto el aviso de bienvenida.
 - Después, «Nuestros clientes adoran sus ilustraciones ★★★★★» (ajuste «stars» de instagram-gallery) con el carrusel, que avanza solo por scroll y se puede arrastrar (theme.js).
 
 ## SEO
