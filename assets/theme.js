@@ -668,20 +668,40 @@
     mark(0);
   });
 
-  /* Barra fija "Añadir al carrito" en móvil (formulario personalizado) ------ */
+  /* Barra fija "Añadir al carrito" (formulario personalizado): aparece al bajar por debajo del botón.
+     Con el descuento de bienvenida activo enseña el precio tachado, el nuevo y «válido 24 h». */
   (function () {
     var submit = document.getElementById('vlh-submit-btn');
     var totalEl = document.getElementById('vlh-total-price');
     if (!submit || !totalEl) return;
+    var oldEl = document.getElementById('vlh-total-old');
+    var perkEl = document.getElementById('vlh-perk');
+    var envioEl = document.getElementById('vlh-envio');
     var bar = document.createElement('div');
     bar.className = 'sticky-buy';
-    bar.innerHTML = '<span class="sticky-buy__total">Total<b data-sticky-total></b></span><button type="button" class="button">' + (submit.textContent.trim() || 'Añadir al carrito') + '</button>';
+    bar.innerHTML = '<div class="sticky-buy__price"><span class="sticky-buy__label">Total</span>' +
+      '<span class="sticky-buy__amounts"><s data-sticky-old hidden></s><b data-sticky-total></b></span>' +
+      '<span class="sticky-buy__perk" data-sticky-perk hidden><i aria-hidden="true"></i><span></span></span>' +
+      '<span class="sticky-buy__ship" data-sticky-ship hidden>Envío gratis</span></div>' +
+      '<button type="button" class="button sticky-buy__btn">' + (submit.textContent.trim() || 'Añadir al carrito') + '</button>';
     document.body.appendChild(bar);
     document.body.classList.add('has-sticky-buy');
-    var tEl = $('[data-sticky-total]', bar);
-    var sync = function () { tEl.textContent = totalEl.textContent; };
+    var tEl = $('[data-sticky-total]', bar), sOld = $('[data-sticky-old]', bar), sPerk = $('[data-sticky-perk]', bar), sShip = $('[data-sticky-ship]', bar);
+    var sync = function () {
+      tEl.textContent = totalEl.textContent;
+      var deal = !!(perkEl && !perkEl.hidden);
+      var hasOld = !!(oldEl && !oldEl.hidden && oldEl.textContent.trim());
+      sOld.hidden = !hasOld;
+      sOld.textContent = hasOld ? oldEl.textContent : '';
+      var pct = deal ? ((perkEl.textContent.match(/(\d+)\s*%/) || [])[1] || '10') : '';
+      $('span', sPerk).textContent = deal ? '−' + pct + ' % · válido 24 h' : '';
+      sPerk.hidden = !deal;
+      sShip.hidden = deal || !(envioEl && /gratis/i.test(envioEl.textContent));
+      bar.classList.toggle('has-deal', deal);
+    };
     sync();
-    new MutationObserver(sync).observe(totalEl, { childList: true, characterData: true, subtree: true });
+    var mo = new MutationObserver(sync);
+    [totalEl, oldEl, perkEl, envioEl].forEach(function (el) { if (el) mo.observe(el, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['hidden'] }); });
     $('button', bar).addEventListener('click', function () {
       submit.click();
       setTimeout(function () {

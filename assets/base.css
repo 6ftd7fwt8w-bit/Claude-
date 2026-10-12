@@ -1342,3 +1342,28 @@ body.set-open { overflow: hidden; }
 .ig-marquee.is-js { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .ig-marquee.is-js::-webkit-scrollbar { display: none; }
 .ig-marquee.is-js .ig-marquee__track { animation: none; }
+
+/* Barra fija de compra: precio con descuento, «válido 24 h» con latido y brillo suave en el botón */
+.sticky-buy__price { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.sticky-buy__label { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); }
+.sticky-buy__amounts { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+.sticky-buy__amounts s { font-size: 12.5px; color: #a8a096; }
+.sticky-buy__amounts b { font-size: 18px; font-weight: 600; color: var(--color-text); }
+.sticky-buy.has-deal .sticky-buy__amounts b { color: #2f6b3a; }
+.sticky-buy__perk { display: inline-flex; align-items: center; gap: 6px; margin-top: 2px; font-size: 11px; font-weight: 600; letter-spacing: .02em; color: #8a6a24; white-space: nowrap; }
+.sticky-buy__perk[hidden], .sticky-buy__ship[hidden], .sticky-buy__amounts s[hidden] { display: none; }
+.sticky-buy__perk i { width: 7px; height: 7px; flex: none; border-radius: 50%; background: #c49a3a; animation: sb-pulse 1.8s ease-out infinite; }
+.sticky-buy__ship { margin-top: 2px; font-size: 11px; color: #2f6b3a; }
+@keyframes sb-pulse { 0% { box-shadow: 0 0 0 0 rgba(196,154,58,.6); } 70% { box-shadow: 0 0 0 7px rgba(196,154,58,0); } 100% { box-shadow: 0 0 0 0 rgba(196,154,58,0); } }
+.sticky-buy__btn { position: relative; overflow: hidden; }
+.sticky-buy__btn::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; pointer-events: none;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,.28), transparent); transform: skewX(-20deg); animation: sb-shine 4.5s ease-in-out infinite; }
+@keyframes sb-shine { 0%, 72% { left: -60%; } 100% { left: 130%; } }
+body.has-vlh-offer .sticky-buy { visibility: hidden; }
+@media (min-width: 750px) {
+  .sticky-buy { display: flex; left: 50%; right: auto; bottom: 18px; width: min(620px, calc(100% - 48px)); gap: 20px; padding: 12px 12px 12px 22px;
+    border: 1px solid var(--color-border); border-radius: 14px; box-shadow: 0 14px 40px rgba(35,31,28,.16); transform: translate(-50%, 160%); }
+  .sticky-buy.is-visible { transform: translate(-50%, 0); }
+  .sticky-buy .button { flex: 0 0 auto; min-width: 280px; }
+}
+@media (prefers-reduced-motion: reduce) { .sticky-buy__perk i, .sticky-buy__btn::after { animation: none; } }
