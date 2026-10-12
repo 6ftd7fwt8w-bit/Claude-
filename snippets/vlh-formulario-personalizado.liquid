@@ -436,17 +436,17 @@
       <div class="vlh-offer" id="vlh-offer" role="dialog" aria-labelledby="vlh-offer-title" data-code="{{ vlh_w_code | escape }}" data-percent="{{ vlh_w_pct }}" hidden>
         <button type="button" class="vlh-offer__close" data-offer-no aria-label="Cerrar">&times;</button>
         <div class="vlh-offer__ask">
-          <p class="vlh-offer__kicker">¿Nuevo por aquí?</p>
-          <p class="vlh-offer__title" id="vlh-offer-title">Ahorra un {{ vlh_w_pct }}&nbsp;% en tu primera ilustración</p>
-          <p class="vlh-offer__text">Se aplica automáticamente, no necesitas código.</p>
-          <button type="button" class="vlh-offer__cta" data-offer-yes>Activar descuento</button>
-          <p class="vlh-offer__small">Válido 24 horas desde la activación</p>
-          <button type="button" class="vlh-offer__no" data-offer-no>No, gracias</button>
+          <p class="vlh-offer__kicker">Tenemos algo solo para ti…</p>
+          <p class="vlh-offer__title" id="vlh-offer-title">Un {{ vlh_w_pct }}&nbsp;% de regalo en tu primera ilustración</p>
+          <p class="vlh-offer__text">Porque es tu primera vez por aquí, y eso se celebra. Se aplica solo, sin códigos.</p>
+          <button type="button" class="vlh-offer__cta" data-offer-yes><span class="vlh-offer__gift" aria-hidden="true">{% render 'icon', name: 'gift' %}</span>Activar descuento</button>
+          <p class="vlh-offer__small">✦ Válido 24 horas desde la activación</p>
+          <button type="button" class="vlh-offer__no" data-offer-no>Ahora no, gracias</button>
         </div>
         <div class="vlh-offer__done" hidden>
           <span class="vlh-offer__check" aria-hidden="true">✓</span>
-          <p class="vlh-offer__title">¡Listo! Tu {{ vlh_w_pct }}&nbsp;% ya está activado</p>
-          <p class="vlh-offer__text">Lo verás descontado en el resumen y en tu cesta durante 24 horas.</p>
+          <p class="vlh-offer__title">¡Tu regalo ya está activado!</p>
+          <p class="vlh-offer__text">Verás el {{ vlh_w_pct }}&nbsp;% descontado en el resumen y en tu cesta durante 24 horas.</p>
         </div>
       </div>
     {%- endif -%}
@@ -684,7 +684,10 @@
   .vlh-offer__title { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-size: 23px; line-height: 1.2; }
   .vlh-offer__text { margin: 0 0 16px; font-size: 13.5px; line-height: 1.45; color: #5d5248; }
   .vlh-offer__cta { display: block; width: 100%; min-height: 50px; border: 0; border-radius: 4px; background: #231F1C; color: #fff; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+  .vlh-offer__cta { display: flex; align-items: center; justify-content: center; gap: 10px; }
   .vlh-offer__cta:disabled { opacity: .7; }
+  .vlh-offer__gift { display: inline-flex; color: #f2d16b; }
+  .vlh-offer__gift svg { width: 19px; height: 19px; }
   .vlh-offer__small { margin: 9px 0 4px; font-size: 12px; color: #8a6a24; letter-spacing: .02em; }
   .vlh-offer__no { border: 0; background: none; padding: 6px 10px; font: inherit; font-size: 12.5px; color: #8a7d6e; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
   .vlh-offer__done[hidden], .vlh-offer__ask[hidden] { display: none; }
