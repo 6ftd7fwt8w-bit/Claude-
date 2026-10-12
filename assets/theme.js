@@ -958,3 +958,51 @@ document.querySelectorAll('[data-scroller]').forEach((wrap) => {
   new MutationObserver(update).observe(track, { childList: true });
   update();
 });
+
+/* «Visto en Instagram»: avanza solo y también se puede arrastrar (con el dedo o el ratón);
+   al soltar sigue avanzando. Las dos copias de fotos permiten un bucle sin saltos. */
+document.querySelectorAll('.ig-marquee').forEach((box) => {
+  const track = box.querySelector('.ig-marquee__track');
+  const set = box.querySelector('.ig-marquee__set');
+  if (!track || !set || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  box.classList.add('is-js');
+  const secs = parseFloat(getComputedStyle(box).getPropertyValue('--ig-duration')) || 60;
+  let pos = 0, last = 0, visible = false, holdUntil = 0, dragging = false, raf = 0;
+  const half = () => set.getBoundingClientRect().width;
+  const hold = (ms) => { holdUntil = Math.max(holdUntil, performance.now() + ms); };
+  const step = (t) => {
+    raf = 0;
+    if (!visible) return;
+    const dt = last ? Math.min(t - last, 64) : 0;
+    last = t;
+    const w = half();
+    if (w > 0) {
+      if (!dragging && t > holdUntil) pos += (w / secs) * (dt / 1000);
+      else pos = box.scrollLeft;
+      if (pos >= w) pos -= w;
+      if (pos < 0) pos += w;
+      if (Math.abs(box.scrollLeft - pos) >= 0.5) box.scrollLeft = pos;
+    }
+    raf = requestAnimationFrame(step);
+  };
+  const start = () => { if (!raf) { last = 0; raf = requestAnimationFrame(step); } };
+  // Al tocarlo o arrastrarlo se para; sigue solo poco después de soltarlo (incluida la inercia)
+  // Si está al principio, salta a la segunda copia (idéntica) para poder arrastrar también hacia la izquierda
+  const roomLeft = () => { const w = half(); if (w > 0 && box.scrollLeft < w * 0.3) { box.scrollLeft += w; pos = box.scrollLeft; } };
+  box.addEventListener('touchstart', () => { dragging = true; roomLeft(); }, { passive: true });
+  box.addEventListener('touchend', () => { dragging = false; hold(1500); }, { passive: true });
+  box.addEventListener('scroll', () => { if (dragging || performance.now() < holdUntil) { pos = box.scrollLeft; hold(1200); } }, { passive: true });
+  box.addEventListener('wheel', () => hold(1500), { passive: true });
+  box.addEventListener('mouseenter', () => { dragging = true; });
+  box.addEventListener('mouseleave', () => { dragging = false; hold(600); });
+  // Arrastrar con el ratón en ordenador
+  let mx = null, ms = 0, moved = false;
+  box.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') return; roomLeft(); mx = e.clientX; ms = box.scrollLeft; moved = false; });
+  window.addEventListener('pointermove', (e) => { if (mx === null) return; const d = e.clientX - mx; if (Math.abs(d) > 4) moved = true; box.scrollLeft = ms - d; pos = box.scrollLeft; });
+  window.addEventListener('pointerup', () => { mx = null; });
+  box.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
+  box.addEventListener('dragstart', (e) => e.preventDefault());
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((en) => { visible = en[0].isIntersecting; if (visible) start(); }).observe(box);
+  } else { visible = true; start(); }
+});
