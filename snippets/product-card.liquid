@@ -3,18 +3,8 @@
   image_pos ('last' = usa la última foto como principal), ratio (p. ej. '1 / 1'), price_suffix (texto tras el precio),
   hot (texto de la etiqueta de producto destacado),
   in_collection (true en la rejilla de una colección: el descuento y «también en lienzo XL» se muestran una sola vez bajo la descripción de la colección).
-  Si el código de bienvenida vale para el producto, muestra el precio con descuento
+  Láminas infantiles: aviso del 3x2 (código cruzado)
 {%- endcomment -%}
-{%- liquid
-  assign w_expired = false
-  if settings.welcome_end != blank
-    assign w_today = 'now' | date: '%Y%m%d' | plus: 0
-    assign w_last = settings.welcome_end | remove: '-' | plus: 0
-    if w_today > w_last
-      assign w_expired = true
-    endif
-  endif
--%}
 {%- liquid
   assign img = product.featured_media.preview_image
   assign img2 = product.media[1].preview_image
@@ -26,17 +16,8 @@
   if lazy == false
     assign loading = 'eager'
   endif
-  assign deal = false
-  if settings.welcome_code != blank and settings.welcome_collection != blank and w_expired == false
-    for c in product.collections
-      if c.handle == settings.welcome_collection.handle
-        assign deal = true
-        break
-      endif
-    endfor
-  endif
   assign cross_deal = false
-  if deal == false and settings.cross_code != blank and settings.cross_collection != blank and settings.cross_card != blank
+  if settings.cross_code != blank and settings.cross_collection != blank and settings.cross_card != blank
     for c in product.collections
       if c.handle == settings.cross_collection.handle
         assign cross_deal = true
@@ -102,13 +83,6 @@
     <a href="{{ product.url }}" class="card__title">{{ product.title | split: ' | ' | first | escape }}</a>
     <div class="card__price">{% render 'price', product: product, show_from: settings.card_from_price %}{% if price_suffix != blank %} <span class="card__price-suffix">{{ price_suffix }}</span>{% endif %}</div>
     {%- if in_collection -%}
-    {%- elsif deal -%}
-      {%- assign pct = settings.welcome_percent | default: 10 -%}
-      {%- assign deal_price = 100 | minus: pct | times: product.price_min | divided_by: 100 -%}
-      <div class="card__deal">
-        <strong>🍀 ¡Estás de suerte!</strong>
-        <span>Con el código de descuento <b>{{ settings.welcome_code }}</b>,{% if product.price_varies %} desde{% endif %} <b class="card__deal-price">{{ deal_price | money }}</b> · {% if settings.welcome_until != blank %}solo hasta el {{ settings.welcome_until }}{% else %}por tiempo limitado{% endif %}</span>
-      </div>
     {%- elsif cross_deal -%}
       {%- assign cross_code_html = '<b>' | append: settings.cross_code | append: '</b>' -%}
       <div class="card__deal">

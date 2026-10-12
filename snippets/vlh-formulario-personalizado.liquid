@@ -401,16 +401,17 @@
 
     <!-- ============ RESUMEN DE PRECIO ============ -->
     <div class="vlh-summary">
-      <p class="vlh-ship" id="vlh-ship" data-threshold="{{ settings.free_shipping_threshold | times: 100 }}" data-zone="{{ settings.free_shipping_zone | escape }}" hidden></p>
+      <p class="vlh-ship" id="vlh-ship" data-threshold="{{ settings.free_shipping_threshold | times: 100 }}" data-always="{{ settings.free_shipping_always }}" data-zone="{{ settings.free_shipping_zone | escape }}" hidden></p>
       <div class="vlh-summary__row vlh-summary__row--total">
         <span class="vlh-summary__label">Total</span>
         <span><span class="vlh-summary__old" id="vlh-total-old" hidden></span><span class="vlh-summary__value" id="vlh-total-price">—</span></span>
       </div>
       <ul class="vlh-summary__breakdown" id="vlh-breakdown"></ul>
       <p class="vlh-summary__envio" id="vlh-envio">Envío calculado al pagar</p>
+      <p class="vlh-perk" id="vlh-perk" hidden><span aria-hidden="true">✦</span> Descuento de bienvenida del {{ settings.welcome_percent | default: 10 }}&nbsp;% activado · <b>válido 24&nbsp;h</b></p>
     </div>
 
-    <!-- ============ CÓDIGO DE DESCUENTO ============ -->
+    <!-- ============ DESCUENTO DE BIENVENIDA (aviso al subir fotos o llegar al resumen) ============ -->
     {%- liquid
       assign vlh_w_code = settings.welcome_code | strip | upcase
       assign vlh_w_ok = true
@@ -428,27 +429,25 @@
         endunless
       endif
     -%}
-    <div class="vlh-coupon" id="vlh-coupon"
-      data-welcome-code="{% if vlh_w_ok %}{{ vlh_w_code | escape }}{% endif %}"
-      data-welcome-percent="{{ settings.welcome_percent | default: 10 }}">
-      <details class="vlh-coupon__box" id="vlh-coupon-box">
-        <summary>🏷️ ¿Tienes un código de descuento?</summary>
-        <div class="vlh-coupon__row">
-          <input type="text" id="vlh-coupon-input" placeholder="Escribe tu código" autocomplete="off" autocapitalize="characters" spellcheck="false">
-          <button type="button" id="vlh-coupon-apply">Aplicar</button>
+    {%- if vlh_w_ok and vlh_w_code != blank -%}
+      {%- assign vlh_w_pct = settings.welcome_percent | default: 10 -%}
+      <div class="vlh-offer" id="vlh-offer" role="dialog" aria-labelledby="vlh-offer-title" data-code="{{ vlh_w_code | escape }}" data-percent="{{ vlh_w_pct }}" hidden>
+        <button type="button" class="vlh-offer__close" data-offer-no aria-label="Cerrar">&times;</button>
+        <div class="vlh-offer__ask">
+          <p class="vlh-offer__kicker">¿Nuevo por aquí?</p>
+          <p class="vlh-offer__title" id="vlh-offer-title">Ahorra un {{ vlh_w_pct }}&nbsp;% en tu primera ilustración</p>
+          <p class="vlh-offer__text">Se aplica automáticamente, no necesitas código.</p>
+          <button type="button" class="vlh-offer__cta" data-offer-yes>Activar descuento</button>
+          <p class="vlh-offer__small">Válido 24 horas desde la activación</p>
+          <button type="button" class="vlh-offer__no" data-offer-no>No, gracias</button>
         </div>
-        <p class="vlh-coupon__msg" id="vlh-coupon-msg" hidden></p>
-      </details>
-      <div class="vlh-coupon__win" id="vlh-coupon-win" hidden>
-        <span class="vlh-coupon__check" aria-hidden="true">✓</span>
-        <div class="vlh-coupon__body">
-          <p class="vlh-coupon__kicker">Descuento aplicado automáticamente</p>
-          <p class="vlh-coupon__detail" id="vlh-coupon-detail"></p>
-          {%- if settings.welcome_until != blank -%}<p class="vlh-coupon__until">⏳ Solo hasta el {{ settings.welcome_until }}</p>{%- endif -%}
+        <div class="vlh-offer__done" hidden>
+          <span class="vlh-offer__check" aria-hidden="true">✓</span>
+          <p class="vlh-offer__title">¡Listo! Tu {{ vlh_w_pct }}&nbsp;% ya está activado</p>
+          <p class="vlh-offer__text">Lo verás descontado en el resumen y en tu cesta durante 24 horas.</p>
         </div>
-        <button type="button" class="vlh-coupon__remove" id="vlh-coupon-remove">Quitar</button>
       </div>
-    </div>
+    {%- endif -%}
 
     <p class="vlh-error" id="vlh-error" role="alert" hidden></p>
 
@@ -672,30 +671,38 @@
   .vlh-composicion__price { color: #6b6055; white-space: nowrap; }
   .vlh-details--mini { border: 0; padding: 4px 0 0 28px; margin: 0; }
   .vlh-details--mini summary { font-size: 11px; }
-  .vlh-coupon { margin: 0 0 18px; }
-  .vlh-coupon__box summary { cursor: pointer; list-style: none; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; color: var(--vlh-tinta); }
-  .vlh-coupon__box summary::-webkit-details-marker { display: none; }
-  .vlh-coupon__row { display: flex; gap: 8px; margin-top: 10px; }
-  .vlh-coupon__row input { flex: 1; min-width: 0; padding: 11px 12px; border: 1px solid var(--vlh-mist); background: #fff; font: inherit; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; }
-  .vlh-coupon__row button { padding: 0 18px; border: 1px solid var(--vlh-tinta); background: var(--vlh-tinta); color: var(--vlh-crema); font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
-  .vlh-coupon__msg { margin: 8px 0 0; font-size: 13px; color: #b32020; }
-  .vlh-coupon__msg.is-ok { color: #2f6b3a; }
-  .vlh-coupon__win { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #fff8e6; border: 1px dashed rgba(168,148,120,.8); color: #2C2218; animation: vlhPop .4s ease; }
-  .vlh-coupon__win[hidden] { display: none; }
-  .vlh-coupon__check { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: #2f6b3a; color: #fff; font-size: 14px; font-weight: 700; }
-  .vlh-coupon__body { flex: 1; min-width: 0; }
-  .vlh-coupon__kicker { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #2f6b3a; }
-  .vlh-coupon__detail { margin: 2px 0 0; font-size: 14px; line-height: 1.4; }
-  .vlh-coupon__detail b { letter-spacing: .08em; }
-  .vlh-coupon__detail strong { color: #2f6b3a; }
-  .vlh-coupon__until { margin: 3px 0 0; font-size: 12px; font-weight: 600; color: #b0431f; }
-  .vlh-coupon__remove { flex: none; align-self: flex-start; padding: 0; border: 0; background: none; font: inherit; font-size: 11px; text-decoration: underline; cursor: pointer; color: #8a7d6e; }
+  /* Aviso de bienvenida (fijo abajo; se mueve al body) */
+  .vlh-offer { position: fixed; z-index: 160; left: 50%; bottom: 20px; width: min(380px, calc(100vw - 32px)); padding: 26px 24px 18px; text-align: center;
+    background: #fbf8f3; color: #2C2218; border: 1px solid rgba(176,138,62,.35); border-radius: 14px; box-shadow: 0 22px 60px rgba(44,34,24,.24);
+    transform: translate(-50%, 130%); opacity: 0; transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease; }
+  .vlh-offer[hidden] { display: none; }
+  .vlh-offer.is-open { transform: translate(-50%, 0); opacity: 1; }
+  .vlh-offer__close { position: absolute; top: 6px; right: 8px; width: 34px; height: 34px; border: 0; background: none; font-size: 24px; line-height: 1; color: #8a7d6e; cursor: pointer; }
+  .vlh-offer__kicker { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-style: italic; font-size: 17px; color: #8a6a24; }
+  .vlh-offer__title { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-size: 23px; line-height: 1.2; }
+  .vlh-offer__text { margin: 0 0 16px; font-size: 13.5px; line-height: 1.45; color: #5d5248; }
+  .vlh-offer__cta { display: block; width: 100%; min-height: 50px; border: 0; border-radius: 4px; background: #231F1C; color: #fff; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+  .vlh-offer__cta:disabled { opacity: .7; }
+  .vlh-offer__small { margin: 9px 0 4px; font-size: 12px; color: #8a6a24; letter-spacing: .02em; }
+  .vlh-offer__no { border: 0; background: none; padding: 6px 10px; font: inherit; font-size: 12.5px; color: #8a7d6e; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .vlh-offer__done[hidden], .vlh-offer__ask[hidden] { display: none; }
+  .vlh-offer__check { display: inline-grid; place-items: center; width: 40px; height: 40px; margin-bottom: 10px; border-radius: 50%; background: #2f6b3a; color: #fff; font-size: 19px; font-weight: 700; }
+  .vlh-offer.is-done .vlh-offer__close { display: none; }
+  @media (max-width: 749px) {
+    .vlh-offer { left: 0; right: 0; bottom: 0; width: auto; border-radius: 18px 18px 0 0; padding: 26px 22px calc(16px + env(safe-area-inset-bottom)); transform: translateY(110%); }
+    .vlh-offer.is-open { transform: none; }
+    body.has-vlh-offer .sticky-buy { visibility: hidden; }
+  }
+  /* Descuento activado: línea dorada en el resumen */
+  .vlh-perk { margin: 10px 0 0; padding: 8px 12px; font-size: 12.5px; line-height: 1.4; color: #8a6a24; background: #fbf6ea; border: 1px solid rgba(176,138,62,.4); border-radius: 6px; text-align: center; }
+  .vlh-perk[hidden] { display: none; }
+  .vlh-perk b { color: #7a5a12; font-weight: 600; }
   .vlh-summary__old { margin-right: 8px; font-size: 18px; color: #a8a096; text-decoration: line-through; font-family: var(--font-serif); }
   .vlh-summary__breakdown li.is-discount { color: #2f6b3a; font-weight: 600; opacity: 1; }
   .vlh-summary.has-discount .vlh-summary__value { color: #2f6b3a; }
   @keyframes vlhPop { 0% { transform: scale(.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
   @keyframes vlhShine { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
-  @media (prefers-reduced-motion: reduce) { .vlh-coupon__win, .vlh-coupon__shine { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .vlh-offer { transition: none; } }
   .vlh-perks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; line-height: 1.45; color: var(--vlh-tinta); }
   .vlh-perks li { display: flex; gap: 8px; }
   .vlh-perks li > span:first-child { flex: none; width: 18px; text-align: center; }
@@ -813,14 +820,6 @@
     mensajePackContador: document.getElementById('vlh-mensaje-pack-contador'),
     composicionInputs: form.querySelectorAll('input[name="vlh-composicion"]'),
     composicionPrecio: document.querySelector('[data-composicion-precio]'),
-    couponWrap: document.getElementById('vlh-coupon'),
-    couponBox: document.getElementById('vlh-coupon-box'),
-    couponInput: document.getElementById('vlh-coupon-input'),
-    couponApply: document.getElementById('vlh-coupon-apply'),
-    couponMsg: document.getElementById('vlh-coupon-msg'),
-    couponWin: document.getElementById('vlh-coupon-win'),
-    couponDetail: document.getElementById('vlh-coupon-detail'),
-    couponRemove: document.getElementById('vlh-coupon-remove'),
     totalOldEl: document.getElementById('vlh-total-old'),
     laminaExtras: form.querySelector('[data-lamina-extras]'),
     packSummary: document.getElementById('vlh-pack-summary'),
@@ -1109,63 +1108,63 @@
     els.fechaEstimadaEl.dataset.rango = `${formatFecha(desde)} - ${formatFecha(hasta)}`;
   }
 
-  // ---------------- CÓDIGO DE DESCUENTO ----------------
-  let coupon = null; // { code, percent }  (percent = null si no conocemos el importe)
-  const WELCOME_CODE = (els.couponWrap && els.couponWrap.dataset.welcomeCode || '').toUpperCase();
-  const WELCOME_PCT = parseInt(els.couponWrap && els.couponWrap.dataset.welcomePercent, 10) || 0;
-
-  function setCoupon(code, silent) {
-    code = String(code || '').trim().toUpperCase();
-    if (!code) return;
-    els.couponMsg.hidden = true;
-    els.couponMsg.classList.remove('is-ok');
-    if (WELCOME_CODE && code === WELCOME_CODE) {
-      coupon = { code, percent: WELCOME_PCT };
-      els.couponWin.hidden = false;
-      els.couponBox.hidden = true;
-    } else {
-      // Otros códigos: los guardamos y Shopify los valida en el carrito
-      coupon = { code, percent: null };
-      if (!silent) {
-        els.couponMsg.textContent = `Código ${code} guardado: lo aplicamos al añadir al carrito y verás el descuento allí si es válido para este producto.`;
-        els.couponMsg.classList.add('is-ok');
-        els.couponMsg.hidden = false;
-      }
-    }
-    calcTotal();
+  // ---------------- DESCUENTO DE BIENVENIDA ----------------
+  // Aviso «¿Nuevo por aquí?» al subir fotos o al llegar al resumen de precio.
+  // Al activarlo dura 24 h (theme.js guarda la hora, añade el código a la cesta y lo quita al caducar).
+  let coupon = null; // { code, percent }
+  const offerEl = document.getElementById('vlh-offer');
+  const perkEl = document.getElementById('vlh-perk');
+  const WELCOME_CODE = offerEl ? (offerEl.dataset.code || '').toUpperCase() : '';
+  const WELCOME_PCT = offerEl ? (parseInt(offerEl.dataset.percent, 10) || 0) : 0;
+  const readWelcome = () => { try { return JSON.parse(localStorage.getItem('vlh_welcome')) || {}; } catch (e) { return {}; } };
+  const welcomeOn = () => { const w = readWelcome(); return w.status === 'accepted' && w.expires > Date.now(); };
+  const canOffer = () => { const w = readWelcome(); return !w.status || (w.status === 'dismissed' && Date.now() - (w.at || 0) > 7 * 86400000); };
+  function syncWelcome() {
+    coupon = WELCOME_CODE && welcomeOn() ? { code: WELCOME_CODE, percent: WELCOME_PCT } : null;
+    if (perkEl) perkEl.hidden = !coupon;
   }
-  function clearCoupon() {
-    coupon = null;
-    els.couponWin.hidden = true;
-    els.couponBox.hidden = false;
-    els.couponInput.value = '';
-    els.couponMsg.hidden = true;
-    calcTotal();
+  syncWelcome();
+  let offerShown = false;
+  function hideOffer() {
+    offerEl.classList.remove('is-open');
+    document.body.classList.remove('has-vlh-offer');
+    setTimeout(() => { offerEl.hidden = true; }, 350);
   }
-  if (els.couponWrap) {
-    els.couponApply.addEventListener('click', () => {
-      if (!els.couponInput.value.trim()) {
-        els.couponMsg.textContent = 'Escribe tu código.';
-        els.couponMsg.classList.remove('is-ok');
-        els.couponMsg.hidden = false;
-        return;
+  function maybeOffer() {
+    if (!offerEl || offerShown || coupon || !canOffer()) return;
+    offerShown = true;
+    setTimeout(() => {
+      offerEl.hidden = false;
+      document.body.classList.add('has-vlh-offer');
+      requestAnimationFrame(() => requestAnimationFrame(() => offerEl.classList.add('is-open')));
+    }, 700);
+  }
+  if (offerEl) {
+    document.body.appendChild(offerEl); // fuera del formulario para que quede fijo abajo
+    offerEl.querySelectorAll('[data-offer-no]').forEach((b) => b.addEventListener('click', () => {
+      if (window.vivaWelcome) window.vivaWelcome.dismiss();
+      else try { localStorage.setItem('vlh_welcome', JSON.stringify({ status: 'dismissed', at: Date.now() })); } catch (e) {}
+      hideOffer();
+    }));
+    offerEl.querySelector('[data-offer-yes]').addEventListener('click', (e) => {
+      e.currentTarget.disabled = true;
+      if (window.vivaWelcome) window.vivaWelcome.activate(WELCOME_CODE);
+      else {
+        try { localStorage.setItem('vlh_welcome', JSON.stringify({ status: 'accepted', at: Date.now(), expires: Date.now() + 24 * 3600000, code: WELCOME_CODE })); } catch (e2) {}
+        fetch('/cart/update.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ discount: WELCOME_CODE }) }).catch(() => {});
       }
-      setCoupon(els.couponInput.value);
+      syncWelcome();
+      calcTotal();
+      offerEl.querySelector('.vlh-offer__ask').hidden = true;
+      offerEl.querySelector('.vlh-offer__done').hidden = false;
+      offerEl.classList.add('is-done');
+      setTimeout(hideOffer, 2600);
     });
-    els.couponInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); els.couponApply.click(); } });
-    els.couponRemove.addEventListener('click', () => {
-      try { sessionStorage.setItem('vlh_coupon_off', '1'); } catch (e) {}
-      clearCoupon();
-    });
-    // El código de bienvenida se aplica solo (salvo que lo haya quitado en esta visita)
-    let quitado = false;
-    try { quitado = sessionStorage.getItem('vlh_coupon_off') === '1'; } catch (e) {}
-    if (WELCOME_CODE && !quitado) {
-      // Sin recalcular aquí: el primer syncAll() ya pinta el total con el descuento
-      els.couponInput.value = WELCOME_CODE;
-      coupon = { code: WELCOME_CODE, percent: WELCOME_PCT };
-      els.couponWin.hidden = false;
-      els.couponBox.hidden = true;
+    const summaryEl = document.querySelector('.vlh-summary');
+    if (summaryEl && 'IntersectionObserver' in window) {
+      new IntersectionObserver((en, obs) => {
+        if (en.some((x) => x.isIntersecting)) { obs.disconnect(); maybeOffer(); }
+      }, { threshold: 0.6 }).observe(summaryEl);
     }
   }
 
@@ -1176,9 +1175,16 @@
   function paintShip(final) {
     lastFinal = final;
     if (!shipEl) return;
+    const zone = shipEl.dataset.zone ? ` <small>(${shipEl.dataset.zone})</small>` : '';
+    if (shipEl.dataset.always === 'true') {
+      shipEl.hidden = !final;
+      shipEl.classList.add('is-free');
+      shipEl.innerHTML = `<span aria-hidden="true">🚚</span><span>Envío gratis a toda la ${shipEl.dataset.zone || 'península'}</span>`;
+      if (envioEl) envioEl.textContent = 'Envío gratis' + (shipEl.dataset.zone ? ' (' + shipEl.dataset.zone + ')' : '');
+      return;
+    }
     const limit = parseInt(shipEl.dataset.threshold, 10) || 0;
     if (!limit || !final) { shipEl.hidden = true; return; }
-    const zone = shipEl.dataset.zone ? ` <small>(${shipEl.dataset.zone})</small>` : '';
     const left = limit - (cartTotal + final);
     const wasFree = shipEl.classList.contains('is-free');
     shipEl.hidden = false;
@@ -1241,14 +1247,9 @@
     }
     els.totalPriceEl.closest('.vlh-summary').classList.toggle('has-discount', ahorro > 0);
     let html = lines.map(([label, cents]) => `<li><span>${label}</span><span>${money(cents)}</span></li>`).join('');
-    if (ahorro) html += `<li class="is-discount"><span>Descuento ${coupon.code} (−${coupon.percent} %)</span><span>−${money(ahorro)}</span></li>`;
+    if (ahorro) html += `<li class="is-discount"><span>Descuento de bienvenida (−${coupon.percent} %)</span><span>−${money(ahorro)}</span></li>`;
     els.breakdownEl.innerHTML = (lines.length > 1 || ahorro) ? html : '';
     els.breakdownEl.hidden = !(lines.length > 1 || ahorro);
-    if (coupon && els.couponDetail) {
-      els.couponDetail.innerHTML = ahorro
-        ? `Código <b>${coupon.code}</b> (−${coupon.percent} %) · te ahorras <strong>${money(ahorro)}</strong>`
-        : `Código <b>${coupon.code}</b> guardado: se aplicará en el carrito`;
-    }
   }
 
   function syncAll() {
@@ -1296,6 +1297,7 @@
   // Vista previa de las fotos elegidas
   els.uploadInput.addEventListener('change', () => {
     const files = [...(els.uploadInput.files || [])];
+    if (files.length) maybeOffer();
     const drop = document.getElementById('vlh-drop');
     const thumbs = document.getElementById('vlh-drop-thumbs');
     drop.classList.toggle('has-files', files.length > 0);

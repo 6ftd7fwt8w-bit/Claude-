@@ -171,17 +171,11 @@
           discountPending: {{ 'cart.discount_pending' | t | json }},
           discountValidFor: {{ 'cart.discount_valid_for' | t | json }},
           discountSee: {{ 'cart.discount_see' | t | json }},
-          dealToastTitle: {{ 'cart.toast_title' | t | json }},
-          dealToastText: {{ 'cart.toast_text' | t: code: settings.welcome_code, percent: settings.welcome_percent | json }},
-          dealToastCta: {{ 'cart.toast_cta' | t | json }},
           shipRemaining: {{ 'cart.free_shipping_remaining_html' | t: amount: '[amount]' | json }},
-          shipReached: {{ 'cart.free_shipping_reached' | t | json }},
-          fabTimer: {{ 'cart.fab_timer' | t: percent: settings.welcome_percent | json }},
-          fabShip: {{ 'cart.fab_ship' | t: amount: '[amount]' | json }},
-          fabShipFree: {{ 'cart.fab_ship_free' | t | json }}
+          shipReached: {{ 'cart.free_shipping_reached' | t | json }}
         },
         freeShipping: {
-          threshold: {{ settings.free_shipping_threshold | times: 100 | json }},
+          threshold: {% if settings.free_shipping_always %}0{% else %}{{ settings.free_shipping_threshold | times: 100 | json }}{% endif %},
           zone: {{ settings.free_shipping_zone | json }}
         }
       };

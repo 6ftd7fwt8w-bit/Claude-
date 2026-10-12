@@ -33,6 +33,7 @@
     "card_show_vendor": false,
     "cart_type": "drawer",
     "free_shipping_threshold": 60,
+    "free_shipping_always": true,
     "cart_show_note": true,
     "welcome_code": "HOLA10",
     "welcome_collection": "laminas-personalizadas",

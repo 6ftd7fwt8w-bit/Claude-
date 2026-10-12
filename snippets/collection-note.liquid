@@ -1,26 +1,11 @@
 {%- comment -%}
   Nota bajo la descripción de la colección (en vez de repetirla en cada tarjeta):
-  - código de bienvenida si la colección es la del descuento de bienvenida
   - 3x2 si es la colección del código cruzado (infantil)
   - «también en lienzo XL» si algún producto de la colección tiene variante de lienzo
 {%- endcomment -%}
 {%- liquid
-  assign w_expired = false
-  if settings.welcome_end != blank
-    assign w_today = 'now' | date: '%Y%m%d' | plus: 0
-    assign w_last = settings.welcome_end | remove: '-' | plus: 0
-    if w_today > w_last
-      assign w_expired = true
-    endif
-  endif
--%}
-{%- liquid
-  assign note_welcome = false
-  if settings.welcome_code != blank and settings.welcome_collection != blank and settings.welcome_collection.handle == collection.handle and w_expired == false
-    assign note_welcome = true
-  endif
   assign note_cross = false
-  if note_welcome == false and settings.cross_code != blank and settings.cross_collection != blank and settings.cross_collection.handle == collection.handle
+  if settings.cross_code != blank and settings.cross_collection != blank and settings.cross_collection.handle == collection.handle
     assign note_cross = true
   endif
   assign note_canvas = false
@@ -36,30 +21,12 @@
     endif
   endfor
 -%}
-{%- if note_welcome or note_cross or note_canvas -%}
+{%- if note_cross or note_canvas -%}
   <div class="collection-note">
-    {%- if note_welcome or note_cross -%}
+    {%- if note_cross -%}
     <div class="collection-note__card collection-note__card--deal">
-      {%- if note_welcome -%}
-        {%- liquid
-          assign note_pct = settings.welcome_percent | default: 10
-          assign note_max = 0
-          for p in collection.products limit: 50
-            if p.price_max > note_max
-              assign note_max = p.price_max
-            endif
-          endfor
-          assign note_ahorro = note_max | times: note_pct | divided_by: 100
-        -%}
-        <p class="collection-note__text">Código <span class="collection-note__code">{{ settings.welcome_code }}</span> activo · <strong>{{ note_pct }}&nbsp;% de descuento</strong> en tu ilustración{% if note_ahorro > 0 %} <span class="collection-note__save">(ahorra hasta {{ note_ahorro | money }})</span>{% endif %}</p>
-      {%- else -%}
-        <p class="collection-note__text">Código <span class="collection-note__code">{{ settings.cross_code }}</span> activo · <strong>3x2</strong> en láminas infantiles</p>
-      {%- endif -%}
-      {%- if note_welcome and settings.welcome_until != blank -%}
-        <p class="collection-note__small"><strong class="collection-note__until">⏳ Solo hasta el {{ settings.welcome_until }}</strong> · aplícalo al realizar el pedido.</p>
-      {%- else -%}
-        <p class="collection-note__small">Aplícalo al realizar el pedido.</p>
-      {%- endif -%}
+      <p class="collection-note__text">Código <span class="collection-note__code">{{ settings.cross_code }}</span> activo · <strong>3x2</strong> en láminas infantiles</p>
+      <p class="collection-note__small">Aplícalo al realizar el pedido.</p>
     </div>
     {%- endif -%}
     {%- if note_canvas -%}

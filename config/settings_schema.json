@@ -238,6 +238,13 @@
         "default": 0
       },
       {
+        "type": "checkbox",
+        "id": "free_shipping_always",
+        "label": "Envío gratis siempre (sin importe mínimo)",
+        "info": "Si está activado no se usa el umbral: la cesta, el formulario y la ficha muestran «Envío gratis» en todos los pedidos de la zona indicada.",
+        "default": false
+      },
+      {
         "type": "text",
         "id": "free_shipping_zone",
         "label": "Zona del envío gratis",

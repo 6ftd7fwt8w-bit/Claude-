@@ -382,142 +382,41 @@
     refreshDrawer().then(refreshDiscount);
   };
 
-  /* Pop-up de bienvenida + pastilla con contador ------------------------------ */
+  /* Descuento de bienvenida: dura 24 h desde que se activa en el aviso del formulario.
+     Al caducar se quita el código de la cesta. */
   var WKEY = 'vlh_welcome';
+  var WELCOME_MS = 24 * 3600000;
   var readWelcome = function () { try { return JSON.parse(localStorage.getItem(WKEY)) || {}; } catch (e) { return {}; } };
   var writeWelcome = function (o) { try { localStorage.setItem(WKEY, JSON.stringify(o)); } catch (e) {} };
   var welcome = readWelcome();
   var welcomeActive = function () { return welcome.status === 'accepted' && welcome.expires > Date.now(); };
-
-  (function () {
-    var popup = $('[data-welcome]');
-    var badge = $('[data-welcome-badge]');
-    var now = Date.now();
-    var designMode = window.Shopify && Shopify.designMode;
-
-    // Pastilla
-    if (badge) {
-      var timerEl = $('[data-welcome-timer]', badge);
-      var titleEl = $('[data-badge-title]', badge);
-      var textEl = $('[data-badge-text]', badge);
-      var linkEl = $('[data-badge-link]', badge);
-      var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-      var wasApplied = null;
-      var render = function (key, ds, amountCents, codesApplied) {
-        titleEl.textContent = badge.getAttribute('data-' + key + '-title');
-        var parts = (badge.getAttribute('data-' + key + '-text') || '').replace('[codes]', codesApplied.join(' + ')).split('[amount]');
-        textEl.textContent = parts[0];
-        if (parts.length > 1) {
-          var amt = document.createElement('b');
-          amt.className = 'welcome-badge__amount';
-          amt.textContent = formatMoney(amountCents);
-          textEl.appendChild(amt);
-          textEl.appendChild(document.createTextNode(parts.slice(1).join('')));
-        }
-        var url = key === 'wait' ? badge.getAttribute('data-wait-url') : (key === 'cross' ? (ds.crossUrl || badge.getAttribute('data-ok-url')) : badge.getAttribute('data-ok-url'));
-        linkEl.setAttribute('href', url);
-        badge.classList.toggle('is-cross', key === 'cross');
-      };
-      var paint = function (ds) {
-        if (!ds) return;
-        var applied = ds.applied > 0;
-        var codesApplied = (ds.codesApplied || []).filter(Boolean);
-        var isMax = applied && codesApplied.length > 1;
-        var key = isMax ? 'max' : (applied ? 'ok' : 'wait');
-        badge.classList.toggle('is-success', applied);
-        badge.classList.toggle('is-max', isMax);
-        render(key, ds, isMax ? (ds.saving || ds.applied) : ds.applied, codesApplied);
-        if (key === 'ok' && ds.crossCode) {
-          getCartCodes().then(function (codes) {
-            var saved = codes.some(function (c) { return sameCode(c.code, ds.crossCode); });
-            if (saved && discountState === ds) render('cross', ds, ds.applied, codesApplied);
-          });
-        }
-        if ((applied && wasApplied === false) || (isMax && badge._wasMax === false)) {
-          badge.classList.remove('is-celebrate'); void badge.offsetWidth; badge.classList.add('is-celebrate');
-        }
-        wasApplied = applied;
-        badge._wasMax = isMax;
-      };
-      var hideBtn = $('[data-welcome-badge-hide]', badge);
-      if (hideBtn) hideBtn.addEventListener('click', function () {
-        badge.hidden = true;
-        try { sessionStorage.setItem(WKEY + '_badge_hidden', '1'); } catch (e) {}
-      });
-      var runBadge = function () {
-        var hiddenThisSession = false;
-        try { hiddenThisSession = sessionStorage.getItem(WKEY + '_badge_hidden') === '1'; } catch (e) {}
-        if (!hiddenThisSession) badge.hidden = false;
-        paint(discountState);
-        discountListeners.push(paint);
-        var iv;
-        var tick = function () {
-          var left = Math.max(0, welcome.expires - Date.now());
-          var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), sec = Math.floor(left % 60000 / 1000);
-          var txt = (h ? h + ':' + pad(m) : m) + ':' + pad(sec);
-          $$('[data-welcome-timer]').forEach(function (el) { el.textContent = txt; });
-          var showCartTimer = left > 0 && discountState && discountState.applied > 0;
-          $$('[data-cart-timer]').forEach(function (el) { el.hidden = !showCartTimer; });
-          if (left <= 0) {
-            clearInterval(iv);
-            badge.hidden = true;
-            $$('[data-cart-timer]').forEach(function (el) { el.hidden = true; });
-            if (!welcome.cleared) { welcome.cleared = true; welcome.clearedAt = Date.now(); writeWelcome(welcome); removeCode(welcome.code || (discountState && discountState.code) || ''); }
-          }
-        };
-        iv = setInterval(tick, 1000);
-        tick();
-      };
-      if (welcomeActive()) runBadge();
-      else if (welcome.status === 'accepted' && !welcome.cleared) { welcome.cleared = true; welcome.clearedAt = Date.now(); writeWelcome(welcome); removeCode(welcome.code || (discountState && discountState.code) || ''); }
-    }
-
-    // Pop-up
-    if (!popup) return;
-    var open = function () {
-      popup.hidden = false;
-      requestAnimationFrame(function () { requestAnimationFrame(function () { popup.classList.add('is-open'); }); });
-      document.body.classList.add('overflow-hidden');
-      var cta = $('[data-welcome-accept]', popup);
-      if (cta) cta.focus({ preventScroll: true });
-    };
-    var close = function (remember) {
-      popup.classList.remove('is-open');
-      document.body.classList.remove('overflow-hidden');
-      setTimeout(function () { popup.hidden = true; }, 450);
-      if (remember) { welcome.status = 'dismissed'; welcome.at = Date.now(); writeWelcome(welcome); }
-    };
-    $$('[data-welcome-close]', popup).forEach(function (el) { el.addEventListener('click', function () { close(!designMode); }); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !popup.hidden) close(!designMode); });
-    var accept = $('[data-welcome-accept]', popup);
-    if (accept) accept.addEventListener('click', function () {
-      if (designMode) return;
-      var minutes = parseInt(popup.getAttribute('data-minutes'), 10) || 90;
-      writeWelcome({ status: 'accepted', at: Date.now(), expires: Date.now() + minutes * 60000, code: popup.getAttribute('data-code') });
-    });
-    if (designMode) {
-      document.addEventListener('shopify:section:select', function (e) { if (e.target.contains(popup)) open(); });
-      document.addEventListener('shopify:section:deselect', function (e) { if (e.target.contains(popup)) close(false); });
-      return;
-    }
-    var repeatDays = parseInt(popup.getAttribute('data-repeat-days'), 10) || 7;
-    var shouldShow = !welcome.status || (welcome.status === 'dismissed' && now - (welcome.at || 0) > repeatDays * 86400000);
-    var onCart = /\/cart(\/|$|\?)/.test(location.pathname);
-    if (shouldShow && !onCart) setTimeout(open, (parseInt(popup.getAttribute('data-delay'), 10) || 0) * 1000);
-  })();
-
-  /* Código de descuento en el carrito ---------------------------------------- */
-  var paintCartHints = function () {
-    $$('[data-discount-hint]').forEach(function (h) {
-      var show = welcomeActive() && discountState && !(discountState.applied > 0);
-      h.hidden = !show;
-      var box = h.closest('[data-cart-discount]');
-      var input = box && $('[data-discount-input]', box);
-      if (show && input && !input.value) input.value = (discountState && discountState.code) || '';
-    });
+  var welcomeExpire = function () {
+    if (welcome.status !== 'accepted' || welcome.expires > Date.now() || welcome.cleared) return;
+    welcome.cleared = true; writeWelcome(welcome);
+    removeCode(welcome.code || (discountState && discountState.code) || '').then(afterCartChange);
   };
-  paintCartHints();
-  discountListeners.push(paintCartHints);
+  window.vivaWelcome = {
+    active: welcomeActive,
+    // Puede ofrecerse si nunca lo ha activado y no lo ha rechazado en la última semana
+    canOffer: function () { return !welcome.status || (welcome.status === 'dismissed' && Date.now() - (welcome.at || 0) > 7 * 86400000); },
+    expires: function () { return welcome.expires || 0; },
+    activate: function (code) {
+      welcome = { status: 'accepted', at: Date.now(), expires: Date.now() + WELCOME_MS, code: code };
+      writeWelcome(welcome);
+      return addCode(code).then(function () { refreshDrawer().then(refreshDiscount); }).catch(function () {});
+    },
+    dismiss: function () { welcome = { status: 'dismissed', at: Date.now() }; writeWelcome(welcome); }
+  };
+  // Código ya aplicado sin activación (p. ej. de antes de este cambio): sus 24 h empiezan ahora
+  discountListeners.push(function (ds) {
+    if (ds && ds.applied > 0 && welcome.status !== 'accepted') {
+      welcome = { status: 'accepted', at: Date.now(), expires: Date.now() + WELCOME_MS, code: ds.code };
+      writeWelcome(welcome);
+    }
+  });
+  if (discountState) discountListeners[discountListeners.length - 1](discountState);
+  welcomeExpire();
+  setInterval(welcomeExpire, 60000);
 
   /* Sets de 3 láminas: panel con tamaño, total con 3x2 y «Añadir las 3» */
   (function () {
@@ -657,154 +556,6 @@
     paintShip(discountState);
     discountListeners.push(paintShip);
   })();
-
-  /* Descuento aplicado: aviso de enhorabuena + cuenta atrás en la cesta ------- */
-  (function () {
-    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    var ensureTimer = function (ds) {
-      // El código está aplicado sin cuenta atrás activa: empezamos una ahora.
-      // Si su plazo anterior acaba de vencer (se está quitando el código), esperamos.
-      if (!ds || !(ds.applied > 0) || welcomeActive()) return;
-      if (welcome.status === 'accepted' && !(welcome.cleared && (!welcome.clearedAt || Date.now() - welcome.clearedAt > 60000))) return;
-      var pop = $('[data-welcome]');
-      var minutes = (pop && parseInt(pop.getAttribute('data-minutes'), 10)) || 90;
-      welcome = { status: 'accepted', at: Date.now(), expires: Date.now() + minutes * 60000, code: ds.code };
-      writeWelcome(welcome);
-    };
-    var toast = function (ds) {
-      if (!ds || !(ds.applied > 0) || !welcomeActive() || welcome.toasted) return;
-      welcome.toasted = true; writeWelcome(welcome);
-      var el = document.createElement('div');
-      el.className = 'deal-toast'; el.setAttribute('role', 'status');
-      el.innerHTML = '<span class="deal-toast__icon" aria-hidden="true">🎉</span><div class="deal-toast__body"><strong></strong><span></span>' +
-        '<a class="deal-toast__cta"></a></div><button type="button" class="deal-toast__close" aria-label="Cerrar">&times;</button>';
-      el.querySelector('strong').textContent = theme.strings.dealToastTitle || '';
-      el.querySelector('.deal-toast__body span').textContent = theme.strings.dealToastText || '';
-      var cta = el.querySelector('.deal-toast__cta');
-      cta.textContent = (theme.strings.dealToastCta || '') + ' →'; cta.href = theme.routes.cart || '/cart';
-      var drawer = document.getElementById('CartDrawer');
-      if (drawer && drawer.classList.contains('is-open')) cta.hidden = true;
-      var hide = function () { el.classList.remove('is-open'); setTimeout(function () { el.remove(); }, 400); };
-      el.querySelector('.deal-toast__close').addEventListener('click', hide);
-      document.body.appendChild(el);
-      requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.add('is-open'); }); });
-      setTimeout(hide, 9000);
-    };
-    var tick = function () {
-      var ds = discountState;
-      var on = ds && ds.applied > 0 && welcomeActive();
-      var left = on ? Math.max(0, welcome.expires - Date.now()) : 0;
-      $$('[data-deal-timer]').forEach(function (el) {
-        el.hidden = !(left > 0);
-        if (!(left > 0)) return;
-        var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), sec = Math.floor(left % 60000 / 1000);
-        var hw = $('[data-deal-h-wrap]', el); if (hw) hw.hidden = h === 0;
-        $('[data-deal-h]', el).textContent = h;
-        $('[data-deal-m]', el).textContent = pad(m);
-        $('[data-deal-s]', el).textContent = pad(sec);
-        el.classList.toggle('is-urgent', left < 10 * 60000);
-        var end = $('[data-deal-end]', el);
-        if (end) end.textContent = new Date(welcome.expires).toLocaleTimeString((ds && ds.locale) || 'es', { hour: '2-digit', minute: '2-digit' });
-      });
-      if (welcome.status === 'accepted' && welcome.expires <= Date.now() && !welcome.cleared && ds && ds.applied > 0) {
-        welcome.cleared = true; welcome.clearedAt = Date.now(); writeWelcome(welcome);
-        removeCode(welcome.code || ds.code || '').then(afterCartChange);
-      }
-    };
-    /* Franja de arriba: añade la cuenta atrás del descuento junto a lo que falta para el envío gratis */
-    var paintFab = function () {
-      var ds = discountState;
-      var timerOn = !!(ds && ds.applied > 0 && welcomeActive());
-      var left = timerOn ? welcome.expires - Date.now() : 0;
-      var p2 = function (n) { return (n < 10 ? '0' : '') + n; };
-      $$('[data-ship-strip]').forEach(function (el) {
-        var t = $('[data-strip-timer]', el);
-        if (!t) return;
-        t.hidden = !timerOn;
-        el.classList.toggle('has-timer', timerOn);
-        el.classList.toggle('is-urgent', timerOn && left < 10 * 60000);
-        if (!timerOn) return;
-        var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), sec = Math.floor(left % 60000 / 1000);
-        $('[data-strip-time]', t).textContent = (h ? h + ':' + p2(m) : m) + ':' + p2(sec);
-        $('[data-strip-timer-text]', t).textContent = theme.strings.fabTimer || '';
-      });
-      var stripShown = $$('[data-ship-strip]').some(function (el) { return !el.hidden; });
-      document.body.classList.toggle('has-cart-fab', stripShown && timerOn);
-    };
-
-    var onState = function (ds) { ensureTimer(ds); toast(ds); tick(); paintFab(); };
-    onState(discountState);
-    discountListeners.push(onState);
-    setInterval(function () { tick(); paintFab(); }, 1000);
-  })();
-  document.addEventListener('submit', function (e) {
-    var form = e.target.closest('[data-discount-form]');
-    if (!form) return;
-    e.preventDefault();
-    var input = $('[data-discount-input]', form);
-    var msg = $('[data-discount-msg]', form);
-    var btn = $('button[type=submit]', form);
-    var code = (input.value || '').trim();
-    if (!code) { input.focus(); return; }
-    btn.disabled = true;
-    addCode(code).then(function (cart) {
-      btn.disabled = false;
-      var entry = (cart.discount_codes || []).find(function (d) { return sameCode(d.code, code); });
-      if (entry && entry.applicable) { afterCartChange(); return; }
-      var ds = discountState || {};
-      var known = sameCode(code, ds.code) || sameCode(code, ds.crossCode);
-      msg.hidden = false;
-      msg.classList.toggle('is-error', !known);
-      msg.textContent = known ? theme.strings.discountPending : theme.strings.discountInvalid;
-      if (known) {
-        // Dice para qué productos vale el código y enlaza a su colección
-        var isCross = !sameCode(code, ds.code) && sameCode(code, ds.crossCode);
-        var cTitle = isCross ? ds.crossTitle : ds.collectionTitle;
-        var cUrl = isCross ? ds.crossUrl : ds.collectionUrl;
-        if (cTitle && cUrl && theme.strings.discountValidFor) {
-          msg.textContent = theme.strings.discountValidFor.replace('%s', cTitle) + ' ';
-          var a = document.createElement('a'); a.href = cUrl; a.textContent = theme.strings.discountSee || 'Ver';
-          msg.appendChild(a);
-        }
-      }
-      if (!known) removeCode(code);
-      else { refreshDiscount(); paintCrossCards(); }
-    }).catch(function () { btn.disabled = false; });
-  });
-  document.addEventListener('click', function (e) {
-    var rm = e.target.closest('[data-discount-remove]');
-    if (rm) {
-      e.preventDefault();
-      removeCode(rm.getAttribute('data-discount-remove')).then(afterCartChange);
-      return;
-    }
-    var cross = e.target.closest('[data-cross-apply]');
-    if (cross) {
-      e.preventDefault();
-      var card = cross.closest('[data-cross-card]');
-      cross.disabled = true;
-      addCode(card.getAttribute('data-code')).then(function () {
-        window.location.href = card.getAttribute('data-url') || '/';
-      }).catch(function () { cross.disabled = false; });
-    }
-  });
-
-  /* Oferta cruzada: si el código ya está guardado (pendiente), cambia el texto y el botón */
-  var paintCrossCards = function () {
-    var cards = $$('[data-cross-card]');
-    if (!cards.length) return;
-    getCartCodes().then(function (codes) {
-      cards.forEach(function (card) {
-        var saved = codes.some(function (c) { return sameCode(c.code, card.getAttribute('data-code')); });
-        $('[data-cross-offer]', card).hidden = saved;
-        $('[data-cross-pending]', card).hidden = !saved;
-        $('[data-cross-apply]', card).hidden = saved;
-        $('[data-cross-go]', card).hidden = !saved;
-      });
-    });
-  };
-  paintCrossCards();
-  discountListeners.push(paintCrossCards);
 
   /* Visor de fotos (lightbox) -------------------------------------------- */
   var lightbox = $('[data-lightbox]');
