@@ -672,11 +672,11 @@
   .vlh-details--mini { border: 0; padding: 4px 0 0 28px; margin: 0; }
   .vlh-details--mini summary { font-size: 11px; }
   /* Aviso de bienvenida (fijo abajo; se mueve al body) */
-  .vlh-offer { position: fixed; z-index: 160; left: 50%; bottom: 20px; width: min(380px, calc(100vw - 32px)); padding: 26px 24px 18px; text-align: center;
+  .vlh-offer { position: fixed; z-index: 160; right: 24px; bottom: 24px; width: min(380px, calc(100vw - 32px)); padding: 26px 24px 18px; text-align: center;
     background: #fbf8f3; color: #2C2218; border: 1px solid rgba(176,138,62,.35); border-radius: 14px; box-shadow: 0 22px 60px rgba(44,34,24,.24);
-    transform: translate(-50%, 130%); opacity: 0; transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease; }
+    transform: translateY(130%); opacity: 0; transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease; }
   .vlh-offer[hidden] { display: none; }
-  .vlh-offer.is-open { transform: translate(-50%, 0); opacity: 1; }
+  .vlh-offer.is-open { transform: none; opacity: 1; }
   .vlh-offer__close { position: absolute; top: 6px; right: 8px; width: 34px; height: 34px; border: 0; background: none; font-size: 24px; line-height: 1; color: #8a7d6e; cursor: pointer; }
   .vlh-offer__kicker { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-style: italic; font-size: 17px; color: #8a6a24; }
   .vlh-offer__title { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-size: 23px; line-height: 1.2; }
@@ -1133,11 +1133,15 @@
   function maybeOffer() {
     if (!offerEl || offerShown || coupon || !canOffer()) return;
     offerShown = true;
-    setTimeout(() => {
+    const show = () => {
+      // Espera a que se cierre el aviso de cookies de Shopify para no taparse
+      const cookies = document.getElementById('shopify-pc__banner');
+      if (cookies && cookies.offsetParent !== null) { setTimeout(show, 1000); return; }
       offerEl.hidden = false;
       document.body.classList.add('has-vlh-offer');
       requestAnimationFrame(() => requestAnimationFrame(() => offerEl.classList.add('is-open')));
-    }, 700);
+    };
+    setTimeout(show, 700);
   }
   if (offerEl) {
     document.body.appendChild(offerEl); // fuera del formulario para que quede fijo abajo
