@@ -33,7 +33,26 @@
     {%- endif -%}
 
     {%- if desc_html != blank -%}
-      {%- if s.accordion and parts.size > 1 -%}
+      {%- if s.accordion and s.merge and parts.size > 1 -%}
+        {%- comment -%} Todo en un solo desplegable: el primer título es el del desplegable y los demás quedan dentro como apartados {%- endcomment -%}
+        {%- assign intro = parts.first | strip -%}
+        <div class="pdesc__accordions">
+          <details class="accordion pdesc__merged"{% if s.first_open %} open{% endif %}>
+            {%- assign first_head = parts[1] | split: '</h3>' | first -%}
+            <summary>{{ first_head | prepend: '<h3' | strip_html | strip }}</summary>
+            <div class="accordion__content rte">
+              {%- if intro != blank -%}{{ intro }}{%- endif -%}
+              {%- for part in parts offset: 1 -%}
+                {%- assign head_and_body = part | split: '</h3>' -%}
+                {%- assign title = head_and_body.first | prepend: '<h3' | strip_html | strip -%}
+                {%- assign body = part | remove_first: head_and_body.first | remove_first: '</h3>' -%}
+                {%- unless forloop.first -%}<h4 class="pdesc__sub">{{ title }}</h4>{%- endunless -%}
+                {{ body }}
+              {%- endfor -%}
+            </div>
+          </details>
+        </div>
+      {%- elsif s.accordion and parts.size > 1 -%}
         {%- assign intro = parts.first | strip -%}
         {%- if intro != blank -%}<div class="rte pdesc__intro">{{ intro }}</div>{%- endif -%}
         <div class="pdesc__accordions">
@@ -61,6 +80,7 @@
   "enabled_on": { "templates": ["product"] },
   "settings": [
     { "type": "checkbox", "id": "accordion", "label": "Convertir los títulos en desplegables", "default": true },
+    { "type": "checkbox", "id": "merge", "label": "Todo en un solo desplegable", "info": "El primer título de la descripción es el del desplegable; los demás quedan dentro como apartados.", "default": false },
     { "type": "checkbox", "id": "first_open", "label": "Primer desplegable abierto", "default": true },
     { "type": "header", "content": "Cómo funciona" },
     { "type": "checkbox", "id": "show_steps", "label": "Mostrar pasos", "default": false },

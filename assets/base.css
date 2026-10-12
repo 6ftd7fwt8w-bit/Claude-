@@ -1323,3 +1323,18 @@ body.set-open { overflow: hidden; }
 .cart-breakdown__hint { font-size: 11.5px; font-weight: 400; color: #8a6a24; margin-top: 1px; }
 .drawer__summary .cart-breakdown__total { display: none; }
 .drawer__summary .cart-breakdown__row:last-of-type { margin-bottom: 0; }
+
+/* Descripción de producto compacta: un solo desplegable y pasos en una fila */
+.pdesc__merged .accordion__content h4.pdesc__sub { margin: 22px 0 6px; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-text); }
+@media (max-width: 749px) {
+  .pdesc-steps { margin-bottom: 18px; }
+  .pdesc-steps .section-title { margin-bottom: 14px !important; }
+  .pdesc-steps__list { grid-template-columns: repeat(4, 1fr); gap: 6px; row-gap: 0; }
+  .pdesc-steps__item { gap: 3px; }
+  .pdesc-steps__icon { width: 46px; height: 46px; margin-bottom: 4px; }
+  .pdesc-steps__icon svg { width: 22px; height: 22px; }
+  .pdesc-steps__icon b { width: 17px; height: 17px; font-size: 10px; top: -3px; right: -4px; }
+  .pdesc-steps__item strong { font-size: 11.5px; line-height: 1.25; }
+  .pdesc-steps__item span { font-size: 10.5px; line-height: 1.3; }
+}
+.ig-stars { display: inline-block; white-space: nowrap; margin-left: 6px; color: #c49a3a; font-size: 1.05em; letter-spacing: .12em; vertical-align: 1px; }

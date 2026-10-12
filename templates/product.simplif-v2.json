@@ -67,8 +67,10 @@
       "type": "product-description",
       "settings": {
         "accordion": true,
-        "first_open": true,
-        "show_steps": true
+        "first_open": false,
+        "show_steps": true,
+        "merge": true,
+        "step_3_text": "Lo revisamos contigo"
       }
     },
     "recommendations": {
@@ -83,11 +85,12 @@
       "type": "instagram-gallery",
       "settings": {
         "eyebrow": "@vivalahome.store",
-        "title": "Visto en Instagram",
-        "subtitle": "Son vuestras fotos y vídeos: así lucen nuestras ilustraciones cuando llegan a vuestras manos. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
+        "title": "Nuestros clientes adoran sus ilustraciones",
+        "subtitle": "Fotos y vídeos reales que nos enviáis al recibir vuestra ilustración.",
         "instagram_url": "https://www.instagram.com/vivalahome.store",
         "columns": 6,
-        "background": "default"
+        "background": "default",
+        "stars": true
       },
       "blocks": {
         "foto_1": {

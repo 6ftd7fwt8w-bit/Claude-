@@ -395,21 +395,37 @@
     welcome.cleared = true; writeWelcome(welcome);
     removeCode(welcome.code || (discountState && discountState.code) || '').then(afterCartChange);
   };
+  var dismissedThisSession = function () { try { return sessionStorage.getItem('vlh_welcome_no') === '1'; } catch (e) { return false; } };
   window.vivaWelcome = {
     active: welcomeActive,
-    // Puede ofrecerse si nunca lo ha activado y no lo ha rechazado en la última semana
-    canOffer: function () { return !welcome.status || (welcome.status === 'dismissed' && Date.now() - (welcome.at || 0) > 7 * 86400000); },
+    // Se ofrece hasta la primera compra; «No, gracias» solo lo oculta en esta visita
+    canOffer: function () { return welcome.status !== 'purchased' && !welcomeActive() && !dismissedThisSession(); },
     expires: function () { return welcome.expires || 0; },
     activate: function (code) {
       welcome = { status: 'accepted', at: Date.now(), expires: Date.now() + WELCOME_MS, code: code };
       writeWelcome(welcome);
       return addCode(code).then(function () { refreshDrawer().then(refreshDiscount); }).catch(function () {});
     },
-    dismiss: function () { welcome = { status: 'dismissed', at: Date.now() }; writeWelcome(welcome); }
+    dismiss: function () { try { sessionStorage.setItem('vlh_welcome_no', '1'); } catch (e) {} }
   };
+  // Primera compra hecha: la cesta con el descuento desaparece (Shopify la vacía y crea otra al pagar)
+  // o la clienta ha iniciado sesión y ya tiene pedidos. A partir de ahí no se vuelve a ofrecer.
+  discountListeners.push(function (ds) {
+    if (!ds || welcome.status === 'purchased') return;
+    if (ds.customerOrders > 0 || (welcome.status === 'accepted' && welcome.items > 0 && welcome.token && ds.token !== welcome.token)) {
+      welcome = { status: 'purchased', at: Date.now() };
+      writeWelcome(welcome);
+      return;
+    }
+    if (welcome.status === 'accepted' && ds.token && (ds.token !== welcome.token || ds.itemCount !== welcome.items)) {
+      welcome.token = ds.token; welcome.items = ds.itemCount;
+      writeWelcome(welcome);
+    }
+  });
+  if (discountState) discountListeners[discountListeners.length - 1](discountState);
   // Código ya aplicado sin activación (p. ej. de antes de este cambio): sus 24 h empiezan ahora
   discountListeners.push(function (ds) {
-    if (ds && ds.applied > 0 && welcome.status !== 'accepted') {
+    if (ds && ds.applied > 0 && welcome.status !== 'accepted' && welcome.status !== 'purchased') {
       welcome = { status: 'accepted', at: Date.now(), expires: Date.now() + WELCOME_MS, code: ds.code };
       writeWelcome(welcome);
     }

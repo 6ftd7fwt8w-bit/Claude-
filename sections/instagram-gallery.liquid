@@ -16,6 +16,7 @@
     {%- else -%}
       {{ section.settings.title }}
     {%- endif -%}
+    {%- if section.settings.stars -%} <span class="ig-stars" role="img" aria-label="5 de 5 estrellas">★★★★★</span>{%- endif -%}
   </h2>
   {%- if section.settings.subtitle != blank -%}<p class="section-subtitle ig-subtitle">{{ section.settings.subtitle }}</p>{%- endif -%}
   {%- capture ig_items -%}
@@ -74,6 +75,7 @@
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Antetítulo (con icono de Instagram)", "info": "Ej.: @vivalahome.store" },
     { "type": "text", "id": "title", "label": "Título", "default": "Visto en Instagram" },
+    { "type": "checkbox", "id": "stars", "label": "Mostrar 5 estrellas junto al título", "default": false },
     { "type": "textarea", "id": "subtitle", "label": "Subtítulo" },
     { "type": "url", "id": "instagram_url", "label": "Enlace a tu perfil" },
     { "type": "checkbox", "id": "autoscroll", "label": "Movimiento automático", "default": true },

@@ -429,6 +429,8 @@
         endunless
       endif
     -%}
+    {%- comment -%} Solo hasta la primera compra: con sesión iniciada y pedidos anteriores no se ofrece {%- endcomment -%}
+    {%- if customer and customer.orders_count > 0 -%}{%- assign vlh_w_ok = false -%}{%- endif -%}
     {%- if vlh_w_ok and vlh_w_code != blank -%}
       {%- assign vlh_w_pct = settings.welcome_percent | default: 10 -%}
       <div class="vlh-offer" id="vlh-offer" role="dialog" aria-labelledby="vlh-offer-title" data-code="{{ vlh_w_code | escape }}" data-percent="{{ vlh_w_pct }}" hidden>
@@ -1118,7 +1120,12 @@
   const WELCOME_PCT = offerEl ? (parseInt(offerEl.dataset.percent, 10) || 0) : 0;
   const readWelcome = () => { try { return JSON.parse(localStorage.getItem('vlh_welcome')) || {}; } catch (e) { return {}; } };
   const welcomeOn = () => { const w = readWelcome(); return w.status === 'accepted' && w.expires > Date.now(); };
-  const canOffer = () => { const w = readWelcome(); return !w.status || (w.status === 'dismissed' && Date.now() - (w.at || 0) > 7 * 86400000); };
+  // Se ofrece hasta la primera compra; «No, gracias» solo lo oculta en esta visita
+  const canOffer = () => {
+    if (window.vivaWelcome) return window.vivaWelcome.canOffer();
+    let no = false; try { no = sessionStorage.getItem('vlh_welcome_no') === '1'; } catch (e) {}
+    return readWelcome().status !== 'purchased' && !welcomeOn() && !no;
+  };
   function syncWelcome() {
     coupon = WELCOME_CODE && welcomeOn() ? { code: WELCOME_CODE, percent: WELCOME_PCT } : null;
     if (perkEl) perkEl.hidden = !coupon;
@@ -1147,8 +1154,7 @@
   if (offerEl) {
     document.body.appendChild(offerEl); // fuera del formulario para que quede fijo abajo
     offerEl.querySelectorAll('[data-offer-no]').forEach((b) => b.addEventListener('click', () => {
-      if (window.vivaWelcome) window.vivaWelcome.dismiss();
-      else try { localStorage.setItem('vlh_welcome', JSON.stringify({ status: 'dismissed', at: Date.now() })); } catch (e) {}
+      try { sessionStorage.setItem('vlh_welcome_no', '1'); } catch (e) {}
       hideOffer();
     }));
     offerEl.querySelector('[data-offer-yes]').addEventListener('click', (e) => {

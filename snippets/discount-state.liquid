@@ -64,6 +64,8 @@
     "crossUrl": {{ settings.cross_collection.url | default: '' | json }},
     "crossTitle": {{ settings.cross_collection.title | default: '' | downcase | json }},
     "itemCount": {{ cart.item_count | json }},
+    "token": {{ cart.token | default: '' | json }},
+    "customerOrders": {% if customer %}{{ customer.orders_count | default: 0 }}{% else %}0{% endif %},
     "total": {{ cart.total_price | json }},
     "currency": {{ cart.currency.iso_code | json }},
     "locale": {{ request.locale.iso_code | json }}
