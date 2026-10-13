@@ -127,7 +127,7 @@
               type="radio"
               name="vlh-tamano"
               value="{{ tamano_valor | escape }}"
-              {% if tamano_valor contains 'A3' %}checked{% elsif forloop.first and vlh_tamanos.size == 1 %}checked{% endif %}
+              {% if tamano_valor contains 'A4' %}checked{% elsif forloop.first and vlh_tamanos.size == 1 %}checked{% endif %}
               required
             >
             <span class="vlh-radio-card__title">{{ tamano_valor }}</span>
@@ -171,7 +171,7 @@
           </div>
         </div>
       {%- endif -%}
-      <p class="vlh-hint" id="vlh-tamano-valentina-nota" hidden>El Pack Valentina se presenta siempre en A3 con marco. Si quieres otro tamaño o un lienzo, primero desmarca el Pack Valentina más abajo.</p>
+      <p class="vlh-hint" id="vlh-tamano-valentina-nota" hidden>El Pack Valentina se presenta siempre en A3 con marco. Si quieres otro tamaño o un lienzo, primero elige otra presentación más abajo.</p>
     </fieldset>
 
     <!-- ============ 2. SEGUNDA VARIANTE (solo si el producto la tiene) ============ -->
@@ -238,133 +238,115 @@
       </div>
     </fieldset>
 
-    <!-- ============ EXTRAS (opcionales) ============ -->
-    <div class="vlh-extras-head">
-      <p class="vlh-extras-title">Personaliza tu pedido</p>
-      <p class="vlh-extras-sub">Opcional · regalo, marco y detalles de tu ilustración</p>
-    </div>
-
     {%- if vlh_hay_lienzo -%}
     <div class="vlh-trust vlh-canvas-note" data-canvas-note hidden>
       <span class="vlh-trust__check" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
       <div>
         <p class="vlh-trust__title">¡Enhorabuena! Tu lienzo llega listo para colgar</p>
-        <p class="vlh-trust__text">Pack regalo y marcos disponibles únicamente para láminas A4 y A3.</p>
+        <p class="vlh-trust__text">Marcos y packs regalo disponibles únicamente para láminas A4 y A3.</p>
       </div>
     </div>
     {%- endif -%}
     <div data-lamina-extras>
 
-    <!-- ============ 3. ¿ES PARA REGALO? ============ -->
-    <details class="vlh-field vlh-accordion">
-      <summary>
-        <span class="vlh-accordion__title">Lo quiero para regalar 🎁<small class="vlh-accordion__sub">Packs con marco incluido, envoltorio y mensaje</small></span>
-        <span class="vlh-accordion__value vlh-accordion__value--empty" id="vlh-pack-summary">+</span>
-        <span class="vlh-accordion__icon" aria-hidden="true"></span>
-      </summary>
-      <div class="vlh-accordion__body">
-      <div class="vlh-radio-cards vlh-radio-cards--packs" id="vlh-pack-group">
-        <label class="vlh-radio-card vlh-radio-card--pack">
-          <input type="radio" name="vlh-pack" value="no" checked>
-          <span class="vlh-radio-card__title">No, gracias</span>
+    <!-- ============ 3. ¿CÓMO QUIERES RECIBIR TU ILUSTRACIÓN? (4 tarjetas) ============ -->
+    {%- assign vlh_img_solo = lamina_image | default: product.featured_image -%}
+    {%- assign vlh_img_marco = p_marco_a4.featured_image | default: p_marco_a3.featured_image -%}
+    <fieldset class="vlh-field vlh-pres" id="vlh-pres-field">
+      <legend>¿Cómo quieres recibir tu ilustración?</legend>
+      <div class="vlh-pres-grid">
+        <label class="vlh-pres-card">
+          <input type="radio" name="vlh-pres" value="solo" checked>
+          <span class="vlh-pres-card__media">{%- if vlh_img_solo -%}<img src="{{ vlh_img_solo | image_url: width: 360 }}" alt="Solo lámina" loading="lazy" width="180" height="180">{%- endif -%}</span>
+          <span class="vlh-pres-card__title">Solo lámina</span>
+          <span class="vlh-pres-card__sub">Papel de algodón 300&nbsp;g</span>
+          <span class="vlh-pres-card__price">Incluida</span>
+        </label>
+        <label class="vlh-pres-card">
+          <input type="radio" name="vlh-pres" value="enmarcada">
+          <span class="vlh-pres-card__media">{%- if vlh_img_marco -%}<img src="{{ vlh_img_marco | image_url: width: 360 }}" alt="Enmarcada" loading="lazy" width="180" height="180">{%- endif -%}</span>
+          <span class="vlh-pres-card__title">Enmarcada</span>
+          <span class="vlh-pres-card__sub">Lista para colgar</span>
+          <span class="vlh-pres-card__price" id="vlh-pres-marco-price"></span>
         </label>
         {% if p_pack_regalo %}
-        {%- assign pr_a4 = p_pack_regalo.selected_or_first_available_variant -%}
-        {%- capture pr_vars -%}[{%- for v in p_pack_regalo.variants -%}{"id":{{ v.id }},"price":{{ v.price }},"o":{{ v.options | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
-        <label class="vlh-radio-card vlh-radio-card--pack vlh-pack-row">
-          <input type="radio" name="vlh-pack" value="regalo"
-            data-variant-id="{{ pr_a4.id }}" data-price-cents="{{ pr_a4.price }}"
-            data-variants='{{ pr_vars | escape }}'>
-          {% if p_pack_regalo.featured_image %}
-          <span class="vlh-pack-row__media">
-            <img class="vlh-radio-card__img vlh-radio-card__img--pack" src="{{ p_pack_regalo.featured_image | image_url: width: 400 }}" alt="Pack regalo" loading="lazy" width="200" height="250">
-            {%- if p_pack_regalo.images.size > 0 -%}
-              {%- capture pack_imgs -%}[{%- for im in p_pack_regalo.images -%}{{ im | image_url: width: 1400 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
-              <button type="button" class="vlh-pack-photos" data-lightbox-images='{{ pack_imgs | escape }}' data-lightbox-title="Pack regalo">Ver fotos ({{ p_pack_regalo.images.size }})</button>
-            {%- endif -%}
-          </span>
-          {% endif %}
-          <span class="vlh-pack-row__body">
-            <span class="vlh-radio-card__title">Pack Regalo</span>
-            <span class="vlh-pack-row__kicker">Listo para regalar</span>
-            <span class="vlh-pack-row__list">
-              <span>Marco incluido: la lámina llega ya enmarcada</span>
-              <span>Envuelta en papel premium con lazada, en caja kraft</span>
-              <span>Rafia decorativa y ramillete de flores secas</span>
-              <span>Mensaje personalizado</span>
-            </span>
-            <span class="vlh-pack-row__foot"><span class="vlh-radio-card__price" id="vlh-pack-regalo-price">+ {{ pr_a4.price | money }}</span></span>
-          </span>
+        <label class="vlh-pres-card">
+          <input type="radio" name="vlh-pres" value="regalo">
+          <span class="vlh-pres-card__media">{%- if p_pack_regalo.featured_image -%}<img src="{{ p_pack_regalo.featured_image | image_url: width: 360 }}" alt="Pack Regalo" loading="lazy" width="180" height="180">{%- endif -%}</span>
+          <span class="vlh-pres-card__title">Pack Regalo</span>
+          <span class="vlh-pres-card__sub">Enmarcada y envuelta para regalar</span>
+          <span class="vlh-pres-card__price" id="vlh-pack-regalo-price"></span>
         </label>
         {% endif %}
         {% if p_pack_valentina %}
-        {%- capture pv_vars -%}[{%- for v in p_pack_valentina.variants -%}{"id":{{ v.id }},"price":{{ v.price }},"o":{{ v.options | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
-        <label class="vlh-radio-card vlh-radio-card--pack vlh-pack-row vlh-pack-row--featured" id="vlh-pack-valentina-card">
-          <input type="radio" name="vlh-pack" value="valentina" id="vlh-pack-valentina-input"
-            data-variant-id="{{ p_pack_valentina.selected_or_first_available_variant.id }}"
-            data-price-cents="{{ p_pack_valentina.selected_or_first_available_variant.price }}"
-            data-variants='{{ pv_vars | escape }}'>
-          <span class="vlh-radio-card__ribbon">Pack completo ♡</span>
-          {% if p_pack_valentina.featured_image %}
-          <span class="vlh-pack-row__media">
-            <img class="vlh-radio-card__img vlh-radio-card__img--pack" src="{{ p_pack_valentina.featured_image | image_url: width: 500 }}" alt="Pack Valentina" loading="lazy" width="250" height="312">
-            {%- if p_pack_valentina.images.size > 0 -%}
-              {%- capture pack_imgs -%}[{%- for im in p_pack_valentina.images -%}{{ im | image_url: width: 1400 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
-              <button type="button" class="vlh-pack-photos" data-lightbox-images='{{ pack_imgs | escape }}' data-lightbox-title="Pack Valentina">Ver fotos ({{ p_pack_valentina.images.size }})</button>
-            {%- endif -%}
-          </span>
-          {% endif %}
-          <span class="vlh-pack-row__body">
-            <span class="vlh-radio-card__title vlh-pack-row__name">Pack Valentina</span>
-            <span class="vlh-pack-row__kicker">El regalo completo para emocionar</span>
-            <span class="vlh-pack-row__list">
-              <span>Ilustración en A3, nuestra versión más grande</span>
-              <span>Marco incluido, envuelto en papel premium con lazada</span>
-              <span>Ramo de flores Korean finish que no se marchita</span>
-              <span>Ramillete decorativo y mensaje en la tapa</span>
-              <span>Acabados en textil, yute y encaje, montado a mano</span>
-            </span>
-            <span class="vlh-pack-row__foot"><span class="vlh-radio-card__price" id="vlh-pack-valentina-price">+ {{ p_pack_valentina.selected_or_first_available_variant.price | money }}</span><span class="vlh-pack-row__note">todo listo para emocionar</span></span>
-          </span>
+        <label class="vlh-pres-card vlh-pres-card--featured">
+          <input type="radio" name="vlh-pres" value="valentina">
+          <span class="vlh-pres-card__ribbon">Pack completo ♡</span>
+          <span class="vlh-pres-card__media">{%- if p_pack_valentina.featured_image -%}<img src="{{ p_pack_valentina.featured_image | image_url: width: 360 }}" alt="Pack Valentina" loading="lazy" width="180" height="180">{%- endif -%}</span>
+          <span class="vlh-pres-card__title">Pack Valentina</span>
+          <span class="vlh-pres-card__sub">El pack completo para emocionar</span>
+          <span class="vlh-pres-card__price" id="vlh-pack-valentina-price"></span>
         </label>
         {% endif %}
       </div>
 
-      <p class="vlh-hint" id="vlh-pack-regalo-desc" hidden>Presentación especial lista para regalar: la lámina llega ya enmarcada y envuelta en papel premium con lazada.</p>
-      <p class="vlh-hint" id="vlh-pack-valentina-desc" hidden>Nuestra presentación más especial, con flores y detalles hechos a mano. Marco incluido.</p>
+      {%- comment -%} Radios internos del pack (los mueven las tarjetas; la lógica de precios y carrito los usa) {%- endcomment -%}
+      <div hidden>
+        <input type="radio" name="vlh-pack" value="no" checked>
+        {% if p_pack_regalo %}
+        {%- assign pr_a4 = p_pack_regalo.selected_or_first_available_variant -%}
+        {%- capture pr_vars -%}[{%- for v in p_pack_regalo.variants -%}{"id":{{ v.id }},"price":{{ v.price }},"o":{{ v.options | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
+        <input type="radio" name="vlh-pack" value="regalo" data-variant-id="{{ pr_a4.id }}" data-price-cents="{{ pr_a4.price }}" data-variants='{{ pr_vars | escape }}'>
+        {% endif %}
+        {% if p_pack_valentina %}
+        {%- capture pv_vars -%}[{%- for v in p_pack_valentina.variants -%}{"id":{{ v.id }},"price":{{ v.price }},"o":{{ v.options | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
+        <input type="radio" name="vlh-pack" value="valentina" id="vlh-pack-valentina-input" data-variant-id="{{ p_pack_valentina.selected_or_first_available_variant.id }}" data-price-cents="{{ p_pack_valentina.selected_or_first_available_variant.price }}" data-variants='{{ pv_vars | escape }}'>
+        {% endif %}
+      </div>
+
+      <p class="vlh-hint vlh-pres-hint" id="vlh-pres-solo-desc">Te llega en sobre rígido, protegida para que no se doble.</p>
+      <p class="vlh-hint vlh-pres-hint" id="vlh-pres-marco-desc" hidden>Te llega ya enmarcada y lista para colgar, en un embalaje protector.</p>
+      <p class="vlh-hint vlh-pres-hint" id="vlh-pack-regalo-desc" hidden>Lista para regalar: enmarcada y envuelta en papel premium con lazada, en caja kraft.</p>
+      <p class="vlh-hint vlh-pres-hint" id="vlh-pack-valentina-desc" hidden>Nuestra presentación más especial, con flores y detalles montados a mano. Siempre en A3 y enmarcada.</p>
+      <p class="vlh-hint vlh-pres-hint" id="vlh-tamano-valentina-nota-pack" hidden>Hemos cambiado el tamaño a A3, que es como se presenta este pack.</p>
 
       {% if p_pack_regalo %}
-      <details class="vlh-details" id="vlh-pack-regalo-details" hidden>
+      <details class="vlh-details vlh-pres-incluye" id="vlh-pack-regalo-details" hidden>
         <summary>Ver qué incluye el Pack Regalo</summary>
+        <ul class="vlh-pres-list">
+          <li>Marco incluido: la lámina llega ya enmarcada</li>
+          <li>Envuelta en papel premium con lazada, en caja kraft</li>
+          <li>Rafia decorativa y ramillete de flores secas</li>
+          <li>Mensaje personalizado</li>
+        </ul>
         <div class="vlh-pack-desc__body">{{ p_pack_regalo.description }}</div>
+        {%- if p_pack_regalo.images.size > 0 -%}
+          {%- capture pack_imgs -%}[{%- for im in p_pack_regalo.images -%}{{ im | image_url: width: 1400 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
+          <button type="button" class="vlh-pack-photos" data-lightbox-images='{{ pack_imgs | escape }}' data-lightbox-title="Pack Regalo">Ver fotos ({{ p_pack_regalo.images.size }})</button>
+        {%- endif -%}
       </details>
       {% endif %}
       {% if p_pack_valentina %}
-      <details class="vlh-details" id="vlh-pack-valentina-details" hidden>
+      <details class="vlh-details vlh-pres-incluye" id="vlh-pack-valentina-details" hidden>
         <summary>Ver qué incluye el Pack Valentina</summary>
+        <ul class="vlh-pres-list">
+          <li>Ilustración en A3, nuestra versión más grande</li>
+          <li>Marco incluido, envuelto en papel premium con lazada</li>
+          <li>Ramo de flores Korean finish que no se marchita</li>
+          <li>Ramillete decorativo y mensaje en la tapa</li>
+          <li>Acabados en textil, yute y encaje, montado a mano</li>
+        </ul>
         <div class="vlh-pack-desc__body">{{ p_pack_valentina.description }}</div>
+        {%- if p_pack_valentina.images.size > 0 -%}
+          {%- capture pack_imgs -%}[{%- for im in p_pack_valentina.images -%}{{ im | image_url: width: 1400 | json }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]{%- endcapture -%}
+          <button type="button" class="vlh-pack-photos" data-lightbox-images='{{ pack_imgs | escape }}' data-lightbox-title="Pack Valentina">Ver fotos ({{ p_pack_valentina.images.size }})</button>
+        {%- endif -%}
       </details>
       {% endif %}
 
-      </div>
-    </details>
-
-    <!-- Fuera del desplegable: al elegir pack el desplegable se cierra solo y esto sigue visible -->
-    <p class="vlh-hint vlh-pack-after" id="vlh-tamano-valentina-nota-pack" hidden>Este pack se presenta siempre en A3 y enmarcado — hemos ajustado el tamaño automáticamente.</p>
-    <div class="vlh-subpanel vlh-pack-after" id="vlh-pack-mensaje-panel" hidden>
-      <p class="vlh-hint" style="margin-top:0;">Mensaje personalizado para el interior de la tapa (máx. 10 palabras)</p>
-      <input type="text" id="vlh-mensaje-pack" maxlength="80" placeholder="Ej: Con todo mi cariño para ti">
-      <p class="vlh-hint" id="vlh-mensaje-pack-contador" style="text-align:right;margin-top:4px;">0 / 10 palabras</p>
-    </div>
-
-    <!-- ============ 4. MARCO ============ -->
-    <details class="vlh-field vlh-accordion" id="vlh-marco-field">
-      <summary>
-        <span class="vlh-accordion__title">Lo quiero enmarcado 🖼️<small class="vlh-accordion__sub">Marco blanco o de madera, listo para colgar</small></span>
-        <span class="vlh-accordion__value vlh-accordion__value--empty" id="vlh-marco-summary">+</span>
-        <span class="vlh-accordion__icon" aria-hidden="true"></span>
-      </summary>
-      <div class="vlh-accordion__body">
+      <!-- Color del marco (enmarcada y packs) -->
+      <div class="vlh-subpanel vlh-pres-marco" id="vlh-marco-field" hidden>
+        <p class="vlh-pres-marco__title">Color del marco</p>
         <div class="vlh-trust vlh-marco-incluido" id="vlh-marco-obligatorio-nota" hidden>
           <span class="vlh-trust__check" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
           <div>
@@ -374,13 +356,21 @@
         </div>
         <p class="vlh-hint vlh-marco-depth" id="vlh-marco-depth" hidden><strong>✦ Marco efecto profundidad.</strong> La lámina queda ligeramente hundida dentro del marco, con un acabado más elegante y premium.</p>
         <div class="vlh-radio-cards" id="vlh-marco-color-group"></div>
-        <details class="vlh-details">
-          <summary>¿Cómo se envía tu pedido?</summary>
-          <p class="vlh-hint" style="margin-top:0;" id="vlh-envio-nota">Si tu pedido no incluye marco ni ningún pack regalo, se envía en sobre rígido. Si eliges marco, la lámina va ya enmarcada y lista para colgar, y la enviamos en un packaging especial protector. Si incluye algún pack regalo, la lámina va ya enmarcada (el marco está incluido en el pack) y se envía en caja kraft premium.</p>
-        </details>
       </div>
-    </details>
 
+      <div class="vlh-subpanel" id="vlh-pack-mensaje-panel" hidden>
+        <p class="vlh-hint" style="margin-top:0;">Mensaje personalizado para el interior de la tapa (máx. 10 palabras)</p>
+        <input type="text" id="vlh-mensaje-pack" maxlength="80" placeholder="Ej: Con todo mi cariño para ti">
+        <p class="vlh-hint" id="vlh-mensaje-pack-contador" style="text-align:right;margin-top:4px;">0 / 10 palabras</p>
+      </div>
+    </fieldset>
+
+    </div>
+
+    <!-- ============ EXTRAS (opcionales) ============ -->
+    <div class="vlh-extras-head">
+      <p class="vlh-extras-title">Personaliza tu pedido</p>
+      <p class="vlh-extras-sub">Opcional · detalles de tu ilustración</p>
     </div>
 
     <!-- ============ 7. NOTAS PARA EL DISEÑADOR (plegado) ============ -->
@@ -751,6 +741,28 @@
   .vlh-checkbox-row { display: flex; align-items: center; gap: 10px; }
 
   .vlh-subpanel { margin-top: 16px; padding: 18px; background: var(--vlh-crema); }
+  /* ¿Cómo quieres recibir tu ilustración? — 4 tarjetas con foto */
+  .vlh-pres-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .vlh-pres-card { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 8px 8px 12px; border: 1px solid var(--vlh-mist); border-radius: 10px; background: #fff; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease; -webkit-tap-highlight-color: transparent; }
+  .vlh-pres-card input { position: absolute; opacity: 0; pointer-events: none; }
+  .vlh-pres-card__media { display: block; aspect-ratio: 1 / 1; margin-bottom: 8px; border-radius: 6px; overflow: hidden; background: var(--vlh-crema); }
+  .vlh-pres-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vlh-pres-card__title { font-family: var(--font-serif); font-size: 18px; line-height: 1.15; color: var(--vlh-tinta); padding: 0 2px; }
+  .vlh-pres-card__sub { font-size: 12px; line-height: 1.3; color: #7b7168; padding: 0 2px; }
+  .vlh-pres-card__price { margin-top: 4px; font-size: 13.5px; font-weight: 600; color: var(--vlh-tinta); padding: 0 2px; }
+  .vlh-pres-card__ribbon { position: absolute; top: 14px; left: 14px; z-index: 1; padding: 3px 8px; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: #fff; background: var(--vlh-terracota); border-radius: 3px; }
+  .vlh-pres-card.is-checked, .vlh-pres-card:has(input:checked) { border-color: var(--vlh-tinta); box-shadow: 0 0 0 1px var(--vlh-tinta), 0 6px 16px rgba(35,31,28,.08); }
+  .vlh-pres-card.is-checked::after, .vlh-pres-card:has(input:checked)::after { content: '✓'; position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff; background: var(--vlh-tinta); }
+  .vlh-pres-card:has(input:focus-visible) { outline: 2px solid var(--vlh-terracota); outline-offset: 2px; }
+  .vlh-pres-card--featured { background: linear-gradient(160deg, #fffdf9 0%, #f4ece1 100%); }
+  .vlh-pres-hint { margin: 12px 0 0; }
+  .vlh-pres-hint[hidden], .vlh-pres-marco[hidden] { display: none; }
+  .vlh-pres-incluye { margin-top: 10px; }
+  .vlh-pres-list { margin: 4px 0 8px; padding: 0; list-style: none; font-size: 13px; line-height: 1.45; }
+  .vlh-pres-list li { position: relative; padding-left: 18px; margin-bottom: 3px; }
+  .vlh-pres-list li::before { content: '✓'; position: absolute; left: 0; color: var(--vlh-terracota); font-weight: 700; }
+  .vlh-pres-marco__title { margin: 0 0 10px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+  @media (min-width: 990px) { .vlh-pres-card__title { font-size: 19px; } }
   .vlh-radio-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
   .vlh-radio-list:not(.is-open) .vlh-radio-row--more:not(:has(input:checked)) { display: none; }
   .vlh-more-toggle { align-self: flex-start; margin-top: 2px; padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--vlh-tinta); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
@@ -842,6 +854,7 @@
     composicionPrecio: document.querySelector('[data-composicion-precio]'),
     totalOldEl: document.getElementById('vlh-total-old'),
     laminaExtras: form.querySelector('[data-lamina-extras]'),
+    presInputs: form.querySelectorAll('input[name="vlh-pres"]'),
     packSummary: document.getElementById('vlh-pack-summary'),
     marcoSummary: document.getElementById('vlh-marco-summary'),
     sinFotoToggle: document.getElementById('vlh-sin-foto-toggle'),
@@ -1057,13 +1070,16 @@
     els.packInputs.forEach(input => {
       if (input.value === 'no') return;
       input.disabled = lienzo;
-      input.closest('label').classList.toggle('is-disabled', lienzo);
+      const lbl = input.closest('label');
+      if (lbl) lbl.classList.toggle('is-disabled', lienzo);
       if (lienzo && input.checked) {
         input.checked = false;
         const no = [...els.packInputs].find(i => i.value === 'no');
         if (no) no.checked = true;
       }
     });
+    // Con lienzo vuelve a «Solo lámina» (el lienzo ya llega listo para colgar)
+    if (lienzo) els.presInputs.forEach(i => { i.checked = i.value === 'solo'; });
     form.querySelectorAll('[data-canvas-note]').forEach(n => { n.hidden = !lienzo; });
     if (els.laminaExtras) {
       els.laminaExtras.hidden = lienzo;
@@ -1071,23 +1087,39 @@
     }
   }
 
+  // ---------------- PRESENTACIÓN (4 tarjetas) ----------------
+  // La tarjeta elegida manda: mueve los radios internos del pack y el modo del marco.
+  function getPresMode() {
+    const c = getCheckedRadio(els.presInputs);
+    return c ? c.value : 'solo';
+  }
+  function syncPresToPack() {
+    const mode = getPresMode();
+    const target = mode === 'regalo' || mode === 'valentina' ? mode : 'no';
+    els.packInputs.forEach(i => { i.checked = i.value === target; });
+  }
   function syncPackUI() {
+    const mode = getPresMode();
+    const show = (id, on) => { const el = document.getElementById(id); if (el) el.hidden = !on; };
+    show('vlh-pres-solo-desc', mode === 'solo');
+    show('vlh-pres-marco-desc', mode === 'enmarcada');
     els.packRegaloDesc.hidden = !isRegalo();
     els.packValentinaDesc.hidden = !isValentina();
     if (els.packRegaloDetails) els.packRegaloDetails.hidden = !isRegalo();
     if (els.packValentinaDetails) els.packValentinaDetails.hidden = !isValentina();
     els.packMensajePanel.hidden = !(isRegalo() || isValentina());
-    // Al elegir un pack, despliega el acordeón de Marco para que se vea
-    // que el marco ya va incluido y solo hay que elegir el color.
-    if (hasPack() && !vlhEraPack && els.marcoField) {
-      els.marcoField.open = true;
-    }
-    vlhEraPack = hasPack();
-    if (els.packSummary) {
-      const tieneAlgo = isRegalo() || isValentina();
-      els.packSummary.textContent = isRegalo() ? 'Pack Regalo' : isValentina() ? 'Pack Valentina' : '+';
-      els.packSummary.classList.toggle('vlh-accordion__value--empty', !tieneAlgo);
-    }
+    if (els.marcoField) els.marcoField.hidden = mode === 'solo';
+    els.presInputs.forEach(i => i.closest('label').classList.toggle('is-checked', i.checked));
+  }
+  function syncPresPrecios() {
+    const el = document.getElementById('vlh-pres-marco-price');
+    if (!el) return;
+    const precios = getMarcoColorsForSize().map(c => {
+      if (!HAS_PRES) return c.price;
+      const d = presDiff('Enmarcada · ' + colorPres(c.label));
+      return d != null ? d : c.price;
+    });
+    el.textContent = precios.length ? '+ ' + money(Math.min(...precios)) : '';
   }
 
   function getMarcoColorsForSize() {
@@ -1115,14 +1147,16 @@
     }
     // Si cambia de "con pack" (marco incluido) a "sin pack" o al revés, no arrastramos
     // la elección anterior: sin pack vuelve a "Sin marco" para no cobrar un marco sin querer.
-    const cambioModo = els.marcoColorGroup.dataset.incluido !== String(incluido);
-    els.marcoColorGroup.dataset.incluido = String(incluido);
+    // Modos: pack (marco incluido), enmarcada (hay que elegir color) o solo lámina («Sin marco»)
+    const modo = incluido ? 'pack' : (getPresMode() === 'enmarcada' ? 'marco' : 'no');
+    const cambioModo = els.marcoColorGroup.dataset.modo !== modo;
+    els.marcoColorGroup.dataset.modo = modo;
     const previousLabel = cambioModo ? null : (getSelectedMarco()?.dataset.label || null);
-    const opciones = incluido ? colors : [{ id: '', price: 0, label: 'Sin marco' }, ...colors];
+    const opciones = modo === 'no' ? [{ id: '', price: 0, label: 'Sin marco' }, ...colors] : colors;
     els.marcoColorGroup.innerHTML = opciones.map((c, i) => {
       const esSinMarco = c.label === 'Sin marco';
       const prevValida = previousLabel && opciones.some(o => o.label === previousLabel);
-      const checked = prevValida ? (c.label === previousLabel) : (incluido ? i === 0 : esSinMarco);
+      const checked = prevValida ? (c.label === previousLabel) : (modo === 'no' ? esSinMarco : i === 0);
       return `
         <label class="vlh-radio-card">
           <input type="radio" name="vlh-marco-color" value="${c.label}"
@@ -1348,16 +1382,6 @@
       els.totalOldEl.textContent = ahorro ? money(total) : '';
     }
     els.totalPriceEl.closest('.vlh-summary').classList.toggle('has-discount', ahorro > 0);
-    // Arriba, junto al título: el precio de lo que tiene elegido (no el «desde»)
-    const topPrice = document.querySelector('[data-product-price]');
-    if (topPrice && variante) {
-      topPrice.innerHTML = `<span class="vlh-top-price${ahorro ? ' has-discount' : ''}">${money(final)}</span>${ahorro ? ` <s class="vlh-top-old">${money(total)}</s>` : ''}`;
-      let note = document.getElementById('vlh-top-note');
-      if (!note) { note = document.createElement('p'); note.id = 'vlh-top-note'; note.className = 'vlh-top-note'; topPrice.after(note); }
-      const m = getSelectedMarco();
-      const conMarco = hasPack() || (m && m.dataset.label && m.dataset.label !== 'Sin marco');
-      note.textContent = isLienzo() ? 'Lienzo con bastidor, listo para colgar.' : (conMarco ? 'Te llega ya enmarcada, lista para colgar.' : 'Lámina sin marco. Puedes añadirlo abajo si la quieres lista para colgar.');
-    }
     let html = lines.map(([label, cents]) => `<li><span>${label}</span><span>${money(cents)}</span></li>`).join('');
     if (ahorro) html += `<li class="is-discount"><span>Descuento de bienvenida (−${coupon.percent} %)</span><span>−${money(ahorro)}</span></li>`;
     els.breakdownEl.innerHTML = (lines.length > 1 || ahorro) ? html : '';
@@ -1366,7 +1390,7 @@
 
   function syncAll() {
     if (els.errorEl) els.errorEl.hidden = true;
-    const pasos = [syncPreciosVariante, syncValentinaRules, syncLienzoRules, syncPackPrecio, syncPackUI, syncMarco, syncPackPrecio, syncComposicion, syncFotosUI, calcTotal];
+    const pasos = [syncPresToPack, syncPreciosVariante, syncValentinaRules, syncLienzoRules, syncPackPrecio, syncPackUI, syncMarco, syncPackPrecio, syncPresPrecios, syncComposicion, syncFotosUI, calcTotal];
     pasos.forEach((fn) => { try { fn(); } catch (e) { console.error('Error en ' + fn.name + ':', e); } });
   }
 
