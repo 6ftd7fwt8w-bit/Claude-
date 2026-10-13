@@ -12,7 +12,7 @@
     extra dentro del formulario.
   - Se elimina el selector de fecha de entrega y el recargo de
     urgencia. Se sustituye por un texto informativo con un rango de
-    fechas estimado (hoy + 15 a hoy + 20 días) calculado en el
+    fechas estimado (hoy + 10 a hoy + 15 días) calculado en el
     momento de cargar la página, y un aviso para contactar por
     WhatsApp si se necesita antes.
   - La pregunta de "varias fotografías" se integra directamente en
@@ -389,7 +389,7 @@
 
     <!-- ============ 8. ENTREGA Y REVISIÓN (resumido) ============ -->
     <ul class="vlh-perks">
-      <li><span aria-hidden="true">📦</span><span>Entrega estimada <strong id="vlh-fecha-estimada"></strong> · <a href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener">¿Lo necesitas antes?</a></span></li>
+      <li><span aria-hidden="true">📦</span><span>Entrega estimada <strong id="vlh-fecha-estimada"></strong> <span class="vlh-fecha-nota" id="vlh-fecha-nota" hidden>(10-15 días desde que recibamos tu foto)</span> · <a href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener">¿Lo necesitas antes?</a></span></li>
     </ul>
     <div class="vlh-trust">
       <span class="vlh-trust__check" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
@@ -701,6 +701,11 @@
   /* Descuento activado: línea dorada en el resumen */
   .vlh-perk { margin: 10px 0 0; padding: 8px 12px; font-size: 12.5px; line-height: 1.4; color: #8a6a24; background: #fbf6ea; border: 1px solid rgba(176,138,62,.4); border-radius: 6px; text-align: center; }
   .vlh-perk[hidden] { display: none; }
+  .vlh-top-price.has-discount { color: #2f6b3a; }
+  .vlh-top-old { font-size: .7em; color: #a8a096; margin-left: 6px; }
+  .vlh-top-note { margin: 4px 0 0; font-size: 12.5px; color: var(--color-muted, #7B7168); }
+  .vlh-fecha-nota { font-size: .92em; color: var(--color-muted, #7B7168); }
+  .vlh-fecha-nota[hidden] { display: none; }
   .vlh-perk b { color: #7a5a12; font-weight: 600; }
   .vlh-summary__old { margin-right: 8px; font-size: 18px; color: #a8a096; text-decoration: line-through; font-family: var(--font-serif); }
   .vlh-summary__breakdown li.is-discount { color: #2f6b3a; font-weight: 600; opacity: 1; }
@@ -1096,6 +1101,8 @@
     if (drop) drop.hidden = sinFoto;
     if (thumbs) thumbs.hidden = sinFoto || !thumbs.children.length;
     els.uploadInput.required = !sinFoto;
+    const fechaNota = document.getElementById('vlh-fecha-nota');
+    if (fechaNota) fechaNota.hidden = !sinFoto;
   }
 
   // ---------------- FECHA DE ENTREGA ESTIMADA (solo informativo) ----------------
@@ -1104,8 +1111,8 @@
   }
   function initFechaEstimada() {
     const hoy = new Date();
-    const desde = new Date(hoy); desde.setDate(desde.getDate() + 15);
-    const hasta = new Date(hoy); hasta.setDate(hasta.getDate() + 20);
+    const desde = new Date(hoy); desde.setDate(desde.getDate() + 10);
+    const hasta = new Date(hoy); hasta.setDate(hasta.getDate() + 15);
     const mes = (d) => d.toLocaleDateString('es-ES', { month: 'long' });
     els.fechaEstimadaEl.textContent = desde.getMonth() === hasta.getMonth()
       ? `del ${desde.getDate()} al ${hasta.getDate()} de ${mes(hasta)}`
@@ -1260,6 +1267,16 @@
       els.totalOldEl.textContent = ahorro ? money(total) : '';
     }
     els.totalPriceEl.closest('.vlh-summary').classList.toggle('has-discount', ahorro > 0);
+    // Arriba, junto al título: el precio de lo que tiene elegido (no el «desde»)
+    const topPrice = document.querySelector('[data-product-price]');
+    if (topPrice && variante) {
+      topPrice.innerHTML = `<span class="vlh-top-price${ahorro ? ' has-discount' : ''}">${money(final)}</span>${ahorro ? ` <s class="vlh-top-old">${money(total)}</s>` : ''}`;
+      let note = document.getElementById('vlh-top-note');
+      if (!note) { note = document.createElement('p'); note.id = 'vlh-top-note'; note.className = 'vlh-top-note'; topPrice.after(note); }
+      const m = getSelectedMarco();
+      const conMarco = hasPack() || (m && m.dataset.label && m.dataset.label !== 'Sin marco');
+      note.textContent = isLienzo() ? 'Lienzo con bastidor, listo para colgar.' : (conMarco ? 'Te llega ya enmarcada, lista para colgar.' : 'Lámina sin marco. Puedes añadirlo abajo si la quieres lista para colgar.');
+    }
     let html = lines.map(([label, cents]) => `<li><span>${label}</span><span>${money(cents)}</span></li>`).join('');
     if (ahorro) html += `<li class="is-discount"><span>Descuento de bienvenida (−${coupon.percent} %)</span><span>−${money(ahorro)}</span></li>`;
     els.breakdownEl.innerHTML = (lines.length > 1 || ahorro) ? html : '';
@@ -1311,7 +1328,6 @@
   // Vista previa de las fotos elegidas
   els.uploadInput.addEventListener('change', () => {
     const files = [...(els.uploadInput.files || [])];
-    if (files.length) maybeOffer();
     const drop = document.getElementById('vlh-drop');
     const thumbs = document.getElementById('vlh-drop-thumbs');
     drop.classList.toggle('has-files', files.length > 0);

@@ -180,7 +180,7 @@
     btn.disabled = true; btn.textContent = 'Añadiendo…';
     try {
       var hoy = new Date(), d1 = new Date(hoy), d2 = new Date(hoy);
-      d1.setDate(d1.getDate() + 15); d2.setDate(d2.getDate() + 20);
+      d1.setDate(d1.getDate() + 10); d2.setDate(d2.getDate() + 15);
       var f = function (d) { return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }); };
       var fd = new FormData();
       fd.append('id', v.id);

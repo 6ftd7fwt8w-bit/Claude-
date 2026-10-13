@@ -694,7 +694,7 @@
       sOld.hidden = !hasOld;
       sOld.textContent = hasOld ? oldEl.textContent : '';
       var pct = deal ? ((perkEl.textContent.match(/(\d+)\s*%/) || [])[1] || '10') : '';
-      $('span', sPerk).textContent = deal ? '−' + pct + ' % · válido 24 h' : '';
+      $('span', sPerk).textContent = deal ? '−' + pct + ' % en tu ilustración · 24 h' : '';
       sPerk.hidden = !deal;
       sShip.hidden = deal || !(envioEl && /gratis/i.test(envioEl.textContent));
       bar.classList.toggle('has-deal', deal);
