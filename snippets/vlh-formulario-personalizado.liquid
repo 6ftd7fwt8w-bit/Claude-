@@ -35,6 +35,16 @@
 {%- assign p_marco_a3        = all_products[h_marco_a3] -%}
 {%- assign p_composicion     = all_products[h_composicion] -%}
 
+{%- comment -%}
+  Opción «Presentación» (Solo lámina, Enmarcada, Pack Regalo, Pack Valentina, Lienzo en bastidor):
+  si el producto la tiene, la ilustración y su presentación van en UNA sola variante con el precio total
+  y no se añaden al carrito los productos ocultos de pack ni de marco. Sin ella, funciona como antes.
+{%- endcomment -%}
+{%- assign vlh_pres_pos = 0 -%}
+{%- for o in product.options_with_values -%}{%- if o.name == 'Presentación' -%}{%- assign vlh_pres_pos = o.position -%}{%- endif -%}{%- endfor -%}
+{%- assign vlh_opt2 = false -%}
+{%- if product.options.size > 1 and vlh_pres_pos != 2 -%}{%- assign vlh_opt2 = true -%}{%- endif -%}
+
 {%- comment -%} Listas únicas de valores de Tamaño y de la 2ª opción (si existe), sacadas de las variantes reales del producto {%- endcomment -%}
 {%- assign vlh_tamanos_raw = '' -%}
 {%- assign vlh_mascotas_raw = '' -%}
@@ -42,7 +52,7 @@
   {%- unless vlh_tamanos_raw contains v.option1 -%}
     {%- assign vlh_tamanos_raw = vlh_tamanos_raw | append: v.option1 | append: '||' -%}
   {%- endunless -%}
-  {%- if v.option2 -%}
+  {%- if vlh_opt2 -%}
     {%- unless vlh_mascotas_raw contains v.option2 -%}
       {%- assign vlh_mascotas_raw = vlh_mascotas_raw | append: v.option2 | append: '||' -%}
     {%- endunless -%}
@@ -165,7 +175,7 @@
     </fieldset>
 
     <!-- ============ 2. SEGUNDA VARIANTE (solo si el producto la tiene) ============ -->
-    {% if product.options.size > 1 %}
+    {% if vlh_opt2 %}
     <fieldset class="vlh-field">
       <legend>{{ product.options[1] }}</legend>
       <div class="vlh-radio-list" id="vlh-mascotas-group">
@@ -213,7 +223,7 @@
           <p class="vlh-tip" hidden>Haz el pedido ahora y envíanos la foto cuando la tengas, por WhatsApp o email, indicando tu número de pedido. <strong>Ten en cuenta que la fecha de entrega estimada empieza a contar cuando recibamos la foto</strong>, así que puede retrasarse según lo que tardes en enviárnosla.</p>
         </div>
         {%- comment -%} Solo en productos donde se elige el número de personas o mascotas, y en «dos personas» (pareja) {%- endcomment -%}
-        {% if p_composicion and product.options.size > 1 or p_composicion and product.handle == 'ilustracion-pareja' %}
+        {% if p_composicion and vlh_opt2 or p_composicion and product.handle contains 'dos-personas' or p_composicion and product.handle contains 'ilustracion-pareja' %}
         <div class="vlh-opt-row">
           <label class="vlh-opt">
             <input type="checkbox" name="vlh-composicion" value="si"
@@ -862,12 +872,19 @@
     ]
   };
 
-  // Variantes reales del producto (Tamaño x Segunda opción), leídas de Shopify.
+  // Variantes reales del producto (Tamaño x Segunda opción x Presentación), leídas de Shopify.
+  {%- assign vlh_pres_idx = vlh_pres_pos | minus: 1 %}
   const VARIANTES = [
     {% for v in product.variants %}
-    { id: {{ v.id }}, price: {{ v.price }}, tamano: {{ v.option1 | json }}, mascotas: {{ v.option2 | json }} }{% unless forloop.last %},{% endunless %}
+    { id: {{ v.id }}, price: {{ v.price }}, tamano: {{ v.option1 | json }}, mascotas: {% if vlh_opt2 %}{{ v.option2 | json }}{% else %}null{% endif %}, pres: {% if vlh_pres_pos > 0 %}{{ v.options[vlh_pres_idx] | json }}{% else %}null{% endif %} }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   ];
+  // Con «Presentación», la lámina sola (o el lienzo) es la base; marco y packs son otras variantes
+  // del mismo producto con el precio total, así el carrito lleva una sola línea.
+  const HAS_PRES = {% if vlh_pres_pos > 0 %}true{% else %}false{% endif %};
+  const PRES_BASE = ['Solo lámina', 'Lienzo en bastidor'];
+  const VARIANTES_BASE = VARIANTES.filter(v => !v.pres || PRES_BASE.indexOf(v.pres) !== -1);
+  const PACK_NOMBRE = { regalo: 'Pack Regalo', valentina: 'Pack Valentina' };
 
   const money = (cents) => (cents / 100).toLocaleString('es-ES', { style: 'currency', currency: '{{ cart.currency.iso_code | default: "EUR" }}' });
 
@@ -882,7 +899,38 @@
   function getVarianteActual() {
     const tamano = getSelectedTamano();
     const mascotas = getSelectedMascotas();
-    return VARIANTES.find(v => v.tamano === tamano && v.mascotas === mascotas) || null;
+    return VARIANTES_BASE.find(v => v.tamano === tamano && v.mascotas === mascotas) || null;
+  }
+  // Valor de «Presentación» según lo elegido: «Pack Regalo · marco blanco», «Enmarcada · marco madera clara»…
+  const colorPres = (label) => 'marco ' + (label || 'Blanco').toLowerCase();
+  function getPresentacion() {
+    if (isLienzo()) return 'Lienzo en bastidor';
+    const pack = getCheckedRadio(els.packInputs);
+    const m = getSelectedMarco();
+    const label = m && m.dataset.label && m.dataset.label !== 'Sin marco' ? m.dataset.label : null;
+    if (pack && PACK_NOMBRE[pack.value]) return PACK_NOMBRE[pack.value] + ' · ' + colorPres(label);
+    if (label) return 'Enmarcada · ' + colorPres(label);
+    return 'Solo lámina';
+  }
+  function presVariante(pres, tamano) {
+    const t = tamano || getSelectedTamano();
+    const m = getSelectedMascotas();
+    return VARIANTES.find(v => v.tamano === t && v.mascotas === m && v.pres === pres) || null;
+  }
+  // Lo que suma una presentación sobre la lámina sola del mismo tamaño (null si no existe)
+  function presDiff(pres, tamano) {
+    const t = tamano || getSelectedTamano();
+    const v = presVariante(pres, t);
+    const b = VARIANTES_BASE.find(x => x.tamano === t && x.mascotas === getSelectedMascotas());
+    return v && b ? v.price - b.price : null;
+  }
+  function tamanoA3() {
+    const i = [...els.tamanoInputs].find(i => i.value.indexOf('A3') !== -1);
+    return i ? i.value : null;
+  }
+  // La variante que se añade al carrito (ilustración + presentación)
+  function getVarianteCompra() {
+    return HAS_PRES ? presVariante(getPresentacion()) : getVarianteActual();
   }
   function getCheckedRadio(list) {
     return [...list].find(i => i.checked) || null;
@@ -901,16 +949,16 @@
   function syncPreciosVariante() {
     const mascotasActual = getSelectedMascotas();
     els.tamanoInputs.forEach(input => {
-      const v = VARIANTES.find(v => v.tamano === input.value && v.mascotas === mascotasActual);
+      const v = VARIANTES_BASE.find(v => v.tamano === input.value && v.mascotas === mascotasActual);
       const el = input.closest('label').querySelector('[data-tamano-precio]');
       if (el && v) el.textContent = money(v.price);
     });
     const tamanoActual = getSelectedTamano();
     els.mascotasInputs.forEach(input => {
-      const v = VARIANTES.find(v => v.tamano === tamanoActual && v.mascotas === input.value);
+      const v = VARIANTES_BASE.find(v => v.tamano === tamanoActual && v.mascotas === input.value);
       const el = input.closest('label').querySelector('[data-mascotas-precio]');
       if (!el || !v) return;
-      const base = VARIANTES.find(vv => vv.tamano === tamanoActual && vv.mascotas === [...els.mascotasInputs][0].value);
+      const base = VARIANTES_BASE.find(vv => vv.tamano === tamanoActual && vv.mascotas === [...els.mascotasInputs][0].value);
       const diff = base ? v.price - base.price : 0;
       el.textContent = diff > 0 ? `+ ${money(diff)}` : 'sin coste extra';
     });
@@ -949,11 +997,33 @@
   function getPackSuplemento(color) {
     const input = getPackInput();
     if (!input || input.value === 'no') return 0;
+    if (HAS_PRES) {
+      const nombre = PACK_NOMBRE[input.value];
+      const b = presDiff(nombre + ' · ' + colorPres(MARCO_BASE));
+      const v = presDiff(nombre + ' · ' + colorPres(color));
+      return b != null && v != null ? Math.max(0, v - b) : 0;
+    }
     const base = packVariant(input, MARCO_BASE);
     const v = packVariant(input, color);
     return base && v ? Math.max(0, v.price - base.price) : 0;
   }
   function syncPackPrecio() {
+    if (HAS_PRES) {
+      // Precio del pack = variante con pack − lámina sola (el Valentina siempre en A3)
+      els.packInputs.forEach(input => {
+        const nombre = PACK_NOMBRE[input.value];
+        if (!nombre) return;
+        const t = input.value === 'valentina' ? tamanoA3() : getSelectedTamano();
+        const marco = getSelectedMarco();
+        const color = input.checked && marco && marco.dataset.label !== 'Sin marco' ? marco.dataset.label : MARCO_BASE;
+        const base = presDiff(nombre + ' · ' + colorPres(MARCO_BASE), t);
+        const v = presDiff(nombre + ' · ' + colorPres(color), t);
+        if (v != null) input.dataset.priceCents = v;
+        const el = document.getElementById(input.value === 'regalo' ? 'vlh-pack-regalo-price' : 'vlh-pack-valentina-price');
+        if (el && base != null) el.textContent = '+ ' + money(base);
+      });
+      return;
+    }
     els.packInputs.forEach(input => {
       if (input.value === 'no' || !input.dataset.variants) return;
       const base = packVariant(input, MARCO_BASE);
@@ -1028,7 +1098,12 @@
   }
   function renderMarcoColors() {
     if (isLienzo()) { els.marcoColorGroup.innerHTML = ''; const dn = document.getElementById('vlh-marco-depth'); if (dn) dn.hidden = true; return; }
-    const colors = getMarcoColorsForSize();
+    // Con «Presentación», el precio del marco sale de la variante enmarcada
+    const colors = getMarcoColorsForSize().map(c => {
+      if (!HAS_PRES) return c;
+      const d = presDiff('Enmarcada · ' + colorPres(c.label));
+      return Object.assign({}, c, { price: d != null ? d : c.price });
+    });
     const incluido = hasPack();
     // Los marcos A3 tienen efecto profundidad (los A4 no)
     const profundidad = getTamanoCategoria() === 'A3';
@@ -1254,10 +1329,16 @@
       }
     }
 
-    // Código de descuento (solo sobre la ilustración, como en Shopify)
+    // Con «Presentación» el total es el precio de la variante elegida y el descuento
+    // se aplica a todo (ilustración + marco o pack); si no, solo a la ilustración, como en Shopify
+    const compra = HAS_PRES ? getVarianteCompra() : null;
+    if (compra) {
+      const comp = necesitaComposicion() ? getCheckedRadio(els.composicionInputs) : null;
+      total = compra.price + (comp && comp.dataset.priceCents ? parseInt(comp.dataset.priceCents, 10) : 0);
+    }
     let ahorro = 0;
     if (coupon && coupon.percent && variante) {
-      ahorro = Math.round(variante.price * coupon.percent / 100);
+      ahorro = Math.round((compra ? compra.price : variante.price) * coupon.percent / 100);
     }
     const final = total - ahorro;
     paintShip(final);
@@ -1370,12 +1451,15 @@
   // ---------------- ENVÍO ----------------
   function collectAddons() {
     const addons = [];
-    const pack = getCheckedRadio(els.packInputs);
-    if (pack && pack.dataset.variantId) addons.push({ id: parseInt(pack.dataset.variantId, 10), quantity: 1 });
+    // Con «Presentación», marco y pack ya van en la variante de la ilustración
+    if (!HAS_PRES) {
+      const pack = getCheckedRadio(els.packInputs);
+      if (pack && pack.dataset.variantId) addons.push({ id: parseInt(pack.dataset.variantId, 10), quantity: 1 });
 
-    // Con pack, el marco va incluido: no se añade como producto aparte
-    const marco = getSelectedMarco();
-    if (!hasPack() && marco && marco.dataset.variantId) addons.push({ id: parseInt(marco.dataset.variantId, 10), quantity: 1 });
+      // Con pack, el marco va incluido: no se añade como producto aparte
+      const marco = getSelectedMarco();
+      if (!hasPack() && marco && marco.dataset.variantId) addons.push({ id: parseInt(marco.dataset.variantId, 10), quantity: 1 });
+    }
 
     if (necesitaComposicion()) {
       const composicion = getCheckedRadio(els.composicionInputs);
@@ -1404,6 +1488,11 @@
       showError('Elige el color del marco incluido en tu pack.');
       return;
     }
+    const compra = getVarianteCompra();
+    if (!compra) {
+      showError('Esta combinación no está disponible ahora mismo. Escríbenos por WhatsApp y te ayudamos.');
+      return;
+    }
     if (!els.sinFotoToggle.checked && (!els.uploadInput.files || els.uploadInput.files.length === 0)) {
       showError('Sube al menos una foto, o marca "Enviaré la foto más tarde".');
       return;
@@ -1414,7 +1503,7 @@
 
     try {
       const mainData = new FormData();
-      mainData.append('id', variante.id);
+      mainData.append('id', compra.id);
       mainData.append('quantity', 1);
       mainData.append('properties[¿Tiene la foto?]', els.sinFotoToggle.checked ? 'La enviará más adelante' : 'Sí, adjunta');
       mainData.append('properties[Fecha de entrega estimada]', els.fechaEstimadaEl.dataset.rango || '');
@@ -1422,7 +1511,7 @@
       if (els.descripcion.value.trim()) {
         mainData.append('properties[Cómo quiere su ilustración]', els.descripcion.value.trim());
       }
-      if (hasPack() && getSelectedMarco()) {
+      if (!HAS_PRES && hasPack() && getSelectedMarco()) {
         mainData.append('properties[Marco (incluido en el pack)]', getSelectedMarco().dataset.label);
       }
       if ((isRegalo() || isValentina()) && els.mensajePack.value.trim()) {

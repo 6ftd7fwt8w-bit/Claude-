@@ -7,7 +7,14 @@
     <div>
       <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title | split: ' | ' | first }}</a>
       {%- unless item.product.has_only_default_variant -%}
-        <div class="cart-item__meta">{{ item.variant.title }}</div>
+        {%- comment -%} «A3 · 2 personas · Pack Valentina · marco blanco» (el lienzo ya dice que va en bastidor) {%- endcomment -%}
+        {%- assign vlh_meta = '' -%}
+        {%- for o in item.options_with_values -%}
+          {%- if o.value == 'Lienzo en bastidor' -%}{%- continue -%}{%- endif -%}
+          {%- if vlh_meta != '' -%}{%- assign vlh_meta = vlh_meta | append: ' · ' -%}{%- endif -%}
+          {%- assign vlh_meta = vlh_meta | append: o.value -%}
+        {%- endfor -%}
+        <div class="cart-item__meta">{{ vlh_meta }}</div>
       {%- endunless -%}
       {%- for property in item.properties -%}
         {%- assign first_char = property.first | slice: 0 -%}
