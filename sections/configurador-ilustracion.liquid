@@ -26,14 +26,35 @@
     assign w_ok = false
   endif
   assign w_pct = settings.welcome_percent | default: 10
+  comment
+    Modo «pack»: en la ficha de un pack regalo (plantilla product.packs-regalo) el configurador sale con
+    las fotos y el nombre del pack, y con «Pack regalo» y ese pack ya elegidos.
+  endcomment
+  assign pack_mode = false
+  assign pack_name = ''
+  if s.mode == 'pack' and product
+    assign pack_mode = true
+    assign pack_name = 'Pack Regalo'
+    assign pack_tag = 'Listo para abrir y sorprender'
+    if product.handle contains 'valentina'
+      assign pack_name = 'Pack Valentina'
+      assign pack_tag = 'El pack completo para emocionar'
+    endif
+  endif
 -%}
 <section class="cfg section" id="configurador" data-cfg>
   <div class="page-width">
     <header class="cfg__head">
+      {%- if pack_mode -%}
+      <p class="cfg__kicker">{{ pack_tag }}</p>
+      <h1 class="cfg__title">{{ pack_name }}</h1>
+      <p class="cfg__subtitle">{{ s.pack_subtitle }}</p>
+      {%- else -%}
       <h1 class="cfg__title">{{ s.title }}</h1>
       {%- if s.subtitle != blank -%}<p class="cfg__subtitle">{{ s.subtitle }}</p>{%- endif -%}
-      <p class="cfg__see">Ver ejemplos:</p>
-      <div class="cfg__types" role="tablist" aria-label="Tipos de ilustración">
+      {%- endif -%}
+      <p class="cfg__see"{% if pack_mode %} style="display:none"{% endif %}>Ver ejemplos:</p>
+      <div class="cfg__types" role="tablist" aria-label="Tipos de ilustración"{% if pack_mode %} style="display:none"{% endif %}>
         {%- for block in section.blocks -%}
           <button type="button" class="cfg__type{% if forloop.first %} is-active{% endif %}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" data-type="{{ forloop.index0 }}" {{ block.shopify_attributes }}>{{ block.settings.label }}</button>
         {%- endfor -%}
@@ -42,7 +63,7 @@
 
     <div class="cfg__grid">
       <div class="cfg__gallery">
-        <div class="cfg__main">{%- assign first_p = section.blocks.first.settings.product -%}{%- if first_p.featured_image -%}{{ first_p.featured_image | image_url: width: 1100 | image_tag: data-cfg-main: "", alt: "", width: 900, height: 1125 }}{%- else -%}<img data-cfg-main alt="" width="900" height="1125">{%- endif -%}</div>
+        <div class="cfg__main">{%- assign first_p = section.blocks.first.settings.product -%}{%- if pack_mode -%}{%- assign first_p = product -%}{%- endif -%}{%- if first_p.featured_image -%}{{ first_p.featured_image | image_url: width: 1100 | image_tag: data-cfg-main: "", alt: "", width: 900, height: 1125 }}{%- else -%}<img data-cfg-main alt="" width="900" height="1125">{%- endif -%}</div>
         <div class="cfg__thumbs" data-cfg-thumbs></div>
       </div>
 
@@ -339,6 +360,7 @@
       ],
       {%- assign pg = s.product_general -%}
       "general": {% if pg != blank %}{"label": "", "fixed": "", "generic": true, "default": "", "title": {{ pg.title | json }}, "options": {{ pg.options | json }}, "images": [], "variants": [{%- for v in pg.variants -%}{%- unless forloop.first -%},{%- endunless -%}{"id": {{ v.id }}, "price": {{ v.price }}, "cmp": {{ v.compare_at_price | default: 0 }}, "ok": {{ v.available | json }}, "o": {{ v.options | json }}}{%- endfor -%}]}{% else %}null{% endif %},
+      "pack": {% if pack_mode %}{"name": {{ pack_name | json }}, "images": [{%- for m in product.media -%}{%- if m.preview_image -%}{%- unless forloop.first -%},{%- endunless -%}{"src": {{ m.preview_image | image_url: width: 1100 | json }}, "thumb": {{ m.preview_image | image_url: width: 180 | json }}, "alt": {{ m.alt | default: pack_name | json }}}{%- endif -%}{%- endfor -%}]}{% else %}null{% endif %},
       "locale": {{ request.locale.iso_code | json }}
     }
   </script>
@@ -661,7 +683,7 @@
     const a = thumbs.children[cur]; if (a) thumbs.scrollTo({ left: a.offsetLeft - thumbs.clientWidth / 2 + a.clientWidth / 2, behavior: 'smooth' });
   };
   const paintGallery = () => {
-    imgs = data.types[st.type].images || [];
+    imgs = (data.pack ? data.pack.images : data.types[st.type].images) || [];
     thumbs.innerHTML = imgs.map((im, k) => `<button type="button" class="cfg__thumb" data-i="${k}" aria-label="Foto ${k + 1}"><img src="${im.thumb}" alt="" loading="lazy" width="68" height="85"></button>`).join('');
     show(0);
   };
@@ -841,7 +863,7 @@
     try {
       const fd = new FormData();
       fd.append('id', v.id); fd.append('quantity', 1);
-      fd.append('properties[_Ejemplo visto]', data.types[st.type].label);
+      fd.append('properties[_Ejemplo visto]', data.pack ? 'Ficha del ' + data.pack.name : data.types[st.type].label);
       fd.append('properties[¿Tiene la foto?]', later.checked ? 'La enviará más adelante' : 'Sí, adjunta');
       if (!later.checked) [...files.files].forEach((f, i) => fd.append('properties[Foto ' + (i + 1) + ']', f));
       const notes = $('[data-cfg-notes]').value.trim(); if (notes) fd.append('properties[Cómo quiere su ilustración]', notes);
@@ -861,6 +883,7 @@
     if (q) { const k = data.types.findIndex((t) => t.label.toLowerCase().indexOf(q) === 0); if (k > -1) st.type = k; }
   } catch (e) {}
   const t0 = data.types[st.type]; st.count = t0 ? (t0.default || t0.fixed || null) : null;
+  if (data.pack) { st.finish = 'regalo'; st.pack = data.pack.name; st.count = '2'; if (st.pack === 'Pack Valentina') st.size = 'A3'; }
   paintGallery(); paint();
 })();
 </script>
@@ -869,6 +892,8 @@
 {
   "name": "Configurador",
   "settings": [
+    { "type": "select", "id": "mode", "label": "Modo", "options": [{ "value": "page", "label": "Página del configurador" }, { "value": "pack", "label": "Ficha de un pack regalo (pack ya elegido)" }], "default": "page" },
+    { "type": "text", "id": "pack_subtitle", "label": "Modo pack: subtítulo", "default": "Configura la ilustración que irá dentro de tu regalo" },
     { "type": "text", "id": "title", "label": "Título", "default": "Configura tu ilustración" },
     { "type": "text", "id": "subtitle", "label": "Subtítulo", "default": "Creamos la ilustración perfecta a partir de tu foto para rememorar ese momento especial" },
     { "type": "text", "id": "steps_title", "label": "Título de los pasos", "default": "Crea tu ilustración" },
