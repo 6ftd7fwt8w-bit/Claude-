@@ -664,8 +664,13 @@
   // Barra superior: aparece al pasar los botones de tipo
   const bar = $('[data-cfg-bar]'), head = $('.cfg__head');
   document.body.appendChild(bar);
-  const barUpd = () => { const on = head.getBoundingClientRect().bottom < 0 && !document.body.classList.contains('has-vlh-offer'); bar.classList.toggle('is-on', on); bar.setAttribute('aria-hidden', !on); bar.querySelector('button').tabIndex = on ? 0 : -1; };
-  window.addEventListener('scroll', barUpd, { passive: true }); barUpd();
+  const sumEl = $('.cfg__summary');
+  // Sale al bajar (pasados los botones de tipo) y solo mientras el total de abajo no se ve
+  const barUpd = () => {
+    const r = sumEl.getBoundingClientRect(), sumVisible = r.top < window.innerHeight && r.bottom > 0;
+    const on = window.scrollY > 0 && head.getBoundingClientRect().bottom < 0 && !sumVisible && !document.body.classList.contains('has-vlh-offer'); bar.classList.toggle('is-on', on); bar.setAttribute('aria-hidden', !on); bar.querySelector('button').tabIndex = on ? 0 : -1;
+  };
+  window.addEventListener('scroll', barUpd, { passive: true }); window.addEventListener('resize', barUpd); barUpd();
   bar.querySelector('[data-bar-add]').addEventListener('click', () => form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })));
 
   // Fotos
