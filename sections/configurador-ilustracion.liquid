@@ -184,6 +184,13 @@
         </fieldset>
 
         <div class="cfg__checkout">
+          <div class="cfg__guarantee">
+            <span class="cfg__seal" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+            <div>
+              <p class="cfg__guarantee-title">Revisión incluida <span class="cfg__nosurprise">Sin sorpresas</span></p>
+              <p class="cfg__guarantee-text">Cuando tengamos tu diseño, te escribiremos por WhatsApp para que lo veas con calma y nos digas si quieres cambiar algo. <strong>No lo preparamos hasta que te encante.</strong></p>
+            </div>
+          </div>
           <div class="cfg__summary">
             <div class="cfg__total">
               <span class="cfg__total-label">Total</span>
@@ -207,13 +214,6 @@
                   <p>Si necesitas tu ilustración para una fecha concreta, escríbenos por WhatsApp antes de hacer el pedido y te confirmamos si llegamos a tiempo.</p>
                   <a class="cfg__wa" href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener">{% render 'icon', name: 'whatsapp' %}Consultar por WhatsApp</a>
                 </details>
-              </div>
-            </div>
-            <div class="cfg__fact">
-              <span class="cfg__fact-icon cfg__fact-icon--ok" aria-hidden="true">✓</span>
-              <div>
-                <p class="cfg__fact-title">Revisión incluida <span class="cfg__nosurprise">Sin sorpresas</span></p>
-                <p class="cfg__fact-text">Cuando tengamos tu diseño, te escribiremos por WhatsApp para que lo veas con calma y nos digas si quieres cambiar algo. No lo preparamos hasta que te encante.</p>
               </div>
             </div>
           </div>
@@ -510,6 +510,13 @@
   .cfg__checkout .cfg__envio { margin: 4px 0 0; text-align: right; font-size: 13px; color: var(--color-muted); }
   .cfg__checkout .cfg__submit { margin-top: 14px; }
   .cfg__checkout .cfg__secure { margin: 8px 0 0; }
+  .cfg__guarantee { display: flex; gap: 14px; align-items: flex-start; margin: -18px -16px 18px; padding: 18px 16px; border-radius: 16px 16px 0 0; background: #eaf4e7; border-bottom: 1px solid #cfe3ca; }
+  .cfg__seal { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #2f6b3a; color: #fff; box-shadow: 0 0 0 4px #fff, 0 0 0 5px #b9d6b2; }
+  .cfg__guarantee p { margin: 0; }
+  .cfg__guarantee-title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-family: var(--font-serif, Georgia, serif); font-size: 21px; line-height: 1.2; color: #24522d; }
+  .cfg__guarantee-title .cfg__nosurprise { margin-left: 0; font-family: var(--font-body, sans-serif); }
+  .cfg__guarantee-text { margin-top: 6px !important; font-size: 14.5px; line-height: 1.5; color: #3f5a42; }
+  .cfg__guarantee-text strong { color: #24522d; font-weight: 600; }
   .cfg__facts { display: grid; gap: 14px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #eee6da; }
   .cfg__fact { display: flex; gap: 12px; align-items: flex-start; }
   .cfg__fact-icon { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #f3ede4; font-size: 16px; }
@@ -534,6 +541,7 @@
     .cfg__step { padding: 16px 12px 18px; }
     .cfg__easy { font-size: 21px; }
     .cfg__checkout { padding: 16px 12px 14px; }
+    .cfg__guarantee { margin: -16px -12px 16px; padding: 16px 12px; }
     .cfg-how { padding: 22px 12px 6px; }
     .cfg__tiles--finish .cfg__tile-name { font-size: 12.5px; }
     .cfg__tile-img { width: 100%; height: auto; aspect-ratio: 1; }
