@@ -67,6 +67,7 @@
             <span><strong data-cfg-drop-title>Sube tus fotos</strong><small>Toca para elegir · una o varias. Mejor con buena luz y las caras nítidas.</small></span>
           </label>
           <label class="cfg__check"><input type="checkbox" data-cfg-later> Enviaré la foto más tarde (por WhatsApp o email)</label>
+          <p class="cfg__later-note" data-cfg-later-note hidden>Sin problema. Ten en cuenta que el plazo de entrega empieza a contar desde que recibamos tu foto.</p>
           <label class="cfg__notes-label" for="cfg-notes">Notas para la ilustración <span class="cfg__muted">(opcional)</span></label>
           <p class="cfg__hint">Nombres, una fecha, una frase, el fondo o los colores que prefieras…</p>
           <textarea class="cfg__notes" id="cfg-notes" rows="3" maxlength="600" data-cfg-notes placeholder="Ej: Quiero añadir el texto 'Marta &amp; Pablo · 12.06.2026'. Quiero que el fondo sea sencillo, en tonos verdes, con alguna flor."></textarea>
@@ -81,30 +82,29 @@
           {%- assign img_r = s.img_regalo | default: p_regalo.featured_image -%}
           <div class="cfg__tiles cfg__tiles--finish">
             <button type="button" class="cfg__tile" data-finish="lamina">
-              <span class="cfg__tile-img">{%- if s.img_lamina -%}{{ s.img_lamina | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 64, height: 64 }}{%- endif -%}</span>
+              <span class="cfg__tile-img">{%- if s.img_lamina -%}{{ s.img_lamina | image_url: width: 400, height: 400, crop: 'center' | image_tag: loading: 'eager', alt: '', width: 200, height: 200 }}{%- endif -%}</span>
               <span class="cfg__tile-name">Lámina</span>
             </button>
             <button type="button" class="cfg__tile" data-finish="marco">
-              <span class="cfg__tile-img">{%- if img_m -%}{{ img_m | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 64, height: 64 }}{%- endif -%}</span>
+              <span class="cfg__tile-img">{%- if img_m -%}{{ img_m | image_url: width: 400, height: 400, crop: 'center' | image_tag: loading: 'eager', alt: '', width: 200, height: 200 }}{%- endif -%}</span>
               <span class="cfg__tile-name">Lámina con marco</span>
             </button>
             <button type="button" class="cfg__tile" data-finish="lienzo">
-              <span class="cfg__tile-img">{%- if s.img_lienzo -%}{{ s.img_lienzo | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 64, height: 64 }}{%- endif -%}</span>
+              <span class="cfg__tile-img">{%- if s.img_lienzo -%}{{ s.img_lienzo | image_url: width: 400, height: 400, crop: 'center' | image_tag: loading: 'eager', alt: '', width: 200, height: 200 }}{%- endif -%}</span>
               <span class="cfg__tile-name">Lienzo</span>
             </button>
             <button type="button" class="cfg__tile cfg__tile--gift" data-finish="regalo">
-              <span class="cfg__tile-img">{%- if img_r -%}{{ img_r | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 64, height: 64 }}{%- endif -%}</span>
+              <span class="cfg__tile-img">{%- if img_r -%}{{ img_r | image_url: width: 400, height: 400, crop: 'center' | image_tag: loading: 'eager', alt: '', width: 200, height: 200 }}{%- endif -%}</span>
               <span class="cfg__tile-name">Pack regalo</span>
             </button>
           </div>
           <ul class="cfg__feats" data-feats="lamina">
             <li>Papel artístico verjurado 300 g</li>
-            <li>Diseñada a partir de tu foto, con revisión incluida</li>
+            <li>Perfecta para enmarcar a tu gusto</li>
             <li class="is-info">Se entrega sin marco</li>
           </ul>
           <ul class="cfg__feats" data-feats="marco" hidden>
             <li>Ya colocada en el marco, lista para colgar</li>
-            <li>Marco color blanco o madera clara</li>
             <li>Papel artístico verjurado 300 g</li>
           </ul>
           <ul class="cfg__feats" data-feats="lienzo" hidden>
@@ -115,22 +115,22 @@
           <ul class="cfg__feats" data-feats="regalo" hidden>
             <li>Listo para abrir y sorprender</li>
             <li>Marco incluido: la lámina llega enmarcada y envuelta</li>
-            <li>Con ramillete de flores secas y mensaje personalizado</li>
           </ul>
 
           <div class="cfg__sub" data-cfg-sub="pack" hidden>
             <p class="cfg__label">Elige tu pack</p>
             <div class="cfg__tiles cfg__tiles--pack">
               <div class="cfg__pack" data-pack="Pack Regalo" role="button" tabindex="0">
-                <span class="cfg__pack-img">{%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 400 | image_tag: loading: 'eager', alt: 'Pack Regalo', width: 200, height: 150 }}{%- endif -%}</span>
+                <span class="cfg__pack-tag">✓ Marco incluido</span>
+                <span class="cfg__pack-img">{%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 700 | image_tag: loading: 'eager', alt: 'Pack Regalo', width: 350, height: 263 }}{%- endif -%}</span>
                 <strong>Pack Regalo</strong>
                 <em>Listo para abrir y sorprender</em>
                 <small>Lámina enmarcada y envuelta en papel premium con lazada, en caja kraft, con ramillete de flores secas y mensaje personalizado.</small>
                 <button type="button" class="cfg__pack-more" data-pack-more="regalo">Ver más</button>
               </div>
               <div class="cfg__pack cfg__pack--star" data-pack="Pack Valentina" role="button" tabindex="0">
-                <span class="cfg__pack-tag">Solo A3</span>
-                <span class="cfg__pack-img">{%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 400 | image_tag: loading: 'eager', alt: 'Pack Valentina', width: 200, height: 150 }}{%- endif -%}</span>
+                <span class="cfg__pack-tag">✓ Marco incluido</span>
+                                <span class="cfg__pack-img">{%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 700 | image_tag: loading: 'eager', alt: 'Pack Valentina', width: 350, height: 263 }}{%- endif -%}</span>
                 <strong>Pack Valentina</strong>
                 <em>El pack completo para emocionar</em>
                 <small>Confeccionado a mano con apliques en yute y encaje. Mensaje personalizado, ramillete de flores secas, ramo de flores preservadas y textil, lámina enmarcada y envuelta.</small>
@@ -147,42 +147,53 @@
             </button>
           </div>
           <div class="cfg__tiles cfg__tiles--size" data-cfg-sizes></div>
+          <p class="cfg__note" data-cfg-val-note hidden>El Pack Valentina se prepara en A3, el tamaño que encaja perfecto en su caja.</p>
 
           <div class="cfg__sub" data-cfg-sub="color" hidden>
-            <p class="cfg__label">Color del marco</p>
-            <div class="cfg__tiles cfg__tiles--color">
-              {%- for v in p_marco.variants -%}
-                {%- liquid
-                  assign c_val = 'marco blanco'
-                  assign c_bg = '#f4f1ec'
-                  if v.title contains 'adera'
-                    assign c_val = 'marco madera clara'
-                    assign c_bg = '#c9a77c'
-                  endif
-                -%}
-                <button type="button" class="cfg__tile cfg__tile--color" data-color="{{ c_val }}">
-                  <span class="cfg__color-img">{%- if v.featured_image -%}{{ v.featured_image | image_url: width: 160 | image_tag: loading: 'eager', alt: '', width: 48, height: 48 }}{%- else -%}<span class="cfg__swatch" style="background:{{ c_bg }}"></span>{%- endif -%}</span>
-                  {{ v.title }}
-                </button>
-              {%- else -%}
-                <button type="button" class="cfg__tile cfg__tile--color" data-color="marco blanco"><span class="cfg__swatch" style="background:#f4f1ec"></span>Blanco</button>
-                <button type="button" class="cfg__tile cfg__tile--color" data-color="marco madera clara"><span class="cfg__swatch" style="background:#c9a77c"></span>Madera clara</button>
-              {%- endfor -%}
-            </div>
+            <p class="cfg__label">Color del marco <span class="cfg__incl" data-cfg-incl hidden>✓ Incluido en tu pack</span></p>
+            {%- assign marcos = 'A4,A3' | split: ',' -%}
+            {%- for mz in marcos -%}
+              {%- if mz == 'A4' -%}{%- assign pm = all_products['vlh-extra-marco-a4'] -%}{%- else -%}{%- assign pm = p_marco -%}{%- endif -%}
+              <div class="cfg__tiles cfg__tiles--color" data-color-size="{{ mz }}"{% unless forloop.first %} hidden{% endunless %}>
+                {%- for v in pm.variants -%}
+                  {%- liquid
+                    assign c_val = 'marco blanco'
+                    assign c_bg = '#f4f1ec'
+                    if v.title contains 'adera'
+                      assign c_val = 'marco madera clara'
+                      assign c_bg = '#c9a77c'
+                    endif
+                  -%}
+                  <button type="button" class="cfg__tile cfg__tile--color" data-color="{{ c_val }}">
+                    <span class="cfg__color-img">{%- if v.featured_image -%}{{ v.featured_image | image_url: width: 240, height: 240, crop: 'center' | image_tag: loading: 'eager', alt: '', width: 120, height: 120 }}{%- else -%}<span class="cfg__swatch" style="background:{{ c_bg }}"></span>{%- endif -%}</span>
+                    {{ v.title }}
+                  </button>
+                {%- else -%}
+                  <button type="button" class="cfg__tile cfg__tile--color" data-color="marco blanco"><span class="cfg__swatch" style="background:#f4f1ec"></span>Blanco</button>
+                  <button type="button" class="cfg__tile cfg__tile--color" data-color="marco madera clara"><span class="cfg__swatch" style="background:#c9a77c"></span>Madera clara</button>
+                {%- endfor -%}
+              </div>
+            {%- endfor -%}
           </div>
 
           <div class="cfg__sub" data-cfg-sub="message" hidden>
-            <p class="cfg__label">Mensaje para tu regalo <span class="cfg__muted">(opcional)</span></p>
-            <textarea class="cfg__notes" rows="2" maxlength="200" data-cfg-message placeholder="Ej: Con todo mi cariño para ti"></textarea>
+            <p class="cfg__label">Mensaje personalizado <span class="cfg__muted">(opcional)</span></p>
+            <p class="cfg__hint">Lo pondremos en la etiqueta del interior de la tapa: será lo primero que lea al abrir su regalo.</p>
+            <textarea class="cfg__notes" rows="2" maxlength="200" data-cfg-message placeholder="Ej: Para que nunca olvides este día. Te quiero, mamá"></textarea>
           </div>
         </fieldset>
 
         <ul class="cfg__trust">
-          <li><span aria-hidden="true">📦</span><span>Entrega estimada <strong data-cfg-date></strong> <span class="cfg__muted" data-cfg-date-note hidden>(10-15 días desde que recibamos tu foto)</span> · <a href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener">¿Lo necesitas antes?</a></span></li>
+          <li><span aria-hidden="true">📦</span><span>Entrega estimada <strong data-cfg-date></strong> <span class="cfg__muted" data-cfg-date-note hidden>(10-15 días desde que recibamos tu foto)</span></span></li>
         </ul>
+        <details class="cfg__soon">
+          <summary>¿Lo necesitas antes?</summary>
+          <p>Si necesitas tu ilustración para una fecha concreta, escríbenos por WhatsApp antes de hacer el pedido y te confirmamos si llegamos a tiempo.</p>
+          <a class="cfg__wa" href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener">{% render 'icon', name: 'whatsapp' %}Consultar por WhatsApp</a>
+        </details>
         <div class="cfg__review">
           <span class="cfg__review-icon" aria-hidden="true">✓</span>
-          <p><strong>Revisión incluida</strong>Antes de prepararla, te contactaremos para revisar contigo la ilustración y ver si necesitas algún cambio.</p>
+          <p><strong>Revisión incluida</strong>Cuando tengamos tu diseño, te contactaremos personalmente para que lo veas con calma y nos digas si quieres cambiar algo. No lo preparamos hasta que te encante.</p>
         </div>
 
         <div class="cfg__summary">
@@ -322,9 +333,9 @@
   .cfg__kicker { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-style: italic; color: #8a6a24; font-size: 17px; }
   .cfg__title { margin: 0 0 8px; font-size: clamp(28px, 4vw, 40px); }
   .cfg__subtitle { margin: 0 0 18px; color: var(--color-muted); }
-  .cfg__see { margin: 0 0 8px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); }
+  .cfg__see { margin: 0 0 8px; font-size: 13.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); }
   .cfg__types { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-  .cfg__type { padding: 9px 16px; border: 1px solid var(--color-border); border-radius: 999px; background: #fff; font: inherit; font-size: 14px; cursor: pointer; transition: all .2s ease; }
+  .cfg__type { padding: 9px 16px; border: 1px solid var(--color-border); border-radius: 999px; background: #fff; font: inherit; font-size: 15.5px; cursor: pointer; transition: all .2s ease; }
   .cfg__type.is-active { background: var(--color-text); border-color: var(--color-text); color: #fff; }
   .cfg__form, .cfg__gallery { min-width: 0; }
   .cfg__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
@@ -338,152 +349,171 @@
   .cfg__thumb.is-active { border-color: var(--color-text); opacity: 1; }
   .cfg__easy { margin: 0 0 18px; font-size: 22px; }
   .cfg__step { min-width: 0; margin: 0 0 22px; padding: 0 0 22px; border: 0; border-bottom: 1px solid var(--color-border); }
-  .cfg__step legend { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-  .cfg__num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--color-text); color: #fff; font-size: 13px; letter-spacing: 0; }
-  .cfg__label { margin: 12px 0 8px; font-size: 13px; color: var(--color-muted); }
+  .cfg__step legend { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 14.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+  .cfg__num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--color-text); color: #fff; font-size: 14.5px; letter-spacing: 0; }
+  .cfg__label { margin: 12px 0 8px; font-size: 14.5px; color: var(--color-muted); }
   .cfg__chips, .cfg__opts { display: flex; flex-wrap: wrap; gap: 8px; }
-  .cfg__chip, .cfg__opt { min-width: 52px; padding: 10px 14px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; font: inherit; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .cfg__chip, .cfg__opt { min-width: 52px; padding: 10px 14px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; font: inherit; font-size: 15.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
   .cfg__chip.is-active, .cfg__opt.is-active { border-color: var(--color-text); box-shadow: inset 0 0 0 1px var(--color-text); font-weight: 600; }
   .cfg__opt small { color: var(--color-muted); font-weight: 400; }
   .cfg__swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,.18); }
   .cfg__drop { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1.5px dashed #cbbfae; border-radius: 10px; background: #fff; cursor: pointer; }
   .cfg__drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
-  .cfg__drop small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--color-muted); }
+  .cfg__drop small { display: block; margin-top: 2px; font-size: 14px; color: var(--color-muted); }
   .cfg__drop.has-files { border-style: solid; border-color: #2f6b3a; }
   .cfg__drop[hidden] { display: none; }
   .cfg__drop-icon { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--color-bg-alt); }
   .cfg__drop-icon svg { width: 22px; height: 22px; }
-  .cfg__check { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 14px; cursor: pointer; }
+  .cfg__check { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 15.5px; cursor: pointer; }
   .cfg__check[hidden] { display: none; }
   .cfg__check input { width: 18px; height: 18px; accent-color: var(--color-text); }
-  .cfg__notes { width: 100%; margin-top: 12px; padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; font: inherit; font-size: 14px; resize: vertical; }
+  .cfg__notes { width: 100%; margin-top: 12px; padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; font: inherit; font-size: 15.5px; resize: vertical; }
   .cfg__muted { color: var(--color-muted); font-weight: 400; }
   .cfg__tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .cfg__tiles--finish { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
   .cfg__tiles--size, .cfg__tiles--color, .cfg__tiles--pack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .cfg__tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 52px; padding: 8px 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; font-size: 13.5px; text-align: center; line-height: 1.2; cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+  .cfg__tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 52px; padding: 8px 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; font-size: 15px; text-align: center; line-height: 1.2; cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease; }
   .cfg__tile.is-active { background: var(--color-text); border-color: var(--color-text); color: #fff; }
   .cfg__tile[disabled] { opacity: .4; cursor: not-allowed; }
   .cfg__tile-img { width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: var(--color-bg-alt); }
   .cfg__tile-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .cfg__tile-name { font-weight: 600; font-size: 12.5px; }
+  .cfg__tile-name { font-weight: 600; font-size: 14px; }
   .cfg__tile--gift:not(.is-active) { border-color: rgba(176,138,62,.6); background: #fbf6ea; }
   .cfg__tile--size strong { font-size: 16px; }
-  .cfg__tile--size small { font-size: 12px; opacity: .7; }
+  .cfg__tile--size small { font-size: 13.5px; opacity: .7; }
   .cfg__tile--row { flex-direction: row; gap: 8px; }
   .cfg__tile.is-active .cfg__swatch { border-color: rgba(255,255,255,.7); }
-  .cfg__feats { list-style: none; margin: 12px 0 0; padding: 12px 14px; background: rgba(168,148,120,.1); border-radius: 10px; font-size: 13.5px; }
+  .cfg__feats { list-style: none; margin: 12px 0 0; padding: 12px 14px; background: rgba(168,148,120,.1); border-radius: 10px; font-size: 15px; }
   .cfg__feats[hidden] { display: none; }
   .cfg__feats li { position: relative; padding-left: 24px; margin: 3px 0; }
   .cfg__feats li::before { content: '✓'; position: absolute; left: 2px; color: #2f6b3a; font-weight: 700; }
-  .cfg__feats li.is-info::before { content: 'i'; top: 2px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; background: #8aa3b8; color: #fff; font-size: 11px; font-style: italic; }
+  .cfg__feats li.is-info::before { content: 'i'; top: 2px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; background: #8aa3b8; color: #fff; font-size: 12px; font-style: italic; }
   .cfg__info { margin-top: 8px; }
-  .cfg__info summary { font-size: 12.5px; color: var(--color-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; list-style: none; }
+  .cfg__info summary { font-size: 14px; color: var(--color-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; list-style: none; }
   .cfg__info summary::-webkit-details-marker { display: none; }
   .cfg__info summary::after { content: ' +'; }
   .cfg__info[open] summary::after { content: ' −'; }
-  .cfg__off { padding: 3px 9px; border-radius: 999px; background: #e3f1e0; color: #2f6b3a; font-style: normal; font-family: var(--font-body, sans-serif); font-size: 13px; font-weight: 700; letter-spacing: 0; }
+  .cfg__off { padding: 3px 9px; border-radius: 999px; background: #e3f1e0; color: #2f6b3a; font-style: normal; font-family: var(--font-body, sans-serif); font-size: 14.5px; font-weight: 700; letter-spacing: 0; }
   .cfg__off[hidden] { display: none; }
   .cfg__amounts { display: inline-flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
   .cfg__label-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 16px; }
   .cfg__label-row .cfg__label { margin: 0; }
-  .cfg__guide-link { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 4px 0; font: inherit; font-size: 13px; color: var(--color-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .cfg__guide-link { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 4px 0; font: inherit; font-size: 14.5px; color: var(--color-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
   .cfg__guide { width: min(920px, 94vw); max-height: 92vh; padding: 28px 24px 22px; border: 0; border-radius: 10px; background: var(--color-bg, #fbf8f3); overflow: auto; }
   .cfg__guide::backdrop { background: rgba(35,31,28,.55); }
-  .cfg__guide-title { margin: 0 0 16px; text-align: center; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
+  .cfg__guide-title { margin: 0 0 16px; text-align: center; font-size: 14.5px; letter-spacing: .14em; text-transform: uppercase; }
   .cfg__guide-close { position: absolute; top: 8px; right: 12px; border: 0; background: none; font-size: 28px; line-height: 1; cursor: pointer; }
   .cfg__guide .size-guide { margin: 0; }
   .cfg__gift { margin-top: 18px; padding: 14px; border: 1px solid rgba(176,138,62,.45); border-radius: 12px; background: #fbf6ea; }
   .cfg__gift-icon { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #fff; color: #b08a3e; }
   .cfg__gift-icon svg { width: 18px; height: 18px; }
   .cfg__gift-title { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; font-family: var(--font-serif, Georgia, serif); font-size: 19px; }
-  .cfg__gift-text { margin: 6px 0 12px; font-size: 13px; line-height: 1.4; color: #5d5248; }
-  .cfg__badge { padding: 3px 9px; border-radius: 999px; background: #2f6b3a; color: #fff; font-family: var(--font-body, sans-serif); font-size: 10.5px; font-weight: 600; letter-spacing: .04em; }
+  .cfg__gift-text { margin: 6px 0 12px; font-size: 14.5px; line-height: 1.4; color: #5d5248; }
+  .cfg__badge { padding: 3px 9px; border-radius: 999px; background: #2f6b3a; color: #fff; font-family: var(--font-body, sans-serif); font-size: 11.5px; font-weight: 600; letter-spacing: .04em; }
   .cfg__chip--land { margin-top: 10px; background: #eef3ea; border-color: #c9d8c2; color: #2f5a36; }
-  .cfg__chip--land small { color: #6b8a6f; font-size: 12px; }
+  .cfg__chip--land small { color: #6b8a6f; font-size: 13.5px; }
   .cfg__chip--land.is-active { border-color: #2f6b3a; box-shadow: inset 0 0 0 1px #2f6b3a; }
-  .cfg__notes-label { display: block; margin-top: 16px; font-weight: 600; font-size: 14px; }
-  .cfg__hint { margin: 4px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--color-muted); }
+  .cfg__notes-label { display: block; margin-top: 16px; font-weight: 600; font-size: 15.5px; }
+  .cfg__hint { margin: 4px 0 0; font-size: 14px; line-height: 1.45; color: var(--color-muted); }
   .cfg__notes-label + .cfg__hint + .cfg__notes { margin-top: 8px; }
   .cfg__notes::placeholder { color: #a8a096; }
   .cfg__sub { margin-top: 6px; }
   .cfg__sub[hidden] { display: none; }
   .cfg__pack { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 8px 8px 12px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; text-align: left; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease; }
   .cfg__pack[hidden] { display: none; }
-  .cfg__pack-img { width: 100%; aspect-ratio: 4 / 3; border-radius: 6px; overflow: hidden; background: var(--color-bg-alt); margin-bottom: 4px; }
-  .cfg__pack-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .cfg__pack strong { font-size: 14.5px; }
-  .cfg__pack em { font-family: var(--font-serif, Georgia, serif); font-size: 13.5px; color: #8a6a24; line-height: 1.25; }
-  .cfg__pack-more { margin-top: auto; padding: 6px 0 0; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; color: var(--color-text); }
+  .cfg__pack-img { width: 100%; aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #f3eee7; margin-bottom: 4px; }
+  .cfg__pack-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .cfg__pack strong { font-size: 16px; }
+  .cfg__pack em { font-family: var(--font-serif, Georgia, serif); font-size: 15px; color: #8a6a24; line-height: 1.25; }
+  .cfg__pack-more { margin-top: auto; padding: 6px 0 0; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; color: var(--color-text); }
   .cfg__tile--color { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 6px 10px 6px 6px; }
   .cfg__color-img { flex: none; width: 44px; height: 44px; border-radius: 6px; overflow: hidden; background: var(--color-bg-alt); display: grid; place-items: center; }
   .cfg__color-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .cfg__pdlg { width: min(860px, 94vw); max-height: 92vh; padding: 0; border: 0; border-radius: 12px; background: var(--color-bg, #fbf8f3); overflow: auto; }
+  .cfg__pdlg { width: min(860px, 94vw); max-height: 88vh; max-height: 88dvh; padding: 0; border: 0; border-radius: 12px; background: var(--color-bg, #fbf8f3); overflow: hidden; }
+  .cfg__pdlg[open] { display: flex; flex-direction: column; }
+  .cfg__pdlg-grid { overflow-y: auto; overscroll-behavior: contain; }
   .cfg__pdlg::backdrop { background: rgba(35,31,28,.55); }
-  .cfg__pdlg .cfg__guide-close { z-index: 2; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.85); }
+  .cfg__pdlg .cfg__guide-close { z-index: 3; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.18); display: grid; place-items: center; }
   .cfg__pdlg-grid { display: grid; grid-template-columns: 1.1fr 1fr; }
-  .cfg__pdlg-main { aspect-ratio: 1; background: var(--color-bg-alt); }
-  .cfg__pdlg-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cfg__pdlg-main { aspect-ratio: 1; background: #f3eee7; }
+  .cfg__pdlg-main img { width: 100%; height: 100%; object-fit: contain; display: block; }
   .cfg__pdlg-thumbs { display: flex; gap: 6px; padding: 8px; overflow-x: auto; }
   .cfg__pdlg-thumbs .cfg__thumb { flex-basis: 56px; height: 56px; }
   .cfg__pdlg-text { padding: 26px 22px; }
   .cfg__pdlg-kicker { margin: 0 0 4px; font-family: var(--font-serif, Georgia, serif); font-style: italic; color: #8a6a24; }
   .cfg__pdlg-title { margin: 0 0 12px; font-family: var(--font-serif, Georgia, serif); font-size: 26px; }
-  .cfg__pdlg-desc { font-size: 14px; line-height: 1.55; margin-bottom: 18px; }
+  .cfg__pdlg-desc { font-size: 15.5px; line-height: 1.55; margin-bottom: 18px; }
   .cfg__pdlg-desc ul { padding-left: 18px; margin: 0 0 10px; }
-  .cfg__pdlg-desc blockquote { margin: 0; color: var(--color-muted); font-size: 13px; }
+  .cfg__pdlg-desc blockquote { margin: 0; color: var(--color-muted); font-size: 14.5px; }
   .cfg-bar { position: fixed; z-index: 70; top: 0; left: 0; right: 0; background: #fff; box-shadow: 0 6px 20px rgba(44,34,24,.14); transform: translateY(-110%); transition: transform .3s ease; }
   .cfg-bar.is-on { transform: none; }
   .cfg-bar__in { display: flex; align-items: center; gap: 12px; max-width: 1200px; margin: 0 auto; padding: 10px 16px; }
   .cfg-bar__img { flex: none; width: 58px; height: 58px; border-radius: 12px; overflow: hidden; background: var(--color-bg-alt); box-shadow: 0 2px 8px rgba(44,34,24,.15); }
   .cfg-bar__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cfg-bar__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; line-height: 1.15; }
-  .cfg-bar__what { font-size: 13px; color: var(--color-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cfg-bar__what { font-size: 14.5px; color: var(--color-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cfg-bar__price { display: flex; align-items: center; gap: 6px; }
   .cfg-bar__price b { font-family: var(--font-body, sans-serif); font-size: 22px; font-weight: 700; color: #2f6b3a; letter-spacing: -.01em; }
-  .cfg-bar__price .cfg__off { font-size: 12px; padding: 2px 8px; }
-  .cfg-bar__old { font-size: 13px; color: #a8a096; }
+  .cfg-bar__price .cfg__off { font-size: 13.5px; padding: 2px 8px; }
+  .cfg-bar__old { font-size: 14.5px; color: #a8a096; }
   .cfg-bar__old[hidden] { display: none; }
-  .cfg-bar__btn { flex: none; min-height: 48px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--color-text); color: #fff; font: inherit; font-size: 14px; font-weight: 600; letter-spacing: .02em; cursor: pointer; box-shadow: 0 4px 12px rgba(35,31,28,.18); }
+  .cfg-bar__btn { flex: none; min-height: 48px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--color-text); color: #fff; font: inherit; font-size: 15.5px; font-weight: 600; letter-spacing: .02em; cursor: pointer; box-shadow: 0 4px 12px rgba(35,31,28,.18); }
   @media (max-width: 380px) { .cfg-bar__btn { padding: 0 14px; font-size: 13px; } .cfg-bar__img { width: 50px; height: 50px; } }
   .shopify-section:has(#configurador) + .shopify-section > * { padding-top: 12px; margin-top: 0; }
-  .cfg { padding-bottom: 8px; }
+  .cfg { padding-bottom: 8px; --color-muted: #6b6057; }
+  .cfg__later-note, .cfg__note { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: #fbf6ea; border: 1px solid rgba(176,138,62,.35); color: #6b5320; font-size: 14px; line-height: 1.45; }
+  .cfg__later-note[hidden], .cfg__note[hidden] { display: none; }
+  .cfg__incl { margin-left: 8px; padding: 2px 9px; border-radius: 999px; background: #e3f1e0; color: #2f6b3a; font-size: 13px; font-weight: 600; }
+  .cfg__incl[hidden] { display: none; }
+  .cfg__tiles--color[hidden] { display: none; }
+  .cfg__soon { margin: -4px 0 14px 28px; }
+  .cfg__soon summary { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: #8a6a24; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; list-style: none; }
+  .cfg__soon summary::-webkit-details-marker { display: none; }
+  .cfg__soon summary::after { content: '+'; font-weight: 400; text-decoration: none; }
+  .cfg__soon[open] summary::after { content: '−'; }
+  .cfg__soon p { margin: 8px 0 10px; font-size: 14.5px; line-height: 1.5; }
+  .cfg__wa { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #25d366; color: #fff; font-size: 14.5px; font-weight: 600; text-decoration: none; }
+  .cfg__wa svg { width: 18px; height: 18px; }
   .cfg-how { margin: 40px auto 0; }
   .cfg-how .accordion { border-bottom: 1px solid var(--color-border); }
   @media (max-width: 749px) {
+    .cfg__pdlg { width: 94vw; }
     .cfg__pdlg-grid { grid-template-columns: 1fr; }
+    .cfg__pdlg-main { aspect-ratio: auto; height: 38vh; height: 38dvh; }
+    .cfg__pdlg-text { padding: 18px 18px 22px; }
+    .cfg__pdlg-title { font-size: 23px; }
     .cfg__tile { padding: 6px 4px 8px; }
     .cfg__tile-img { width: 100%; height: auto; aspect-ratio: 1; }
   }
-  .cfg__pack small { font-size: 12px; color: var(--color-muted); line-height: 1.35; }
+  .cfg__pack small { font-size: 13.5px; color: var(--color-muted); line-height: 1.35; }
   .cfg__pack--star { border-color: rgba(176,138,62,.7); }
-  .cfg__pack-tag { position: absolute; top: 14px; left: 14px; z-index: 1; padding: 3px 8px; border-radius: 999px; background: #b08a3e; color: #fff; font-size: 10.5px; font-weight: 600; }
+  .cfg__pack-tag { position: absolute; top: 14px; left: 14px; z-index: 1; padding: 3px 8px; border-radius: 999px; background: #2f6b3a; color: #fff; font-size: 11.5px; font-weight: 600; }
   .cfg__pack.is-active { border-color: var(--color-text); box-shadow: inset 0 0 0 2px var(--color-text); }
-  .cfg__pack.is-active::after { content: '✓'; position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--color-text); color: #fff; font-size: 13px; font-weight: 700; }
-  .cfg__more { margin: 8px 0 0; font-size: 12.5px; }
+  .cfg__pack.is-active::after { content: '✓'; position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--color-text); color: #fff; font-size: 14.5px; font-weight: 700; }
+  .cfg__more { margin: 8px 0 0; font-size: 14px; }
   .cfg__more a { text-decoration: underline; text-underline-offset: 3px; }
-  .cfg__trust { list-style: none; margin: 0 0 12px; padding: 0; font-size: 14px; }
+  .cfg__trust { list-style: none; margin: 0 0 12px; padding: 0; font-size: 15.5px; }
   .cfg__trust li { display: flex; gap: 8px; }
   .cfg__review { display: flex; gap: 12px; align-items: flex-start; padding: 14px; margin-bottom: 18px; background: #eef7ec; border: 1px solid #cfe3ca; border-radius: 8px; }
-  .cfg__review p { margin: 0; font-size: 13.5px; line-height: 1.45; color: #3f5a42; }
+  .cfg__review p { margin: 0; font-size: 15px; line-height: 1.45; color: #3f5a42; }
   .cfg__review strong { display: block; color: #24522d; }
   .cfg__review-icon { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #2f6b3a; color: #fff; font-weight: 700; }
   .cfg__summary { padding: 16px 0 6px; border-top: 1px solid var(--color-text); }
-  .cfg__total { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+  .cfg__total { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
   .cfg__total strong { font-family: var(--font-serif, Georgia, serif); font-size: 32px; letter-spacing: 0; }
   .cfg__total.has-discount strong { color: #2f6b3a; }
   .cfg__old { margin-right: 8px; font-size: 18px; color: #a8a096; letter-spacing: 0; text-transform: none; font-weight: 400; }
-  .cfg__envio { margin: 2px 0 0; font-size: 12px; color: var(--color-muted); text-align: right; }
-  .cfg__perk { margin: 10px 0 0; padding: 8px 12px; font-size: 12.5px; color: #8a6a24; background: #fbf6ea; border: 1px solid rgba(176,138,62,.4); border-radius: 6px; text-align: center; }
+  .cfg__envio { margin: 2px 0 0; font-size: 13.5px; color: var(--color-muted); text-align: right; }
+  .cfg__perk { margin: 10px 0 0; padding: 8px 12px; font-size: 14px; color: #8a6a24; background: #fbf6ea; border: 1px solid rgba(176,138,62,.4); border-radius: 6px; text-align: center; }
   .cfg__perk[hidden] { display: none; }
-  .cfg__error { margin: 10px 0; color: #b32020; font-size: 14px; }
+  .cfg__error { margin: 10px 0; color: #b32020; font-size: 15.5px; }
   .cfg__error[hidden] { display: none; }
-  .cfg__submit { min-height: 56px; margin-top: 10px; font-size: 14px; letter-spacing: .16em; }
-  .cfg__secure { margin: 8px 0 0; text-align: center; font-size: 12px; color: var(--color-muted); }
+  .cfg__submit { min-height: 56px; margin-top: 10px; font-size: 15.5px; letter-spacing: .16em; }
+  .cfg__secure { margin: 8px 0 0; text-align: center; font-size: 13.5px; color: var(--color-muted); }
   @media (max-width: 749px) {
     .cfg { padding-top: 18px; }
     .cfg__types { gap: 6px; }
-    .cfg__type { padding: 7px 12px; font-size: 13px; }
+    .cfg__type { padding: 7px 12px; font-size: 14.5px; }
     .cfg__grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
     .cfg__gallery { position: static; }
     .cfg__thumb { flex-basis: 58px; height: 72px; }
@@ -606,12 +636,16 @@
       b.setAttribute('aria-pressed', b.dataset.pack === st.pack);
     });
     $('[data-cfg-sizes]').innerHTML = SIZES[st.finish].map((sz) => {
-      // Con Pack Valentina (solo A3) el A4 sigue visible: al tocarlo pasa a Pack Regalo
-      const ok = findVariant(t, st.count, sz, presFor(st.finish, st.color, gift && sz === 'A4' ? 'Pack Regalo' : st.pack));
+      // Con Pack Valentina (solo A3) el A4 se ve desactivado
+      const valOnly = gift && st.pack === 'Pack Valentina' && sz === 'A4';
+      const ok = findVariant(t, st.count, sz, presFor(st.finish, st.color, valOnly ? 'Pack Regalo' : st.pack));
       const info = SIZE_INFO[sz];
-      return ok ? `<button type="button" class="cfg__tile cfg__tile--size${sz === st.size ? ' is-active' : ''}" data-size="${sz}"><strong>${info[0]}</strong><small>${info[1]}</small></button>` : '';
+      return ok ? `<button type="button" class="cfg__tile cfg__tile--size${sz === st.size ? ' is-active' : ''}" data-size="${sz}"${valOnly ? ' disabled' : ''}><strong>${info[0]}</strong><small>${info[1]}</small></button>` : '';
     }).join('');
+    $('[data-cfg-val-note]').hidden = !(gift && st.pack === 'Pack Valentina');
     $('[data-cfg-sub="color"]').hidden = !(st.finish === 'marco' || gift);
+    $$('[data-color-size]').forEach((g) => { g.hidden = g.dataset.colorSize !== st.size; });
+    $('[data-cfg-incl]').hidden = !gift;
     $$('[data-color]').forEach((b) => b.classList.toggle('is-active', b.dataset.color === st.color));
     $('[data-cfg-sub="message"]').hidden = !gift;
     // Total: precio de antes (compare at) tachado, % de descuento y bienvenida si está activa
@@ -653,7 +687,7 @@
       paint();
     }
     else if (b.dataset.finish) { if (b.disabled) return; st.finish = b.dataset.finish; paint(); }
-    else if (b.dataset.size) { st.size = b.dataset.size; if (st.pack === 'Pack Valentina' && st.size === 'A4') st.pack = 'Pack Regalo'; paint(); }
+    else if (b.dataset.size) { if (b.disabled) return; st.size = b.dataset.size; if (st.pack === 'Pack Valentina' && st.size === 'A4') st.pack = 'Pack Regalo'; paint(); }
     else if (b.dataset.pack) { st.pack = b.dataset.pack; paint(); }
     else if (b.dataset.color) { st.color = b.dataset.color; paint(); }
     else if ('guideOpen' in b.dataset) openDlg($('[data-guide]'));
@@ -662,13 +696,13 @@
   $$('dialog', root).forEach((d) => d.addEventListener('click', (e) => { if (e.target === d) closeDlg(d); }));
 
   // Barra superior: aparece al pasar los botones de tipo
-  const bar = $('[data-cfg-bar]'), head = $('.cfg__head');
+  const bar = $('[data-cfg-bar]'), step3 = $$('.cfg__step')[2];
   document.body.appendChild(bar);
   const sumEl = $('.cfg__summary');
-  // Sale al bajar (pasados los botones de tipo) y solo mientras el total de abajo no se ve
+  // Sale al llegar al paso 3 (acabado) y solo mientras el total de abajo no se ve
   const barUpd = () => {
     const r = sumEl.getBoundingClientRect(), sumVisible = r.top < window.innerHeight && r.bottom > 0;
-    const on = window.scrollY > 0 && head.getBoundingClientRect().bottom < 0 && !sumVisible && !document.body.classList.contains('has-vlh-offer'); bar.classList.toggle('is-on', on); bar.setAttribute('aria-hidden', !on); bar.querySelector('button').tabIndex = on ? 0 : -1;
+    const on = step3.getBoundingClientRect().top < window.innerHeight * 0.35 && !sumVisible && !document.body.classList.contains('has-vlh-offer'); bar.classList.toggle('is-on', on); bar.setAttribute('aria-hidden', !on); bar.querySelector('button').tabIndex = on ? 0 : -1;
   };
   window.addEventListener('scroll', barUpd, { passive: true }); window.addEventListener('resize', barUpd); barUpd();
   bar.querySelector('[data-bar-add]').addEventListener('click', () => form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })));
@@ -680,7 +714,7 @@
     drop.classList.toggle('has-files', n > 0);
     $('[data-cfg-drop-title]').textContent = n ? (n === 1 ? '1 foto lista ✓' : n + ' fotos listas ✓') : 'Sube tus fotos';
   });
-  later.addEventListener('change', () => { drop.hidden = later.checked; $('[data-cfg-date-note]').hidden = !later.checked; });
+  later.addEventListener('change', () => { drop.hidden = later.checked; $('[data-cfg-date-note]').hidden = !later.checked; $('[data-cfg-later-note]').hidden = !later.checked; });
 
   // Fecha estimada (10-15 días)
   (() => {
