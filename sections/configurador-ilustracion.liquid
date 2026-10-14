@@ -226,7 +226,7 @@
   .cfg__types { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
   .cfg__type { padding: 9px 16px; border: 1px solid var(--color-border); border-radius: 999px; background: #fff; font: inherit; font-size: 14px; cursor: pointer; transition: all .2s ease; }
   .cfg__type.is-active { background: var(--color-text); border-color: var(--color-text); color: #fff; }
-  .cfg__form { min-width: 0; }
+  .cfg__form, .cfg__gallery { min-width: 0; }
   .cfg__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
   .cfg__gallery { position: sticky; top: 96px; }
   .cfg__main { aspect-ratio: 4 / 5; background: var(--color-bg-alt); border-radius: 6px; overflow: hidden; touch-action: pan-y; }
@@ -308,7 +308,7 @@
     .cfg__types { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px; scrollbar-width: none; }
     .cfg__types::-webkit-scrollbar { display: none; }
     .cfg__type { flex: none; }
-    .cfg__grid { grid-template-columns: 1fr; gap: 22px; }
+    .cfg__grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
     .cfg__gallery { position: static; }
     .cfg__thumb { flex-basis: 58px; height: 72px; }
     .cfg__finish-badge { top: 14px; left: 14px; }
