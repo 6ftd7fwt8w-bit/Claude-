@@ -47,14 +47,14 @@
       </div>
 
       <form class="cfg__form" id="vlh-form" data-cfg-form novalidate>
-        <h2 class="cfg__easy">{{ s.steps_title }}</h2>
+        <h2 class="cfg__easy">{{ s.steps_title }}{%- if s.steps_sub != blank -%}<span>{{ s.steps_sub }}</span>{%- endif -%}</h2>
 
         <fieldset class="cfg__step">
           <legend><span class="cfg__num">1</span> ¿Cuántos salen en tu ilustración?</legend>
           <p class="cfg__label">Personas / mascotas <span class="cfg__muted">· cuenta a todos juntos</span></p>
           <div class="cfg__chips" data-cfg-counts>
-            {%- assign c_keys = '1|2|3-4|5-6|7-8|9+' | split: '|' -%}
-            {%- for c in c_keys -%}<button type="button" class="cfg__chip" data-count="{{ c }}">{{ c | replace: '9+', '9 o más' }}</button>{%- endfor -%}
+            {%- assign c_keys = '1|2|3|4|5|6|7|8|9|10+' | split: '|' -%}
+            {%- for c in c_keys -%}<button type="button" class="cfg__chip" data-count="{{ c }}">{{ c | replace: '10+', '10 o más' }}</button>{%- endfor -%}
           </div>
           <button type="button" class="cfg__chip cfg__chip--land" data-count="paisaje"><span aria-hidden="true">⛰</span> Solo paisaje o lugar especial <small>sin personas</small></button>
         </fieldset>
@@ -113,7 +113,7 @@
             <li>Listo para colgar</li>
           </ul>
           <ul class="cfg__feats" data-feats="regalo" hidden>
-            <li>Listo para abrir y sorprender</li>
+            <li>El detalle que marca la diferencia</li>
             <li>Marco incluido: la lámina llega enmarcada y envuelta</li>
           </ul>
 
@@ -125,7 +125,7 @@
                 <span class="cfg__pack-img">{%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 700 | image_tag: loading: 'eager', alt: 'Pack Regalo', width: 350, height: 263 }}{%- endif -%}</span>
                 <strong>Pack Regalo</strong>
                 <em>Listo para abrir y sorprender</em>
-                <small>Lámina enmarcada y envuelta en papel premium con lazada, en caja kraft, con ramillete de flores secas y mensaje personalizado.</small>
+                <ul class="cfg__pack-list"><li>Lámina enmarcada</li><li>Envuelta en papel premium con lazada</li><li>Caja kraft con rafia</li><li>Ramillete de flores secas</li><li>Mensaje personalizado</li></ul>
                 <button type="button" class="cfg__pack-more" data-pack-more="regalo">Ver más</button>
               </div>
               <div class="cfg__pack cfg__pack--star" data-pack="Pack Valentina" role="button" tabindex="0">
@@ -133,7 +133,7 @@
                                 <span class="cfg__pack-img">{%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 700 | image_tag: loading: 'eager', alt: 'Pack Valentina', width: 350, height: 263 }}{%- endif -%}</span>
                 <strong>Pack Valentina</strong>
                 <em>El pack completo para emocionar</em>
-                <small>Confeccionado a mano con apliques en yute y encaje. Mensaje personalizado, ramillete de flores secas, ramo de flores preservadas y textil, lámina enmarcada y envuelta.</small>
+                <ul class="cfg__pack-list"><li>Confeccionado a mano con apliques en yute y encaje</li><li>Lámina enmarcada y envuelta</li><li>Ramo de flores preservadas y textil</li><li>Ramillete de flores secas</li><li>Mensaje personalizado</li></ul>
                 <button type="button" class="cfg__pack-more" data-pack-more="valentina">Ver más</button>
               </div>
             </div>
@@ -193,7 +193,7 @@
         </details>
         <div class="cfg__review">
           <span class="cfg__review-icon" aria-hidden="true">✓</span>
-          <p><strong>Revisión incluida</strong>Cuando tengamos tu diseño, te contactaremos personalmente para que lo veas con calma y nos digas si quieres cambiar algo. No lo preparamos hasta que te encante.</p>
+          <p><strong>Revisión incluida</strong>Cuando tengamos tu diseño, te escribiremos por WhatsApp para que lo veas con calma y nos digas si quieres cambiar algo. No lo preparamos hasta que te encante.</p>
         </div>
 
         <div class="cfg__summary">
@@ -347,7 +347,7 @@
   .cfg__thumb { flex: 0 0 68px; height: 85px; padding: 0; border: 2px solid transparent; border-radius: 4px; overflow: hidden; background: var(--color-bg-alt); cursor: pointer; opacity: .7; }
   .cfg__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cfg__thumb.is-active { border-color: var(--color-text); opacity: 1; }
-  .cfg__easy { margin: 0 0 18px; font-size: 22px; }
+  .cfg__easy { margin: 0 0 20px; font-size: 26px; line-height: 1.15; }
   .cfg__step { min-width: 0; margin: 0 0 22px; padding: 0 0 22px; border: 0; border-bottom: 1px solid var(--color-border); }
   .cfg__step legend { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 14.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
   .cfg__num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--color-text); color: #fff; font-size: 14.5px; letter-spacing: 0; }
@@ -372,11 +372,12 @@
   .cfg__tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .cfg__tiles--finish { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
   .cfg__tiles--size, .cfg__tiles--color, .cfg__tiles--pack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .cfg__tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 52px; padding: 8px 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; font-size: 15px; text-align: center; line-height: 1.2; cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+  .cfg__tile { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; min-height: 52px; padding: 8px 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; font-size: 15px; text-align: center; line-height: 1.2; cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease; }
   .cfg__tile.is-active { background: var(--color-text); border-color: var(--color-text); color: #fff; }
   .cfg__tile[disabled] { opacity: .4; cursor: not-allowed; }
   .cfg__tile-img { width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: var(--color-bg-alt); }
   .cfg__tile-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cfg__tiles--finish .cfg__tile-name { display: flex; align-items: center; justify-content: center; min-height: 2.5em; }
   .cfg__tile-name { font-weight: 600; font-size: 14px; }
   .cfg__tile--gift:not(.is-active) { border-color: rgba(176,138,62,.6); background: #fbf6ea; }
   .cfg__tile--size strong { font-size: 16px; }
@@ -424,6 +425,10 @@
   .cfg__pack-img { width: 100%; aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #f3eee7; margin-bottom: 4px; }
   .cfg__pack-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
   .cfg__pack strong { font-size: 16px; }
+  .cfg__easy span { display: block; margin-top: 2px; font-family: var(--font-serif, Georgia, serif); font-style: italic; font-size: .95em; color: #8a6a24; }
+  .cfg__pack-list { list-style: none; margin: 4px 0 0; padding: 0; font-size: 13.5px; line-height: 1.35; color: var(--color-muted); }
+  .cfg__pack-list li { position: relative; padding-left: 20px; margin: 3px 0; }
+  .cfg__pack-list li::before { content: '✓'; position: absolute; left: 2px; color: #2f6b3a; font-weight: 700; }
   .cfg__pack em { font-family: var(--font-serif, Georgia, serif); font-size: 15px; color: #8a6a24; line-height: 1.25; }
   .cfg__pack-more { margin-top: auto; padding: 6px 0 0; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; color: var(--color-text); }
   .cfg__tile--color { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 6px 10px 6px 6px; }
@@ -556,8 +561,8 @@
 
   // ---- Producto y variante ----
   // Número «genérico» (1, 2, 3-4, 5-6, 7-8, 9+, paisaje) → valor de la opción del producto
-  const P = { '1': '1 persona', '2': '2 personas', '3-4': '3-4 personas', '5-6': '5-6 personas', '7-8': '7-8 personas', '9+': '9 o más personas' };
-  const M = { '1': '1 mascota', '2': '2 mascotas', '3-4': '3-4 mascotas', '5-6': '5 o más mascotas' };
+  const P = { '1': '1 persona', '10+': '10 o más personas' }; for (let n = 2; n <= 9; n++) P[n] = n + ' personas';
+  const M = { '1': '1 mascota', '2': '2 mascotas', '3': '3 mascotas', '4': '4 mascotas', '5': '5 o más mascotas' };
   const countIdx = (t) => t.options.findIndex((o) => /^número/i.test(o));
   const sizeIdx = (t) => t.options.findIndex((o) => /tamaño/i.test(o));
   const presIdx = (t) => t.options.findIndex((o) => /presentaci/i.test(o));
@@ -611,11 +616,11 @@
     welcomeOn = readWelcome();
     const type = data.types[st.type];
     $$('.cfg__type').forEach((b, k) => { b.classList.toggle('is-active', k === st.type); b.setAttribute('aria-selected', k === st.type); });
-    // Paso 1: con «Mascota» el último tramo es «5 o más»
+    // Paso 1: con «Mascota» van de 1 a «5 o más»
     const pets = /mascota/i.test(type.options[countIdx(type)] || '');
     $$('[data-count]').forEach((b) => {
-      b.hidden = !productFor(b.dataset.count) || (pets && (b.dataset.count === '7-8' || b.dataset.count === '9+'));
-      if (b.dataset.count === '5-6') b.textContent = pets ? '5 o más' : '5-6';
+      b.hidden = !productFor(b.dataset.count) || (pets && b.dataset.count !== 'paisaje' && !M[b.dataset.count]);
+      if (b.dataset.count === '5') b.textContent = pets ? '5 o más' : '5';
       b.classList.toggle('is-active', b.dataset.count === st.count);
     });
     const t = productFor(st.count);
@@ -682,8 +687,7 @@
     if (b.dataset.type) { st.type = +b.dataset.type; const t = data.types[st.type]; const def = t.default || t.fixed; if (def && productFor(def)) st.count = def; paintGallery(); paint(); }
     else if (b.dataset.count) {
       st.count = b.dataset.count;
-      // Si el tipo elegido no tiene ese número, pasamos al tipo que sí (p. ej. Pareja → Familia con 3-4)
-      if (!supports(data.types[st.type], st.count)) { const k = data.types.indexOf(productFor(st.count)); if (k > -1) { st.type = k; paintGallery(); } }
+      // Las fotos de arriba no cambian: si el tipo no tiene ese número, el precio sale del producto que sí lo tiene
       paint();
     }
     else if (b.dataset.finish) { if (b.disabled) return; st.finish = b.dataset.finish; paint(); }
@@ -797,7 +801,8 @@
   "settings": [
     { "type": "text", "id": "title", "label": "Título", "default": "Configura tu ilustración" },
     { "type": "text", "id": "subtitle", "label": "Subtítulo", "default": "Creamos la ilustración perfecta a partir de tu foto para rememorar ese momento especial" },
-    { "type": "text", "id": "steps_title", "label": "Título de los pasos", "default": "Reserva tu ilustración en solo 3 pasos" },
+    { "type": "text", "id": "steps_title", "label": "Título de los pasos", "default": "Crea tu ilustración" },
+    { "type": "text", "id": "steps_sub", "label": "Título de los pasos: segunda línea", "default": "en solo 3 pasos" },
     { "type": "image_picker", "id": "img_lamina", "label": "Foto: lámina sola" },
     { "type": "image_picker", "id": "img_marco", "label": "Foto: lámina enmarcada", "info": "Si está vacío usa la foto del producto Marco A3" },
     { "type": "image_picker", "id": "img_lienzo", "label": "Foto: lienzo" },
