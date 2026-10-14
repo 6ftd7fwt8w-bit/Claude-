@@ -184,27 +184,39 @@
         </fieldset>
 
         <div class="cfg__checkout">
-        <ul class="cfg__trust">
-          <li><span aria-hidden="true">📦</span><span>Entrega estimada <strong data-cfg-date></strong> <span class="cfg__muted" data-cfg-date-note hidden>(10-15 días desde que recibamos tu foto)</span></span></li>
-        </ul>
-        <details class="cfg__soon">
-          <summary>¿Lo necesitas antes?</summary>
-          <p>Si necesitas tu ilustración para una fecha concreta, escríbenos por WhatsApp antes de hacer el pedido y te confirmamos si llegamos a tiempo.</p>
-          <a class="cfg__wa" href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener">{% render 'icon', name: 'whatsapp' %}Consultar por WhatsApp</a>
-        </details>
-        <div class="cfg__review">
-          <span class="cfg__review-icon" aria-hidden="true">✓</span>
-          <p><strong>Revisión incluida <span class="cfg__nosurprise">Sin sorpresas</span></strong>Cuando tengamos tu diseño, te escribiremos por WhatsApp para que lo veas con calma y nos digas si quieres cambiar algo. No lo preparamos hasta que te encante.</p>
-        </div>
+          <div class="cfg__summary">
+            <div class="cfg__total">
+              <span class="cfg__total-label">Total</span>
+              <span class="cfg__amounts"><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong><em class="cfg__off" data-cfg-off hidden></em></span>
+            </div>
+            <p class="cfg__envio" id="vlh-envio">IVA incluido · Envío gratis{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</p>
+            <p class="vlh-perk cfg__perk" id="vlh-perk" hidden><span aria-hidden="true">✦</span> Descuento de bienvenida del {{ w_pct }}&nbsp;% activado · <b>válido 24&nbsp;h</b></p>
+          </div>
+          <p class="cfg__error" id="vlh-error" data-cfg-error role="alert" hidden></p>
+          <button type="submit" class="button button--full cfg__submit" data-cfg-submit>Añadir al carrito</button>
+          <p class="cfg__secure">🔒 Pago 100 % seguro</p>
 
-        <div class="cfg__summary">
-          <div class="cfg__total"><span>Total</span><span class="cfg__amounts"><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong><em class="cfg__off" data-cfg-off hidden></em></span></div>
-          <p class="cfg__envio" id="vlh-envio">IVA incluido · Envío gratis{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</p>
-          <p class="vlh-perk cfg__perk" id="vlh-perk" hidden><span aria-hidden="true">✦</span> Descuento de bienvenida del {{ w_pct }}&nbsp;% activado · <b>válido 24&nbsp;h</b></p>
-        </div>
-        <p class="cfg__error" id="vlh-error" data-cfg-error role="alert" hidden></p>
-        <button type="submit" class="button button--full cfg__submit" data-cfg-submit>Añadir al carrito</button>
-        <p class="cfg__secure">🔒 Pago 100 % seguro</p>
+          <div class="cfg__facts">
+            <div class="cfg__fact">
+              <span class="cfg__fact-icon" aria-hidden="true">📦</span>
+              <div>
+                <p class="cfg__fact-title">Entrega estimada <strong data-cfg-date></strong></p>
+                <p class="cfg__fact-text" data-cfg-date-note hidden>10-15 días desde que recibamos tu foto</p>
+                <details class="cfg__soon">
+                  <summary>¿Lo necesitas antes?</summary>
+                  <p>Si necesitas tu ilustración para una fecha concreta, escríbenos por WhatsApp antes de hacer el pedido y te confirmamos si llegamos a tiempo.</p>
+                  <a class="cfg__wa" href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener">{% render 'icon', name: 'whatsapp' %}Consultar por WhatsApp</a>
+                </details>
+              </div>
+            </div>
+            <div class="cfg__fact">
+              <span class="cfg__fact-icon cfg__fact-icon--ok" aria-hidden="true">✓</span>
+              <div>
+                <p class="cfg__fact-title">Revisión incluida <span class="cfg__nosurprise">Sin sorpresas</span></p>
+                <p class="cfg__fact-text">Cuando tengamos tu diseño, te escribiremos por WhatsApp para que lo veas con calma y nos digas si quieres cambiar algo. No lo preparamos hasta que te encante.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </form>
     </div>
@@ -492,6 +504,22 @@
   .cfg__soon p { margin: 8px 0 10px; font-size: 14.5px; line-height: 1.5; }
   .cfg__wa { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #25d366; color: #fff; font-size: 14.5px; font-weight: 600; text-decoration: none; }
   .cfg__wa svg { width: 18px; height: 18px; }
+  .cfg__checkout .cfg__summary { padding: 0; border: 0; }
+  .cfg__checkout .cfg__total { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .cfg__total-label { font-size: 13px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; color: var(--color-muted); }
+  .cfg__checkout .cfg__envio { margin: 4px 0 0; text-align: right; font-size: 13px; color: var(--color-muted); }
+  .cfg__checkout .cfg__submit { margin-top: 14px; }
+  .cfg__checkout .cfg__secure { margin: 8px 0 0; }
+  .cfg__facts { display: grid; gap: 14px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #eee6da; }
+  .cfg__fact { display: flex; gap: 12px; align-items: flex-start; }
+  .cfg__fact-icon { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #f3ede4; font-size: 16px; }
+  .cfg__fact-icon--ok { background: #2f6b3a; color: #fff; font-weight: 700; }
+  .cfg__fact p { margin: 0; }
+  .cfg__fact-title { font-size: 15px; font-weight: 600; line-height: 1.35; }
+  .cfg__fact-title strong { font-weight: 600; color: #2f6b3a; }
+  .cfg__fact-text { margin-top: 3px !important; font-size: 14px; line-height: 1.5; color: var(--color-muted); }
+  .cfg__fact-text[hidden] { display: none; }
+  .cfg__fact .cfg__soon { margin: 6px 0 0; }
   .cfg__checkout { margin-top: 16px; padding: 18px 16px 16px; border: 1px solid #e4dacb; border-radius: 16px; background: #fff; box-shadow: 0 6px 20px rgba(44,34,24,.06); }
   .cfg-how { margin: 36px auto 0; padding: 26px 18px 10px; border-radius: 16px; background: #f0e9df; border: 1px solid #e4dacb; }
   .cfg-how .pdesc-steps { margin-bottom: 18px; }
@@ -714,7 +742,7 @@
     if (b.dataset.packMore) { e.stopPropagation(); openDlg($(`[data-pack-dialog="${b.dataset.packMore}"]`)); return; }
     if ('dlgClose' in b.dataset || 'guideClose' in b.dataset) { closeDlg(dlg); return; }
     if (b.dataset.dlgSrc) { const m = $('[data-dlg-main]', dlg); if (m) { m.removeAttribute('srcset'); m.src = b.dataset.dlgSrc; } $$('.cfg__thumb', dlg).forEach((x) => x.classList.toggle('is-active', x === b)); return; }
-    if (b.dataset.dlgChoose) { st.finish = 'regalo'; st.pack = b.dataset.dlgChoose; closeDlg(dlg); paint(); return; }
+    if (b.dataset.dlgChoose) { if (st.finish !== 'regalo') { st.size = 'A4'; st.color = 'marco blanco'; } st.finish = 'regalo'; st.pack = b.dataset.dlgChoose; closeDlg(dlg); paint(); return; }
     if (b.dataset.type) { st.type = +b.dataset.type; const t = data.types[st.type]; const def = t.default || t.fixed; if (def && productFor(def)) st.count = def; paintGallery(); paint(); }
     else if ('moreCounts' in b.dataset) { b.parentElement.classList.add('is-open'); }
     else if (b.dataset.count) {
@@ -722,7 +750,7 @@
       // Las fotos de arriba no cambian: si el tipo no tiene ese número, el precio sale del producto que sí lo tiene
       paint();
     }
-    else if (b.dataset.finish) { if (b.disabled) return; st.finish = b.dataset.finish; paint(); }
+    else if (b.dataset.finish) { if (b.disabled) return; if (st.finish !== b.dataset.finish) { st.finish = b.dataset.finish; st.size = SIZES[st.finish][0]; st.color = 'marco blanco'; st.pack = 'Pack Regalo'; } paint(); }
     else if (b.dataset.size) { if (b.disabled) return; st.size = b.dataset.size; if (st.pack === 'Pack Valentina' && st.size === 'A4') st.pack = 'Pack Regalo'; paint(); }
     else if (b.dataset.pack) { st.pack = b.dataset.pack; paint(); }
     else if (b.dataset.color) { st.color = b.dataset.color; paint(); }
