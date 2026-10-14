@@ -8,7 +8,7 @@
           "settings": {
             "label": "Pareja",
             "product": "ilustracion-personalizada-dos-personas",
-            "count_fixed": "2 personas",
+            "count_fixed": "2",
             "count_default": "",
             "generic": true
           }
@@ -19,7 +19,7 @@
             "label": "Familia y amigos",
             "product": "ilustracion-personalizada-grupo-familia",
             "count_fixed": "",
-            "count_default": "3-4 personas",
+            "count_default": "3-4",
             "generic": true
           }
         },
@@ -29,7 +29,7 @@
             "label": "Fallera y tradiciones",
             "product": "ilustracion-personalizada-tradicion-fallera-sevillana-trajes-regionales",
             "count_fixed": "",
-            "count_default": "1 persona",
+            "count_default": "1",
             "generic": false
           }
         },
@@ -39,7 +39,7 @@
             "label": "Mascota",
             "product": "ilustracion-personalizada-mascota",
             "count_fixed": "",
-            "count_default": "1 mascota",
+            "count_default": "1",
             "generic": true
           }
         },
@@ -48,7 +48,7 @@
           "settings": {
             "label": "Boda",
             "product": "ilustracion-personalizada-boda-novios",
-            "count_fixed": "2 personas",
+            "count_fixed": "2",
             "count_default": "",
             "generic": false
           }
@@ -58,7 +58,7 @@
           "settings": {
             "label": "Bebé",
             "product": "ilustracion-personalizada-bebe-natalicio",
-            "count_fixed": "1 persona",
+            "count_fixed": "1",
             "count_default": "",
             "generic": false
           }
@@ -68,7 +68,7 @@
           "settings": {
             "label": "Comunión",
             "product": "ilustracion-personalizada-especial-comunion",
-            "count_fixed": "1 persona",
+            "count_fixed": "1",
             "count_default": "",
             "generic": false
           }
@@ -78,7 +78,7 @@
           "settings": {
             "label": "Retrato",
             "product": "ilustracion-personalizada-retrato-1-persona",
-            "count_fixed": "1 persona",
+            "count_fixed": "1",
             "count_default": "",
             "generic": true
           }
@@ -88,7 +88,7 @@
           "settings": {
             "label": "Paisaje",
             "product": "ilustracion-personalizada-paisaje-lugar-especial",
-            "count_fixed": "Solo paisaje",
+            "count_fixed": "paisaje",
             "count_default": "",
             "generic": true
           }
@@ -106,11 +106,13 @@
         "paisaje"
       ],
       "settings": {
-        "kicker": "Tu foto, convertida en un regalo que emociona",
         "title": "Configura tu ilustración",
-        "subtitle": "Elige un tipo para ver ejemplos reales",
+        "subtitle": "Creamos la ilustración perfecta a partir de tu foto para rememorar ese momento especial",
         "img_lamina": "shopify://shop_images/vlh-ejemplo-lamina.jpg",
-        "img_lienzo": "shopify://shop_images/vlh-ejemplo-lienzo.jpg"
+        "img_lienzo": "shopify://shop_images/vlh-ejemplo-lienzo.jpg",
+        "steps_title": "Reserva tu ilustración en solo 3 pasos",
+        "guide_art": "shopify://shop_images/vlh-arte-fallera-mantilla.jpg",
+        "guide_art_a3": "shopify://shop_images/vlh-fallera-lucia.jpg"
       }
     },
     "instagram": {
