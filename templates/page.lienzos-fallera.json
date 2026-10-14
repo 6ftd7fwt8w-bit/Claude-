@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "hero": {
@@ -26,20 +17,126 @@
       }
     },
     "express": {
-      "type": "lienzo-express",
+      "type": "configurador-ilustracion",
+      "blocks": {
+        "pareja": {
+          "type": "tipo",
+          "settings": {
+            "label": "Pareja",
+            "product": "ilustracion-personalizada-dos-personas",
+            "count_fixed": "2",
+            "count_default": "",
+            "generic": true
+          }
+        },
+        "familia": {
+          "type": "tipo",
+          "settings": {
+            "label": "Familia y amigos",
+            "product": "ilustracion-personalizada-grupo-familia",
+            "count_fixed": "",
+            "count_default": "3",
+            "generic": true
+          }
+        },
+        "fallera": {
+          "type": "tipo",
+          "settings": {
+            "label": "Fallera y tradiciones",
+            "product": "ilustracion-personalizada-tradicion-fallera-sevillana-trajes-regionales",
+            "count_fixed": "",
+            "count_default": "1",
+            "generic": false
+          }
+        },
+        "mascota": {
+          "type": "tipo",
+          "settings": {
+            "label": "Mascota",
+            "product": "ilustracion-personalizada-mascota",
+            "count_fixed": "",
+            "count_default": "1",
+            "generic": true
+          }
+        },
+        "boda": {
+          "type": "tipo",
+          "settings": {
+            "label": "Boda",
+            "product": "ilustracion-personalizada-boda-novios",
+            "count_fixed": "2",
+            "count_default": "",
+            "generic": false
+          }
+        },
+        "bebe": {
+          "type": "tipo",
+          "settings": {
+            "label": "Bebé",
+            "product": "ilustracion-personalizada-bebe-natalicio",
+            "count_fixed": "1",
+            "count_default": "",
+            "generic": false
+          }
+        },
+        "comunion": {
+          "type": "tipo",
+          "settings": {
+            "label": "Comunión",
+            "product": "ilustracion-personalizada-especial-comunion",
+            "count_fixed": "1",
+            "count_default": "",
+            "generic": false
+          }
+        },
+        "retrato": {
+          "type": "tipo",
+          "settings": {
+            "label": "Retrato",
+            "product": "ilustracion-personalizada-retrato-1-persona",
+            "count_fixed": "1",
+            "count_default": "",
+            "generic": true
+          }
+        },
+        "paisaje": {
+          "type": "tipo",
+          "settings": {
+            "label": "Paisaje",
+            "product": "ilustracion-personalizada-paisaje-lugar-especial",
+            "count_fixed": "paisaje",
+            "count_default": "",
+            "generic": true
+          }
+        }
+      },
+      "block_order": [
+        "pareja",
+        "familia",
+        "fallera",
+        "mascota",
+        "boda",
+        "bebe",
+        "comunion",
+        "retrato",
+        "paisaje"
+      ],
       "settings": {
-        "product": "ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales",
-        "title": "Lienzos falleros XL",
-        "apply_code": false,
-        "note": "10 % dto. con [code] · solo hasta el [until] · Envío gratis",
-        "points": "Diseño personalizado\nRevisamos contigo antes de imprimir\nTela 100 % algodón\nBastidor incluido · listo para colgar",
-        "button_label": "Crear mi lienzo",
-        "price_from_note": "Precios para 1 persona · el precio se ajusta según el número de personas",
-        "free_shipping": true,
-        "background": "alt",
-        "note_after": "Envío gratis a toda la península",
-        "more_label": "Ver más ejemplos de ilustraciones falleras y tamaños",
-        "more_link": "shopify://products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales"
+        "title": "Crea tu lienzo de fallera",
+        "subtitle": "Elige cuántas salen, sube tus fotos y el tamaño: el precio se actualiza al momento.",
+        "img_lamina": "shopify://shop_images/vlh-ejemplo-lamina.jpg",
+        "img_lienzo": "shopify://shop_images/vlh-ejemplo-lienzo.jpg",
+        "steps_title": "Tu ilustración,",
+        "guide_art": "shopify://shop_images/vlh-arte-fallera-mantilla.jpg",
+        "guide_art_a3": "shopify://shop_images/vlh-fallera-lucia.jpg",
+        "img_marco": "shopify://shop_images/vlh-icono-lamina-marco-3.jpg",
+        "how_text": "<p><strong>Una ilustración creada para ti</strong></p><p>Creamos tu ilustración personalizada a partir de una o varias fotos, cuidando los detalles que hacen reconocible a cada persona o mascota: las expresiones, la ropa, el pelo, los gestos y todo eso que hace que, al verla, penséis: somos nosotros.</p><p><strong>Personalízala a tu manera</strong></p><p>En las notas puedes contarnos cómo te gustaría tu ilustración: el tipo de fondo, los colores, algún detalle que quieras destacar o si quieres añadir nombres, una fecha o una frase especial.</p><p><strong>Revisión incluida</strong></p><p>Cuando el diseño esté listo, te contactaremos para enseñártelo y revisarlo contigo antes de prepararlo. Incluye hasta 3 cambios.</p><p><strong>Acabado y presentación</strong></p><p>Diseñamos, imprimimos, enmarcamos y montamos cada pedido a mano, cuidando cada detalle. Las láminas se imprimen en papel artístico verjurado de 300 g, con una textura elegante que realza la ilustración. Los lienzos son de tela 100 % algodón con tinta ecológica, montados en bastidor de madera de 2 cm y listos para colgar.</p><p>Si eliges lámina con marco, la recibirás ya enmarcada y protegida para el envío. Y con un pack regalo, te llega envuelta y lista para abrir y sorprender.</p><p><strong>Plazo de entrega</strong></p><p>Tu pedido llega en 10-15 días, incluyendo diseño, preparación y envío. Si nos envías la foto más tarde, el plazo empieza a contar cuando la recibimos. Si hay que hacer cambios tras la revisión o la respuesta se retrasa, esos días se suman al plazo.</p>",
+        "steps_sub": "en solo 3 pasos",
+        "product_general": "ilustracion-personalizada",
+        "embedded": true,
+        "anchor": "crear-lienzo",
+        "start_tipo": "fallera",
+        "start_finish": "lienzo"
       }
     },
     "gallery": {
@@ -57,7 +154,7 @@
           "settings": {
             "title": "",
             "subtitle": "",
-            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
+            "link": "#crear-lienzo",
             "image": "shopify://shop_images/vlh-fallera-abrazo.jpg"
           }
         },
@@ -66,7 +163,7 @@
           "settings": {
             "title": "",
             "subtitle": "",
-            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
+            "link": "#crear-lienzo",
             "image": "shopify://shop_images/vlh-fallera-retrato.jpg"
           }
         },
@@ -75,7 +172,7 @@
           "settings": {
             "title": "",
             "subtitle": "",
-            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=80x120",
+            "link": "#crear-lienzo",
             "image": "shopify://shop_images/vlh-fallera-tres.jpg"
           }
         },
@@ -84,7 +181,7 @@
           "settings": {
             "title": "",
             "subtitle": "",
-            "link": "/products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales?tamano=70x100",
+            "link": "#crear-lienzo",
             "image": "shopify://shop_images/vlh-fallera-mantilla.jpg"
           }
         }
@@ -130,7 +227,7 @@
     "faq": {
       "type": "custom-liquid",
       "settings": {
-        "custom_liquid": "<section class=\"section\"><div class=\"page-width page-width--narrow\">\n<h2 class=\"section-title\">Preguntas frecuentes</h2>\n<details class=\"accordion\" open><summary>¿Cómo es el lienzo?</summary><div class=\"accordion__content rte\"><p>Tu ilustración va sobre tela 100 % algodón, montada en un bastidor de madera. Llega lista para colgar: no necesita marco.</p></div></details>\n<details class=\"accordion\"><summary>¿Qué foto necesito?</summary><div class=\"accordion__content rte\"><p>Una foto nítida y con buena luz de la fallera (o de las falleras) vestidas con el traje. Si tienes varias, envíanoslas todas: elegiremos la que mejor funcione.</p></div></details>\n<details class=\"accordion\"><summary>¿Puedo ver el diseño antes?</summary><div class=\"accordion__content rte\"><p>Sí. Te enseñamos la ilustración antes de preparar tu lienzo: lo revisamos contigo para que quede perfecto.</p></div></details>\n<details class=\"accordion\"><summary>¿Cuánto tarda?</summary><div class=\"accordion__content rte\"><p>Entre 10 y 15 días desde que tenemos tu foto. Si hay que hacer cambios tras la revisión o la respuesta se retrasa, esos días se suman al plazo. Si lo necesitas para una fecha concreta, escríbenos por WhatsApp antes de hacer el pedido.</p></div></details>\n<details class=\"accordion\"><summary>¿Puedo añadir un nombre o un año?</summary><div class=\"accordion__content rte\"><p>Sí, indícalo en «Añadir detalles para tu ilustración» al hacer el pedido.</p></div></details>\n</div></section>"
+        "custom_liquid": "<section class=\"section\"><div class=\"page-width page-width--narrow\">\n<h2 class=\"section-title\">Preguntas frecuentes</h2>\n<details class=\"accordion\" open><summary>¿Cómo es el lienzo?</summary><div class=\"accordion__content rte\"><p>Tu ilustración va sobre tela 100 % algodón con tinta ecológica, montada en un bastidor de madera de 2 cm. Llega lista para colgar: no necesita marco.</p></div></details>\n<details class=\"accordion\"><summary>¿Qué foto necesito?</summary><div class=\"accordion__content rte\"><p>Una foto nítida y con buena luz de la fallera (o de las falleras) vestidas con el traje. Si tienes varias, envíanoslas todas: elegiremos la que mejor funcione.</p></div></details>\n<details class=\"accordion\"><summary>¿Puedo ver el diseño antes?</summary><div class=\"accordion__content rte\"><p>Sí, la revisión está incluida: cuando tengamos tu diseño te escribiremos por WhatsApp para que lo veas con calma y nos digas si quieres cambiar algo. No preparamos tu lienzo hasta que te encante.</p></div></details>\n<details class=\"accordion\"><summary>¿Cuánto tarda?</summary><div class=\"accordion__content rte\"><p>Entre 10 y 15 días desde que tenemos tu foto. Si hay que hacer cambios tras la revisión o la respuesta se retrasa, esos días se suman al plazo. Si lo necesitas para una fecha concreta, escríbenos por WhatsApp antes de hacer el pedido.</p></div></details>\n<details class=\"accordion\"><summary>¿Puedo añadir un nombre o un año?</summary><div class=\"accordion__content rte\"><p>Sí, indícalo en «Notas para la ilustración» al hacer el pedido.</p></div></details>\n</div></section>"
       }
     },
     "instagram": {

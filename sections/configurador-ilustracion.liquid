@@ -60,19 +60,21 @@
     endif
   endif
 -%}
-<section class="cfg section" id="configurador" data-cfg>
+<section class="cfg section{% if s.embedded %} cfg--embedded{% endif %}" id="{{ s.anchor | default: 'configurador' }}" data-cfg>
   <div class="page-width">
     <header class="cfg__head">
       {%- if pack_mode -%}
       <p class="cfg__kicker">{{ pack_tag }}</p>
       <h1 class="cfg__title">{{ pack_name }}</h1>
       <p class="cfg__subtitle">{{ s.pack_subtitle }}</p>
+      {%- elsif s.embedded -%}
+      <h2 class="cfg__title">{{ s.title }}</h2>
       {%- else -%}
       <h1 class="cfg__title">{{ s.title }}</h1>
       {%- if s.subtitle != blank -%}<p class="cfg__subtitle">{{ s.subtitle }}</p>{%- endif -%}
       {%- endif -%}
-      <p class="cfg__see"{% if pack_mode %} style="display:none"{% endif %}>Ver ejemplos:</p>
-      <div class="cfg__types" role="tablist" aria-label="Tipos de ilustración"{% if pack_mode %} style="display:none"{% endif %}>
+      <p class="cfg__see"{% if pack_mode or s.embedded %} style="display:none"{% endif %}>Ver ejemplos:</p>
+      <div class="cfg__types" role="tablist" aria-label="Tipos de ilustración"{% if pack_mode or s.embedded %} style="display:none"{% endif %}>
         {%- for block in section.blocks -%}
           <button type="button" class="cfg__type{% if forloop.first %} is-active{% endif %}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" data-type="{{ forloop.index0 }}" {{ block.shopify_attributes }}>{{ block.settings.label }}</button>
         {%- endfor -%}
@@ -263,6 +265,7 @@
       </form>
     </div>
 
+    {%- unless s.embedded -%}
     <div class="cfg-how page-width--narrow">
       <div class="pdesc-steps">
         <h2 class="section-title" style="margin-bottom:24px">{{ s.how_title }}</h2>
@@ -288,6 +291,7 @@
         </details>
       {%- endif -%}
     </div>
+    {%- endunless -%}
   </div>
 
   <div class="cfg-bar" data-cfg-bar aria-hidden="true">
@@ -382,6 +386,8 @@
       {%- assign pg = s.product_general -%}
       "general": {% if pg != blank %}{"label": "", "fixed": "", "generic": true, "default": "", "title": {{ pg.title | json }}, "options": {{ pg.options | json }}, "images": [], "variants": [{%- for v in pg.variants -%}{%- unless forloop.first -%},{%- endunless -%}{"id": {{ v.id }}, "price": {{ v.price }}, "cmp": {{ v.compare_at_price | default: 0 }}, "ok": {{ v.available | json }}, "o": {{ v.options | json }}}{%- endfor -%}]}{% else %}null{% endif %},
       "start": {{ start_type }},
+      "startTipo": {{ s.start_tipo | json }},
+      "startFinish": {{ s.start_finish | json }},
       "pack": {% if pack_mode %}{"name": {{ pack_name | json }}, "images": [{%- for m in product.media -%}{%- if m.preview_image -%}{%- unless forloop.first -%},{%- endunless -%}{"src": {{ m.preview_image | image_url: width: 1100 | json }}, "thumb": {{ m.preview_image | image_url: width: 180 | json }}, "alt": {{ m.alt | default: pack_name | json }}}{%- endif -%}{%- endfor -%}]}{% else %}null{% endif %},
       "locale": {{ request.locale.iso_code | json }}
     }
@@ -912,11 +918,16 @@
 
   // Inicio: tipo desde ?tipo=pareja si viene en el enlace
   if (data.start > -1) st.type = data.start;
-  try {
-    const q = (new URLSearchParams(location.search).get('tipo') || '').toLowerCase();
-    if (q) { const k = data.types.findIndex((t) => t.label.toLowerCase().indexOf(q) === 0); if (k > -1) st.type = k; }
-  } catch (e) {}
+  // ?tipo=pareja · ?acabado=lienzo · ?tamano=80x120 (o los ajustes «Empezar con…» de la sección)
+  let qs = {}; try { qs = Object.fromEntries(new URLSearchParams(location.search)); } catch (e) {}
+  const q = (qs.tipo || data.startTipo || '').toLowerCase();
+  if (q) { const k = data.types.findIndex((t) => t.label.toLowerCase().indexOf(q) === 0); if (k > -1) st.type = k; }
   const t0 = data.types[st.type]; st.count = t0 ? (t0.default || t0.fixed || null) : null;
+  const fin = (qs.acabado || data.startFinish || '').toLowerCase();
+  if (SIZES[fin]) { st.finish = fin; st.size = SIZES[fin][0]; }
+  const tam = (qs.tamano || '').toUpperCase().replace('X', 'x');
+  const szk = SIZES[st.finish].find((z) => z.toUpperCase() === tam.toUpperCase() || z.replace('Lienzo ', '') === tam);
+  if (szk) st.size = szk;
   if (data.pack) { st.finish = 'regalo'; st.pack = data.pack.name; st.count = '2'; if (st.pack === 'Pack Valentina') st.size = 'A3'; }
   paintGallery(); paint();
 })();
@@ -927,6 +938,10 @@
   "name": "Configurador",
   "settings": [
     { "type": "select", "id": "mode", "label": "Modo", "options": [{ "value": "page", "label": "Página del configurador" }, { "value": "pack", "label": "Ficha de un pack regalo (pack ya elegido)" }, { "value": "product", "label": "Ficha de un tipo de ilustración (tipo ya elegido)" }], "default": "page" },
+    { "type": "checkbox", "id": "embedded", "label": "Dentro de otra página", "info": "Título como h2, sin botones de tipo ni «Cómo funciona» (p. ej. página de lienzos de fallera)", "default": false },
+    { "type": "text", "id": "anchor", "label": "Ancla (id)", "info": "Para enlazar con #… (por defecto configurador)" },
+    { "type": "text", "id": "start_tipo", "label": "Empezar con el tipo", "info": "Ej.: fallera, pareja (como ?tipo=)" },
+    { "type": "select", "id": "start_finish", "label": "Empezar con el acabado", "options": [{ "value": "", "label": "Lámina (por defecto)" }, { "value": "marco", "label": "Lámina con marco" }, { "value": "lienzo", "label": "Lienzo" }, { "value": "regalo", "label": "Pack regalo" }], "default": "" },
     { "type": "text", "id": "pack_subtitle", "label": "Modo pack: subtítulo", "default": "Configura la ilustración que irá dentro de tu regalo" },
     { "type": "text", "id": "title", "label": "Título", "default": "Configura tu ilustración" },
     { "type": "text", "id": "subtitle", "label": "Subtítulo", "default": "Creamos la ilustración perfecta a partir de tu foto para rememorar ese momento especial" },
