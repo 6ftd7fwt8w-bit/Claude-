@@ -10,7 +10,6 @@
 {%- endcomment -%}
 {%- liquid
   assign s = section.settings
-  assign p_comp = all_products['vlh-extra-composicion-varias-fotos']
   assign p_regalo = all_products['vlh-extra-pack-regalo']
   assign p_valentina = all_products['vlh-extra-pack-valentina']
   assign p_marco = all_products['vlh-extra-marco-a3']
@@ -68,80 +67,84 @@
             <span><strong data-cfg-drop-title>Sube tus fotos</strong><small>Toca para elegir · una o varias. Mejor con buena luz y las caras nítidas.</small></span>
           </label>
           <label class="cfg__check"><input type="checkbox" data-cfg-later> Enviaré la foto más tarde (por WhatsApp o email)</label>
-          {%- if p_comp -%}
-            <label class="cfg__check" data-cfg-comp-row hidden><input type="checkbox" data-cfg-comp> Combinar varias fotos en una <span class="cfg__muted">+ {{ p_comp.price | money }}</span></label>
-          {%- endif -%}
           <label class="cfg__notes-label" for="cfg-notes">Notas para la ilustración <span class="cfg__muted">(opcional)</span></label>
           <p class="cfg__hint">Nombres, una fecha, una frase, el fondo o los colores que prefieras…</p>
           <textarea class="cfg__notes" id="cfg-notes" rows="3" maxlength="600" data-cfg-notes placeholder="Ej: Quiero añadir el texto 'Marta &amp; Pablo · 12.06.2026'. Quiero que el fondo sea sencillo, en tonos verdes, con alguna flor."></textarea>
-          <p class="cfg__hint">No necesitas describirlo todo: trabajaremos con cariño tomando como referencia las fotografías que nos envíes, cuidando cada detalle para que la ilustración quede elegante y preciosa. Los aspectos que no nos indiques quedarán a criterio de nuestro equipo de diseño, que siempre busca el resultado más armonioso.</p>
+          <details class="cfg__info"><summary>Más información</summary>
+            <p class="cfg__hint">No necesitas describirlo todo: trabajaremos con cariño tomando como referencia las fotografías que nos envíes, cuidando cada detalle para que la ilustración quede elegante y preciosa. Los aspectos que no nos indiques quedarán a criterio de nuestro equipo de diseño, que siempre busca el resultado más armonioso.</p>
+          </details>
         </fieldset>
 
         <fieldset class="cfg__step">
           <legend><span class="cfg__num">3</span> Elige tu acabado</legend>
           {%- assign img_m = s.img_marco | default: p_marco.featured_image -%}
-          <div class="cfg__rows">
-            <button type="button" class="cfg__row" data-finish="lamina">
-              <span class="cfg__row-img">{%- if s.img_lamina -%}{{ s.img_lamina | image_url: width: 160 | image_tag: loading: 'lazy', alt: '', width: 64, height: 80 }}{%- endif -%}</span>
-              <span class="cfg__row-body"><strong>Solo lámina</strong><small>Papel verjurado de algodón 300 g</small></span>
-              <span class="cfg__row-price" data-price-for="lamina"></span>
+          <div class="cfg__tiles cfg__tiles--finish">
+            <button type="button" class="cfg__tile" data-finish="lamina">
+              <span class="cfg__tile-img">{%- if s.img_lamina -%}{{ s.img_lamina | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 72, height: 72 }}{%- endif -%}</span>
+              <span class="cfg__tile-name">Lámina</span>
             </button>
-            <button type="button" class="cfg__row" data-finish="marco">
-              <span class="cfg__row-img">{%- if img_m -%}{{ img_m | image_url: width: 160 | image_tag: loading: 'lazy', alt: '', width: 64, height: 80 }}{%- endif -%}</span>
-              <span class="cfg__row-body"><strong>Lámina enmarcada</strong><small>Ya preparada en el marco y lista para colgar</small></span>
-              <span class="cfg__row-price" data-price-for="marco"></span>
+            <button type="button" class="cfg__tile" data-finish="marco">
+              <span class="cfg__tile-img">{%- if img_m -%}{{ img_m | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 72, height: 72 }}{%- endif -%}</span>
+              <span class="cfg__tile-name">Lámina con marco</span>
             </button>
-            <button type="button" class="cfg__row" data-finish="lienzo">
-              <span class="cfg__row-img">{%- if s.img_lienzo -%}{{ s.img_lienzo | image_url: width: 160 | image_tag: loading: 'lazy', alt: '', width: 64, height: 80 }}{%- endif -%}</span>
-              <span class="cfg__row-body"><strong>Lienzo XL <em class="cfg__new">Nuevo</em></strong><small>Tela de algodón en bastidor, listo para colgar</small></span>
-              <span class="cfg__row-price" data-price-for="lienzo"></span>
+            <button type="button" class="cfg__tile" data-finish="lienzo">
+              <span class="cfg__tile-img">{%- if s.img_lienzo -%}{{ s.img_lienzo | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 72, height: 72 }}{%- endif -%}</span>
+              <span class="cfg__tile-name">Lienzo</span>
             </button>
           </div>
+          <ul class="cfg__feats" data-feats="lamina">
+            <li>Papel de algodón verjurado 300 g</li>
+            <li>Diseñada a partir de tu foto, con revisión incluida</li>
+            <li class="is-info">Se entrega sin marco</li>
+          </ul>
+          <ul class="cfg__feats" data-feats="marco" hidden>
+            <li>Ya colocada en el marco, lista para colgar</li>
+            <li>Marco fino blanco o de madera clara</li>
+            <li>Papel de algodón verjurado 300 g</li>
+          </ul>
+          <ul class="cfg__feats" data-feats="lienzo" hidden>
+            <li>Tela 100 % algodón montada en bastidor</li>
+            <li>Lista para colgar</li>
+            <li>Gran formato para presidir una pared</li>
+          </ul>
 
-          <div class="cfg__sub" data-cfg-sub="size">
-            <div class="cfg__label-row">
-              <p class="cfg__label">Tamaño</p>
-              <button type="button" class="cfg__guide-link" data-guide-open>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="1.5"/><path d="M6 7v4M10 7v3M14 7v4M18 7v3"/></svg>
-                Comparar tamaños
-              </button>
-            </div>
-            <div class="cfg__sizes" data-cfg-sizes></div>
+          <div class="cfg__label-row">
+            <p class="cfg__label">Tamaño</p>
+            <button type="button" class="cfg__guide-link" data-guide-open>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="1.5"/><path d="M6 7v4M10 7v3M14 7v4M18 7v3"/></svg>
+              Comparar tamaños
+            </button>
           </div>
+          <div class="cfg__tiles cfg__tiles--size" data-cfg-sizes></div>
 
           <div class="cfg__sub" data-cfg-sub="color" hidden>
             <p class="cfg__label">Color del marco</p>
-            <div class="cfg__opts" data-cfg-colors>
-              <button type="button" class="cfg__opt" data-color="marco blanco"><span class="cfg__swatch" style="background:#f4f1ec"></span>Blanco</button>
-              <button type="button" class="cfg__opt" data-color="marco madera clara"><span class="cfg__swatch" style="background:#c9a77c"></span>Madera clara</button>
+            <div class="cfg__tiles cfg__tiles--color">
+              <button type="button" class="cfg__tile cfg__tile--row" data-color="marco blanco"><span class="cfg__swatch" style="background:#f4f1ec"></span>Blanco</button>
+              <button type="button" class="cfg__tile cfg__tile--row" data-color="marco madera clara"><span class="cfg__swatch" style="background:#c9a77c"></span>Madera clara</button>
             </div>
           </div>
 
-          <div class="cfg__gift" data-cfg-sub="gift" hidden>
-            <div class="cfg__gift-ask" data-gift-ask>
-              <span class="cfg__gift-icon" aria-hidden="true">{% render 'icon', name: 'gift' %}</span>
-              <div>
-                <p class="cfg__gift-title">¿Es para regalar?</p>
-                <p class="cfg__gift-text">Pack regalo disponible para este formato: te llega <strong>enmarcada, envuelta y lista para emocionar</strong>.</p>
-              </div>
-              <button type="button" class="cfg__gift-btn" data-gift-on>Lo quiero para regalar</button>
+          <div class="cfg__sub cfg__gift" data-cfg-sub="gift" hidden>
+            <p class="cfg__gift-title"><span class="cfg__gift-icon" aria-hidden="true">{% render 'icon', name: 'gift' %}</span> ¿Es para regalar? <span class="cfg__badge">Marco incluido</span></p>
+            <p class="cfg__gift-text">Pack regalo disponible para este formato: te llega enmarcada, envuelta y lista para emocionar. Elige uno (opcional).</p>
+            <div class="cfg__tiles cfg__tiles--pack">
+              <button type="button" class="cfg__pack" data-pack="Pack Regalo">
+                <span class="cfg__pack-img">{%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 400 | image_tag: loading: 'eager', alt: 'Pack Regalo', width: 200, height: 150 }}{%- endif -%}</span>
+                <strong>Pack Regalo</strong>
+                <small>Enmarcada, envuelta en papel premium con lazada, en caja kraft con flores secas y tu mensaje.</small>
+              </button>
+              <button type="button" class="cfg__pack cfg__pack--star" data-pack="Pack Valentina">
+                <span class="cfg__pack-tag">El más completo</span>
+                <span class="cfg__pack-img">{%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 400 | image_tag: loading: 'eager', alt: 'Pack Valentina', width: 200, height: 150 }}{%- endif -%}</span>
+                <strong>Pack Valentina</strong>
+                <small>El pack completo para emocionar: caja forrada a mano, mensaje en la tapa y ramo que nunca se marchita. Solo A3.</small>
+              </button>
             </div>
-            <div class="cfg__gift-open" data-gift-open hidden>
-              <p class="cfg__gift-title"><span class="cfg__gift-icon" aria-hidden="true">{% render 'icon', name: 'gift' %}</span> Elige tu pack regalo <span class="cfg__badge">Marco incluido</span></p>
-              <div class="cfg__packs">
-                <button type="button" class="cfg__pack" data-pack="Pack Regalo">
-                  {%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 240 | image_tag: loading: 'eager', alt: 'Pack Regalo', width: 96, height: 96 }}{%- endif -%}
-                  <span><strong>Pack Regalo</strong><small>Lámina ya enmarcada, envuelta en papel premium con lazada, en caja kraft con rafia, ramillete de flores secas y tu mensaje.</small><b data-pack-price="Pack Regalo"></b></span>
-                </button>
-                <button type="button" class="cfg__pack cfg__pack--star" data-pack="Pack Valentina">
-                  {%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 240 | image_tag: loading: 'eager', alt: 'Pack Valentina', width: 96, height: 96 }}{%- endif -%}
-                  <span><em>El pack completo para emocionar</em><strong>Pack Valentina</strong><small>En A3 y enmarcada, con caja forrada a mano en yute y encaje, mensaje en la tapa y un ramo de flores preservadas que nunca se marchita.</small><b data-pack-price="Pack Valentina"></b></span>
-                </button>
-              </div>
-              <p class="cfg__more">Ver todo lo que incluye: {% if p_regalo %}<a href="{{ p_regalo.url }}" target="_blank" rel="noopener">Pack Regalo</a>{% endif %}{% if p_regalo and p_valentina %} · {% endif %}{% if p_valentina %}<a href="{{ p_valentina.url }}" target="_blank" rel="noopener">Pack Valentina</a>{% endif %}</p>
+            <p class="cfg__more">Ver todo lo que incluye: {% if p_regalo %}<a href="{{ p_regalo.url }}" target="_blank" rel="noopener">Pack Regalo</a>{% endif %}{% if p_regalo and p_valentina %} · {% endif %}{% if p_valentina %}<a href="{{ p_valentina.url }}" target="_blank" rel="noopener">Pack Valentina</a>{% endif %}</p>
+            <div data-cfg-sub="message" hidden>
               <p class="cfg__label">Mensaje para tu regalo <span class="cfg__muted">(opcional)</span></p>
               <textarea class="cfg__notes" rows="2" maxlength="200" data-cfg-message placeholder="Ej: Con todo mi cariño para ti"></textarea>
-              <button type="button" class="cfg__gift-off" data-gift-off>No es para regalo</button>
             </div>
           </div>
         </fieldset>
@@ -155,7 +158,7 @@
         </div>
 
         <div class="cfg__summary">
-          <div class="cfg__total"><span>Total</span><span><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong></span></div>
+          <div class="cfg__total"><span>Total</span><span class="cfg__amounts"><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong><em class="cfg__off" data-cfg-off hidden></em></span></div>
           <p class="cfg__what" data-cfg-what></p>
           <p class="cfg__envio" id="vlh-envio">IVA incluido · Envío gratis{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</p>
           <p class="vlh-perk cfg__perk" id="vlh-perk" hidden><span aria-hidden="true">✦</span> Descuento de bienvenida del {{ w_pct }}&nbsp;% activado · <b>válido 24&nbsp;h</b></p>
@@ -209,7 +212,7 @@
               {%- for m in p.media -%}{%- if m.preview_image -%}{%- unless forloop.first -%},{%- endunless -%}{"src": {{ m.preview_image | image_url: width: 1100 | json }}, "thumb": {{ m.preview_image | image_url: width: 180 | json }}, "alt": {{ m.alt | default: p.title | json }}}{%- endif -%}{%- endfor -%}
             ],
             "variants": [
-              {%- for v in p.variants -%}{%- unless forloop.first -%},{%- endunless -%}{"id": {{ v.id }}, "price": {{ v.price }}, "ok": {{ v.available | json }}, "o": {{ v.options | json }}}{%- endfor -%}
+              {%- for v in p.variants -%}{%- unless forloop.first -%},{%- endunless -%}{"id": {{ v.id }}, "price": {{ v.price }}, "cmp": {{ v.compare_at_price | default: 0 }}, "ok": {{ v.available | json }}, "o": {{ v.options | json }}}{%- endfor -%}
             ]
             {%- else -%}
             "title": "", "options": [], "images": [], "variants": []
@@ -217,7 +220,6 @@
           }{%- unless forloop.last -%},{%- endunless -%}
         {%- endfor -%}
       ],
-      "comp": {% if p_comp %}{"id": {{ p_comp.selected_or_first_available_variant.id }}, "price": {{ p_comp.price }}}{% else %}null{% endif %},
       "locale": {{ request.locale.iso_code | json }}
     }
   </script>
@@ -265,43 +267,45 @@
   .cfg__check input { width: 18px; height: 18px; accent-color: var(--color-text); }
   .cfg__notes { width: 100%; margin-top: 12px; padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; font: inherit; font-size: 14px; resize: vertical; }
   .cfg__muted { color: var(--color-muted); font-weight: 400; }
-  .cfg__rows, .cfg__sizes { display: grid; gap: 8px; }
-  .cfg__row, .cfg__size { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 14px 8px 8px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; text-align: left; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease; }
-  .cfg__size { padding: 12px 14px; }
-  .cfg__row.is-active, .cfg__size.is-active { border-color: var(--color-text); box-shadow: inset 0 0 0 1px var(--color-text); }
-  .cfg__row[disabled] { opacity: .45; cursor: not-allowed; }
-  .cfg__row::before, .cfg__size::before { content: ''; flex: none; order: 9; width: 18px; height: 18px; border: 1.5px solid #bdb2a5; border-radius: 50%; }
-  .cfg__row.is-active::before, .cfg__size.is-active::before { border: 5.5px solid var(--color-text); }
-  .cfg__row-img { flex: none; width: 56px; height: 70px; border-radius: 6px; overflow: hidden; background: var(--color-bg-alt); }
-  .cfg__row-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .cfg__row-body, .cfg__size-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-  .cfg__row-body strong, .cfg__size-body strong { font-size: 15px; }
-  .cfg__row-body small, .cfg__size-body small { font-size: 12.5px; color: var(--color-muted); line-height: 1.35; }
-  .cfg__row-price, .cfg__size-price { flex: none; text-align: right; font-weight: 600; font-size: 15px; }
-  .cfg__row-price small { display: block; font-weight: 400; font-size: 11px; color: var(--color-muted); }
-  .cfg__new { margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: #f3ead6; color: #8a6a24; font-style: normal; font-size: 10.5px; font-weight: 600; letter-spacing: .04em; vertical-align: 2px; }
+  .cfg__tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .cfg__tiles--size, .cfg__tiles--color, .cfg__tiles--pack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cfg__tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 52px; padding: 8px 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; font-size: 13.5px; text-align: center; line-height: 1.2; cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+  .cfg__tile.is-active { background: var(--color-text); border-color: var(--color-text); color: #fff; }
+  .cfg__tile[disabled] { opacity: .4; cursor: not-allowed; }
+  .cfg__tile-img { width: 64px; height: 64px; border-radius: 8px; overflow: hidden; background: var(--color-bg-alt); }
+  .cfg__tile-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cfg__tile-name { font-weight: 600; }
+  .cfg__tile--size strong { font-size: 16px; }
+  .cfg__tile--size small { font-size: 12px; opacity: .7; }
+  .cfg__tile--row { flex-direction: row; gap: 8px; }
+  .cfg__tile.is-active .cfg__swatch { border-color: rgba(255,255,255,.7); }
+  .cfg__feats { list-style: none; margin: 12px 0 0; padding: 12px 14px; background: rgba(168,148,120,.1); border-radius: 10px; font-size: 13.5px; }
+  .cfg__feats[hidden] { display: none; }
+  .cfg__feats li { position: relative; padding-left: 24px; margin: 3px 0; }
+  .cfg__feats li::before { content: '✓'; position: absolute; left: 2px; color: #2f6b3a; font-weight: 700; }
+  .cfg__feats li.is-info::before { content: 'i'; top: 2px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; background: #8aa3b8; color: #fff; font-size: 11px; font-style: italic; }
+  .cfg__info { margin-top: 8px; }
+  .cfg__info summary { font-size: 12.5px; color: var(--color-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; list-style: none; }
+  .cfg__info summary::-webkit-details-marker { display: none; }
+  .cfg__info summary::after { content: ' +'; }
+  .cfg__info[open] summary::after { content: ' −'; }
+  .cfg__off { padding: 3px 9px; border-radius: 999px; background: #e3f1e0; color: #2f6b3a; font-style: normal; font-family: var(--font-body, sans-serif); font-size: 13px; font-weight: 700; letter-spacing: 0; }
+  .cfg__off[hidden] { display: none; }
+  .cfg__amounts { display: inline-flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
   .cfg__label-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 16px; }
   .cfg__label-row .cfg__label { margin: 0; }
   .cfg__guide-link { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 4px 0; font: inherit; font-size: 13px; color: var(--color-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-  .cfg__label-row + .cfg__sizes { margin-top: 8px; }
   .cfg__guide { width: min(920px, 94vw); max-height: 92vh; padding: 28px 24px 22px; border: 0; border-radius: 10px; background: var(--color-bg, #fbf8f3); overflow: auto; }
   .cfg__guide::backdrop { background: rgba(35,31,28,.55); }
   .cfg__guide-title { margin: 0 0 16px; text-align: center; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
   .cfg__guide-close { position: absolute; top: 8px; right: 12px; border: 0; background: none; font-size: 28px; line-height: 1; cursor: pointer; }
   .cfg__guide .size-guide { margin: 0; }
-  .cfg__gift { margin-top: 16px; }
-  .cfg__gift[hidden], .cfg__gift-ask[hidden], .cfg__gift-open[hidden] { display: none; }
-  .cfg__gift-ask { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; padding: 14px; border: 1px dashed rgba(176,138,62,.7); border-radius: 10px; background: #fbf6ea; }
-  .cfg__gift-icon { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #b08a3e; }
-  .cfg__gift-icon svg { width: 20px; height: 20px; }
-  .cfg__gift-title { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; font-family: var(--font-serif, Georgia, serif); font-size: 18px; }
-  .cfg__gift-text { margin: 2px 0 0; font-size: 13px; line-height: 1.4; color: #5d5248; }
-  .cfg__gift-btn { grid-column: 1 / -1; min-height: 46px; margin-top: 6px; border: 0; border-radius: 4px; background: #b08a3e; color: #fff; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
-  .cfg__gift-open { padding: 14px; border: 1px solid rgba(176,138,62,.5); border-radius: 10px; background: #fbf8f3; }
-  .cfg__gift-open .cfg__gift-icon { width: 32px; height: 32px; }
-  .cfg__gift-open .cfg__packs { margin-top: 12px; }
+  .cfg__gift { margin-top: 18px; padding: 14px; border: 1px solid rgba(176,138,62,.45); border-radius: 12px; background: #fbf6ea; }
+  .cfg__gift-icon { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #fff; color: #b08a3e; }
+  .cfg__gift-icon svg { width: 18px; height: 18px; }
+  .cfg__gift-title { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; font-family: var(--font-serif, Georgia, serif); font-size: 19px; }
+  .cfg__gift-text { margin: 6px 0 12px; font-size: 13px; line-height: 1.4; color: #5d5248; }
   .cfg__badge { padding: 3px 9px; border-radius: 999px; background: #2f6b3a; color: #fff; font-family: var(--font-body, sans-serif); font-size: 10.5px; font-weight: 600; letter-spacing: .04em; }
-  .cfg__gift-off { margin-top: 10px; border: 0; background: none; padding: 4px 0; font: inherit; font-size: 12.5px; color: var(--color-muted); text-decoration: underline; cursor: pointer; }
   .cfg__chip--land { margin-top: 10px; background: #eef3ea; border-color: #c9d8c2; color: #2f5a36; }
   .cfg__chip--land small { color: #6b8a6f; font-size: 12px; }
   .cfg__chip--land.is-active { border-color: #2f6b3a; box-shadow: inset 0 0 0 1px #2f6b3a; }
@@ -311,16 +315,16 @@
   .cfg__notes::placeholder { color: #a8a096; }
   .cfg__sub { margin-top: 6px; }
   .cfg__sub[hidden] { display: none; }
-  .cfg__packs { display: grid; gap: 10px; }
-  .cfg__pack { display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; text-align: left; cursor: pointer; }
+  .cfg__pack { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 8px 8px 12px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; text-align: left; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease; }
   .cfg__pack[hidden] { display: none; }
-  .cfg__pack img { flex: none; width: 76px; height: 76px; border-radius: 6px; object-fit: cover; }
-  .cfg__pack span { display: flex; flex-direction: column; gap: 2px; }
+  .cfg__pack-img { width: 100%; aspect-ratio: 4 / 3; border-radius: 6px; overflow: hidden; background: var(--color-bg-alt); margin-bottom: 4px; }
+  .cfg__pack-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cfg__pack strong { font-size: 14.5px; }
   .cfg__pack small { font-size: 12px; color: var(--color-muted); line-height: 1.35; }
-  .cfg__pack em { font-family: var(--font-serif, Georgia, serif); font-size: 14px; color: #8a6a24; }
-  .cfg__pack b { font-size: 14.5px; }
-  .cfg__pack--star { border-color: rgba(176,138,62,.6); background: #fbf8f3; }
-  .cfg__pack.is-active { border-color: var(--color-text); box-shadow: inset 0 0 0 1px var(--color-text); }
+  .cfg__pack--star { border-color: rgba(176,138,62,.7); }
+  .cfg__pack-tag { position: absolute; top: 14px; left: 14px; z-index: 1; padding: 3px 8px; border-radius: 999px; background: #b08a3e; color: #fff; font-size: 10.5px; font-weight: 600; }
+  .cfg__pack.is-active { border-color: var(--color-text); box-shadow: inset 0 0 0 2px var(--color-text); }
+  .cfg__pack.is-active::after { content: '✓'; position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--color-text); color: #fff; font-size: 13px; font-weight: 700; }
   .cfg__more { margin: 8px 0 0; font-size: 12.5px; }
   .cfg__more a { text-decoration: underline; text-underline-offset: 3px; }
   .cfg__trust { list-style: none; margin: 0 0 12px; padding: 0; font-size: 14px; }
@@ -330,7 +334,7 @@
   .cfg__review strong { display: block; color: #24522d; }
   .cfg__review-icon { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #2f6b3a; color: #fff; font-weight: 700; }
   .cfg__summary { padding: 16px 0 6px; border-top: 1px solid var(--color-text); }
-  .cfg__total { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+  .cfg__total { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
   .cfg__total strong { font-family: var(--font-serif, Georgia, serif); font-size: 32px; letter-spacing: 0; }
   .cfg__total.has-discount strong { color: #2f6b3a; }
   .cfg__old { margin-right: 8px; font-size: 18px; color: #a8a096; letter-spacing: 0; text-transform: none; font-weight: 400; }
@@ -383,13 +387,8 @@
   const fmt = (c) => (c / 100).toLocaleString(data.locale || 'es', { style: 'currency', currency: 'EUR' });
   const form = $('[data-cfg-form]');
   const SIZES = { lamina: ['A4', 'A3'], marco: ['A4', 'A3'], lienzo: ['Lienzo 70x100', 'Lienzo 80x120'] };
-  const SIZE_INFO = {
-    'A4': ['A4', '21 × 29,7 cm · como un folio'],
-    'A3': ['A3', '29,7 × 42 cm · el doble que un A4'],
-    'Lienzo 70x100': ['70 × 100 cm', 'Gran formato para presidir una pared'],
-    'Lienzo 80x120': ['80 × 120 cm', 'Nuestro tamaño más grande']
-  };
-  const st = { type: 0, count: null, finish: 'lamina', size: null, color: 'marco blanco', gift: false, pack: 'Pack Regalo' };
+  const SIZE_INFO = { 'A4': ['A4', '21 × 29,7 cm'], 'A3': ['A3', '29,7 × 42 cm'], 'Lienzo 70x100': ['70 × 100', 'cm'], 'Lienzo 80x120': ['80 × 120', 'cm'] };
+  const st = { type: 0, count: null, finish: 'lamina', size: 'A4', color: 'marco blanco', pack: null };
 
   // ---- Producto y variante ----
   // Número «genérico» (1, 2, 3-4, 5-6, 7-8, 9+, paisaje) → valor de la opción del producto
@@ -410,8 +409,8 @@
     if (supports(cur, key)) return cur;
     return data.types.find((t) => t.generic && supports(t, key)) || data.types.find((t) => supports(t, key)) || null;
   };
-  const presFor = (finish, color, gift, pack) => finish === 'lienzo' ? 'Lienzo en bastidor'
-    : gift ? pack + ' · ' + color : finish === 'marco' ? 'Enmarcada · ' + color : 'Solo lámina';
+  const presFor = (finish, color, pack) => finish === 'lienzo' ? 'Lienzo en bastidor'
+    : pack ? pack + ' · ' + color : finish === 'marco' ? 'Enmarcada · ' + color : 'Solo lámina';
   const findVariant = (t, key, size, pres) => {
     if (!t || !size) return null;
     const ci = countIdx(t), si = sizeIdx(t), pi = presIdx(t);
@@ -456,64 +455,46 @@
       b.classList.toggle('is-active', b.dataset.count === st.count);
     });
     const t = productFor(st.count);
+    // Paso 3: acabado, sus ventajas y tamaños (sin precios: el total de abajo cambia solo)
     const lam = st.finish !== 'lienzo';
-    if (!lam) st.gift = false;
-    // Paso 3: acabados con su precio «desde» (el tamaño más pequeño)
-    ['lamina', 'marco', 'lienzo'].forEach((f) => {
-      const v = findVariant(t, st.count, SIZES[f][0], presFor(f, 'marco blanco', false));
-      const el = $(`[data-price-for="${f}"]`), row = el.closest('.cfg__row');
-      row.disabled = !v;
-      el.innerHTML = v ? `<small>desde</small>${fmt(v.price)}` : '';
-      row.classList.toggle('is-active', f === st.finish);
+    if (!lam) st.pack = null;
+    if (st.pack === 'Pack Valentina') st.size = 'A3';
+    if (!SIZES[st.finish].includes(st.size)) st.size = SIZES[st.finish][0];
+    $$('[data-finish]').forEach((b) => {
+      const f = b.dataset.finish;
+      b.disabled = !findVariant(t, st.count, SIZES[f][0], presFor(f, 'marco blanco', null));
+      b.classList.toggle('is-active', f === st.finish);
     });
-    if (st.size && !SIZES[st.finish].includes(st.size)) st.size = null;
-    if (st.gift && st.pack === 'Pack Valentina') st.size = 'A3';
-    const pres = presFor(st.finish, st.color, st.gift, st.pack);
+    $$('[data-feats]').forEach((u) => { u.hidden = u.dataset.feats !== st.finish; });
     $('[data-cfg-sizes]').innerHTML = SIZES[st.finish].map((sz) => {
-      // Con Pack Valentina (solo A3) el A4 enseña el precio del Pack Regalo, que es al que cambia
-      const v = findVariant(t, st.count, sz, st.gift && st.pack === 'Pack Valentina' && sz === 'A4' ? presFor('lamina', st.color, true, 'Pack Regalo') : pres);
+      const ok = findVariant(t, st.count, sz, presFor(st.finish, st.color, sz === 'A4' && st.pack === 'Pack Valentina' ? 'Pack Regalo' : st.pack));
       const info = SIZE_INFO[sz];
-      return v ? `<button type="button" class="cfg__size${sz === st.size ? ' is-active' : ''}" data-size="${sz}"><span class="cfg__size-body"><strong>${info[0]}</strong><small>${info[1]}</small></span><span class="cfg__size-price">${fmt(v.price)}</span></button>` : '';
+      return ok ? `<button type="button" class="cfg__tile cfg__tile--size${sz === st.size ? ' is-active' : ''}" data-size="${sz}"><strong>${info[0]}</strong><small>${info[1]}</small></button>` : '';
     }).join('');
-    // Marco y regalo: solo con lámina y tamaño elegido
-    $('[data-cfg-sub="color"]').hidden = !(st.size && lam && (st.finish === 'marco' || st.gift));
-    $$('[data-color]').forEach((b) => {
-      const v = findVariant(t, st.count, st.size, presFor(st.finish, b.dataset.color, st.gift, st.pack));
-      b.classList.toggle('is-active', b.dataset.color === st.color);
-      const sm = b.querySelector('small') || b.appendChild(document.createElement('small'));
-      sm.textContent = v ? fmt(v.price) : '';
-    });
-    const giftBox = $('[data-cfg-sub="gift"]');
-    giftBox.hidden = !(st.size && lam && findVariant(t, st.count, 'A3', presFor('lamina', 'marco blanco', true, 'Pack Regalo')));
-    $('[data-gift-ask]').hidden = st.gift; $('[data-gift-open]').hidden = !st.gift;
+    // Color del marco (enmarcada o con pack) y packs regalo (cualquier lámina)
+    $('[data-cfg-sub="color"]').hidden = !(lam && (st.finish === 'marco' || st.pack));
+    $$('[data-color]').forEach((b) => b.classList.toggle('is-active', b.dataset.color === st.color));
+    $('[data-cfg-sub="gift"]').hidden = !(lam && findVariant(t, st.count, 'A3', presFor('lamina', 'marco blanco', 'Pack Regalo')));
     $$('[data-pack]').forEach((b) => {
-      const val = b.dataset.pack === 'Pack Valentina';
-      const sz = val ? 'A3' : (st.size || 'A4');
-      const v = findVariant(t, st.count, sz, presFor('lamina', st.color, true, b.dataset.pack));
-      b.hidden = !v;
-      b.classList.toggle('is-active', st.gift && b.dataset.pack === st.pack);
-      $(`[data-pack-price="${b.dataset.pack}"]`).textContent = v ? 'Total ' + fmt(v.price) + (val && st.size === 'A4' ? ' (en A3)' : ' · ' + sz) : '';
+      b.hidden = !findVariant(t, st.count, b.dataset.pack === 'Pack Valentina' ? 'A3' : st.size, presFor('lamina', st.color, b.dataset.pack));
+      b.classList.toggle('is-active', b.dataset.pack === st.pack);
+      b.setAttribute('aria-pressed', b.dataset.pack === st.pack);
     });
-    const compRow = $('[data-cfg-comp-row]');
-    if (compRow) compRow.hidden = !st.count || st.count === '1' || st.count === 'paisaje';
-    // Total
-    const v = findVariant(t, st.count, st.size, pres);
-    const comp = compRow && !compRow.hidden && $('[data-cfg-comp]').checked && data.comp ? data.comp.price : 0;
-    const totalEl = $('#vlh-total-price'), oldEl = $('#vlh-total-old');
-    let ahorro = 0;
-    if (v) {
-      ahorro = welcomeOn ? Math.round(v.price * 0.1) : 0;
-      totalEl.textContent = fmt(v.price + comp - ahorro);
-    } else {
-      const from = findVariant(t, st.count, SIZES[st.finish][0], presFor(st.finish, st.color, st.gift, st.pack));
-      totalEl.textContent = from ? 'desde ' + fmt(from.price + comp) : '—';
-    }
-    oldEl.hidden = !ahorro; oldEl.textContent = ahorro ? fmt(v.price + comp) : '';
-    totalEl.closest('.cfg__total').classList.toggle('has-discount', !!ahorro);
+    $('[data-cfg-sub="message"]').hidden = !st.pack;
+    // Total: precio de antes (compare at) tachado, % de descuento y bienvenida si está activa
+    const v = findVariant(t, st.count, st.size, presFor(st.finish, st.color, st.pack));
+    const totalEl = $('#vlh-total-price'), oldEl = $('#vlh-total-old'), offEl = $('[data-cfg-off]');
+    const now = v ? (welcomeOn ? Math.round(v.price * 0.9) : v.price) : 0;
+    const before = v ? Math.max(v.cmp || 0, v.price) : 0;
+    totalEl.textContent = v ? fmt(now) : '—';
+    const pct = before > now ? Math.round((1 - now / before) * 100) : 0;
+    oldEl.hidden = !pct; oldEl.textContent = pct ? fmt(before) : '';
+    offEl.hidden = !pct; offEl.textContent = pct ? '−' + pct + ' %' : '';
+    totalEl.closest('.cfg__total').classList.toggle('has-discount', !!pct);
     $('#vlh-perk').hidden = !welcomeOn;
-    const finName = st.finish === 'lienzo' ? 'Lienzo XL' : st.gift ? st.pack + ' · ' + st.color : st.finish === 'marco' ? 'Enmarcada · ' + st.color : 'Solo lámina';
+    const finName = st.finish === 'lienzo' ? 'Lienzo' : st.pack ? st.pack + ' · ' + st.color : st.finish === 'marco' ? 'Con marco · ' + st.color.replace('marco ', '') : 'Lámina sin marco';
     const cnt = st.count === 'paisaje' ? 'Solo paisaje' : st.count ? (pets ? countVal(type, st.count) : P[st.count]) : '';
-    $('[data-cfg-what]').textContent = !st.count ? 'Elige cuántos salen (paso 1)' : !st.size ? 'Elige el tamaño (paso 3)' : v ? [type.label, cnt, (SIZE_INFO[st.size] || [st.size])[0], finName].join(' · ') : 'Esta combinación no está disponible';
+    $('[data-cfg-what]').textContent = !st.count ? 'Elige cuántos salen (paso 1)' : v ? [type.label, cnt, (SIZE_INFO[st.size] || [st.size])[0].replace(' × ', '×') + (st.finish === 'lienzo' ? ' cm' : ''), finName].join(' · ') : 'Esta combinación no está disponible';
     root._variant = v; root._product = t;
   };
 
@@ -527,16 +508,13 @@
       if (!supports(data.types[st.type], st.count)) { const k = data.types.indexOf(productFor(st.count)); if (k > -1) { st.type = k; paintGallery(); } }
       paint();
     }
-    else if (b.dataset.finish) { if (b.disabled) return; if (b.dataset.finish !== st.finish) { st.finish = b.dataset.finish; st.size = null; st.gift = false; } paint(); }
-    else if (b.dataset.size) { st.size = b.dataset.size; if (st.gift && st.pack === 'Pack Valentina' && st.size === 'A4') st.pack = 'Pack Regalo'; paint(); }
-    else if (b.dataset.pack) { st.pack = b.dataset.pack; paint(); }
+    else if (b.dataset.finish) { if (b.disabled) return; st.finish = b.dataset.finish; paint(); }
+    else if (b.dataset.size) { st.size = b.dataset.size; if (st.pack === 'Pack Valentina' && st.size === 'A4') st.pack = 'Pack Regalo'; paint(); }
+    else if (b.dataset.pack) { st.pack = st.pack === b.dataset.pack ? null : b.dataset.pack; paint(); }
     else if (b.dataset.color) { st.color = b.dataset.color; paint(); }
-    else if ('giftOn' in b.dataset) { st.gift = true; paint(); }
-    else if ('giftOff' in b.dataset) { st.gift = false; paint(); }
     else if ('guideOpen' in b.dataset) { const g = document.querySelector('[data-guide]'); if (g.showModal) g.showModal(); else g.setAttribute('open', ''); }
   });
-  const comp = $('[data-cfg-comp]'); if (comp) comp.addEventListener('change', paint);
-  const guide = $('[data-guide]');
+  const guide = document.querySelector('[data-guide]');
   if (guide) {
     guide.querySelector('[data-guide-close]').addEventListener('click', () => guide.close ? guide.close() : guide.removeAttribute('open'));
     guide.addEventListener('click', (e) => { if (e.target === guide && guide.close) guide.close(); });
@@ -597,7 +575,6 @@
     const v = root._variant;
     if (!st.count) return fail('Elige cuántos salen en tu ilustración (paso 1).');
     if (!later.checked && !files.files.length) return fail('Sube al menos una foto, o marca «Enviaré la foto más tarde» (paso 2).');
-    if (!st.size) return fail('Elige el tamaño (paso 3).');
     if (!v) return fail('Esta combinación no está disponible. Prueba otro tamaño o acabado.');
     btn.disabled = true; btn.textContent = 'Añadiendo…';
     try {
@@ -607,13 +584,10 @@
       fd.append('properties[¿Tiene la foto?]', later.checked ? 'La enviará más adelante' : 'Sí, adjunta');
       if (!later.checked) [...files.files].forEach((f, i) => fd.append('properties[Foto ' + (i + 1) + ']', f));
       const notes = $('[data-cfg-notes]').value.trim(); if (notes) fd.append('properties[Cómo quiere su ilustración]', notes);
-      const msg = $('[data-cfg-message]').value.trim(); if (st.gift && msg) fd.append('properties[Mensaje del regalo]', msg);
-      const compChk = $('[data-cfg-comp]'), withComp = compChk && !$('[data-cfg-comp-row]').hidden && compChk.checked;
-      if (withComp) fd.append('properties[Combinar varias fotos]', 'Sí');
+      const msg = $('[data-cfg-message]').value.trim(); if (st.pack && msg) fd.append('properties[Mensaje del regalo]', msg);
       fd.append('properties[Fecha de entrega estimada]', $('[data-cfg-date]').dataset.rango || '');
       const r = await fetch('/cart/add.js', { method: 'POST', body: fd });
       if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.description || 'No se pudo añadir al carrito.'); }
-      if (withComp && data.comp) await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ id: data.comp.id, quantity: 1 }] }) });
       if (readWelcome() && window.vivaAddDiscountCode && offer) { try { await window.vivaAddDiscountCode(offer.dataset.code); } catch (e2) {} }
       if (window.vivaCartAdded) { window.vivaCartAdded(); } else { window.location.href = '/cart'; }
     } catch (ex) { fail(ex.message || 'Ha ocurrido un error. Inténtalo de nuevo.'); }
