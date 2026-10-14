@@ -460,7 +460,12 @@
   root.addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b || !root.contains(b)) return;
     if (b.dataset.type) { st.type = +b.dataset.type; const t = data.types[st.type]; const def = t.default || t.fixed; if (def && productFor(def)) st.count = def; paintGallery(); paint(); }
-    else if (b.dataset.count) { st.count = b.dataset.count; paint(); }
+    else if (b.dataset.count) {
+      st.count = b.dataset.count;
+      // Si el tipo elegido no tiene ese número, pasamos al tipo que sí (p. ej. Pareja → Familia con 3-4 personas)
+      if (!supports(data.types[st.type], st.count)) { const k = data.types.indexOf(productFor(st.count)); if (k > -1) { st.type = k; paintGallery(); } }
+      paint();
+    }
     else if (b.dataset.finish) { if (b.disabled) return; st.finish = b.dataset.finish; paint(); }
     else if (b.dataset.size) { st.size = b.dataset.size; paint(); }
     else if (b.dataset.pack) { st.pack = b.dataset.pack; paint(); }
