@@ -378,6 +378,7 @@
   const show = (i) => {
     if (!imgs.length) return;
     cur = (i + imgs.length) % imgs.length;
+    mainImg.removeAttribute('srcset'); mainImg.removeAttribute('sizes');
     mainImg.src = imgs[cur].src; mainImg.alt = imgs[cur].alt || '';
     $$('.cfg__thumb', thumbs).forEach((b, k) => b.classList.toggle('is-active', k === cur));
     const a = thumbs.children[cur]; if (a) thumbs.scrollTo({ left: a.offsetLeft - thumbs.clientWidth / 2 + a.clientWidth / 2, behavior: 'smooth' });
