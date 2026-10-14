@@ -1,84 +1,132 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
-      "type": "main-product",
-      "settings": {},
+      "type": "configurador-ilustracion",
       "blocks": {
-        "block_1": {
-          "type": "breadcrumb",
+        "pareja": {
+          "type": "tipo",
           "settings": {
-            "collection": "laminas-personalizadas",
-            "label": "Todas las ilustraciones personalizadas"
+            "label": "Pareja",
+            "product": "ilustracion-personalizada-dos-personas",
+            "count_fixed": "2",
+            "count_default": "",
+            "generic": true,
+            "match": "ilustracion-pareja"
           }
         },
-        "block_2": {
-          "type": "title",
-          "settings": {}
-        },
-        "block_3": {
-          "type": "price",
-          "settings": {}
-        },
-        "block_4": {
-          "type": "personalization_form",
+        "familia": {
+          "type": "tipo",
           "settings": {
-            "lamina_image": "shopify://shop_images/vlh-ejemplo-lamina.jpg",
-            "canvas_image": "shopify://shop_images/vlh-ejemplo-lienzo.jpg",
-            "canvas_detail": "shopify://shop_images/vlh-lienzo-esquina.jpg",
-            "guide_art": "shopify://shop_images/vlh-arte-fallera-mantilla.jpg",
-            "guide_art_a3": "shopify://shop_images/vlh-fallera-lucia.jpg"
+            "label": "Familia y amigos",
+            "product": "ilustracion-personalizada-grupo-familia",
+            "count_fixed": "",
+            "count_default": "3",
+            "generic": true,
+            "match": "sin-titulo-28ago_16-34-27"
           }
         },
-        "block_5": {
-          "type": "whatsapp",
+        "fallera": {
+          "type": "tipo",
           "settings": {
-            "label": "¿Dudas? Escríbenos por WhatsApp",
-            "number": "34604524295",
-            "message": "¡Hola! Tengo una duda sobre"
+            "label": "Fallera y tradiciones",
+            "product": "ilustracion-personalizada-tradicion-fallera-sevillana-trajes-regionales",
+            "count_fixed": "",
+            "count_default": "1",
+            "generic": false,
+            "match": "ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales"
           }
         },
-        "block_6": {
-          "type": "back_link",
+        "mascota": {
+          "type": "tipo",
           "settings": {
-            "label": "Ver más ilustraciones personalizadas",
-            "collection": "laminas-personalizadas"
+            "label": "Mascota",
+            "product": "ilustracion-personalizada-mascota",
+            "count_fixed": "",
+            "count_default": "1",
+            "generic": true,
+            "match": "ilustracion-mascota"
+          }
+        },
+        "boda": {
+          "type": "tipo",
+          "settings": {
+            "label": "Boda",
+            "product": "ilustracion-personalizada-boda-novios",
+            "count_fixed": "2",
+            "count_default": "",
+            "generic": false,
+            "match": "ilustracion-boda"
+          }
+        },
+        "bebe": {
+          "type": "tipo",
+          "settings": {
+            "label": "Bebé",
+            "product": "ilustracion-personalizada-bebe-natalicio",
+            "count_fixed": "1",
+            "count_default": "",
+            "generic": false,
+            "match": "sin-titulo-3sept_14-00-21"
+          }
+        },
+        "comunion": {
+          "type": "tipo",
+          "settings": {
+            "label": "Comunión",
+            "product": "ilustracion-personalizada-especial-comunion",
+            "count_fixed": "1",
+            "count_default": "",
+            "generic": false,
+            "match": "ilustracion-comunion"
+          }
+        },
+        "retrato": {
+          "type": "tipo",
+          "settings": {
+            "label": "Retrato",
+            "product": "ilustracion-personalizada-retrato-1-persona",
+            "count_fixed": "1",
+            "count_default": "",
+            "generic": true,
+            "match": "ilustracion-retrato-1-persona"
+          }
+        },
+        "paisaje": {
+          "type": "tipo",
+          "settings": {
+            "label": "Paisaje",
+            "product": "ilustracion-personalizada-paisaje-lugar-especial",
+            "count_fixed": "paisaje",
+            "count_default": "",
+            "generic": true,
+            "match": "ilustracion-paisaje-lugar-especial"
           }
         }
       },
       "block_order": [
-        "block_1",
-        "block_2",
-        "block_3",
-        "block_4",
-        "block_5",
-        "block_6"
-      ]
-    },
-    "description": {
-      "type": "product-description",
+        "pareja",
+        "familia",
+        "fallera",
+        "mascota",
+        "boda",
+        "bebe",
+        "comunion",
+        "retrato",
+        "paisaje"
+      ],
       "settings": {
-        "accordion": true,
-        "first_open": false,
-        "show_steps": true,
-        "merge": true,
-        "step_3_text": "Lo revisamos contigo para que quede perfecto"
-      }
-    },
-    "recommendations": {
-      "type": "product-recommendations",
-      "settings": {
-        "title": "También te puede gustar",
-        "limit": 8,
-        "background": "alt"
+        "title": "Configura tu ilustración",
+        "subtitle": "Creamos la ilustración perfecta a partir de tu foto para rememorar ese momento especial",
+        "img_lamina": "shopify://shop_images/vlh-ejemplo-lamina.jpg",
+        "img_lienzo": "shopify://shop_images/vlh-ejemplo-lienzo.jpg",
+        "steps_title": "Tu ilustración,",
+        "guide_art": "shopify://shop_images/vlh-arte-fallera-mantilla.jpg",
+        "guide_art_a3": "shopify://shop_images/vlh-fallera-lucia.jpg",
+        "img_marco": "shopify://shop_images/vlh-icono-lamina-marco-3.jpg",
+        "how_text": "<p><strong>Una ilustración creada para ti</strong></p><p>Creamos tu ilustración personalizada a partir de una o varias fotos, cuidando los detalles que hacen reconocible a cada persona o mascota: las expresiones, la ropa, el pelo, los gestos y todo eso que hace que, al verla, penséis: somos nosotros.</p><p><strong>Personalízala a tu manera</strong></p><p>En las notas puedes contarnos cómo te gustaría tu ilustración: el tipo de fondo, los colores, algún detalle que quieras destacar o si quieres añadir nombres, una fecha o una frase especial.</p><p><strong>Revisión incluida</strong></p><p>Cuando el diseño esté listo, te contactaremos para enseñártelo y revisarlo contigo antes de prepararlo. Incluye hasta 3 cambios.</p><p><strong>Acabado y presentación</strong></p><p>Diseñamos, imprimimos, enmarcamos y montamos cada pedido a mano, cuidando cada detalle. Las láminas se imprimen en papel artístico verjurado de 300 g, con una textura elegante que realza la ilustración. Los lienzos son de tela 100 % algodón con tinta ecológica, montados en bastidor de madera de 2 cm y listos para colgar.</p><p>Si eliges lámina con marco, la recibirás ya enmarcada y protegida para el envío. Y con un pack regalo, te llega envuelta y lista para abrir y sorprender.</p><p><strong>Plazo de entrega</strong></p><p>Tu pedido llega en 10-15 días, incluyendo diseño, preparación y envío. Si nos envías la foto más tarde, el plazo empieza a contar cuando la recibimos. Si hay que hacer cambios tras la revisión o la respuesta se retrasa, esos días se suman al plazo.</p>",
+        "steps_sub": "en solo 3 pasos",
+        "product_general": "ilustracion-personalizada",
+        "mode": "product"
       }
     },
     "instagram": {
@@ -220,8 +268,6 @@
   },
   "order": [
     "main",
-    "description",
-    "instagram",
-    "recommendations"
+    "instagram"
   ]
 }

@@ -30,6 +30,24 @@
     Modo «pack»: en la ficha de un pack regalo (plantilla product.packs-regalo) el configurador sale con
     las fotos y el nombre del pack, y con «Pack regalo» y ese pack ya elegidos.
   endcomment
+  comment
+    Modo «producto»: en las fichas de cada tipo (plantilla product.simplif-v2) sale el configurador con el tipo
+    de esa ficha ya elegido (bloque cuyo producto o lista «Fichas» coincide con la ficha).
+  endcomment
+  assign start_type = -1
+  if s.mode == 'product' and product
+    for block in section.blocks
+      assign handles = block.settings.match | split: ','
+      if block.settings.product.handle == product.handle
+        assign start_type = forloop.index0
+      endif
+      for h in handles
+        if h == product.handle
+          assign start_type = forloop.parentloop.index0
+        endif
+      endfor
+    endfor
+  endif
   assign pack_mode = false
   assign pack_name = ''
   if s.mode == 'pack' and product
@@ -363,6 +381,7 @@
       ],
       {%- assign pg = s.product_general -%}
       "general": {% if pg != blank %}{"label": "", "fixed": "", "generic": true, "default": "", "title": {{ pg.title | json }}, "options": {{ pg.options | json }}, "images": [], "variants": [{%- for v in pg.variants -%}{%- unless forloop.first -%},{%- endunless -%}{"id": {{ v.id }}, "price": {{ v.price }}, "cmp": {{ v.compare_at_price | default: 0 }}, "ok": {{ v.available | json }}, "o": {{ v.options | json }}}{%- endfor -%}]}{% else %}null{% endif %},
+      "start": {{ start_type }},
       "pack": {% if pack_mode %}{"name": {{ pack_name | json }}, "images": [{%- for m in product.media -%}{%- if m.preview_image -%}{%- unless forloop.first -%},{%- endunless -%}{"src": {{ m.preview_image | image_url: width: 1100 | json }}, "thumb": {{ m.preview_image | image_url: width: 180 | json }}, "alt": {{ m.alt | default: pack_name | json }}}{%- endif -%}{%- endfor -%}]}{% else %}null{% endif %},
       "locale": {{ request.locale.iso_code | json }}
     }
@@ -892,6 +911,7 @@
   });
 
   // Inicio: tipo desde ?tipo=pareja si viene en el enlace
+  if (data.start > -1) st.type = data.start;
   try {
     const q = (new URLSearchParams(location.search).get('tipo') || '').toLowerCase();
     if (q) { const k = data.types.findIndex((t) => t.label.toLowerCase().indexOf(q) === 0); if (k > -1) st.type = k; }
@@ -906,7 +926,7 @@
 {
   "name": "Configurador",
   "settings": [
-    { "type": "select", "id": "mode", "label": "Modo", "options": [{ "value": "page", "label": "Página del configurador" }, { "value": "pack", "label": "Ficha de un pack regalo (pack ya elegido)" }], "default": "page" },
+    { "type": "select", "id": "mode", "label": "Modo", "options": [{ "value": "page", "label": "Página del configurador" }, { "value": "pack", "label": "Ficha de un pack regalo (pack ya elegido)" }, { "value": "product", "label": "Ficha de un tipo de ilustración (tipo ya elegido)" }], "default": "page" },
     { "type": "text", "id": "pack_subtitle", "label": "Modo pack: subtítulo", "default": "Configura la ilustración que irá dentro de tu regalo" },
     { "type": "text", "id": "title", "label": "Título", "default": "Configura tu ilustración" },
     { "type": "text", "id": "subtitle", "label": "Subtítulo", "default": "Creamos la ilustración perfecta a partir de tu foto para rememorar ese momento especial" },
@@ -940,6 +960,7 @@
         { "type": "product", "id": "product", "label": "Producto (con la opción «Presentación»)" },
         { "type": "text", "id": "count_fixed", "label": "Número fijo si el producto no tiene opción de número", "info": "Ej.: 2 · 1 · paisaje" },
         { "type": "text", "id": "count_default", "label": "Número preseleccionado", "info": "Ej.: 3-4 · 1" },
+        { "type": "text", "id": "match", "label": "Fichas de este tipo", "info": "Handles de los productos (separados por comas) cuya ficha abre el configurador con este tipo elegido" },
         { "type": "checkbox", "id": "generic", "label": "Genérico", "info": "Se usa cuando el tipo elegido no tiene ese número de personas", "default": false }
       ]
     }
