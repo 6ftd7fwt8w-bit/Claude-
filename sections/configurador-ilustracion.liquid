@@ -454,7 +454,7 @@
   .cfg-bar__what { font-size: 14.5px; color: var(--color-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cfg-bar__price { display: flex; align-items: center; gap: 6px; }
   .cfg-bar__price b { font-family: var(--font-body, sans-serif); font-size: 22px; font-weight: 700; color: #2f6b3a; letter-spacing: -.01em; }
-  .cfg-bar__price .cfg__off { font-size: 13.5px; padding: 2px 8px; }
+  .cfg-bar__price .cfg__off { font-size: 13.5px; padding: 2px 8px; white-space: nowrap; }
   .cfg-bar__old { font-size: 14.5px; color: #a8a096; }
   .cfg-bar__old[hidden] { display: none; }
   .cfg-bar__btn { flex: none; min-height: 48px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--color-text); color: #fff; font: inherit; font-size: 15.5px; font-weight: 600; letter-spacing: .02em; cursor: pointer; box-shadow: 0 4px 12px rgba(35,31,28,.18); }
@@ -702,7 +702,7 @@
   // Sale al llegar al paso 3 (acabado) y solo mientras el total de abajo no se ve
   const barUpd = () => {
     const r = sumEl.getBoundingClientRect(), sumVisible = r.top < window.innerHeight && r.bottom > 0;
-    const on = step3.getBoundingClientRect().top < window.innerHeight * 0.35 && !sumVisible && !document.body.classList.contains('has-vlh-offer'); bar.classList.toggle('is-on', on); bar.setAttribute('aria-hidden', !on); bar.querySelector('button').tabIndex = on ? 0 : -1;
+    const on = step3.getBoundingClientRect().top < window.innerHeight * 0.6 && !sumVisible && !document.body.classList.contains('has-vlh-offer'); bar.classList.toggle('is-on', on); bar.setAttribute('aria-hidden', !on); bar.querySelector('button').tabIndex = on ? 0 : -1;
   };
   window.addEventListener('scroll', barUpd, { passive: true }); window.addEventListener('resize', barUpd); barUpd();
   bar.querySelector('[data-bar-add]').addEventListener('click', () => form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })));
