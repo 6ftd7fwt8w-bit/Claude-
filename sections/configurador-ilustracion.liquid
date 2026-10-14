@@ -78,35 +78,66 @@
         <fieldset class="cfg__step">
           <legend><span class="cfg__num">3</span> Elige tu acabado</legend>
           {%- assign img_m = s.img_marco | default: p_marco.featured_image -%}
+          {%- assign img_r = s.img_regalo | default: p_regalo.featured_image -%}
           <div class="cfg__tiles cfg__tiles--finish">
             <button type="button" class="cfg__tile" data-finish="lamina">
-              <span class="cfg__tile-img">{%- if s.img_lamina -%}{{ s.img_lamina | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 72, height: 72 }}{%- endif -%}</span>
+              <span class="cfg__tile-img">{%- if s.img_lamina -%}{{ s.img_lamina | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 64, height: 64 }}{%- endif -%}</span>
               <span class="cfg__tile-name">Lámina</span>
             </button>
             <button type="button" class="cfg__tile" data-finish="marco">
-              <span class="cfg__tile-img">{%- if img_m -%}{{ img_m | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 72, height: 72 }}{%- endif -%}</span>
+              <span class="cfg__tile-img">{%- if img_m -%}{{ img_m | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 64, height: 64 }}{%- endif -%}</span>
               <span class="cfg__tile-name">Lámina con marco</span>
             </button>
             <button type="button" class="cfg__tile" data-finish="lienzo">
-              <span class="cfg__tile-img">{%- if s.img_lienzo -%}{{ s.img_lienzo | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 72, height: 72 }}{%- endif -%}</span>
+              <span class="cfg__tile-img">{%- if s.img_lienzo -%}{{ s.img_lienzo | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 64, height: 64 }}{%- endif -%}</span>
               <span class="cfg__tile-name">Lienzo</span>
+            </button>
+            <button type="button" class="cfg__tile cfg__tile--gift" data-finish="regalo">
+              <span class="cfg__tile-img">{%- if img_r -%}{{ img_r | image_url: width: 200 | image_tag: loading: 'eager', alt: '', width: 64, height: 64 }}{%- endif -%}</span>
+              <span class="cfg__tile-name">Pack regalo</span>
             </button>
           </div>
           <ul class="cfg__feats" data-feats="lamina">
-            <li>Papel de algodón verjurado 300 g</li>
+            <li>Papel artístico verjurado 300 g</li>
             <li>Diseñada a partir de tu foto, con revisión incluida</li>
             <li class="is-info">Se entrega sin marco</li>
           </ul>
           <ul class="cfg__feats" data-feats="marco" hidden>
             <li>Ya colocada en el marco, lista para colgar</li>
-            <li>Marco fino blanco o de madera clara</li>
-            <li>Papel de algodón verjurado 300 g</li>
+            <li>Marco color blanco o madera clara</li>
+            <li>Papel artístico verjurado 300 g</li>
           </ul>
           <ul class="cfg__feats" data-feats="lienzo" hidden>
-            <li>Tela 100 % algodón montada en bastidor</li>
-            <li>Lista para colgar</li>
-            <li>Gran formato para presidir una pared</li>
+            <li>Tela 100 % algodón con tinta ecológica</li>
+            <li>Montado en bastidor de madera de 2 cm</li>
+            <li>Listo para colgar</li>
           </ul>
+          <ul class="cfg__feats" data-feats="regalo" hidden>
+            <li>Listo para abrir y sorprender</li>
+            <li>Marco incluido: la lámina llega enmarcada y envuelta</li>
+            <li>Con ramillete de flores secas y mensaje personalizado</li>
+          </ul>
+
+          <div class="cfg__sub" data-cfg-sub="pack" hidden>
+            <p class="cfg__label">Elige tu pack</p>
+            <div class="cfg__tiles cfg__tiles--pack">
+              <div class="cfg__pack" data-pack="Pack Regalo" role="button" tabindex="0">
+                <span class="cfg__pack-img">{%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 400 | image_tag: loading: 'eager', alt: 'Pack Regalo', width: 200, height: 150 }}{%- endif -%}</span>
+                <strong>Pack Regalo</strong>
+                <em>Listo para abrir y sorprender</em>
+                <small>Lámina enmarcada y envuelta en papel premium con lazada, en caja kraft, con ramillete de flores secas y mensaje personalizado.</small>
+                <button type="button" class="cfg__pack-more" data-pack-more="regalo">Ver más</button>
+              </div>
+              <div class="cfg__pack cfg__pack--star" data-pack="Pack Valentina" role="button" tabindex="0">
+                <span class="cfg__pack-tag">Solo A3</span>
+                <span class="cfg__pack-img">{%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 400 | image_tag: loading: 'eager', alt: 'Pack Valentina', width: 200, height: 150 }}{%- endif -%}</span>
+                <strong>Pack Valentina</strong>
+                <em>El pack completo para emocionar</em>
+                <small>Confeccionado a mano con apliques en yute y encaje. Mensaje personalizado, ramillete de flores secas, ramo de flores preservadas y textil, lámina enmarcada y envuelta.</small>
+                <button type="button" class="cfg__pack-more" data-pack-more="valentina">Ver más</button>
+              </div>
+            </div>
+          </div>
 
           <div class="cfg__label-row">
             <p class="cfg__label">Tamaño</p>
@@ -120,55 +151,115 @@
           <div class="cfg__sub" data-cfg-sub="color" hidden>
             <p class="cfg__label">Color del marco</p>
             <div class="cfg__tiles cfg__tiles--color">
-              <button type="button" class="cfg__tile cfg__tile--row" data-color="marco blanco"><span class="cfg__swatch" style="background:#f4f1ec"></span>Blanco</button>
-              <button type="button" class="cfg__tile cfg__tile--row" data-color="marco madera clara"><span class="cfg__swatch" style="background:#c9a77c"></span>Madera clara</button>
+              {%- for v in p_marco.variants -%}
+                {%- liquid
+                  assign c_val = 'marco blanco'
+                  assign c_bg = '#f4f1ec'
+                  if v.title contains 'adera'
+                    assign c_val = 'marco madera clara'
+                    assign c_bg = '#c9a77c'
+                  endif
+                -%}
+                <button type="button" class="cfg__tile cfg__tile--color" data-color="{{ c_val }}">
+                  <span class="cfg__color-img">{%- if v.featured_image -%}{{ v.featured_image | image_url: width: 160 | image_tag: loading: 'eager', alt: '', width: 48, height: 48 }}{%- else -%}<span class="cfg__swatch" style="background:{{ c_bg }}"></span>{%- endif -%}</span>
+                  {{ v.title }}
+                </button>
+              {%- else -%}
+                <button type="button" class="cfg__tile cfg__tile--color" data-color="marco blanco"><span class="cfg__swatch" style="background:#f4f1ec"></span>Blanco</button>
+                <button type="button" class="cfg__tile cfg__tile--color" data-color="marco madera clara"><span class="cfg__swatch" style="background:#c9a77c"></span>Madera clara</button>
+              {%- endfor -%}
             </div>
           </div>
 
-          <div class="cfg__sub cfg__gift" data-cfg-sub="gift" hidden>
-            <p class="cfg__gift-title"><span class="cfg__gift-icon" aria-hidden="true">{% render 'icon', name: 'gift' %}</span> ¿Es para regalar? <span class="cfg__badge">Marco incluido</span></p>
-            <p class="cfg__gift-text">Pack regalo disponible para este formato: te llega enmarcada, envuelta y lista para emocionar. Elige uno (opcional).</p>
-            <div class="cfg__tiles cfg__tiles--pack">
-              <button type="button" class="cfg__pack" data-pack="Pack Regalo">
-                <span class="cfg__pack-img">{%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 400 | image_tag: loading: 'eager', alt: 'Pack Regalo', width: 200, height: 150 }}{%- endif -%}</span>
-                <strong>Pack Regalo</strong>
-                <small>Enmarcada, envuelta en papel premium con lazada, en caja kraft con flores secas y tu mensaje.</small>
-              </button>
-              <button type="button" class="cfg__pack cfg__pack--star" data-pack="Pack Valentina">
-                <span class="cfg__pack-tag">El más completo</span>
-                <span class="cfg__pack-img">{%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 400 | image_tag: loading: 'eager', alt: 'Pack Valentina', width: 200, height: 150 }}{%- endif -%}</span>
-                <strong>Pack Valentina</strong>
-                <small>El pack completo para emocionar: caja forrada a mano, mensaje en la tapa y ramo que nunca se marchita. Solo A3.</small>
-              </button>
-            </div>
-            <p class="cfg__more">Ver todo lo que incluye: {% if p_regalo %}<a href="{{ p_regalo.url }}" target="_blank" rel="noopener">Pack Regalo</a>{% endif %}{% if p_regalo and p_valentina %} · {% endif %}{% if p_valentina %}<a href="{{ p_valentina.url }}" target="_blank" rel="noopener">Pack Valentina</a>{% endif %}</p>
-            <div data-cfg-sub="message" hidden>
-              <p class="cfg__label">Mensaje para tu regalo <span class="cfg__muted">(opcional)</span></p>
-              <textarea class="cfg__notes" rows="2" maxlength="200" data-cfg-message placeholder="Ej: Con todo mi cariño para ti"></textarea>
-            </div>
+          <div class="cfg__sub" data-cfg-sub="message" hidden>
+            <p class="cfg__label">Mensaje para tu regalo <span class="cfg__muted">(opcional)</span></p>
+            <textarea class="cfg__notes" rows="2" maxlength="200" data-cfg-message placeholder="Ej: Con todo mi cariño para ti"></textarea>
           </div>
         </fieldset>
 
         <ul class="cfg__trust">
-          <li><span aria-hidden="true">📦</span><span>Entrega estimada <strong data-cfg-date></strong> <span class="cfg__muted" data-cfg-date-note hidden>(10-15 días desde que recibamos tu foto)</span></span></li>
+          <li><span aria-hidden="true">📦</span><span>Entrega estimada <strong data-cfg-date></strong> <span class="cfg__muted" data-cfg-date-note hidden>(10-15 días desde que recibamos tu foto)</span> · <a href="https://wa.me/34604524295?text=Hola%21+Quiero+consultar+disponibilidad+para+una+fecha+concreta" target="_blank" rel="noopener">¿Lo necesitas antes?</a></span></li>
         </ul>
         <div class="cfg__review">
           <span class="cfg__review-icon" aria-hidden="true">✓</span>
-          <p><strong>Revisión incluida</strong>Te enseñamos el diseño antes de prepararlo: lo revisamos contigo para que quede perfecto.</p>
+          <p><strong>Revisión incluida</strong>Antes de prepararla, te contactaremos para revisar contigo la ilustración y ver si necesitas algún cambio.</p>
         </div>
 
         <div class="cfg__summary">
           <div class="cfg__total"><span>Total</span><span class="cfg__amounts"><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong><em class="cfg__off" data-cfg-off hidden></em></span></div>
-          <p class="cfg__what" data-cfg-what></p>
           <p class="cfg__envio" id="vlh-envio">IVA incluido · Envío gratis{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</p>
           <p class="vlh-perk cfg__perk" id="vlh-perk" hidden><span aria-hidden="true">✦</span> Descuento de bienvenida del {{ w_pct }}&nbsp;% activado · <b>válido 24&nbsp;h</b></p>
         </div>
         <p class="cfg__error" id="vlh-error" data-cfg-error role="alert" hidden></p>
-        <button type="submit" class="button button--full cfg__submit" id="vlh-submit-btn">Añadir al carrito</button>
+        <button type="submit" class="button button--full cfg__submit" data-cfg-submit>Añadir al carrito</button>
         <p class="cfg__secure">🔒 Pago 100 % seguro</p>
       </form>
     </div>
+
+    <div class="cfg-how page-width--narrow">
+      <div class="pdesc-steps">
+        <h2 class="section-title" style="margin-bottom:24px">{{ s.how_title }}</h2>
+        <ol class="pdesc-steps__list">
+          {%- assign how_icons = 'camera,brush,chat,box' | split: ',' -%}
+          {%- for i in (1..4) -%}
+            {%- assign t_key = 'step_' | append: i | append: '_title' -%}
+            {%- assign x_key = 'step_' | append: i | append: '_text' -%}
+            {%- if s[t_key] != blank -%}
+              <li class="pdesc-steps__item">
+                <span class="pdesc-steps__icon">{% render 'icon', name: how_icons[forloop.index0] %}<b>{{ i }}</b></span>
+                <strong>{{ s[t_key] }}</strong>
+                {%- if s[x_key] != blank -%}<span>{{ s[x_key] }}</span>{%- endif -%}
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ol>
+      </div>
+      {%- if s.how_text != blank -%}
+        <details class="accordion pdesc__merged">
+          <summary>Descripción y cómo trabajamos</summary>
+          <div class="accordion__content rte">{{ s.how_text }}</div>
+        </details>
+      {%- endif -%}
+    </div>
   </div>
+
+  <div class="cfg-bar" data-cfg-bar aria-hidden="true">
+    <div class="cfg-bar__in">
+      <span class="cfg-bar__img"><img data-bar-img alt="" width="48" height="60"></span>
+      <span class="cfg-bar__info">
+        <span class="cfg-bar__what" data-bar-what></span>
+        <span class="cfg-bar__price"><b data-bar-price></b><em class="cfg__off" data-bar-off hidden></em></span>
+        <s class="cfg-bar__old" data-bar-old hidden></s>
+      </span>
+      <button type="button" class="cfg-bar__btn" data-bar-add tabindex="-1">Añadir al carrito</button>
+    </div>
+  </div>
+
+  {%- assign packs = 'regalo,valentina' | split: ',' -%}
+  {%- for k in packs -%}
+    {%- if k == 'regalo' -%}{%- assign pp = p_regalo -%}{%- assign pt = 'Pack Regalo' -%}{%- assign ps = 'Listo para abrir y sorprender' -%}{%- else -%}{%- assign pp = p_valentina -%}{%- assign pt = 'Pack Valentina' -%}{%- assign ps = 'El pack completo para emocionar' -%}{%- endif -%}
+    {%- if pp -%}
+    <dialog class="cfg__pdlg" data-pack-dialog="{{ k }}" aria-label="{{ pt }}">
+      <button type="button" class="cfg__guide-close" data-dlg-close aria-label="Cerrar">&times;</button>
+      <div class="cfg__pdlg-grid">
+        <div class="cfg__pdlg-gal">
+          <div class="cfg__pdlg-main">{%- if pp.images.size > 0 -%}{{ pp.images.first | image_url: width: 1000 | image_tag: loading: 'lazy', alt: pt, data-dlg-main: '' }}{%- endif -%}</div>
+          <div class="cfg__pdlg-thumbs">
+            {%- for im in pp.images -%}
+              <button type="button" class="cfg__thumb{% if forloop.first %} is-active{% endif %}" data-dlg-src="{{ im | image_url: width: 1000 }}" aria-label="Foto {{ forloop.index }}">{{ im | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}</button>
+            {%- endfor -%}
+          </div>
+        </div>
+        <div class="cfg__pdlg-text">
+          <p class="cfg__pdlg-kicker">{{ ps }}</p>
+          <p class="cfg__pdlg-title">{{ pt }}</p>
+          <div class="cfg__pdlg-desc">{{ pp.description }}</div>
+          <button type="button" class="button button--full" data-dlg-choose="{{ pt }}">Elegir {{ pt }}</button>
+        </div>
+      </div>
+    </dialog>
+    {%- endif -%}
+  {%- endfor -%}
 
   <dialog class="cfg__guide" data-guide aria-label="Comparar tamaños">
     <button type="button" class="cfg__guide-close" data-guide-close aria-label="Cerrar">&times;</button>
@@ -268,13 +359,15 @@
   .cfg__notes { width: 100%; margin-top: 12px; padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; font: inherit; font-size: 14px; resize: vertical; }
   .cfg__muted { color: var(--color-muted); font-weight: 400; }
   .cfg__tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .cfg__tiles--finish { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
   .cfg__tiles--size, .cfg__tiles--color, .cfg__tiles--pack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cfg__tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 52px; padding: 8px 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; font-size: 13.5px; text-align: center; line-height: 1.2; cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease; }
   .cfg__tile.is-active { background: var(--color-text); border-color: var(--color-text); color: #fff; }
   .cfg__tile[disabled] { opacity: .4; cursor: not-allowed; }
-  .cfg__tile-img { width: 64px; height: 64px; border-radius: 8px; overflow: hidden; background: var(--color-bg-alt); }
+  .cfg__tile-img { width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: var(--color-bg-alt); }
   .cfg__tile-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .cfg__tile-name { font-weight: 600; }
+  .cfg__tile-name { font-weight: 600; font-size: 12.5px; }
+  .cfg__tile--gift:not(.is-active) { border-color: rgba(176,138,62,.6); background: #fbf6ea; }
   .cfg__tile--size strong { font-size: 16px; }
   .cfg__tile--size small { font-size: 12px; opacity: .7; }
   .cfg__tile--row { flex-direction: row; gap: 8px; }
@@ -320,6 +413,47 @@
   .cfg__pack-img { width: 100%; aspect-ratio: 4 / 3; border-radius: 6px; overflow: hidden; background: var(--color-bg-alt); margin-bottom: 4px; }
   .cfg__pack-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cfg__pack strong { font-size: 14.5px; }
+  .cfg__pack em { font-family: var(--font-serif, Georgia, serif); font-size: 13.5px; color: #8a6a24; line-height: 1.25; }
+  .cfg__pack-more { margin-top: auto; padding: 6px 0 0; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; color: var(--color-text); }
+  .cfg__tile--color { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 6px 10px 6px 6px; }
+  .cfg__color-img { flex: none; width: 44px; height: 44px; border-radius: 6px; overflow: hidden; background: var(--color-bg-alt); display: grid; place-items: center; }
+  .cfg__color-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cfg__pdlg { width: min(860px, 94vw); max-height: 92vh; padding: 0; border: 0; border-radius: 12px; background: var(--color-bg, #fbf8f3); overflow: auto; }
+  .cfg__pdlg::backdrop { background: rgba(35,31,28,.55); }
+  .cfg__pdlg .cfg__guide-close { z-index: 2; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.85); }
+  .cfg__pdlg-grid { display: grid; grid-template-columns: 1.1fr 1fr; }
+  .cfg__pdlg-main { aspect-ratio: 1; background: var(--color-bg-alt); }
+  .cfg__pdlg-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cfg__pdlg-thumbs { display: flex; gap: 6px; padding: 8px; overflow-x: auto; }
+  .cfg__pdlg-thumbs .cfg__thumb { flex-basis: 56px; height: 56px; }
+  .cfg__pdlg-text { padding: 26px 22px; }
+  .cfg__pdlg-kicker { margin: 0 0 4px; font-family: var(--font-serif, Georgia, serif); font-style: italic; color: #8a6a24; }
+  .cfg__pdlg-title { margin: 0 0 12px; font-family: var(--font-serif, Georgia, serif); font-size: 26px; }
+  .cfg__pdlg-desc { font-size: 14px; line-height: 1.55; margin-bottom: 18px; }
+  .cfg__pdlg-desc ul { padding-left: 18px; margin: 0 0 10px; }
+  .cfg__pdlg-desc blockquote { margin: 0; color: var(--color-muted); font-size: 13px; }
+  .cfg-bar { position: fixed; z-index: 70; top: 0; left: 0; right: 0; background: rgba(251,248,243,.97); border-bottom: 1px solid var(--color-border); box-shadow: 0 8px 24px rgba(44,34,24,.10); transform: translateY(-110%); transition: transform .3s ease; }
+  .cfg-bar.is-on { transform: none; }
+  .cfg-bar__in { display: flex; align-items: center; gap: 12px; max-width: 1200px; margin: 0 auto; padding: 8px 16px; }
+  .cfg-bar__img { flex: none; width: 44px; height: 55px; border-radius: 6px; overflow: hidden; background: var(--color-bg-alt); }
+  .cfg-bar__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cfg-bar__info { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+  .cfg-bar__what { font-size: 12.5px; color: var(--color-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cfg-bar__price { display: flex; align-items: center; gap: 8px; }
+  .cfg-bar__price b { font-family: var(--font-serif, Georgia, serif); font-size: 21px; }
+  .cfg-bar__price .cfg__off { font-size: 11.5px; padding: 2px 7px; }
+  .cfg-bar__old { font-size: 12.5px; color: #a8a096; }
+  .cfg-bar__old[hidden] { display: none; }
+  .cfg-bar__btn { flex: none; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--color-text); color: #fff; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: .06em; cursor: pointer; }
+  .shopify-section:has(#configurador) + .shopify-section > * { padding-top: 12px; margin-top: 0; }
+  .cfg { padding-bottom: 8px; }
+  .cfg-how { margin: 40px auto 0; }
+  .cfg-how .accordion { border-bottom: 1px solid var(--color-border); }
+  @media (max-width: 749px) {
+    .cfg__pdlg-grid { grid-template-columns: 1fr; }
+    .cfg__tile { padding: 6px 4px 8px; }
+    .cfg__tile-img { width: 100%; height: auto; aspect-ratio: 1; }
+  }
   .cfg__pack small { font-size: 12px; color: var(--color-muted); line-height: 1.35; }
   .cfg__pack--star { border-color: rgba(176,138,62,.7); }
   .cfg__pack-tag { position: absolute; top: 14px; left: 14px; z-index: 1; padding: 3px 8px; border-radius: 999px; background: #b08a3e; color: #fff; font-size: 10.5px; font-weight: 600; }
@@ -338,7 +472,6 @@
   .cfg__total strong { font-family: var(--font-serif, Georgia, serif); font-size: 32px; letter-spacing: 0; }
   .cfg__total.has-discount strong { color: #2f6b3a; }
   .cfg__old { margin-right: 8px; font-size: 18px; color: #a8a096; letter-spacing: 0; text-transform: none; font-weight: 400; }
-  .cfg__what { margin: 4px 0 0; font-size: 13px; color: var(--color-muted); text-align: right; }
   .cfg__envio { margin: 2px 0 0; font-size: 12px; color: var(--color-muted); text-align: right; }
   .cfg__perk { margin: 10px 0 0; padding: 8px 12px; font-size: 12.5px; color: #8a6a24; background: #fbf6ea; border: 1px solid rgba(176,138,62,.4); border-radius: 6px; text-align: center; }
   .cfg__perk[hidden] { display: none; }
@@ -386,9 +519,9 @@
   const $$ = (s, el) => [...(el || root).querySelectorAll(s)];
   const fmt = (c) => (c / 100).toLocaleString(data.locale || 'es', { style: 'currency', currency: 'EUR' });
   const form = $('[data-cfg-form]');
-  const SIZES = { lamina: ['A4', 'A3'], marco: ['A4', 'A3'], lienzo: ['Lienzo 70x100', 'Lienzo 80x120'] };
+  const SIZES = { lamina: ['A4', 'A3'], marco: ['A4', 'A3'], regalo: ['A4', 'A3'], lienzo: ['Lienzo 70x100', 'Lienzo 80x120'] };
   const SIZE_INFO = { 'A4': ['A4', '21 × 29,7 cm'], 'A3': ['A3', '29,7 × 42 cm'], 'Lienzo 70x100': ['70 × 100', 'cm'], 'Lienzo 80x120': ['80 × 120', 'cm'] };
-  const st = { type: 0, count: null, finish: 'lamina', size: 'A4', color: 'marco blanco', pack: null };
+  const st = { type: 0, count: null, finish: 'lamina', size: 'A4', color: 'marco blanco', pack: 'Pack Regalo' };
 
   // ---- Producto y variante ----
   // Número «genérico» (1, 2, 3-4, 5-6, 7-8, 9+, paisaje) → valor de la opción del producto
@@ -410,7 +543,7 @@
     return data.types.find((t) => t.generic && supports(t, key)) || data.types.find((t) => supports(t, key)) || null;
   };
   const presFor = (finish, color, pack) => finish === 'lienzo' ? 'Lienzo en bastidor'
-    : pack ? pack + ' · ' + color : finish === 'marco' ? 'Enmarcada · ' + color : 'Solo lámina';
+    : finish === 'regalo' ? pack + ' · ' + color : finish === 'marco' ? 'Enmarcada · ' + color : 'Solo lámina';
   const findVariant = (t, key, size, pres) => {
     if (!t || !size) return null;
     const ci = countIdx(t), si = sizeIdx(t), pi = presIdx(t);
@@ -456,31 +589,30 @@
     });
     const t = productFor(st.count);
     // Paso 3: acabado, sus ventajas y tamaños (sin precios: el total de abajo cambia solo)
-    const lam = st.finish !== 'lienzo';
-    if (!lam) st.pack = null;
-    if (st.pack === 'Pack Valentina') st.size = 'A3';
+    const gift = st.finish === 'regalo';
+    if (gift && st.pack === 'Pack Valentina') st.size = 'A3';
     if (!SIZES[st.finish].includes(st.size)) st.size = SIZES[st.finish][0];
     $$('[data-finish]').forEach((b) => {
       const f = b.dataset.finish;
-      b.disabled = !findVariant(t, st.count, SIZES[f][0], presFor(f, 'marco blanco', null));
+      b.disabled = !findVariant(t, st.count, f === 'lienzo' ? SIZES[f][0] : 'A3', presFor(f, 'marco blanco', 'Pack Regalo'));
       b.classList.toggle('is-active', f === st.finish);
     });
     $$('[data-feats]').forEach((u) => { u.hidden = u.dataset.feats !== st.finish; });
-    $('[data-cfg-sizes]').innerHTML = SIZES[st.finish].map((sz) => {
-      const ok = findVariant(t, st.count, sz, presFor(st.finish, st.color, sz === 'A4' && st.pack === 'Pack Valentina' ? 'Pack Regalo' : st.pack));
-      const info = SIZE_INFO[sz];
-      return ok ? `<button type="button" class="cfg__tile cfg__tile--size${sz === st.size ? ' is-active' : ''}" data-size="${sz}"><strong>${info[0]}</strong><small>${info[1]}</small></button>` : '';
-    }).join('');
-    // Color del marco (enmarcada o con pack) y packs regalo (cualquier lámina)
-    $('[data-cfg-sub="color"]').hidden = !(lam && (st.finish === 'marco' || st.pack));
-    $$('[data-color]').forEach((b) => b.classList.toggle('is-active', b.dataset.color === st.color));
-    $('[data-cfg-sub="gift"]').hidden = !(lam && findVariant(t, st.count, 'A3', presFor('lamina', 'marco blanco', 'Pack Regalo')));
+    $('[data-cfg-sub="pack"]').hidden = !gift;
     $$('[data-pack]').forEach((b) => {
-      b.hidden = !findVariant(t, st.count, b.dataset.pack === 'Pack Valentina' ? 'A3' : st.size, presFor('lamina', st.color, b.dataset.pack));
+      b.hidden = !findVariant(t, st.count, 'A3', presFor('regalo', st.color, b.dataset.pack));
       b.classList.toggle('is-active', b.dataset.pack === st.pack);
       b.setAttribute('aria-pressed', b.dataset.pack === st.pack);
     });
-    $('[data-cfg-sub="message"]').hidden = !st.pack;
+    $('[data-cfg-sizes]').innerHTML = SIZES[st.finish].map((sz) => {
+      // Con Pack Valentina (solo A3) el A4 sigue visible: al tocarlo pasa a Pack Regalo
+      const ok = findVariant(t, st.count, sz, presFor(st.finish, st.color, gift && sz === 'A4' ? 'Pack Regalo' : st.pack));
+      const info = SIZE_INFO[sz];
+      return ok ? `<button type="button" class="cfg__tile cfg__tile--size${sz === st.size ? ' is-active' : ''}" data-size="${sz}"><strong>${info[0]}</strong><small>${info[1]}</small></button>` : '';
+    }).join('');
+    $('[data-cfg-sub="color"]').hidden = !(st.finish === 'marco' || gift);
+    $$('[data-color]').forEach((b) => b.classList.toggle('is-active', b.dataset.color === st.color));
+    $('[data-cfg-sub="message"]').hidden = !gift;
     // Total: precio de antes (compare at) tachado, % de descuento y bienvenida si está activa
     const v = findVariant(t, st.count, st.size, presFor(st.finish, st.color, st.pack));
     const totalEl = $('#vlh-total-price'), oldEl = $('#vlh-total-old'), offEl = $('[data-cfg-off]');
@@ -492,15 +624,26 @@
     offEl.hidden = !pct; offEl.textContent = pct ? '−' + pct + ' %' : '';
     totalEl.closest('.cfg__total').classList.toggle('has-discount', !!pct);
     $('#vlh-perk').hidden = !welcomeOn;
-    const finName = st.finish === 'lienzo' ? 'Lienzo' : st.pack ? st.pack + ' · ' + st.color : st.finish === 'marco' ? 'Con marco · ' + st.color.replace('marco ', '') : 'Lámina sin marco';
-    const cnt = st.count === 'paisaje' ? 'Solo paisaje' : st.count ? (pets ? countVal(type, st.count) : P[st.count]) : '';
-    $('[data-cfg-what]').textContent = !st.count ? 'Elige cuántos salen (paso 1)' : v ? [type.label, cnt, (SIZE_INFO[st.size] || [st.size])[0].replace(' × ', '×') + (st.finish === 'lienzo' ? ' cm' : ''), finName].join(' · ') : 'Esta combinación no está disponible';
+    // Barra superior
+    const fin = { lamina: 'Lámina', marco: 'Lámina con marco', lienzo: 'Lienzo', regalo: st.pack }[st.finish];
+    bar.querySelector('[data-bar-what]').textContent = fin + ' · ' + (SIZE_INFO[st.size] || [st.size])[0] + (st.finish === 'lienzo' ? ' cm' : '');
+    bar.querySelector('[data-bar-price]').textContent = v ? fmt(now) : '—';
+    bar.querySelector('[data-bar-old]').hidden = !pct; bar.querySelector('[data-bar-old]').textContent = pct ? fmt(before) : '';
+    bar.querySelector('[data-bar-off]').hidden = !pct; bar.querySelector('[data-bar-off]').textContent = pct ? '−' + pct + ' %' : '';
+    const bi = bar.querySelector('[data-bar-img]'); if (imgs[0]) bi.src = imgs[0].thumb;
     root._variant = v; root._product = t;
   };
 
   // ---- Eventos ----
+  const openDlg = (d) => { if (!d) return; if (d.showModal) d.showModal(); else d.setAttribute('open', ''); };
+  const closeDlg = (d) => { if (!d) return; if (d.close) d.close(); else d.removeAttribute('open'); };
   root.addEventListener('click', (e) => {
-    const b = e.target.closest('button'); if (!b || !root.contains(b)) return;
+    const b = e.target.closest('button, [data-pack]'); if (!b || !root.contains(b)) return;
+    const dlg = b.closest('dialog');
+    if (b.dataset.packMore) { e.stopPropagation(); openDlg($(`[data-pack-dialog="${b.dataset.packMore}"]`)); return; }
+    if ('dlgClose' in b.dataset || 'guideClose' in b.dataset) { closeDlg(dlg); return; }
+    if (b.dataset.dlgSrc) { const m = $('[data-dlg-main]', dlg); if (m) { m.removeAttribute('srcset'); m.src = b.dataset.dlgSrc; } $$('.cfg__thumb', dlg).forEach((x) => x.classList.toggle('is-active', x === b)); return; }
+    if (b.dataset.dlgChoose) { st.finish = 'regalo'; st.pack = b.dataset.dlgChoose; closeDlg(dlg); paint(); return; }
     if (b.dataset.type) { st.type = +b.dataset.type; const t = data.types[st.type]; const def = t.default || t.fixed; if (def && productFor(def)) st.count = def; paintGallery(); paint(); }
     else if (b.dataset.count) {
       st.count = b.dataset.count;
@@ -510,15 +653,19 @@
     }
     else if (b.dataset.finish) { if (b.disabled) return; st.finish = b.dataset.finish; paint(); }
     else if (b.dataset.size) { st.size = b.dataset.size; if (st.pack === 'Pack Valentina' && st.size === 'A4') st.pack = 'Pack Regalo'; paint(); }
-    else if (b.dataset.pack) { st.pack = st.pack === b.dataset.pack ? null : b.dataset.pack; paint(); }
+    else if (b.dataset.pack) { st.pack = b.dataset.pack; paint(); }
     else if (b.dataset.color) { st.color = b.dataset.color; paint(); }
-    else if ('guideOpen' in b.dataset) { const g = document.querySelector('[data-guide]'); if (g.showModal) g.showModal(); else g.setAttribute('open', ''); }
+    else if ('guideOpen' in b.dataset) openDlg($('[data-guide]'));
   });
-  const guide = document.querySelector('[data-guide]');
-  if (guide) {
-    guide.querySelector('[data-guide-close]').addEventListener('click', () => guide.close ? guide.close() : guide.removeAttribute('open'));
-    guide.addEventListener('click', (e) => { if (e.target === guide && guide.close) guide.close(); });
-  }
+  root.addEventListener('keydown', (e) => { const c = e.target.closest && e.target.closest('[data-pack]'); if (c && e.target === c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); c.click(); } });
+  $$('dialog', root).forEach((d) => d.addEventListener('click', (e) => { if (e.target === d) closeDlg(d); }));
+
+  // Barra superior: aparece al pasar los botones de tipo
+  const bar = $('[data-cfg-bar]'), head = $('.cfg__head');
+  document.body.appendChild(bar);
+  const barUpd = () => { const on = head.getBoundingClientRect().bottom < 0 && !document.body.classList.contains('has-vlh-offer'); bar.classList.toggle('is-on', on); bar.setAttribute('aria-hidden', !on); bar.querySelector('button').tabIndex = on ? 0 : -1; };
+  window.addEventListener('scroll', barUpd, { passive: true }); barUpd();
+  bar.querySelector('[data-bar-add]').addEventListener('click', () => form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })));
 
   // Fotos
   const files = $('[data-cfg-files]'), later = $('[data-cfg-later]'), drop = $('[data-cfg-drop]');
@@ -568,7 +715,7 @@
   }
 
   // Añadir al carrito: UNA línea con la variante elegida
-  const err = $('[data-cfg-error]'), btn = $('#vlh-submit-btn');
+  const err = $('[data-cfg-error]'), btn = $('[data-cfg-submit]');
   const fail = (m) => { err.textContent = m; err.hidden = false; err.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
   form.addEventListener('submit', async (e) => {
     e.preventDefault(); err.hidden = true;
@@ -584,7 +731,7 @@
       fd.append('properties[¿Tiene la foto?]', later.checked ? 'La enviará más adelante' : 'Sí, adjunta');
       if (!later.checked) [...files.files].forEach((f, i) => fd.append('properties[Foto ' + (i + 1) + ']', f));
       const notes = $('[data-cfg-notes]').value.trim(); if (notes) fd.append('properties[Cómo quiere su ilustración]', notes);
-      const msg = $('[data-cfg-message]').value.trim(); if (st.pack && msg) fd.append('properties[Mensaje del regalo]', msg);
+      const msg = $('[data-cfg-message]').value.trim(); if (st.finish === 'regalo' && msg) fd.append('properties[Mensaje del regalo]', msg);
       fd.append('properties[Fecha de entrega estimada]', $('[data-cfg-date]').dataset.rango || '');
       const r = await fetch('/cart/add.js', { method: 'POST', body: fd });
       if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.description || 'No se pudo añadir al carrito.'); }
@@ -614,6 +761,18 @@
     { "type": "image_picker", "id": "img_lamina", "label": "Foto: lámina sola" },
     { "type": "image_picker", "id": "img_marco", "label": "Foto: lámina enmarcada", "info": "Si está vacío usa la foto del producto Marco A3" },
     { "type": "image_picker", "id": "img_lienzo", "label": "Foto: lienzo" },
+    { "type": "image_picker", "id": "img_regalo", "label": "Foto: pack regalo", "info": "Si está vacío usa la foto del Pack Regalo" },
+    { "type": "header", "content": "Cómo funciona" },
+    { "type": "text", "id": "how_title", "label": "Título", "default": "Cómo funciona" },
+    { "type": "text", "id": "step_1_title", "label": "Paso 1", "default": "Configura y sube tu foto" },
+    { "type": "text", "id": "step_1_text", "label": "Paso 1: texto", "default": "O envíanosla después" },
+    { "type": "text", "id": "step_2_title", "label": "Paso 2", "default": "Diseñamos tu ilustración" },
+    { "type": "text", "id": "step_2_text", "label": "Paso 2: texto", "default": "A partir de tus fotos y notas" },
+    { "type": "text", "id": "step_3_title", "label": "Paso 3", "default": "La revisamos contigo" },
+    { "type": "text", "id": "step_3_text", "label": "Paso 3: texto", "default": "Hasta 3 cambios incluidos" },
+    { "type": "text", "id": "step_4_title", "label": "Paso 4", "default": "La recibes en casa" },
+    { "type": "text", "id": "step_4_text", "label": "Paso 4: texto", "default": "En 10-15 días, envío gratis" },
+    { "type": "richtext", "id": "how_text", "label": "Descripción y cómo trabajamos" },
     { "type": "image_picker", "id": "guide_art", "label": "Comparar tamaños: ilustración de ejemplo", "info": "Solo la ilustración, sin fondo" },
     { "type": "image_picker", "id": "guide_art_a3", "label": "Comparar tamaños: ejemplo lámina A3" }
   ],
