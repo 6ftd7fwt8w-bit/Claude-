@@ -130,11 +130,11 @@
               <p class="cfg__gift-title"><span class="cfg__gift-icon" aria-hidden="true">{% render 'icon', name: 'gift' %}</span> Elige tu pack regalo <span class="cfg__badge">Marco incluido</span></p>
               <div class="cfg__packs">
                 <button type="button" class="cfg__pack" data-pack="Pack Regalo">
-                  {%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 240 | image_tag: loading: 'lazy', alt: 'Pack Regalo', width: 96, height: 96 }}{%- endif -%}
+                  {%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 240 | image_tag: loading: 'eager', alt: 'Pack Regalo', width: 96, height: 96 }}{%- endif -%}
                   <span><strong>Pack Regalo</strong><small>Lámina ya enmarcada, envuelta en papel premium con lazada, en caja kraft con rafia, ramillete de flores secas y tu mensaje.</small><b data-pack-price="Pack Regalo"></b></span>
                 </button>
                 <button type="button" class="cfg__pack cfg__pack--star" data-pack="Pack Valentina">
-                  {%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 240 | image_tag: loading: 'lazy', alt: 'Pack Valentina', width: 96, height: 96 }}{%- endif -%}
+                  {%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 240 | image_tag: loading: 'eager', alt: 'Pack Valentina', width: 96, height: 96 }}{%- endif -%}
                   <span><em>El pack completo para emocionar</em><strong>Pack Valentina</strong><small>En A3 y enmarcada, con caja forrada a mano en yute y encaje, mensaje en la tapa y un ramo de flores preservadas que nunca se marchita.</small><b data-pack-price="Pack Valentina"></b></span>
                 </button>
               </div>
@@ -470,7 +470,8 @@
     if (st.gift && st.pack === 'Pack Valentina') st.size = 'A3';
     const pres = presFor(st.finish, st.color, st.gift, st.pack);
     $('[data-cfg-sizes]').innerHTML = SIZES[st.finish].map((sz) => {
-      const v = findVariant(t, st.count, sz, pres);
+      // Con Pack Valentina (solo A3) el A4 enseña el precio del Pack Regalo, que es al que cambia
+      const v = findVariant(t, st.count, sz, st.gift && st.pack === 'Pack Valentina' && sz === 'A4' ? presFor('lamina', st.color, true, 'Pack Regalo') : pres);
       const info = SIZE_INFO[sz];
       return v ? `<button type="button" class="cfg__size${sz === st.size ? ' is-active' : ''}" data-size="${sz}"><span class="cfg__size-body"><strong>${info[0]}</strong><small>${info[1]}</small></span><span class="cfg__size-price">${fmt(v.price)}</span></button>` : '';
     }).join('');
