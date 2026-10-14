@@ -80,7 +80,7 @@
   </a>
   <div class="card__info">
     {%- if settings.card_show_vendor -%}<div class="card__vendor">{{ product.vendor }}</div>{%- endif -%}
-    <a href="{{ product.url }}" class="card__title">{{ product.title | split: ' | ' | first | escape }}</a>
+    <a href="{{ product.url }}" class="card__title">{{ product.title | split: ' | ' | first | remove_first: 'Extra: ' | escape }}</a>
     {%- if product.template_suffix == 'packs-regalo' -%}
       {%- comment -%} Packs regalo: el precio se ve al configurar la ilustración dentro de la ficha {%- endcomment -%}
       <div class="card__price card__price--cta" style="color:#8a6a24">Personalízalo con tu ilustración →</div>
