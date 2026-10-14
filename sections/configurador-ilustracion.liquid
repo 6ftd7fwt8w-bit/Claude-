@@ -322,6 +322,8 @@
           }{%- unless forloop.last -%},{%- endunless -%}
         {%- endfor -%}
       ],
+      {%- assign pg = s.product_general -%}
+      "general": {% if pg != blank %}{"label": "", "fixed": "", "generic": true, "default": "", "title": {{ pg.title | json }}, "options": {{ pg.options | json }}, "images": [], "variants": [{%- for v in pg.variants -%}{%- unless forloop.first -%},{%- endunless -%}{"id": {{ v.id }}, "price": {{ v.price }}, "cmp": {{ v.compare_at_price | default: 0 }}, "ok": {{ v.available | json }}, "o": {{ v.options | json }}}{%- endfor -%}]}{% else %}null{% endif %},
       "locale": {{ request.locale.iso_code | json }}
     }
   </script>
@@ -577,6 +579,8 @@
     return (t.fixed || '') === key;
   };
   const productFor = (key) => {
+    // Personas: siempre el producto general «Ilustración personalizada» (en el carrito no sale el tipo)
+    if (key !== 'paisaje' && supports(data.general, key)) return data.general;
     const cur = data.types[st.type];
     if (supports(cur, key)) return cur;
     return data.types.find((t) => t.generic && supports(t, key)) || data.types.find((t) => supports(t, key)) || null;
@@ -620,7 +624,7 @@
     const type = data.types[st.type];
     $$('.cfg__type').forEach((b, k) => { b.classList.toggle('is-active', k === st.type); b.setAttribute('aria-selected', k === st.type); });
     // Paso 1: con «Mascota» van de 1 a «5 o más»
-    const pets = /mascota/i.test(type.options[countIdx(type)] || '');
+    const pets = !data.general && /mascota/i.test(type.options[countIdx(type)] || '');
     $$('[data-count]').forEach((b) => {
       b.hidden = !productFor(b.dataset.count) || (pets && b.dataset.count !== 'paisaje' && !M[b.dataset.count]);
       if (b.dataset.count === '5') b.textContent = pets ? '5 o más' : '5';
@@ -774,7 +778,7 @@
     try {
       const fd = new FormData();
       fd.append('id', v.id); fd.append('quantity', 1);
-      fd.append('properties[Tipo de ilustración]', data.types[st.type].label);
+      fd.append('properties[_Ejemplo visto]', data.types[st.type].label);
       fd.append('properties[¿Tiene la foto?]', later.checked ? 'La enviará más adelante' : 'Sí, adjunta');
       if (!later.checked) [...files.files].forEach((f, i) => fd.append('properties[Foto ' + (i + 1) + ']', f));
       const notes = $('[data-cfg-notes]').value.trim(); if (notes) fd.append('properties[Cómo quiere su ilustración]', notes);
@@ -806,6 +810,7 @@
     { "type": "text", "id": "subtitle", "label": "Subtítulo", "default": "Creamos la ilustración perfecta a partir de tu foto para rememorar ese momento especial" },
     { "type": "text", "id": "steps_title", "label": "Título de los pasos", "default": "Crea tu ilustración" },
     { "type": "text", "id": "steps_sub", "label": "Título de los pasos: segunda línea", "default": "en solo 3 pasos" },
+    { "type": "product", "id": "product_general", "label": "Producto general (personas)", "info": "«Ilustración personalizada» con Tamaño · Número de personas · Presentación. Es el que va al carrito; los tipos de arriba solo enseñan ejemplos." },
     { "type": "image_picker", "id": "img_lamina", "label": "Foto: lámina sola" },
     { "type": "image_picker", "id": "img_marco", "label": "Foto: lámina enmarcada", "info": "Si está vacío usa la foto del producto Marco A3" },
     { "type": "image_picker", "id": "img_lienzo", "label": "Foto: lienzo" },
