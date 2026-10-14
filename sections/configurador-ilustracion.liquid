@@ -97,8 +97,8 @@
           </details>
         </fieldset>
 
-        <fieldset class="cfg__step">
-          <legend><span class="cfg__num">3</span> Elige tu acabado</legend>
+        <fieldset class="cfg__step{% if pack_mode %} cfg__step--pack{% endif %}" data-step3>
+          <legend><span class="cfg__num">3</span> {% if pack_mode %}Tu pack regalo{% else %}Elige tu acabado{% endif %}</legend>
           {%- assign img_m = s.img_marco | default: p_marco.featured_image -%}
           {%- assign img_r = s.img_regalo | default: p_regalo.featured_image -%}
           <div class="cfg__tiles cfg__tiles--finish">
@@ -202,6 +202,9 @@
             <p class="cfg__hint">Lo pondremos en la etiqueta del interior de la tapa: será lo primero que lea al abrir su regalo.</p>
             <textarea class="cfg__notes" rows="2" maxlength="200" data-cfg-message placeholder="Ej: Para que nunca olvides este día. Te quiero, mamá"></textarea>
           </div>
+          {%- if pack_mode -%}
+          <button type="button" class="cfg__other" data-other-finishes><span data-other-label>¿Prefieres otro acabado? Ver lámina, con marco o lienzo</span> <b aria-hidden="true">+</b></button>
+          {%- endif -%}
         </fieldset>
 
         <div class="cfg__checkout">
@@ -528,6 +531,10 @@
   .cfg__soon p { margin: 8px 0 10px; font-size: 14.5px; line-height: 1.5; }
   .cfg__wa { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: #25d366; color: #fff; font-size: 14.5px; font-weight: 600; text-decoration: none; }
   .cfg__wa svg { width: 18px; height: 18px; }
+  .cfg__step--pack:not(.is-open) .cfg__tiles--finish, .cfg__step--pack:not(.is-open) [data-feats] { display: none !important; }
+  .cfg__step--pack [data-cfg-sub="pack"] { margin-top: 0; }
+  .cfg__other { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; margin-top: 18px; padding: 12px 14px; border: 1px dashed #cbbfae; border-radius: 10px; background: rgba(255,255,255,.55); font: inherit; font-size: 14px; color: var(--color-text); text-align: left; cursor: pointer; }
+  .cfg__other b { font-size: 18px; font-weight: 400; }
   .cfg__checkout .cfg__summary { padding: 0; border: 0; }
   .cfg__checkout .cfg__total { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .cfg__total-label { font-size: 13px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; color: var(--color-muted); }
@@ -776,6 +783,13 @@
     if (b.dataset.dlgSrc) { const m = $('[data-dlg-main]', dlg); if (m) { m.removeAttribute('srcset'); m.src = b.dataset.dlgSrc; } $$('.cfg__thumb', dlg).forEach((x) => x.classList.toggle('is-active', x === b)); return; }
     if (b.dataset.dlgChoose) { if (st.finish !== 'regalo') { st.size = 'A4'; st.color = 'marco blanco'; } st.finish = 'regalo'; st.pack = b.dataset.dlgChoose; closeDlg(dlg); paint(); return; }
     if (b.dataset.type) { st.type = +b.dataset.type; const t = data.types[st.type]; const def = t.default || t.fixed; if (def && productFor(def)) st.count = def; paintGallery(); paint(); }
+    else if ('otherFinishes' in b.dataset) {
+      const f = b.closest('[data-step3]'), open = !f.classList.contains('is-open');
+      f.classList.toggle('is-open', open);
+      b.querySelector('[data-other-label]').textContent = open ? 'Ocultar otros acabados' : '¿Prefieres otro acabado? Ver lámina, con marco o lienzo';
+      b.querySelector('b').textContent = open ? '−' : '+';
+      if (open) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
     else if ('moreCounts' in b.dataset) { b.parentElement.classList.add('is-open'); }
     else if (b.dataset.count) {
       st.count = b.dataset.count;
