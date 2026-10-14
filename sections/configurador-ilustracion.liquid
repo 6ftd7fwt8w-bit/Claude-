@@ -1,0 +1,584 @@
+{%- comment -%}
+  Configurador general «Configura tu ilustración».
+  - Arriba, botones de tipo («Ver ejemplos»): cada bloque es un tipo con su producto (copias con la opción
+    «Presentación») y cambia la galería (foto grande + miniaturas).
+  - Tres pasos: 1) número de personas / mascotas / solo paisaje · 2) fotos y detalles · 3) acabado
+    (lámina sola, enmarcada, preparada para regalo, lienzo) con el PRECIO TOTAL de cada opción.
+  - Añade UNA sola línea (la variante Tamaño · Número · Presentación) con las propiedades del pedido.
+  - Si el tipo elegido no tiene ese número (p. ej. «Bebé» con 3 personas), usa el producto genérico que sí
+    lo tiene (los bloques marcados como «genérico»): el precio es el mismo, va por número de personas.
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign p_comp = all_products['vlh-extra-composicion-varias-fotos']
+  assign p_regalo = all_products['vlh-extra-pack-regalo']
+  assign p_valentina = all_products['vlh-extra-pack-valentina']
+  assign p_marco = all_products['vlh-extra-marco-a3']
+  assign w_code = settings.welcome_code | strip | upcase
+  assign w_ok = true
+  if settings.welcome_end != blank
+    assign w_today = 'now' | date: '%Y%m%d' | plus: 0
+    assign w_last = settings.welcome_end | remove: '-' | plus: 0
+    if w_today > w_last
+      assign w_ok = false
+    endif
+  endif
+  if customer and customer.orders_count > 0
+    assign w_ok = false
+  endif
+  assign w_pct = settings.welcome_percent | default: 10
+-%}
+<section class="cfg section" id="configurador" data-cfg>
+  <div class="page-width">
+    <header class="cfg__head">
+      {%- if s.kicker != blank -%}<p class="cfg__kicker">{{ s.kicker }}</p>{%- endif -%}
+      <h1 class="cfg__title">{{ s.title }}</h1>
+      {%- if s.subtitle != blank -%}<p class="cfg__subtitle">{{ s.subtitle }}</p>{%- endif -%}
+      <p class="cfg__see">Ver ejemplos:</p>
+      <div class="cfg__types" role="tablist" aria-label="Tipos de ilustración">
+        {%- for block in section.blocks -%}
+          <button type="button" class="cfg__type{% if forloop.first %} is-active{% endif %}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" data-type="{{ forloop.index0 }}" {{ block.shopify_attributes }}>{{ block.settings.label }}</button>
+        {%- endfor -%}
+      </div>
+    </header>
+
+    <div class="cfg__grid">
+      <div class="cfg__gallery">
+        <div class="cfg__main">{%- assign first_p = section.blocks.first.settings.product -%}{%- if first_p.featured_image -%}{{ first_p.featured_image | image_url: width: 1100 | image_tag: data-cfg-main: "", alt: "", width: 900, height: 1125 }}{%- else -%}<img data-cfg-main alt="" width="900" height="1125">{%- endif -%}</div>
+        <div class="cfg__thumbs" data-cfg-thumbs></div>
+      </div>
+
+      <form class="cfg__form" id="vlh-form" data-cfg-form novalidate>
+        <h2 class="cfg__easy">Configurar tu ilustración es muy fácil</h2>
+
+        <fieldset class="cfg__step">
+          <legend><span class="cfg__num">1</span> ¿Quién sale en tu ilustración?</legend>
+          <p class="cfg__label">Personas</p>
+          <div class="cfg__chips" data-cfg-counts="personas">
+            {%- assign c_personas = '1 persona|2 personas|3-4 personas|5-6 personas|7-8 personas|9 o más personas' | split: '|' -%}
+            {%- for c in c_personas -%}<button type="button" class="cfg__chip" data-count="{{ c }}">{{ c | replace: ' personas', '' | replace: ' persona', '' }}</button>{%- endfor -%}
+          </div>
+          <p class="cfg__label">Mascotas</p>
+          <div class="cfg__chips" data-cfg-counts="mascotas">
+            {%- assign c_mascotas = '1 mascota|2 mascotas|3-4 mascotas|5 o más mascotas' | split: '|' -%}
+            {%- for c in c_mascotas -%}<button type="button" class="cfg__chip" data-count="{{ c }}">{{ c | replace: ' mascotas', '' | replace: ' mascota', '' }}</button>{%- endfor -%}
+          </div>
+          <div class="cfg__chips">
+            <button type="button" class="cfg__chip cfg__chip--wide" data-count="Solo paisaje">Solo paisaje o lugar especial</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="cfg__step">
+          <legend><span class="cfg__num">2</span> Sube tus fotos y cuéntanos tu idea</legend>
+          <label class="cfg__drop" data-cfg-drop>
+            <input type="file" name="fotos" accept="image/*" multiple data-cfg-files>
+            <span class="cfg__drop-icon" aria-hidden="true">{% render 'icon', name: 'camera' %}</span>
+            <span><strong data-cfg-drop-title>Sube tus fotos</strong><small>Toca para elegir · una o varias. Mejor con buena luz y las caras nítidas.</small></span>
+          </label>
+          <label class="cfg__check"><input type="checkbox" data-cfg-later> Enviaré la foto más tarde (por WhatsApp o email)</label>
+          {%- if p_comp -%}
+            <label class="cfg__check" data-cfg-comp-row hidden><input type="checkbox" data-cfg-comp> Combinar varias fotos en una <span class="cfg__muted">+ {{ p_comp.price | money }}</span></label>
+          {%- endif -%}
+          <textarea class="cfg__notes" rows="3" maxlength="600" data-cfg-notes placeholder="Opcional: nombres, una fecha, una frase, el fondo o los colores que prefieras…"></textarea>
+        </fieldset>
+
+        <fieldset class="cfg__step">
+          <legend><span class="cfg__num">3</span> Elige tu acabado</legend>
+          <div class="cfg__finishes">
+            <button type="button" class="cfg__finish" data-finish="lamina">
+              <span class="cfg__finish-media">{%- if s.img_lamina -%}{{ s.img_lamina | image_url: width: 360 | image_tag: loading: 'lazy', alt: 'Lámina sola', width: 180, height: 180 }}{%- endif -%}</span>
+              <span class="cfg__finish-name">Lámina sola</span>
+              <span class="cfg__finish-text">Papel de algodón 300 g, sin marco</span>
+              <span class="cfg__finish-price" data-price-for="lamina"></span>
+            </button>
+            <button type="button" class="cfg__finish" data-finish="marco">
+              <span class="cfg__finish-media">{%- assign img_m = s.img_marco | default: p_marco.featured_image -%}{%- if img_m -%}{{ img_m | image_url: width: 360 | image_tag: loading: 'lazy', alt: 'Lámina enmarcada', width: 180, height: 180 }}{%- endif -%}</span>
+              <span class="cfg__finish-name">Enmarcada</span>
+              <span class="cfg__finish-text">Lista para colgar</span>
+              <span class="cfg__finish-price" data-price-for="marco"></span>
+            </button>
+            <button type="button" class="cfg__finish cfg__finish--gift" data-finish="regalo">
+              <span class="cfg__finish-badge">Marco incluido</span>
+              <span class="cfg__finish-media">{%- assign img_r = s.img_regalo | default: p_regalo.featured_image -%}{%- if img_r -%}{{ img_r | image_url: width: 360 | image_tag: loading: 'lazy', alt: 'Preparada para regalo', width: 180, height: 180 }}{%- endif -%}</span>
+              <span class="cfg__finish-name">Preparada para regalo</span>
+              <span class="cfg__finish-text">Enmarcada y envuelta, lista para regalar</span>
+              <span class="cfg__finish-price" data-price-for="regalo"></span>
+            </button>
+            <button type="button" class="cfg__finish" data-finish="lienzo">
+              <span class="cfg__finish-media">{%- if s.img_lienzo -%}{{ s.img_lienzo | image_url: width: 360 | image_tag: loading: 'lazy', alt: 'Lienzo XL', width: 180, height: 180 }}{%- endif -%}</span>
+              <span class="cfg__finish-name">Lienzo XL</span>
+              <span class="cfg__finish-text">Tela de algodón en bastidor</span>
+              <span class="cfg__finish-price" data-price-for="lienzo"></span>
+            </button>
+          </div>
+
+          <div class="cfg__sub" data-cfg-sub="size" hidden>
+            <p class="cfg__label">Tamaño</p>
+            <div class="cfg__opts" data-cfg-sizes></div>
+          </div>
+          <div class="cfg__sub" data-cfg-sub="pack" hidden>
+            <p class="cfg__label">Elige tu regalo</p>
+            <div class="cfg__packs">
+              <button type="button" class="cfg__pack" data-pack="Pack Regalo">
+                {%- if p_regalo.featured_image -%}{{ p_regalo.featured_image | image_url: width: 240 | image_tag: loading: 'lazy', alt: 'Pack Regalo', width: 120, height: 120 }}{%- endif -%}
+                <span><strong>Pack Regalo</strong><small>Marco, papel premium con lazada, caja kraft, rafia, flores secas y mensaje</small><b data-pack-price="Pack Regalo"></b></span>
+              </button>
+              <button type="button" class="cfg__pack cfg__pack--star" data-pack="Pack Valentina">
+                {%- if p_valentina.featured_image -%}{{ p_valentina.featured_image | image_url: width: 240 | image_tag: loading: 'lazy', alt: 'Pack Valentina', width: 120, height: 120 }}{%- endif -%}
+                <span><em>El pack completo para emocionar</em><strong>Pack Valentina</strong><small>Siempre en A3, con su caja y ramo</small><b data-pack-price="Pack Valentina"></b></span>
+              </button>
+            </div>
+            {%- if p_regalo or p_valentina -%}
+              <p class="cfg__more"><a href="{{ p_regalo.url }}" target="_blank" rel="noopener">Ver qué incluye el Pack Regalo</a> · <a href="{{ p_valentina.url }}" target="_blank" rel="noopener">Ver qué incluye el Pack Valentina</a></p>
+            {%- endif -%}
+          </div>
+          <div class="cfg__sub" data-cfg-sub="color" hidden>
+            <p class="cfg__label">Color del marco</p>
+            <div class="cfg__opts" data-cfg-colors>
+              <button type="button" class="cfg__opt" data-color="marco blanco"><span class="cfg__swatch" style="background:#f4f1ec"></span>Blanco</button>
+              <button type="button" class="cfg__opt" data-color="marco madera clara"><span class="cfg__swatch" style="background:#c9a77c"></span>Madera clara</button>
+            </div>
+          </div>
+          <div class="cfg__sub" data-cfg-sub="message" hidden>
+            <p class="cfg__label">Mensaje para tu regalo <span class="cfg__muted">(opcional)</span></p>
+            <textarea class="cfg__notes" rows="2" maxlength="200" data-cfg-message placeholder="Lo escribimos a mano en la tarjeta"></textarea>
+          </div>
+        </fieldset>
+
+        <ul class="cfg__trust">
+          <li><span aria-hidden="true">📦</span><span>Entrega estimada <strong data-cfg-date></strong> <span class="cfg__muted" data-cfg-date-note hidden>(10-15 días desde que recibamos tu foto)</span></span></li>
+        </ul>
+        <div class="cfg__review">
+          <span class="cfg__review-icon" aria-hidden="true">✓</span>
+          <p><strong>Revisión incluida</strong>Te enseñamos el diseño antes de prepararlo: lo revisamos contigo para que quede perfecto.</p>
+        </div>
+
+        <div class="cfg__summary">
+          <div class="cfg__total"><span>Total</span><span><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong></span></div>
+          <p class="cfg__what" data-cfg-what></p>
+          <p class="cfg__envio" id="vlh-envio">IVA incluido · Envío gratis{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</p>
+          <p class="vlh-perk cfg__perk" id="vlh-perk" hidden><span aria-hidden="true">✦</span> Descuento de bienvenida del {{ w_pct }}&nbsp;% activado · <b>válido 24&nbsp;h</b></p>
+        </div>
+        <p class="cfg__error" data-cfg-error role="alert" hidden></p>
+        <button type="submit" class="button button--full cfg__submit" id="vlh-submit-btn">Añadir al carrito</button>
+        <p class="cfg__secure">🔒 Pago 100 % seguro</p>
+      </form>
+    </div>
+  </div>
+
+  {%- if w_ok and w_code != blank -%}
+    <div class="vlh-offer" id="vlh-offer" role="dialog" aria-labelledby="cfg-offer-title" data-code="{{ w_code | escape }}" data-percent="{{ w_pct }}" hidden>
+      <button type="button" class="vlh-offer__close" data-offer-no aria-label="Cerrar">&times;</button>
+      <div class="vlh-offer__ask">
+        <p class="vlh-offer__kicker">Tenemos algo solo para ti…</p>
+        <p class="vlh-offer__title" id="cfg-offer-title">Un {{ w_pct }}&nbsp;% de regalo en tu primera ilustración</p>
+        <p class="vlh-offer__text">Porque es tu primera vez por aquí, y eso se celebra. Se aplica solo, sin códigos.</p>
+        <button type="button" class="vlh-offer__cta" data-offer-yes><span class="vlh-offer__gift" aria-hidden="true">{% render 'icon', name: 'gift' %}</span>Activar descuento</button>
+        <p class="vlh-offer__small">✦ Válido 24 horas desde la activación</p>
+        <button type="button" class="vlh-offer__no" data-offer-no>Ahora no, gracias</button>
+      </div>
+      <div class="vlh-offer__done" hidden>
+        <span class="vlh-offer__check" aria-hidden="true">✓</span>
+        <p class="vlh-offer__title">¡Tu regalo ya está activado!</p>
+        <p class="vlh-offer__text">Verás el {{ w_pct }}&nbsp;% descontado en el total y en tu cesta durante 24 horas.</p>
+      </div>
+    </div>
+  {%- endif -%}
+
+  <script type="application/json" data-cfg-data>
+    {
+      "types": [
+        {%- for block in section.blocks -%}
+          {%- assign p = block.settings.product -%}
+          {
+            "label": {{ block.settings.label | json }},
+            "fixed": {{ block.settings.count_fixed | json }},
+            "generic": {{ block.settings.generic | json }},
+            "default": {{ block.settings.count_default | json }},
+            {%- if p != blank -%}
+            "title": {{ p.title | split: ' | ' | first | json }},
+            "options": {{ p.options | json }},
+            "images": [
+              {%- for m in p.media -%}{%- if m.preview_image -%}{%- unless forloop.first -%},{%- endunless -%}{"src": {{ m.preview_image | image_url: width: 1100 | json }}, "thumb": {{ m.preview_image | image_url: width: 180 | json }}, "alt": {{ m.alt | default: p.title | json }}}{%- endif -%}{%- endfor -%}
+            ],
+            "variants": [
+              {%- for v in p.variants -%}{%- unless forloop.first -%},{%- endunless -%}{"id": {{ v.id }}, "price": {{ v.price }}, "ok": {{ v.available | json }}, "o": {{ v.options | json }}}{%- endfor -%}
+            ]
+            {%- else -%}
+            "title": "", "options": [], "images": [], "variants": []
+            {%- endif -%}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "comp": {% if p_comp %}{"id": {{ p_comp.selected_or_first_available_variant.id }}, "price": {{ p_comp.price }}}{% else %}null{% endif %},
+      "locale": {{ request.locale.iso_code | json }}
+    }
+  </script>
+</section>
+
+<style>
+  .cfg { padding-top: 28px; }
+  .cfg__head { text-align: center; max-width: 760px; margin: 0 auto 22px; }
+  .cfg__kicker { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-style: italic; color: #8a6a24; font-size: 17px; }
+  .cfg__title { margin: 0 0 8px; font-size: clamp(28px, 4vw, 40px); }
+  .cfg__subtitle { margin: 0 0 18px; color: var(--color-muted); }
+  .cfg__see { margin: 0 0 8px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); }
+  .cfg__types { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .cfg__type { padding: 9px 16px; border: 1px solid var(--color-border); border-radius: 999px; background: #fff; font: inherit; font-size: 14px; cursor: pointer; transition: all .2s ease; }
+  .cfg__type.is-active { background: var(--color-text); border-color: var(--color-text); color: #fff; }
+  .cfg__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+  .cfg__gallery { position: sticky; top: 96px; }
+  .cfg__main { aspect-ratio: 4 / 5; background: var(--color-bg-alt); border-radius: 6px; overflow: hidden; touch-action: pan-y; }
+  .cfg__main img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .25s ease; }
+  .cfg__thumbs { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .cfg__thumbs::-webkit-scrollbar { display: none; }
+  .cfg__thumb { flex: 0 0 68px; height: 85px; padding: 0; border: 2px solid transparent; border-radius: 4px; overflow: hidden; background: var(--color-bg-alt); cursor: pointer; opacity: .7; }
+  .cfg__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cfg__thumb.is-active { border-color: var(--color-text); opacity: 1; }
+  .cfg__easy { margin: 0 0 18px; font-size: 22px; }
+  .cfg__step { margin: 0 0 22px; padding: 0 0 22px; border: 0; border-bottom: 1px solid var(--color-border); }
+  .cfg__step legend { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+  .cfg__num { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--color-text); color: #fff; font-size: 13px; letter-spacing: 0; }
+  .cfg__label { margin: 12px 0 8px; font-size: 13px; color: var(--color-muted); }
+  .cfg__chips, .cfg__opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cfg__chip, .cfg__opt { min-width: 52px; padding: 10px 14px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; font: inherit; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .cfg__chip--wide { margin-top: 12px; }
+  .cfg__chip.is-active, .cfg__opt.is-active { border-color: var(--color-text); box-shadow: inset 0 0 0 1px var(--color-text); font-weight: 600; }
+  .cfg__opt small { color: var(--color-muted); font-weight: 400; }
+  .cfg__swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,.18); }
+  .cfg__drop { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1.5px dashed #cbbfae; border-radius: 10px; background: #fff; cursor: pointer; }
+  .cfg__drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .cfg__drop small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--color-muted); }
+  .cfg__drop.has-files { border-style: solid; border-color: #2f6b3a; }
+  .cfg__drop[hidden] { display: none; }
+  .cfg__drop-icon { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--color-bg-alt); }
+  .cfg__drop-icon svg { width: 22px; height: 22px; }
+  .cfg__check { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 14px; cursor: pointer; }
+  .cfg__check[hidden] { display: none; }
+  .cfg__check input { width: 18px; height: 18px; accent-color: var(--color-text); }
+  .cfg__notes { width: 100%; margin-top: 12px; padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; font: inherit; font-size: 14px; resize: vertical; }
+  .cfg__muted { color: var(--color-muted); font-weight: 400; }
+  .cfg__finishes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .cfg__finish { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 10px 10px 12px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; text-align: left; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease; }
+  .cfg__finish.is-active { border-color: var(--color-text); box-shadow: inset 0 0 0 1px var(--color-text); }
+  .cfg__finish[disabled] { opacity: .45; cursor: not-allowed; }
+  .cfg__finish-media { width: 100%; aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: var(--color-bg-alt); margin-bottom: 6px; }
+  .cfg__finish-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cfg__finish-name { font-weight: 600; font-size: 14.5px; }
+  .cfg__finish-text { font-size: 12px; color: var(--color-muted); line-height: 1.35; }
+  .cfg__finish-price { margin-top: 4px; font-size: 15px; font-weight: 600; }
+  .cfg__finish-price small { font-weight: 400; color: var(--color-muted); font-size: 12px; }
+  .cfg__finish--gift { border-color: rgba(176,138,62,.5); }
+  .cfg__finish-badge { position: absolute; top: 16px; left: 16px; z-index: 1; padding: 3px 8px; border-radius: 999px; background: #2f6b3a; color: #fff; font-size: 10.5px; font-weight: 600; letter-spacing: .04em; }
+  .cfg__sub { margin-top: 6px; }
+  .cfg__sub[hidden] { display: none; }
+  .cfg__packs { display: grid; gap: 10px; }
+  .cfg__pack { display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--color-border); border-radius: 10px; background: #fff; font: inherit; text-align: left; cursor: pointer; }
+  .cfg__pack img { flex: none; width: 76px; height: 76px; border-radius: 6px; object-fit: cover; }
+  .cfg__pack span { display: flex; flex-direction: column; gap: 2px; }
+  .cfg__pack small { font-size: 12px; color: var(--color-muted); line-height: 1.35; }
+  .cfg__pack em { font-family: var(--font-serif, Georgia, serif); font-size: 14px; color: #8a6a24; }
+  .cfg__pack b { font-size: 14.5px; }
+  .cfg__pack--star { border-color: rgba(176,138,62,.6); background: #fbf8f3; }
+  .cfg__pack.is-active { border-color: var(--color-text); box-shadow: inset 0 0 0 1px var(--color-text); }
+  .cfg__more { margin: 8px 0 0; font-size: 12.5px; }
+  .cfg__more a { text-decoration: underline; text-underline-offset: 3px; }
+  .cfg__trust { list-style: none; margin: 0 0 12px; padding: 0; font-size: 14px; }
+  .cfg__trust li { display: flex; gap: 8px; }
+  .cfg__review { display: flex; gap: 12px; align-items: flex-start; padding: 14px; margin-bottom: 18px; background: #eef7ec; border: 1px solid #cfe3ca; border-radius: 8px; }
+  .cfg__review p { margin: 0; font-size: 13.5px; line-height: 1.45; color: #3f5a42; }
+  .cfg__review strong { display: block; color: #24522d; }
+  .cfg__review-icon { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #2f6b3a; color: #fff; font-weight: 700; }
+  .cfg__summary { padding: 16px 0 6px; border-top: 1px solid var(--color-text); }
+  .cfg__total { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+  .cfg__total strong { font-family: var(--font-serif, Georgia, serif); font-size: 32px; letter-spacing: 0; }
+  .cfg__total.has-discount strong { color: #2f6b3a; }
+  .cfg__old { margin-right: 8px; font-size: 18px; color: #a8a096; letter-spacing: 0; text-transform: none; font-weight: 400; }
+  .cfg__what { margin: 4px 0 0; font-size: 13px; color: var(--color-muted); text-align: right; }
+  .cfg__envio { margin: 2px 0 0; font-size: 12px; color: var(--color-muted); text-align: right; }
+  .cfg__perk { margin: 10px 0 0; padding: 8px 12px; font-size: 12.5px; color: #8a6a24; background: #fbf6ea; border: 1px solid rgba(176,138,62,.4); border-radius: 6px; text-align: center; }
+  .cfg__perk[hidden] { display: none; }
+  .cfg__error { margin: 10px 0; color: #b32020; font-size: 14px; }
+  .cfg__error[hidden] { display: none; }
+  .cfg__submit { min-height: 56px; margin-top: 10px; font-size: 14px; letter-spacing: .16em; }
+  .cfg__secure { margin: 8px 0 0; text-align: center; font-size: 12px; color: var(--color-muted); }
+  @media (max-width: 749px) {
+    .cfg { padding-top: 18px; }
+    .cfg__types { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px; scrollbar-width: none; }
+    .cfg__types::-webkit-scrollbar { display: none; }
+    .cfg__type { flex: none; }
+    .cfg__grid { grid-template-columns: 1fr; gap: 22px; }
+    .cfg__gallery { position: static; }
+    .cfg__thumb { flex-basis: 58px; height: 72px; }
+    .cfg__finish-badge { top: 14px; left: 14px; }
+  }
+  /* Aviso de bienvenida (igual que en las fichas) */
+  .vlh-offer { position: fixed; z-index: 160; right: 24px; bottom: 24px; width: min(380px, calc(100vw - 32px)); padding: 26px 24px 18px; text-align: center;
+    background: #fbf8f3; color: #2C2218; border: 1px solid rgba(176,138,62,.35); border-radius: 14px; box-shadow: 0 22px 60px rgba(44,34,24,.24);
+    transform: translateY(130%); opacity: 0; transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease; }
+  .vlh-offer[hidden] { display: none; }
+  .vlh-offer.is-open { transform: none; opacity: 1; }
+  .vlh-offer__close { position: absolute; top: 6px; right: 8px; width: 34px; height: 34px; border: 0; background: none; font-size: 24px; color: #8a7d6e; cursor: pointer; }
+  .vlh-offer__kicker { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-style: italic; font-size: 17px; color: #8a6a24; }
+  .vlh-offer__title { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-size: 23px; line-height: 1.2; }
+  .vlh-offer__text { margin: 0 0 16px; font-size: 13.5px; line-height: 1.45; color: #5d5248; }
+  .vlh-offer__cta { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 50px; border: 0; border-radius: 4px; background: #231F1C; color: #fff; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+  .vlh-offer__gift { display: inline-flex; color: #f2d16b; }
+  .vlh-offer__gift svg { width: 19px; height: 19px; }
+  .vlh-offer__small { margin: 9px 0 4px; font-size: 12px; color: #8a6a24; }
+  .vlh-offer__no { border: 0; background: none; padding: 6px 10px; font: inherit; font-size: 12.5px; color: #8a7d6e; text-decoration: underline; cursor: pointer; }
+  .vlh-offer__done[hidden], .vlh-offer__ask[hidden] { display: none; }
+  .vlh-offer__check { display: inline-grid; place-items: center; width: 40px; height: 40px; margin-bottom: 10px; border-radius: 50%; background: #2f6b3a; color: #fff; font-size: 19px; font-weight: 700; }
+  @media (max-width: 749px) {
+    .vlh-offer { left: 0; right: 0; bottom: 0; width: auto; border-radius: 18px 18px 0 0; padding: 26px 22px calc(16px + env(safe-area-inset-bottom)); transform: translateY(110%); }
+    .vlh-offer.is-open { transform: none; }
+  }
+</style>
+
+<script>
+(function () {
+  const root = document.querySelector('[data-cfg]');
+  if (!root) return;
+  const data = JSON.parse(root.querySelector('[data-cfg-data]').textContent);
+  const $ = (s, el) => (el || root).querySelector(s);
+  const $$ = (s, el) => [...(el || root).querySelectorAll(s)];
+  const fmt = (c) => (c / 100).toLocaleString(data.locale || 'es', { style: 'currency', currency: 'EUR' });
+  const form = $('[data-cfg-form]');
+  const SIZES = { lamina: ['A4', 'A3'], marco: ['A4', 'A3'], regalo: ['A4', 'A3'], lienzo: ['Lienzo 70x100', 'Lienzo 80x120'] };
+  const SIZE_LABEL = { 'A4': 'A4 · 21×29,7 cm', 'A3': 'A3 · 29,7×42 cm', 'Lienzo 70x100': '70×100 cm', 'Lienzo 80x120': '80×120 cm' };
+  const st = { type: 0, count: null, finish: 'lamina', size: 'A4', color: 'marco blanco', pack: 'Pack Regalo' };
+
+  // ---- Producto y variante ----
+  const countIdx = (t) => t.options.findIndex((o) => /^número/i.test(o));
+  const sizeIdx = (t) => t.options.findIndex((o) => /tamaño/i.test(o));
+  const presIdx = (t) => t.options.findIndex((o) => /presentaci/i.test(o));
+  const supports = (t, count) => {
+    if (!t.variants.length) return false;
+    const ci = countIdx(t);
+    if (ci > -1) return t.variants.some((v) => v.o[ci] === count);
+    return (t.fixed || '') === count;
+  };
+  const productFor = (count) => {
+    const cur = data.types[st.type];
+    if (supports(cur, count)) return cur;
+    return data.types.find((t) => t.generic && supports(t, count)) || data.types.find((t) => supports(t, count)) || null;
+  };
+  const presFor = (finish, color, pack) => finish === 'lamina' ? 'Solo lámina' : finish === 'lienzo' ? 'Lienzo en bastidor'
+    : finish === 'marco' ? 'Enmarcada · ' + color : pack + ' · ' + color;
+  const findVariant = (t, count, size, pres) => {
+    if (!t) return null;
+    const ci = countIdx(t), si = sizeIdx(t), pi = presIdx(t);
+    return t.variants.find((v) => (ci < 0 || v.o[ci] === count) && String(v.o[si]).indexOf(size) === 0 && v.o[pi] === pres) || null;
+  };
+
+  // ---- Galería ----
+  const mainImg = $('[data-cfg-main]');
+  const thumbs = $('[data-cfg-thumbs]');
+  let imgs = [], cur = 0;
+  const show = (i) => {
+    if (!imgs.length) return;
+    cur = (i + imgs.length) % imgs.length;
+    mainImg.src = imgs[cur].src; mainImg.alt = imgs[cur].alt || '';
+    $$('.cfg__thumb', thumbs).forEach((b, k) => b.classList.toggle('is-active', k === cur));
+    const a = thumbs.children[cur]; if (a) thumbs.scrollTo({ left: a.offsetLeft - thumbs.clientWidth / 2 + a.clientWidth / 2, behavior: 'smooth' });
+  };
+  const paintGallery = () => {
+    imgs = data.types[st.type].images || [];
+    thumbs.innerHTML = imgs.map((im, k) => `<button type="button" class="cfg__thumb" data-i="${k}" aria-label="Foto ${k + 1}"><img src="${im.thumb}" alt="" loading="lazy" width="68" height="85"></button>`).join('');
+    show(0);
+  };
+  thumbs.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) show(+b.dataset.i); });
+  let sx = null;
+  mainImg.parentElement.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; }, { passive: true });
+  mainImg.parentElement.addEventListener('touchend', (e) => { if (sx === null) return; const d = e.changedTouches[0].clientX - sx; if (Math.abs(d) > 40) show(cur + (d < 0 ? 1 : -1)); sx = null; });
+
+  // ---- Pintar todo ----
+  let welcomeOn = false;
+  const readWelcome = () => { try { const w = JSON.parse(localStorage.getItem('vlh_welcome')) || {}; return w.status === 'accepted' && w.expires > Date.now(); } catch (e) { return false; } };
+  const paint = () => {
+    welcomeOn = readWelcome();
+    $$('.cfg__type').forEach((b, k) => { b.classList.toggle('is-active', k === st.type); b.setAttribute('aria-selected', k === st.type); });
+    $$('[data-count]').forEach((b) => {
+      const ok = !!productFor(b.dataset.count);
+      b.hidden = !ok;
+      b.classList.toggle('is-active', b.dataset.count === st.count);
+    });
+    $$('[data-cfg-counts]').forEach((g) => { g.previousElementSibling.hidden = g.hidden = !$$('[data-count]', g).some((b) => !b.hidden); });
+    const t = productFor(st.count);
+    // Precios «desde» de cada acabado para este número
+    ['lamina', 'marco', 'regalo', 'lienzo'].forEach((f) => {
+      const v = findVariant(t, st.count, SIZES[f][0], presFor(f, 'marco blanco', 'Pack Regalo'));
+      const el = $(`[data-price-for="${f}"]`);
+      const btn = el.closest('.cfg__finish');
+      btn.disabled = !v;
+      el.innerHTML = v ? `<small>desde</small> ${fmt(v.price)}` : '';
+      btn.classList.toggle('is-active', f === st.finish);
+    });
+    // Subopciones
+    const isPack = st.finish === 'regalo';
+    if (isPack && st.pack === 'Pack Valentina') st.size = 'A3';
+    if (!SIZES[st.finish].includes(st.size)) st.size = SIZES[st.finish][0];
+    $('[data-cfg-sub="size"]').hidden = isPack && st.pack === 'Pack Valentina';
+    $('[data-cfg-sizes]').innerHTML = SIZES[st.finish].map((sz) => {
+      const v = findVariant(t, st.count, sz, presFor(st.finish, st.color, st.pack));
+      return v ? `<button type="button" class="cfg__opt${sz === st.size ? ' is-active' : ''}" data-size="${sz}">${SIZE_LABEL[sz]} <small>${fmt(v.price)}</small></button>` : '';
+    }).join('');
+    $('[data-cfg-sub="pack"]').hidden = !isPack;
+    $$('[data-pack]').forEach((b) => {
+      const v = findVariant(t, st.count, b.dataset.pack === 'Pack Valentina' ? 'A3' : st.size, presFor('regalo', st.color, b.dataset.pack));
+      b.hidden = !v;
+      b.classList.toggle('is-active', b.dataset.pack === st.pack);
+      $(`[data-pack-price="${b.dataset.pack}"]`).textContent = v ? 'Total ' + fmt(v.price) : '';
+    });
+    $('[data-cfg-sub="color"]').hidden = !(st.finish === 'marco' || isPack);
+    $$('[data-color]').forEach((b) => {
+      const v = findVariant(t, st.count, st.size, presFor(st.finish, b.dataset.color, st.pack));
+      b.classList.toggle('is-active', b.dataset.color === st.color);
+      const sm = b.querySelector('small') || b.appendChild(document.createElement('small'));
+      sm.textContent = v ? fmt(v.price) : '';
+    });
+    $('[data-cfg-sub="message"]').hidden = !isPack;
+    const compRow = $('[data-cfg-comp-row]');
+    if (compRow) compRow.hidden = !st.count || st.count === '1 persona' || st.count === '1 mascota' || st.count === 'Solo paisaje';
+    // Total
+    const v = findVariant(t, st.count, st.size, presFor(st.finish, st.color, st.pack));
+    const comp = compRow && !compRow.hidden && $('[data-cfg-comp]').checked && data.comp ? data.comp.price : 0;
+    const base = v ? v.price + comp : 0;
+    const ahorro = welcomeOn && v ? Math.round(v.price * 0.1) : 0;
+    const totalEl = $('#vlh-total-price'), oldEl = $('#vlh-total-old');
+    totalEl.textContent = v ? fmt(base - ahorro) : '—';
+    oldEl.hidden = !ahorro; oldEl.textContent = ahorro ? fmt(base) : '';
+    totalEl.closest('.cfg__total').classList.toggle('has-discount', !!ahorro);
+    $('#vlh-perk').hidden = !welcomeOn;
+    const sizeTxt = SIZE_LABEL[st.size] || st.size;
+    $('[data-cfg-what]').textContent = v ? [data.types[st.type].label, st.count, sizeTxt, presFor(st.finish, st.color, st.pack).replace('Solo lámina', 'Lámina sola')].join(' · ') : (st.count ? 'Esta combinación no está disponible' : 'Elige quién sale en tu ilustración');
+    root._variant = v; root._product = t;
+  };
+
+  // ---- Eventos ----
+  root.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b || !root.contains(b)) return;
+    if (b.dataset.type) { st.type = +b.dataset.type; const t = data.types[st.type]; const def = t.default || t.fixed; if (def && productFor(def)) st.count = def; paintGallery(); paint(); }
+    else if (b.dataset.count) { st.count = b.dataset.count; paint(); }
+    else if (b.dataset.finish) { if (b.disabled) return; st.finish = b.dataset.finish; paint(); }
+    else if (b.dataset.size) { st.size = b.dataset.size; paint(); }
+    else if (b.dataset.pack) { st.pack = b.dataset.pack; paint(); }
+    else if (b.dataset.color) { st.color = b.dataset.color; paint(); }
+  });
+  const comp = $('[data-cfg-comp]'); if (comp) comp.addEventListener('change', paint);
+
+  // Fotos
+  const files = $('[data-cfg-files]'), later = $('[data-cfg-later]'), drop = $('[data-cfg-drop]');
+  files.addEventListener('change', () => {
+    const n = files.files.length;
+    drop.classList.toggle('has-files', n > 0);
+    $('[data-cfg-drop-title]').textContent = n ? (n === 1 ? '1 foto lista ✓' : n + ' fotos listas ✓') : 'Sube tus fotos';
+  });
+  later.addEventListener('change', () => { drop.hidden = later.checked; $('[data-cfg-date-note]').hidden = !later.checked; });
+
+  // Fecha estimada (10-15 días)
+  (() => {
+    const d1 = new Date(), d2 = new Date(); d1.setDate(d1.getDate() + 10); d2.setDate(d2.getDate() + 15);
+    const m = (d) => d.toLocaleDateString('es-ES', { month: 'long' });
+    const el = $('[data-cfg-date]');
+    el.textContent = d1.getMonth() === d2.getMonth() ? `del ${d1.getDate()} al ${d2.getDate()} de ${m(d2)}` : `del ${d1.getDate()} de ${m(d1)} al ${d2.getDate()} de ${m(d2)}`;
+    const f = (d) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+    el.dataset.rango = f(d1) + ' - ' + f(d2);
+  })();
+
+  // Aviso de bienvenida al llegar al total
+  const offer = document.getElementById('vlh-offer');
+  if (offer) {
+    document.body.appendChild(offer);
+    const canOffer = () => window.vivaWelcome ? window.vivaWelcome.canOffer() : !readWelcome();
+    const hide = () => { offer.classList.remove('is-open'); document.body.classList.remove('has-vlh-offer'); setTimeout(() => { offer.hidden = true; }, 350); };
+    offer.querySelectorAll('[data-offer-no]').forEach((b) => b.addEventListener('click', () => { try { sessionStorage.setItem('vlh_welcome_no', '1'); } catch (e) {} hide(); }));
+    offer.querySelector('[data-offer-yes]').addEventListener('click', (e) => {
+      e.currentTarget.disabled = true;
+      if (window.vivaWelcome) window.vivaWelcome.activate(offer.dataset.code);
+      paint();
+      offer.querySelector('.vlh-offer__ask').hidden = true; offer.querySelector('.vlh-offer__done').hidden = false;
+      setTimeout(hide, 2600);
+    });
+    let shown = false;
+    const open = () => {
+      if (shown || readWelcome() || !canOffer()) return; shown = true;
+      const go = () => {
+        const ck = document.getElementById('shopify-pc__banner'), cs = ck && getComputedStyle(ck);
+        if (ck && cs.display !== 'none' && cs.visibility !== 'hidden' && ck.getBoundingClientRect().height > 0) { setTimeout(go, 1000); return; }
+        offer.hidden = false; document.body.classList.add('has-vlh-offer');
+        requestAnimationFrame(() => requestAnimationFrame(() => offer.classList.add('is-open')));
+      };
+      setTimeout(go, 700);
+    };
+    if ('IntersectionObserver' in window) new IntersectionObserver((en, o) => { if (en.some((x) => x.isIntersecting)) { o.disconnect(); open(); } }, { threshold: 0.6 }).observe($('.cfg__summary'));
+  }
+
+  // Añadir al carrito: UNA línea con la variante elegida
+  const err = $('[data-cfg-error]'), btn = $('#vlh-submit-btn');
+  const fail = (m) => { err.textContent = m; err.hidden = false; err.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); err.hidden = true;
+    const v = root._variant;
+    if (!st.count) return fail('Elige quién sale en tu ilustración (paso 1).');
+    if (!later.checked && !files.files.length) return fail('Sube al menos una foto, o marca «Enviaré la foto más tarde» (paso 2).');
+    if (!v) return fail('Esta combinación no está disponible. Prueba otro tamaño o acabado.');
+    btn.disabled = true; btn.textContent = 'Añadiendo…';
+    try {
+      const fd = new FormData();
+      fd.append('id', v.id); fd.append('quantity', 1);
+      fd.append('properties[Tipo de ilustración]', data.types[st.type].label);
+      fd.append('properties[¿Tiene la foto?]', later.checked ? 'La enviará más adelante' : 'Sí, adjunta');
+      if (!later.checked) [...files.files].forEach((f, i) => fd.append('properties[Foto ' + (i + 1) + ']', f));
+      const notes = $('[data-cfg-notes]').value.trim(); if (notes) fd.append('properties[Cómo quiere su ilustración]', notes);
+      const msg = $('[data-cfg-message]').value.trim(); if (st.finish === 'regalo' && msg) fd.append('properties[Mensaje del regalo]', msg);
+      const compChk = $('[data-cfg-comp]'), withComp = compChk && !$('[data-cfg-comp-row]').hidden && compChk.checked;
+      if (withComp) fd.append('properties[Combinar varias fotos]', 'Sí');
+      fd.append('properties[Fecha de entrega estimada]', $('[data-cfg-date]').dataset.rango || '');
+      const r = await fetch('/cart/add.js', { method: 'POST', body: fd });
+      if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.description || 'No se pudo añadir al carrito.'); }
+      if (withComp && data.comp) await fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ id: data.comp.id, quantity: 1 }] }) });
+      if (readWelcome() && window.vivaAddDiscountCode && offer) { try { await window.vivaAddDiscountCode(offer.dataset.code); } catch (e2) {} }
+      if (window.vivaCartAdded) { window.vivaCartAdded(); } else { window.location.href = '/cart'; }
+    } catch (ex) { fail(ex.message || 'Ha ocurrido un error. Inténtalo de nuevo.'); }
+    btn.disabled = false; btn.textContent = 'Añadir al carrito';
+  });
+
+  // Inicio: tipo desde ?tipo=pareja si viene en el enlace
+  try {
+    const q = (new URLSearchParams(location.search).get('tipo') || '').toLowerCase();
+    if (q) { const k = data.types.findIndex((t) => t.label.toLowerCase().indexOf(q) === 0); if (k > -1) st.type = k; }
+  } catch (e) {}
+  const t0 = data.types[st.type]; st.count = t0 ? (t0.default || t0.fixed || null) : null;
+  paintGallery(); paint();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Configurador",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Antetítulo", "default": "Tu foto, convertida en un regalo que emociona" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Configura tu ilustración" },
+    { "type": "text", "id": "subtitle", "label": "Subtítulo", "default": "Elige un tipo para ver ejemplos reales" },
+    { "type": "image_picker", "id": "img_lamina", "label": "Foto: lámina sola" },
+    { "type": "image_picker", "id": "img_marco", "label": "Foto: enmarcada", "info": "Si está vacío usa la foto del producto Marco A3" },
+    { "type": "image_picker", "id": "img_regalo", "label": "Foto: preparada para regalo", "info": "Si está vacío usa la foto del Pack Regalo" },
+    { "type": "image_picker", "id": "img_lienzo", "label": "Foto: lienzo" }
+  ],
+  "blocks": [
+    {
+      "type": "tipo",
+      "name": "Tipo de ilustración",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Botón", "default": "Pareja" },
+        { "type": "product", "id": "product", "label": "Producto (con la opción «Presentación»)" },
+        { "type": "text", "id": "count_fixed", "label": "Número fijo si el producto no tiene opción de número", "info": "Ej.: 2 personas · 1 persona · Solo paisaje" },
+        { "type": "text", "id": "count_default", "label": "Número preseleccionado", "info": "Ej.: 3-4 personas · 1 mascota" },
+        { "type": "checkbox", "id": "generic", "label": "Genérico", "info": "Se usa cuando el tipo elegido no tiene ese número de personas", "default": false }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Configurador" }]
+}
+{% endschema %}
