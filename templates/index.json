@@ -2,20 +2,14 @@
   "sections": {
     "hero": {
       "type": "slideshow",
-      "settings": {
-        "height": 620,
-        "height_mobile": 560,
-        "mobile_layout": "stacked",
-        "mobile_ratio": "1.25",
-        "autoplay": true,
-        "speed": 6
-      },
       "blocks": {
         "slide_2": {
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/vlh-hero-cine-inicio.jpg",
             "image_mobile": "shopify://shop_images/vlh-hero-cine-inicio-movil.jpg",
+            "video": "shopify://files/videos/vlh-hero-cine-escritorio.mp4",
+            "video_mobile": "shopify://files/videos/vlh-hero-cine-movil.mp4",
             "focal": "center center",
             "overlay": 0,
             "tag": "Hecha con mimo para ti",
@@ -26,23 +20,24 @@
             "align": "right",
             "valign": "middle",
             "panel": false,
-            "light_text": false,
-            "video": "shopify://files/videos/vlh-hero-cine-escritorio.mp4",
-            "video_mobile": "shopify://files/videos/vlh-hero-cine-movil.mp4"
+            "light_text": false
           }
         }
       },
       "block_order": [
         "slide_2"
-      ]
+      ],
+      "settings": {
+        "height": 620,
+        "height_mobile": 560,
+        "mobile_layout": "stacked",
+        "mobile_ratio": "1.25",
+        "autoplay": true,
+        "speed": 6
+      }
     },
     "strip": {
       "type": "text-strip",
-      "settings": {
-        "label": "Hecho con amor",
-        "bg": "#A89478",
-        "fg": "#FFFFFF"
-      },
       "blocks": {
         "item_1": {
           "type": "item",
@@ -86,75 +81,73 @@
         "item_3",
         "item_4",
         "item_5"
-      ]
+      ],
+      "settings": {
+        "label": "Hecho con amor",
+        "bg": "#A89478",
+        "fg": "#FFFFFF"
+      }
     },
     "trending": {
       "type": "collection-tiles",
-      "settings": {
-        "title": "Tendencias",
-        "layout": "carousel",
-        "columns": 4,
-        "ratio": "3 / 4",
-        "background": "alt"
-      },
       "blocks": {
         "tile_1": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/vlh-fallera-abrazo.jpg",
             "title": "Lienzos de fallera",
             "subtitle": "Nuevo · hasta 80×120 cm",
-            "pos_x": 50,
-            "pos_y": 16,
             "link": "/pages/lienzos-xl-fallera",
-            "image": "shopify://shop_images/vlh-fallera-abrazo.jpg"
+            "pos_x": 50,
+            "pos_y": 16
           }
         },
         "tile_2": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/vlh-tendencia-pareja.jpg",
             "title": "Regalos pareja",
             "subtitle": "",
-            "link": "shopify://products/ilustracion-pareja",
-            "image": "shopify://shop_images/vlh-tendencia-pareja.jpg"
+            "link": "shopify://products/ilustracion-pareja"
           }
         },
         "tile_3": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/1407BF8C-D83D-4DBC-9276-DC34AF019920.jpg",
             "title": "Frases con sonrisa",
             "subtitle": "",
-            "pos_x": 80,
             "link": "shopify://collections/frases-con-sonrisa",
-            "image": "shopify://shop_images/1407BF8C-D83D-4DBC-9276-DC34AF019920.jpg"
+            "pos_x": 80
           }
         },
         "tile_4": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/vlh-tendencia-estrellas.png",
             "title": "Estrellas y sueños",
             "subtitle": "",
-            "link": "shopify://collections/estrellas-y-suenos",
-            "image": "shopify://shop_images/vlh-tendencia-estrellas.png"
+            "link": "shopify://collections/estrellas-y-suenos"
           }
         },
         "tile_5": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/vlh-tendencia-mascotas.png",
             "title": "Retratos de mascotas",
             "subtitle": "",
-            "zoom": 115,
-            "zoom_origin": "0% 0%",
             "link": "shopify://products/ilustracion-mascota",
-            "image": "shopify://shop_images/vlh-tendencia-mascotas.png"
+            "zoom": 115,
+            "zoom_origin": "0% 0%"
           }
         },
         "tile_6": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/vlh-estancia-dormitorio.png",
             "title": "Bodas",
             "subtitle": "",
-            "link": "shopify://products/ilustracion-boda",
-            "image": "shopify://shop_images/vlh-estancia-dormitorio.png"
+            "link": "shopify://products/ilustracion-boda"
           }
         }
       },
@@ -165,45 +158,45 @@
         "tile_4",
         "tile_5",
         "tile_6"
-      ]
+      ],
+      "settings": {
+        "title": "Tendencias",
+        "layout": "carousel",
+        "columns": 4,
+        "ratio": "3 / 4",
+        "background": "alt"
+      }
     },
     "new_arrivals": {
       "type": "collection-tiles",
-      "settings": {
-        "title": "Novedades y colecciones",
-        "layout": "grid",
-        "columns": 3,
-        "ratio": "4 / 3",
-        "background": "default"
-      },
       "blocks": {
         "tile_1": {
           "type": "tile",
           "settings": {
+            "collection": "laminas-personalizadas",
+            "image": "shopify://shop_images/vlh-novedades-personalizadas-v2.png",
             "title": "Ilustraciones personalizadas",
             "subtitle": "Tu foto favorita, convertida en ilustración",
             "zoom": 120,
-            "zoom_origin": "50% 0%",
-            "image": "shopify://shop_images/vlh-novedades-personalizadas-v2.png",
-            "collection": "laminas-personalizadas"
+            "zoom_origin": "50% 0%"
           }
         },
         "tile_2": {
           "type": "tile",
           "settings": {
-            "title": "Colección infantil",
-            "subtitle": "Sets que hacen soñar en su habitación",
+            "collection": "infantil",
             "image": "shopify://shop_images/vlh-novedades-infantil-v2.png",
-            "collection": "infantil"
+            "title": "Colección infantil",
+            "subtitle": "Sets que hacen soñar en su habitación"
           }
         },
         "tile_3": {
           "type": "tile",
           "settings": {
-            "title": "Packs regalo",
-            "subtitle": "Listos para regalar, con mensaje incluido",
+            "collection": "packs-regalo",
             "image": "shopify://shop_images/vlh-novedades-packs-regalo-v2.png",
-            "collection": "packs-regalo"
+            "title": "Packs regalo",
+            "subtitle": "Listos para regalar, con mensaje incluido"
           }
         }
       },
@@ -211,112 +204,108 @@
         "tile_1",
         "tile_2",
         "tile_3"
-      ]
+      ],
+      "settings": {
+        "title": "Novedades y colecciones",
+        "layout": "grid",
+        "columns": 3,
+        "ratio": "4 / 3",
+        "background": "default"
+      }
     },
     "worth": {
       "type": "split-banner",
       "settings": {
-        "image": "shopify://shop_images/vlh-video-dibujando-poster.jpg",
-        "video": "shopify://files/videos/vlh-video-dibujando-clip.mp4",
-        "video_start": 0,
-        "video_duration": 8,
+        "image": "shopify://shop_images/vlh-pablo-marta.jpg",
         "image_first": false,
-        "image_width": "wide",
-        "tag": "Gracias por estar aquí",
+        "image_width": "narrow",
+        "tag": "Quiénes somos",
         "eyebrow": "",
-        "heading": "Ilustramos momentos, creamos hogar",
+        "heading": "¡Encantados de conocerte!",
         "heading_size": "medium",
-        "text": "<p>En Viva la Home diseñamos cada ilustración y del resto también nos encargamos nosotras: las imprimimos, las enmarcamos y montamos a mano cada pack regalo, con sus telas y sus ramitos. Sin prisas y cuidando hasta el último detalle, para que tus paredes cuenten vuestra historia.</p><p>Las imprimimos en papel de algodón verjurado de 300 g, un papel artístico con cuerpo y una textura muy especial.</p><p>Gracias por apoyar un proyecto pequeño, hecho con cariño.</p>",
+        "text": "<p><strong>Somos Pablo y Marta.</strong></p><p>Una informática y un artista (lo sabemos… ¡qué pareja más rara!). Nos unen el arte, las ganas de viajar y la ilusión de crear algo juntos.</p><p>De mezclar nuestro lado artístico y técnico nació Viva la Home. Por el camino estamos colaborando con gente maravillosa, conociendo historias especiales y, sobre todo, creando grandes recuerdos, que es lo que más ilusión nos hace.</p><p>Gracias por estar aquí y por apoyar nuestro pequeño proyecto 🤍</p>",
         "button_label": "Crear mi ilustración",
         "button_link": "shopify://collections/laminas-personalizadas",
         "text_center": false,
         "panel_bg": "#EFE8DE",
         "contained": true,
-        "outer_background": "default"
+        "outer_background": "default",
+        "image_fit": "contain"
       }
     },
     "moments": {
       "type": "collection-tiles",
-      "settings": {
-        "title": "Ilustraciones para cada momento",
-        "subtitle": "Nos envías tu foto y la convertimos en una ilustración única, diseñada en nuestro estudio y preparada con mimo hasta que llega a tu casa",
-        "badge": "A partir de tu foto",
-        "layout": "carousel",
-        "columns": 4,
-        "ratio": "3 / 4",
-        "background": "default"
-      },
       "blocks": {
         "tile_1": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/641E1CC9-4DC1-42A6-8406-AB82ED858ECA.jpg",
             "title": "Parejas",
             "subtitle": "",
-            "link": "shopify://products/ilustracion-pareja",
-            "image": "shopify://shop_images/641E1CC9-4DC1-42A6-8406-AB82ED858ECA.jpg"
+            "link": "shopify://products/ilustracion-pareja"
           }
         },
         "tile_2": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/43E84B86-4D1E-441C-8E05-0B5BF8E29BB1.jpg",
             "title": "Mascotas",
             "subtitle": "",
-            "link": "shopify://products/ilustracion-mascota",
-            "image": "shopify://shop_images/43E84B86-4D1E-441C-8E05-0B5BF8E29BB1.jpg"
+            "link": "shopify://products/ilustracion-mascota"
           }
         },
         "tile_3": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/IMG-5107.jpg",
             "title": "Bodas",
             "subtitle": "",
-            "link": "shopify://products/ilustracion-boda",
-            "image": "shopify://shop_images/IMG-5107.jpg"
+            "link": "shopify://products/ilustracion-boda"
           }
         },
         "tile_4": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/979E0D82-2A97-4187-9348-504A6BA432D6.jpg",
             "title": "Familias",
             "subtitle": "",
-            "link": "shopify://products/sin-titulo-28ago_16-34-27",
-            "image": "shopify://shop_images/979E0D82-2A97-4187-9348-504A6BA432D6.jpg"
+            "link": "shopify://products/sin-titulo-28ago_16-34-27"
           }
         },
         "tile_5": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/CEAB9B58-A00B-48D5-9E3A-193CB4D4B60B.jpg",
             "title": "Bebés",
             "subtitle": "",
-            "link": "shopify://products/sin-titulo-3sept_14-00-21",
-            "image": "shopify://shop_images/CEAB9B58-A00B-48D5-9E3A-193CB4D4B60B.jpg"
+            "link": "shopify://products/sin-titulo-3sept_14-00-21"
           }
         },
         "tile_6": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/D0E189DC-BBD1-48D2-B60D-76BC54F85C8D.jpg",
             "title": "Comuniones",
             "subtitle": "",
-            "link": "shopify://products/ilustracion-comunion",
-            "image": "shopify://shop_images/D0E189DC-BBD1-48D2-B60D-76BC54F85C8D.jpg"
+            "link": "shopify://products/ilustracion-comunion"
           }
         },
         "tile_7": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/IMG-5108.jpg",
             "title": "Tradiciones",
             "subtitle": "",
-            "link": "shopify://products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales",
-            "image": "shopify://shop_images/IMG-5108.jpg"
+            "link": "shopify://products/ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales"
           }
         },
         "tile_8": {
           "type": "tile",
           "settings": {
+            "image": "shopify://shop_images/F0315B13-66CF-4958-AC24-55DC56983F0C.jpg",
             "title": "Lugares especiales",
             "subtitle": "",
-            "link": "shopify://products/ilustracion-paisaje-lugar-especial",
-            "image": "shopify://shop_images/F0315B13-66CF-4958-AC24-55DC56983F0C.jpg"
+            "link": "shopify://products/ilustracion-paisaje-lugar-especial"
           }
         }
       },
@@ -329,7 +318,16 @@
         "tile_6",
         "tile_7",
         "tile_8"
-      ]
+      ],
+      "settings": {
+        "title": "Ilustraciones para cada momento",
+        "subtitle": "Nos envías tu foto y la convertimos en una ilustración única, diseñada en nuestro estudio y preparada con mimo hasta que llega a tu casa",
+        "badge": "A partir de tu foto",
+        "layout": "carousel",
+        "columns": 4,
+        "ratio": "3 / 4",
+        "background": "default"
+      }
     },
     "kids": {
       "type": "featured-collection",
@@ -337,16 +335,16 @@
         "title": "Colección infantil",
         "subtitle": "Algunas ideas de sets para su habitación: combina tus láminas favoritas",
         "collection": "infantil",
-        "limit": 12,
-        "columns": 4,
+        "products_first": [
+          "lamina-infantil-la-pluma-magica",
+          "lamina-decorativa-infantil-bonito-vivalahome-copia",
+          "lamina-infantil-pequena-gran-sonadora"
+        ],
         "image_pos": "last",
         "card_ratio": "square",
         "price_suffix": "la lámina",
-        "products_first": [
-          "lamina-decorativa-infantil-todo-bajo-control-vivalahome-copia",
-          "lamina-decorativa-infantil-bonito-vivalahome-copia",
-          "lamina-decorativa-infantil-suenos-con-alas-vivalahome-copia"
-        ],
+        "limit": 12,
+        "columns": 4,
         "layout": "carousel",
         "background": "alt",
         "show_view_all": true,
@@ -355,10 +353,6 @@
     },
     "reviews": {
       "type": "testimonials",
-      "settings": {
-        "title": "Lo que dicen de nosotros",
-        "background": "default"
-      },
       "blocks": {
         "review_1": {
           "type": "review",
@@ -381,18 +375,14 @@
         "review_1",
         "review_2"
       ],
-      "disabled": true
+      "disabled": true,
+      "settings": {
+        "title": "Lo que dicen de nosotros",
+        "background": "default"
+      }
     },
     "instagram": {
       "type": "instagram-gallery",
-      "settings": {
-        "eyebrow": "@vivalahome.store",
-        "title": "Visto en Instagram",
-        "subtitle": "Son vuestras fotos y vídeos: así lucen nuestras ilustraciones cuando llegan a vuestras manos. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
-        "instagram_url": "https://www.instagram.com/vivalahome.store",
-        "columns": 6,
-        "background": "default"
-      },
       "blocks": {
         "foto_1": {
           "type": "foto",
@@ -516,15 +506,18 @@
         "foto_13",
         "foto_14",
         "foto_15"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "@vivalahome.store",
+        "title": "Visto en Instagram",
+        "subtitle": "Son vuestras fotos y vídeos: así lucen nuestras ilustraciones cuando llegan a vuestras manos. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
+        "instagram_url": "https://www.instagram.com/vivalahome.store",
+        "columns": 6,
+        "background": "default"
+      }
     },
     "promise": {
       "type": "icon-bar",
-      "settings": {
-        "label": "Nuestra promesa",
-        "bg": "#A89478",
-        "fg": "#FFFFFF"
-      },
       "blocks": {
         "item_1": {
           "type": "item",
@@ -560,7 +553,12 @@
         "item_2",
         "item_3",
         "item_4"
-      ]
+      ],
+      "settings": {
+        "label": "Nuestra promesa",
+        "bg": "#A89478",
+        "fg": "#FFFFFF"
+      }
     }
   },
   "order": [

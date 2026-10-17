@@ -7,11 +7,13 @@
   assign split = '1fr 1.45fr'
   if s.image_width == 'half'
     assign split = '1fr 1fr'
+  elsif s.image_width == 'narrow'
+    assign split = '1.7fr 1fr'
   endif
 -%}
 <section class="{% if s.contained %}section bg-{{ s.outer_background }}{% else %}section--flush{% endif %} reveal" data-reveal>
   <div class="{% if s.contained %}page-width{% endif %}">
-    <div class="split{% if s.image_first %} split--reverse{% endif %}"
+    <div class="split{% if s.image_first %} split--reverse{% endif %}{% if s.image_width == 'narrow' %} split--narrow{% endif %}"
       style="--split: {{ split }}; --split-rev: {{ split | split: ' ' | reverse | join: ' ' }}; --split-bg: {{ s.panel_bg }};">
       <div class="split__text{% if s.text_center %} split__text--center{% endif %}">
         {%- if s.tag != blank -%}<span class="tag-highlight script">{{ s.tag }}</span>{%- endif -%}
@@ -72,6 +74,12 @@
   </div>
 </section>
 
+<style>
+  /* Foto pequeña (p. ej. «Encantados de conocerte»): entera, como una foto impresa */
+  .split--narrow .split__media--contain > img { max-height: 340px; border: 8px solid #fff; transform: rotate(-1.2deg); }
+  @media (max-width: 749px) { .split--narrow .split__media--contain > img { max-height: 280px; } }
+</style>
+
 {% schema %}
 {
   "name": "Banner partido",
@@ -89,7 +97,7 @@
     },
     {
       "type": "select", "id": "image_width", "label": "Ancho de imagen",
-      "options": [{ "value": "wide", "label": "Ancha" }, { "value": "half", "label": "Mitad" }],
+      "options": [{ "value": "wide", "label": "Ancha" }, { "value": "half", "label": "Mitad" }, { "value": "narrow", "label": "Estrecha (foto pequeña)" }],
       "default": "wide"
     },
     { "type": "text", "id": "tag", "label": "Etiqueta (cursiva sobre color)", "default": "Favoritas de temporada" },
