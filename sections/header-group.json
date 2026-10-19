@@ -21,9 +21,18 @@
             "text": "3x2 en láminas infantiles con el código PEQUES3X2",
             "link": "shopify://collections/infantil"
           }
+        },
+        "announcement_viaje": {
+          "type": "announcement",
+          "settings": {
+            "text": "✈️ Pedidos desde el 19 de octubre: entrega a partir del 24 de noviembre",
+            "until": "2026-11-14",
+            "urgent": true
+          }
         }
       },
       "block_order": [
+        "announcement_viaje",
         "announcement_1",
         "announcement_2"
       ]

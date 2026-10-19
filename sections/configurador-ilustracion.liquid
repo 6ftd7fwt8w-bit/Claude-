@@ -253,6 +253,13 @@
               <div>
                 <p class="cfg__fact-title">Entrega estimada <strong data-cfg-date></strong></p>
                 <p class="cfg__fact-text" data-cfg-date-note hidden>10-15 días desde que recibamos tu foto</p>
+                {%- if s.away_text != blank and s.away_until != blank -%}
+                  {%- assign away_today = 'now' | date: '%Y%m%d' | plus: 0 -%}
+                  {%- assign away_last = s.away_until | remove: '-' | plus: 0 -%}
+                  {%- if away_today <= away_last -%}
+                    <p class="cfg__away" data-cfg-away data-until="{{ s.away_until }}" data-from="{{ s.away_from }}"><span aria-hidden="true">✈️</span> {{ s.away_text }}</p>
+                  {%- endif -%}
+                {%- endif -%}
                 <details class="cfg__soon">
                   <summary>¿Lo necesitas antes?</summary>
                   <p>Si necesitas tu ilustración para una fecha concreta, escríbenos por WhatsApp antes de hacer el pedido y te confirmamos si llegamos a tiempo.</p>
@@ -583,6 +590,7 @@
   .cfg__fact-text { margin-top: 3px !important; font-size: 14px; line-height: 1.5; color: var(--color-muted); }
   .cfg__fact-text[hidden] { display: none; }
   .cfg__fact .cfg__soon { margin: 6px 0 0; }
+  .cfg__away { margin-top: 8px !important; padding: 10px 12px; border-radius: 8px; background: #fbf6ea; border: 1px solid rgba(176,138,62,.4); color: #6b5320; font-size: 14px; line-height: 1.45; }
   .cfg__checkout { margin-top: 16px; padding: 18px 16px 16px; border: 1px solid #e4dacb; border-radius: 16px; background: #fff; box-shadow: 0 6px 20px rgba(44,34,24,.06); }
   .cfg-how { margin: 36px auto 0; padding: 26px 18px 10px; border-radius: 16px; background: #f0e9df; border: 1px solid #e4dacb; }
   .cfg-how .pdesc-steps { margin-bottom: 18px; }
@@ -859,6 +867,19 @@
     el.textContent = d1.getMonth() === d2.getMonth() ? `del ${d1.getDate()} al ${d2.getDate()} de ${m(d2)}` : `del ${d1.getDate()} de ${m(d1)} al ${d2.getDate()} de ${m(d2)}`;
     const f = (d) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
     el.dataset.rango = f(d1) + ' - ' + f(d2);
+    // Aviso temporal (p. ej. vacaciones): hasta «away_until» las entregas empiezan en «away_from»
+    const away = $('[data-cfg-away]');
+    if (away) {
+      const [uy, um, ud] = (away.dataset.until || '').split('-').map(Number);
+      const end = new Date(uy, um - 1, ud + 1);
+      if (!(Date.now() < end.getTime())) { away.remove(); return; }
+      const [fy, fm, fd] = (away.dataset.from || '').split('-').map(Number);
+      const from = fy ? new Date(fy, fm - 1, fd) : null;
+      if (from && d1 < from) {
+        el.textContent = 'a partir del ' + from.getDate() + ' de ' + m(from);
+        el.dataset.rango = 'A partir del ' + f(from);
+      }
+    }
   })();
 
   // Aviso de bienvenida al llegar al total
@@ -942,6 +963,10 @@
     { "type": "text", "id": "anchor", "label": "Ancla (id)", "info": "Para enlazar con #… (por defecto configurador)" },
     { "type": "text", "id": "start_tipo", "label": "Empezar con el tipo", "info": "Ej.: fallera, pareja (como ?tipo=)" },
     { "type": "select", "id": "start_finish", "label": "Empezar con el acabado", "options": [{ "value": "", "label": "Lámina (por defecto)" }, { "value": "marco", "label": "Lámina con marco" }, { "value": "lienzo", "label": "Lienzo" }, { "value": "regalo", "label": "Pack regalo" }], "default": "" },
+    { "type": "header", "content": "Aviso temporal de entregas" },
+    { "type": "text", "id": "away_text", "label": "Texto del aviso", "default": "Por motivos de agenda, los pedidos realizados a partir del 19 de octubre se entregarán a partir del 24 de noviembre. ¡Gracias por tu paciencia!" },
+    { "type": "text", "id": "away_until", "label": "Mostrar hasta (AAAA-MM-DD)", "info": "Al día siguiente desaparece solo", "default": "2026-11-14" },
+    { "type": "text", "id": "away_from", "label": "Entregas a partir de (AAAA-MM-DD)", "info": "Mientras se muestra el aviso, la entrega estimada no sale antes de esta fecha", "default": "2026-11-24" },
     { "type": "text", "id": "pack_subtitle", "label": "Modo pack: subtítulo", "default": "Configura la ilustración que irá dentro de tu regalo" },
     { "type": "text", "id": "title", "label": "Título", "default": "Configura tu ilustración" },
     { "type": "text", "id": "subtitle", "label": "Subtítulo", "default": "Creamos la ilustración perfecta a partir de tu foto para rememorar ese momento especial" },
