@@ -1,0 +1,38 @@
+<section class="section section--apps bg-{{ section.settings.background }}" id="{{ section.settings.anchor | default: 'apps' | handleize }}">
+  <div class="page-width">
+    {%- if section.settings.title != blank or section.settings.text != blank -%}
+      <div class="apps-head">
+        {%- if section.settings.title != blank -%}<h2 class="section-title">{{ section.settings.title }}</h2>{%- endif -%}
+        {%- if section.settings.text != blank -%}<p class="apps-head__text">{{ section.settings.text }}</p>{%- endif -%}
+      </div>
+    {%- endif -%}
+    {%- for block in section.blocks -%}
+      {% render block %}
+    {%- endfor -%}
+  </div>
+</section>
+
+<style>
+  .section--apps .apps-head { text-align: center; max-width: 640px; margin: 0 auto 28px; }
+  .section--apps .apps-head .section-title { margin: 0; }
+  .section--apps .apps-head__text { margin: 10px 0 0; color: var(--color-muted, #7B7168); }
+</style>
+
+{% schema %}
+{
+  "name": "Apps (reseñas…)",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Título" },
+    { "type": "text", "id": "text", "label": "Texto" },
+    { "type": "text", "id": "anchor", "label": "Ancla (#)", "default": "opiniones" },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "default"
+    }
+  ],
+  "blocks": [{ "type": "@app" }],
+  "presets": [{ "name": "Apps (reseñas…)" }]
+}
+{% endschema %}
