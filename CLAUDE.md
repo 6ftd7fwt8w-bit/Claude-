@@ -56,11 +56,12 @@
 ## Reseñas (Judge.me, 26/10/2026, borrador «Viva Galería – reseñas» 191702532169)
 - App Judge.me instalada (plan Free); su app embed «judgeme_core» ya está activo en el tema publicado «aviso Japón» (191528009801, MAIN desde el 26/10).
 - sections/apps.liquid: sección genérica con bloques @app (título, texto, ancla, fondo). Bloques válidos de Judge.me (extensión 61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8): all_reviews_page, featured_carousel, review_widget, preview_badge.
-- Página /pages/opiniones (706263121993, plantilla page.opiniones = apps + all_reviews_page, con «Escribir reseña»). Home: sección rich-text «leave_review» antes de «promise»: «¿Ya tienes tu ilustración en casa?» + botón «Déjanos tu reseña» → /pages/opiniones.
-- El bloque all_reviews_page sale vacío mientras en Judge.me esté desactivada la «Página de todas las reseñas» (all_reviews_page:false en su script de ajustes); se activa desde la app (Widgets). Para probar sin cookies de vista previa usar curl con -c/-b (si no, renderiza el tema publicado).
+- La «Página de todas las reseñas» (all_reviews_page, en la app «Widget de clientes satisfechos») es de pago: no usarla. Las marcadas con estrella en la lista de widgets son de pago.
+- Para escribir reseñas (gratis): plantilla product.resenas (apps + review_widget) del producto general → /products/ilustracion-personalizada?view=resenas («Sé el primero en escribir una reseña» + «Escribir una reseña»). Enlace corto: redirecciones /opiniones y /pages/opiniones → esa URL (la página «Opiniones» se borró). Home: sección rich-text «leave_review» antes de «promise»: «¿Ya tienes tu ilustración en casa?» + botón «Déjanos tu reseña» → esa URL. Hasta publicar el borrador, la URL enseña el configurador (el tema publicado no tiene product.resenas).
+- Para probar sin cookies de vista previa usar curl con -c/-b (si no, renderiza el tema publicado).
 - 26/10: «Algodón verjurado 300 g» → «Papel verjurado 300 g» en home (strip, promise), product.json, product.lamina-coleccion.json, main-product (default) y formulario antiguo.
 - La dueña no quiere mostrar carrusel hasta tener unas 5 reseñas (entonces: featured_carousel en home y configurador, encima de Instagram).
-- En el borrador quedaron plantillas de prueba page.t2…t5.json (themeFilesDelete bloqueado): borrar a mano desde «Editar código».
+- En el borrador quedaron plantillas de prueba page.t2…t5.json y page.opiniones.json sin uso (themeFilesDelete bloqueado): borrar a mano desde «Editar código».
 
 ## Hero con vídeos
 - Probada una fila de clips (vlh-hero-reel-1…10 en Archivos, recortes en _media/hero-reel) pero el tema publicado usa otro planteamiento: vídeo único «cine» (vlh-hero-cine-escritorio.mp4 / -movil.mp4) en slide_2 con los ajustes «video»/«video_mobile» del slideshow.
