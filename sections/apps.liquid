@@ -21,6 +21,19 @@
   .section--apps .jm-review-widget-minimal-header__title { display: none !important; }
 </style>
 
+{%- if section.settings.auto_open_review -%}
+<script>
+  (function () {
+    var tries = 0;
+    var t = setInterval(function () {
+      var btn = document.querySelector('#{{ section.settings.anchor | default: 'apps' | handleize }} .jm-action-buttons__button');
+      if (btn) { clearInterval(t); btn.click(); }
+      else if (++tries > 60) clearInterval(t);
+    }, 250);
+  })();
+</script>
+{%- endif -%}
+
 {% schema %}
 {
   "name": "Apps (reseñas…)",
@@ -33,7 +46,8 @@
       "type": "select", "id": "background", "label": "Fondo",
       "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
       "default": "default"
-    }
+    },
+    { "type": "checkbox", "id": "auto_open_review", "label": "Abrir el formulario de reseña al entrar", "default": false }
   ],
   "blocks": [{ "type": "@app" }],
   "presets": [{ "name": "Apps (reseñas…)" }]

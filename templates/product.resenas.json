@@ -15,7 +15,8 @@
         "title": "¿Qué te ha parecido tu ilustración?",
         "text": "Gracias por confiar en nosotros. Tu opinión nos hace muchísima ilusión y ayuda a otras personas a decidirse 🤍",
         "anchor": "opiniones",
-        "background": "default"
+        "background": "default",
+        "auto_open_review": true
       }
     }
   },
