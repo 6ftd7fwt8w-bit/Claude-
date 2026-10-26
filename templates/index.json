@@ -56,7 +56,7 @@
         "item_3": {
           "type": "item",
           "settings": {
-            "text": "Algodón verjurado 300 g",
+            "text": "Papel verjurado 300 g",
             "icon": "none"
           }
         },
@@ -530,7 +530,7 @@
           "type": "item",
           "settings": {
             "icon": "frame",
-            "text": "Algodón verjurado 300 g"
+            "text": "Papel verjurado 300 g"
           }
         },
         "item_3": {
