@@ -579,7 +579,7 @@
           "type": "button",
           "settings": {
             "label": "Déjanos tu reseña",
-            "link": "/pages/opiniones"
+            "link": "/products/ilustracion-personalizada?view=resenas"
           }
         }
       },
