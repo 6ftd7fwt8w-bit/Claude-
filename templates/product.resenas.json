@@ -1,0 +1,25 @@
+{
+  "sections": {
+    "main": {
+      "type": "apps",
+      "blocks": {
+        "reviews": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "reviews"
+      ],
+      "settings": {
+        "title": "¿Qué te ha parecido tu ilustración?",
+        "text": "Gracias por confiar en nosotros. Tu opinión nos hace muchísima ilusión y ayuda a otras personas a decidirse 🤍",
+        "anchor": "opiniones",
+        "background": "default"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
