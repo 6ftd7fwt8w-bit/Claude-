@@ -16,6 +16,9 @@
   .section--apps .apps-head { text-align: center; max-width: 640px; margin: 0 auto 28px; }
   .section--apps .apps-head .section-title { margin: 0; }
   .section--apps .apps-head__text { margin: 10px 0 0; color: var(--color-muted, #7B7168); }
+  /* Judge.me: sin «Sé el primero…» ni título duplicado (ya va el de la sección) */
+  .section--apps .jm-no-reviews-state__text,
+  .section--apps .jm-review-widget-minimal-header__title { display: none !important; }
 </style>
 
 {% schema %}
