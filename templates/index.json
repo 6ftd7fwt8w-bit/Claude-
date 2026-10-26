@@ -559,6 +559,39 @@
         "bg": "#A89478",
         "fg": "#FFFFFF"
       }
+    },
+    "leave_review": {
+      "type": "rich-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "¿Ya tienes tu ilustración en casa?"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Nos haría muchísima ilusión saber qué te ha parecido. Tu opinión nos ayuda a seguir creciendo 🤍</p>"
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "label": "Déjanos tu reseña",
+            "link": "/pages/opiniones"
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "text",
+        "button"
+      ],
+      "settings": {
+        "align": "center",
+        "background": "default"
+      }
     }
   },
   "order": [
@@ -571,6 +604,7 @@
     "moments",
     "kids",
     "reviews",
+    "leave_review",
     "promise"
   ]
 }
