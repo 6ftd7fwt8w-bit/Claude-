@@ -53,6 +53,13 @@
 - Barra de anuncios (sections/header-group.json): bloque «announcement_viaje», el primero, con «until» 2026-11-14 (se oculta solo desde el 15/11).
 - Configurador: ajustes away_text / away_until (2026-11-14) / away_from (2026-11-24), con valores por defecto en el schema, así sale en todas las plantillas que lo usan. Recuadro crema bajo «Entrega estimada» y la fecha estimada (también la propiedad del pedido) no baja de away_from. Desaparece solo el 15/11 (Liquid y JS).
 
+## Reseñas (Judge.me, 26/10/2026, borrador «Viva Galería – reseñas» 191702532169)
+- App Judge.me instalada (plan Free); su app embed «judgeme_core» ya está activo en el tema publicado «aviso Japón» (191528009801, MAIN desde el 26/10).
+- sections/apps.liquid: sección genérica con bloques @app (título, texto, ancla, fondo). Bloques válidos de Judge.me (extensión 61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8): all_reviews_page, featured_carousel, review_widget, preview_badge.
+- Página /pages/opiniones (706263121993, plantilla page.opiniones = apps + all_reviews_page, con «Escribir reseña»). Home: sección rich-text «leave_review» antes de «promise»: «¿Ya tienes tu ilustración en casa?» + botón «Déjanos tu reseña» → /pages/opiniones.
+- La dueña no quiere mostrar carrusel hasta tener unas 5 reseñas (entonces: featured_carousel en home y configurador, encima de Instagram).
+- En el borrador quedaron plantillas de prueba page.t2…t5.json (themeFilesDelete bloqueado): borrar a mano desde «Editar código».
+
 ## Hero con vídeos
 - Probada una fila de clips (vlh-hero-reel-1…10 en Archivos, recortes en _media/hero-reel) pero el tema publicado usa otro planteamiento: vídeo único «cine» (vlh-hero-cine-escritorio.mp4 / -movil.mp4) en slide_2 con los ajustes «video»/«video_mobile» del slideshow.
 - 14/10 (borrador «embudo de compra»): el hero solo tiene slide_2 (quitadas fallera e infantil). Imagen de la diapositiva = fotograma del segundo 1 del vídeo (vlh-hero-cine-inicio.jpg / -movil.jpg); el vídeo empieza invisible y aparece con fundido al reproducirse (clase is-playing), así se ve la imagen mientras carga o si no se puede reproducir.
