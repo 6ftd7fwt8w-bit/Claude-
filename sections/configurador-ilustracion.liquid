@@ -235,13 +235,28 @@
               <p class="cfg__guarantee-text">Cuando tengamos tu diseño, te escribiremos por WhatsApp para que lo veas con calma y nos digas si quieres cambiar algo. <strong>No lo preparamos hasta que te encante.</strong></p>
             </div>
           </div>
+          {%- if w_ok and w_code != blank -%}
+            {%- comment -%} Regalo de bienvenida dentro de la tarjeta (sin ventana): casilla que activa el descuento y enseña cuánto se ahorra {%- endcomment -%}
+            <div class="cfg-gift" data-cfg-gift data-code="{{ w_code | escape }}" data-percent="{{ w_pct }}" hidden>
+              <label class="cfg-gift__ticket">
+                <input type="checkbox" class="cfg-gift__input" data-gift-check>
+                <span class="cfg-gift__box" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                <span class="cfg-gift__body">
+                  <span class="cfg-gift__kicker">🎁 Regalo de bienvenida</span>
+                  <span class="cfg-gift__title" data-gift-title>Activa tu {{ w_pct }}&nbsp;% en tu primera ilustración</span>
+                  <span class="cfg-gift__price" data-gift-price></span>
+                  <span class="cfg-gift__small" data-gift-small>Un clic y se aplica solo, sin códigos · válido 24&nbsp;h</span>
+                </span>
+                <span class="cfg-gift__stamp" aria-hidden="true">−{{ w_pct }}<small>%</small></span>
+              </label>
+            </div>
+          {%- endif -%}
           <div class="cfg__summary">
             <div class="cfg__total">
               <span class="cfg__total-label">Total</span>
               <span class="cfg__amounts"><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong><em class="cfg__off" data-cfg-off hidden></em></span>
             </div>
             <p class="cfg__envio" id="vlh-envio">IVA incluido · Envío gratis{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</p>
-            <p class="vlh-perk cfg__perk" id="vlh-perk" hidden><span aria-hidden="true">✦</span> Descuento de bienvenida del {{ w_pct }}&nbsp;% activado · <b>válido 24&nbsp;h</b></p>
           </div>
           <p class="cfg__error" id="vlh-error" data-cfg-error role="alert" hidden></p>
           <button type="submit" class="button button--full cfg__submit" data-cfg-submit>Añadir al carrito</button>
@@ -346,24 +361,6 @@
     {% render 'size-guide', art: s.guide_art, art_a3: s.guide_art_a3 %}
   </dialog>
 
-  {%- if w_ok and w_code != blank -%}
-    <div class="vlh-offer" id="vlh-offer" role="dialog" aria-labelledby="cfg-offer-title" data-code="{{ w_code | escape }}" data-percent="{{ w_pct }}" hidden>
-      <button type="button" class="vlh-offer__close" data-offer-no aria-label="Cerrar">&times;</button>
-      <div class="vlh-offer__ask">
-        <p class="vlh-offer__kicker">Tenemos algo solo para ti…</p>
-        <p class="vlh-offer__title" id="cfg-offer-title">Un {{ w_pct }}&nbsp;% de regalo en tu primera ilustración</p>
-        <p class="vlh-offer__text">Porque es tu primera vez por aquí, y eso se celebra. Se aplica solo, sin códigos.</p>
-        <button type="button" class="vlh-offer__cta" data-offer-yes><span class="vlh-offer__gift" aria-hidden="true">{% render 'icon', name: 'gift' %}</span>Activar descuento</button>
-        <p class="vlh-offer__small">✦ Válido 24 horas desde la activación</p>
-        <button type="button" class="vlh-offer__no" data-offer-no>Ahora no, gracias</button>
-      </div>
-      <div class="vlh-offer__done" hidden>
-        <span class="vlh-offer__check" aria-hidden="true">✓</span>
-        <p class="vlh-offer__title">¡Tu regalo ya está activado!</p>
-        <p class="vlh-offer__text">Verás el {{ w_pct }}&nbsp;% descontado en el total y en tu cesta durante 24 horas.</p>
-      </div>
-    </div>
-  {%- endif -%}
 
   <script type="application/json" data-cfg-data>
     {
@@ -644,26 +641,48 @@
     .cfg__gallery { position: static; }
     .cfg__thumb { flex-basis: 58px; height: 72px; }
   }
-  /* Aviso de bienvenida (igual que en las fichas) */
-  .vlh-offer { position: fixed; z-index: 160; right: 24px; bottom: 24px; width: min(380px, calc(100vw - 32px)); padding: 26px 24px 18px; text-align: center;
-    background: #fbf8f3; color: #2C2218; border: 1px solid rgba(176,138,62,.35); border-radius: 14px; box-shadow: 0 22px 60px rgba(44,34,24,.24);
-    transform: translateY(130%); opacity: 0; transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease; }
-  .vlh-offer[hidden] { display: none; }
-  .vlh-offer.is-open { transform: none; opacity: 1; }
-  .vlh-offer__close { position: absolute; top: 6px; right: 8px; width: 34px; height: 34px; border: 0; background: none; font-size: 24px; color: #8a7d6e; cursor: pointer; }
-  .vlh-offer__kicker { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-style: italic; font-size: 17px; color: #8a6a24; }
-  .vlh-offer__title { margin: 0 0 6px; font-family: var(--font-serif, Georgia, serif); font-size: 23px; line-height: 1.2; }
-  .vlh-offer__text { margin: 0 0 16px; font-size: 13.5px; line-height: 1.45; color: #5d5248; }
-  .vlh-offer__cta { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 50px; border: 0; border-radius: 4px; background: #231F1C; color: #fff; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
-  .vlh-offer__gift { display: inline-flex; color: #f2d16b; }
-  .vlh-offer__gift svg { width: 19px; height: 19px; }
-  .vlh-offer__small { margin: 9px 0 4px; font-size: 12px; color: #8a6a24; }
-  .vlh-offer__no { border: 0; background: none; padding: 6px 10px; font: inherit; font-size: 12.5px; color: #8a7d6e; text-decoration: underline; cursor: pointer; }
-  .vlh-offer__done[hidden], .vlh-offer__ask[hidden] { display: none; }
-  .vlh-offer__check { display: inline-grid; place-items: center; width: 40px; height: 40px; margin-bottom: 10px; border-radius: 50%; background: #2f6b3a; color: #fff; font-size: 19px; font-weight: 700; }
+  /* Regalo de bienvenida dentro de la tarjeta del precio: cupón con casilla */
+  .cfg-gift[hidden] { display: none; }
+  .cfg-gift { margin: 0 0 16px; }
+  .cfg-gift__ticket { position: relative; display: flex; align-items: center; gap: 14px; padding: 16px 16px 16px 14px; border: 1.5px dashed #c9a24f; border-radius: 12px;
+    background: linear-gradient(135deg, #fffaf0 0%, #fbf1dc 100%); cursor: pointer; overflow: hidden; transition: border-color .3s, background .3s, box-shadow .3s; }
+  .cfg-gift__ticket::before, .cfg-gift__ticket::after { content: ''; position: absolute; top: 50%; width: 16px; height: 16px; margin-top: -8px; border-radius: 50%; background: #fff; border: 1.5px dashed #c9a24f; }
+  .cfg-gift__ticket::before { left: -9px; } .cfg-gift__ticket::after { right: -9px; }
+  .cfg-gift__ticket:hover { box-shadow: 0 6px 18px rgba(176,138,62,.18); }
+  .cfg-gift__input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .cfg-gift__box { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border: 2px solid #b08a3e; border-radius: 7px; background: #fff; color: transparent; transition: background .25s, border-color .25s, color .25s, transform .25s; }
+  .cfg-gift:not(.is-on) .cfg-gift__box { animation: cfgGiftPulse 2.4s ease-in-out infinite; }
+  .cfg-gift__input:focus-visible + .cfg-gift__box { outline: 2px solid #231F1C; outline-offset: 2px; }
+  .cfg-gift__body { flex: 1; min-width: 0; display: grid; gap: 3px; }
+  .cfg-gift__kicker { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #8a6a24; }
+  .cfg-gift__title { font-family: var(--font-serif, Georgia, serif); font-size: 19px; line-height: 1.25; color: #2C2218; }
+  .cfg-gift__price { font-size: 15px; line-height: 1.35; color: #2C2218; }
+  .cfg-gift__price:empty { display: none; }
+  .cfg-gift__price b { color: #2f6b3a; font-weight: 700; }
+  .cfg-gift__price s { color: #8a7d6e; }
+  .cfg-gift__small { font-size: 12.5px; color: #8a6a24; }
+  .cfg-gift__stamp { flex: none; display: grid; place-items: center; width: 62px; height: 62px; border-radius: 50%; background: #231F1C; color: #f2d16b; font-family: var(--font-serif, Georgia, serif); font-size: 21px; line-height: 1; transform: rotate(-10deg); box-shadow: 0 0 0 3px #fbf1dc, 0 0 0 4.5px #c9a24f; }
+  .cfg-gift__stamp small { font-size: 13px; margin-left: 1px; }
+  /* Brillo que cruza el cupón cada pocos segundos mientras no está activado */
+  .cfg-gift:not(.is-on) .cfg-gift__ticket .cfg-gift__body::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.75) 50%, transparent 65%); transform: translateX(-120%); animation: cfgGiftShine 5s ease-in-out 1s infinite; pointer-events: none; }
+  .cfg-gift.is-on .cfg-gift__ticket { border-style: solid; border-color: #8fbf88; background: linear-gradient(135deg, #f1f8ee 0%, #e3f0de 100%); cursor: default; }
+  .cfg-gift.is-on .cfg-gift__ticket::before, .cfg-gift.is-on .cfg-gift__ticket::after { border-style: solid; border-color: #8fbf88; }
+  .cfg-gift.is-on .cfg-gift__box { background: #2f6b3a; border-color: #2f6b3a; color: #fff; transform: scale(1.08); }
+  .cfg-gift.is-on .cfg-gift__kicker, .cfg-gift.is-on .cfg-gift__small { color: #2f6b3a; }
+  .cfg-gift.is-on .cfg-gift__stamp { background: #2f6b3a; color: #fff; box-shadow: 0 0 0 3px #e3f0de, 0 0 0 4.5px #8fbf88; }
+  .cfg-gift.is-popping .cfg-gift__stamp { animation: cfgGiftStamp .6s cubic-bezier(.2,1.6,.4,1); }
+  .cfg__total.is-popping strong { animation: cfgTotalPop .6s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes cfgGiftPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(176,138,62,.45); } 50% { box-shadow: 0 0 0 7px rgba(176,138,62,0); } }
+  @keyframes cfgGiftShine { 0% { transform: translateX(-120%); } 30%, 100% { transform: translateX(120%); } }
+  @keyframes cfgGiftStamp { 0% { transform: rotate(-10deg) scale(.6); } 100% { transform: rotate(-10deg) scale(1); } }
+  @keyframes cfgTotalPop { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
   @media (max-width: 749px) {
-    .vlh-offer { left: 0; right: 0; bottom: 0; width: auto; border-radius: 18px 18px 0 0; padding: 26px 22px calc(16px + env(safe-area-inset-bottom)); transform: translateY(110%); }
-    .vlh-offer.is-open { transform: none; }
+    .cfg-gift__ticket { gap: 12px; padding: 14px 12px; }
+    .cfg-gift__title { font-size: 17px; }
+    .cfg-gift__stamp { width: 52px; height: 52px; font-size: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cfg-gift__box, .cfg-gift__body::after, .cfg-gift__stamp, .cfg__total strong { animation: none !important; }
   }
 </style>
 
@@ -794,7 +813,27 @@
     oldEl.hidden = !pct; oldEl.textContent = pct ? fmt(before) : '';
     offEl.hidden = !pct; offEl.textContent = pct ? '−' + pct + ' %' : '';
     totalEl.closest('.cfg__total').classList.toggle('has-discount', !!pct);
-    $('#vlh-perk').hidden = !welcomeOn;
+    // Regalo de bienvenida en la tarjeta: cuánto se ahorra con la selección de ahora
+    const gEl = $('[data-cfg-gift]');
+    if (gEl) {
+      let ws = {}; try { ws = JSON.parse(localStorage.getItem('vlh_welcome')) || {}; } catch (e) {}
+      gEl.hidden = ws.status === 'purchased';
+      gEl.classList.toggle('is-on', welcomeOn);
+      const chk = gEl.querySelector('[data-gift-check]'); chk.checked = welcomeOn; chk.disabled = welcomeOn;
+      const wp = +gEl.dataset.percent || 10, full = v ? v.price : 0, disc = Math.round(full * (100 - wp) / 100);
+      const priceEl = gEl.querySelector('[data-gift-price]'), titleEl = gEl.querySelector('[data-gift-title]'), smallEl = gEl.querySelector('[data-gift-small]');
+      if (welcomeOn) {
+        titleEl.textContent = v ? '¡Regalo activado! Te ahorras ' + fmt(full - disc) : '¡Regalo activado!';
+        priceEl.innerHTML = '';
+        const exp = new Date(window.vivaWelcome ? window.vivaWelcome.expires() : ws.expires || Date.now());
+        const hh = exp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        smallEl.textContent = 'Ya está descontado en tu total y en tu cesta · válido hasta ' + (exp.toDateString() === new Date().toDateString() ? 'hoy' : 'mañana') + ' a las ' + hh;
+      } else {
+        titleEl.textContent = 'Activa tu ' + wp + ' % en tu primera ilustración';
+        priceEl.innerHTML = v ? 'Pagas <b>' + fmt(disc) + '</b> en lugar de <s>' + fmt(full) + '</s>' : '';
+        smallEl.textContent = 'Un clic y se aplica solo, sin códigos · válido 24 h';
+      }
+    }
     // Barra superior
     const fin = { lamina: 'Lámina', marco: 'Lámina con marco', lienzo: 'Lienzo', regalo: st.pack }[st.finish];
     bar.querySelector('[data-bar-what]').textContent = fin + ' · ' + (SIZE_INFO[st.size] || [st.size])[0] + (st.finish === 'lienzo' ? ' cm' : '');
@@ -845,7 +884,7 @@
   // Sale al llegar al paso 3 (acabado) y solo mientras el total de abajo no se ve
   const barUpd = () => {
     const r = sumEl.getBoundingClientRect(), sumVisible = r.top < window.innerHeight && r.bottom > 0;
-    const on = step3.getBoundingClientRect().top < window.innerHeight * 0.6 && !sumVisible && !document.body.classList.contains('has-vlh-offer'); bar.classList.toggle('is-on', on); bar.setAttribute('aria-hidden', !on); bar.querySelector('button').tabIndex = on ? 0 : -1;
+    const on = step3.getBoundingClientRect().top < window.innerHeight * 0.6 && !sumVisible; bar.classList.toggle('is-on', on); bar.setAttribute('aria-hidden', !on); bar.querySelector('button').tabIndex = on ? 0 : -1;
   };
   window.addEventListener('scroll', barUpd, { passive: true }); window.addEventListener('resize', barUpd); barUpd();
   bar.querySelector('[data-bar-add]').addEventListener('click', () => form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })));
@@ -882,33 +921,17 @@
     }
   })();
 
-  // Aviso de bienvenida al llegar al total
-  const offer = document.getElementById('vlh-offer');
-  if (offer) {
-    document.body.appendChild(offer);
-    const canOffer = () => window.vivaWelcome ? window.vivaWelcome.canOffer() : !readWelcome();
-    const hide = () => { offer.classList.remove('is-open'); document.body.classList.remove('has-vlh-offer'); setTimeout(() => { offer.hidden = true; }, 350); };
-    offer.querySelectorAll('[data-offer-no]').forEach((b) => b.addEventListener('click', () => { try { sessionStorage.setItem('vlh_welcome_no', '1'); } catch (e) {} hide(); }));
-    offer.querySelector('[data-offer-yes]').addEventListener('click', (e) => {
-      e.currentTarget.disabled = true;
-      if (window.vivaWelcome) window.vivaWelcome.activate(offer.dataset.code);
-      paint();
-      offer.querySelector('.vlh-offer__ask').hidden = true; offer.querySelector('.vlh-offer__done').hidden = false;
-      setTimeout(hide, 2600);
-    });
-    let shown = false;
-    const open = () => {
-      if (shown || readWelcome() || !canOffer()) return; shown = true;
-      const go = () => {
-        const ck = document.getElementById('shopify-pc__banner'), cs = ck && getComputedStyle(ck);
-        if (ck && cs.display !== 'none' && cs.visibility !== 'hidden' && ck.getBoundingClientRect().height > 0) { setTimeout(go, 1000); return; }
-        offer.hidden = false; document.body.classList.add('has-vlh-offer');
-        requestAnimationFrame(() => requestAnimationFrame(() => offer.classList.add('is-open')));
-      };
-      setTimeout(go, 700);
-    };
-    if ('IntersectionObserver' in window) new IntersectionObserver((en, o) => { if (en.some((x) => x.isIntersecting)) { o.disconnect(); open(); } }, { threshold: 0.6 }).observe($('.cfg__summary'));
-  }
+  // Regalo de bienvenida: al marcar la casilla se activa (24 h) y el total baja al momento
+  const giftEl = $('[data-cfg-gift]');
+  if (giftEl) giftEl.querySelector('[data-gift-check]').addEventListener('change', (e) => {
+    if (!e.target.checked || readWelcome()) return;
+    if (window.vivaWelcome) window.vivaWelcome.activate(giftEl.dataset.code);
+    else { try { localStorage.setItem('vlh_welcome', JSON.stringify({ status: 'accepted', at: Date.now(), expires: Date.now() + 864e5, code: giftEl.dataset.code })); } catch (x) {} }
+    paint();
+    const tot = $('.cfg__total');
+    giftEl.classList.add('is-popping'); tot.classList.add('is-popping');
+    setTimeout(() => { giftEl.classList.remove('is-popping'); tot.classList.remove('is-popping'); }, 700);
+  });
 
   // Añadir al carrito: UNA línea con la variante elegida
   const err = $('[data-cfg-error]'), btn = $('[data-cfg-submit]');
@@ -931,7 +954,7 @@
       fd.append('properties[Fecha de entrega estimada]', $('[data-cfg-date]').dataset.rango || '');
       const r = await fetch('/cart/add.js', { method: 'POST', body: fd });
       if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.description || 'No se pudo añadir al carrito.'); }
-      if (readWelcome() && window.vivaAddDiscountCode && offer) { try { await window.vivaAddDiscountCode(offer.dataset.code); } catch (e2) {} }
+      if (readWelcome() && window.vivaAddDiscountCode && giftEl) { try { await window.vivaAddDiscountCode(giftEl.dataset.code); } catch (e2) {} }
       if (window.vivaCartAdded) { window.vivaCartAdded(); } else { window.location.href = '/cart'; }
     } catch (ex) { fail(ex.message || 'Ha ocurrido un error. Inténtalo de nuevo.'); }
     btn.disabled = false; btn.textContent = 'Añadir al carrito';
