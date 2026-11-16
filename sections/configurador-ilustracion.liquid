@@ -748,9 +748,18 @@
     show(0);
   };
   thumbs.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) show(+b.dataset.i); });
-  let sx = null;
-  mainImg.parentElement.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; }, { passive: true });
-  mainImg.parentElement.addEventListener('touchend', (e) => { if (sx === null) return; const d = e.changedTouches[0].clientX - sx; if (Math.abs(d) > 40) show(cur + (d < 0 ? 1 : -1)); sx = null; });
+  // Deslizar para cambiar de foto solo si el gesto es claramente horizontal (al hacer scroll hacia abajo
+  // el dedo se desvía un poco y antes saltaba a la foto anterior, es decir, a la última)
+  let sx = null, sy = null;
+  mainImg.parentElement.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  mainImg.parentElement.addEventListener('touchend', (e) => {
+    if (sx === null) return;
+    const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    sx = sy = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    show(cur + (dx < 0 ? 1 : -1));
+  });
+  mainImg.parentElement.addEventListener('touchcancel', () => { sx = sy = null; });
 
   // ---- Pintar todo ----
   let welcomeOn = false;
