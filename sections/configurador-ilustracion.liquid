@@ -822,6 +822,10 @@
   const W_BF = !!(giftBox && giftBox.hasAttribute('data-bf'));
   const W_END = W_BF ? new Date(giftBox.dataset.end + 'T23:59:59+01:00').getTime() : 0;
   const readWelcome = () => { try { const w = JSON.parse(localStorage.getItem(W_KEY)) || {}; return w.status === 'accepted' && w.expires > Date.now(); } catch (e) { return false; } };
+  // Black Friday: el cupón ya sale marcado (se guarda el estado; el código se añade a la cesta al comprar)
+  if (W_BF && Date.now() < W_END && !readWelcome()) {
+    try { localStorage.setItem(W_KEY, JSON.stringify({ status: 'accepted', at: Date.now(), expires: W_END, code: giftBox.dataset.code })); } catch (e) {}
+  }
   const paint = () => {
     welcomeOn = readWelcome();
     const type = data.types[st.type];

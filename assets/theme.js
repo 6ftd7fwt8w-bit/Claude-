@@ -468,6 +468,10 @@
       try { var w = JSON.parse(localStorage.getItem(key)) || {}; return w.status === 'accepted' && w.expires > Date.now(); } catch (e) { return false; }
     };
     // Descuento de una lista de precios, redondeado lámina a lámina como lo hace Shopify en la cesta
+    // Black Friday: el cupón ya sale marcado (el código se añade a la cesta al comprar las 3)
+    if (els[0].hasAttribute('data-auto') && (!end || Date.now() < end) && !api.on()) {
+      try { localStorage.setItem(key, JSON.stringify({ status: 'accepted', at: Date.now(), expires: end || Date.now() + 864e5, code: code })); } catch (e) {}
+    }
     api.off = function (prices) { return prices.reduce(function (a, p) { return a + Math.floor(p * pct / 100); }, 0); };
     // el._prices: precios de las láminas de la oferta · el._need: cuántas faltan para llegar a 3
     api.render = function (el) {
