@@ -59,6 +59,7 @@
 
 ## Colección infantil: sets de 3 primero (21/11, borrador «Black Friday»)
 - Checkbox nuevo «Sets de 3 primero» (sets_first) en el bloque de temáticas de main-collection, activado para infantil: /collections/infantil (sin temática) enseña los sets (bloques «set» de la plantilla collection.json) con la pastilla «🧩 Sets de 3» activa y primera; «Todas» lleva a ?view=todas (templates/collection.todas.json = copia de collection.json) con la cuadrícula normal; las temáticas (/collections/infantil/tema-…) siguen filtrando. En «todas» el «ver más» y los filtros conservan view=todas.
+- 21/11: el panel de cada set tiene galería deslizable (.set-gal, theme.js): foto del set + hasta 4 fotos de cada lámina (p.images, sin la foto del set; con p.media y preview_image no salía nada), flechas, contador «1 / 9» y etiqueta con el nombre de la lámina; tocar la miniatura de una lámina en la lista lleva a sus fotos en vez de abrir la ficha; al abrir el panel vuelve a la foto del set.
 - collection.json, collection.todas.json y collection.sets.json son iguales (copiados de la versión publicada del 21/11, la dueña había cambiado sets): si se cambia un set, cambiarlo en las tres o al menos en collection.json (la que enseña los sets).
 
 ## Lienzos XL
