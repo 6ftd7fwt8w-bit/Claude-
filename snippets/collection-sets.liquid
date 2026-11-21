@@ -83,7 +83,7 @@
             {%- if set_code != blank -%}<span class="set-card__badge">3x2</span>{%- elsif pk_ok -%}<span class="set-card__badge set-card__badge--bf">{% if settings.pack_bf %}Black Friday {% endif %}−{{ pk_pct }}&nbsp;%</span>{%- endif -%}
           </span>
           <span class="set-card__name">Set «{{ block.settings.name }}»</span>
-          <span class="set-card__price">3 láminas · {% if set_code != blank or pk_ok %}<s>{{ set_total | money }}</s> <b>{{ set_pay | money }}</b>{% else %}<b>{{ set_total | money }}</b>{% endif %}</span>
+          <span class="set-card__price">3 láminas sin marco · {% if set_code != blank or pk_ok %}<s>{{ set_total | money }}</s> <b>{{ set_pay | money }}</b>{% else %}<b>{{ set_total | money }}</b>{% endif %}</span>
         </button>
 
         <dialog class="set-sheet" id="set-{{ block.id }}" data-set-sheet data-code="{{ set_code | escape }}">
@@ -158,7 +158,7 @@
                 <span>Total del set</span>
                 <span><s data-set-old></s> <strong data-set-total></strong></span>
               </div>
-              {% render 'ship-note' %}
+              {% render 'ship-note', frame_note: 'Las 3 láminas se entregan <b>sin marco</b>' %}
               <button type="button" class="button button--full set-sheet__add" data-set-add>Añadir las 3 al carrito</button>
               <p class="set-sheet__msg" data-set-msg hidden></p>
             </div>

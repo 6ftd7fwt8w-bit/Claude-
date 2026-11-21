@@ -1,4 +1,10 @@
-{%- comment -%} Envío gratis + IVA incluido justo encima del botón de compra (igual que en el configurador) {%- endcomment -%}
+{%- comment -%}
+  Envío gratis + IVA incluido justo encima del botón de compra (igual que en el configurador).
+  frame_note: texto de «sin marco» (láminas de colección y sets)
+{%- endcomment -%}
 {%- if settings.free_shipping_always -%}
   <p class="ship-note"><span class="ship-note__pill"><span aria-hidden="true">🚚</span> Envío <b>GRATIS</b> a toda la {{ settings.free_shipping_zone | default: 'península' | downcase }}</span>{%- if cart.taxes_included -%}<span class="ship-note__iva">IVA incluido</span>{%- endif -%}</p>
+{%- endif -%}
+{%- if frame_note != blank -%}
+  <p class="frame-note"><span class="frame-note__icon" aria-hidden="true">i</span><span>{{ frame_note }}</span></p>
 {%- endif -%}

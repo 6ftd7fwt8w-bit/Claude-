@@ -214,7 +214,12 @@
               <div {{ block.shopify_attributes }}>
                 {%- form 'product', product, id: form_id, class: 'product-form', data-product-form: '' -%}
                   <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
-                  {% render 'ship-note' %}
+                  {%- assign fn_text = '' -%}
+                  {%- if settings.cross_collection != blank -%}
+                    {%- assign fn_handles = product.collections | map: 'handle' -%}
+                    {%- if fn_handles contains settings.cross_collection.handle -%}{%- assign fn_text = 'Se entrega <b>sin marco</b>' -%}{%- endif -%}
+                  {%- endif -%}
+                  {% render 'ship-note', frame_note: fn_text %}
                   <div class="product__buy">
                     <div class="qty">
                       <button type="button" data-qty-minus aria-label="-">&minus;</button>
