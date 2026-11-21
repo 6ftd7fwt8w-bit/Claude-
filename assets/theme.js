@@ -509,6 +509,37 @@
     return api;
   })();
 
+  /* Galería del panel del set: flechas, contador y miniaturas de cada lámina que llevan a sus fotos */
+  $$('[data-set-gal]').forEach(function (gal) {
+    var track = $('[data-set-gal-track]', gal), slides = $$('.set-gal__slide', track);
+    var prev = $('[data-set-gal-prev]', gal), next = $('[data-set-gal-next]', gal), count = $('[data-set-gal-count]', gal);
+    var idx = function () { return Math.round(track.scrollLeft / Math.max(1, track.clientWidth)); };
+    var sync = function () {
+      var i = idx();
+      if (count) count.textContent = (i + 1) + ' / ' + slides.length;
+      prev.disabled = i <= 0; next.disabled = i >= slides.length - 1;
+    };
+    var go = function (i) { track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' }); };
+    prev.addEventListener('click', function () { go(idx() - 1); });
+    next.addEventListener('click', function () { go(idx() + 1); });
+    track.addEventListener('scroll', function () { window.requestAnimationFrame(sync); }, { passive: true });
+    var sheet = gal.closest('[data-set-sheet]');
+    if (sheet) {
+      sheet.addEventListener('click', function (e) {
+        var j = e.target.closest && e.target.closest('[data-gal-jump]');
+        if (!j) return;
+        var k = slides.findIndex(function (sl) { return sl.getAttribute('data-gal-product') === j.getAttribute('data-gal-jump'); });
+        if (k < 0) return;
+        e.preventDefault();
+        go(k);
+        gal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+      // Al abrir el panel, empieza en la foto del set
+      new MutationObserver(function () { if (sheet.open) { track.scrollLeft = 0; sync(); } }).observe(sheet, { attributes: true, attributeFilter: ['open'] });
+    }
+    sync();
+  });
+
   /* «Añade 2 láminas más»: baja al carrusel «Combínala con…» (sale cuando cargan las recomendaciones) */
   document.addEventListener('click', function (e) {
     var nudge = e.target.closest && e.target.closest('[data-pack-nudge]');

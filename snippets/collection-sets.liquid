@@ -89,7 +89,25 @@
         <dialog class="set-sheet" id="set-{{ block.id }}" data-set-sheet data-code="{{ set_code | escape }}">
           <div class="set-sheet__panel">
             <button type="button" class="set-sheet__close" data-set-close aria-label="Cerrar">&times;</button>
-            <div class="set-sheet__media">{{ photo | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 420px, 100vw', alt: block.settings.name }}</div>
+            {%- comment -%} Galería: foto del set y, después, las fotos de cada lámina del set (detalles) {%- endcomment -%}
+            <div class="set-sheet__media set-gal" data-set-gal>
+              <div class="set-gal__track" data-set-gal-track>
+                <figure class="set-gal__slide">{{ photo | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 560px, 100vw', alt: block.settings.name }}</figure>
+                {%- for p in block.settings.products -%}
+                  {%- assign p_shown = 0 -%}
+                  {%- for m in p.media -%}
+                    {%- if m.media_type == 'image' and m.preview_image.id != photo.id and p_shown < 4 -%}
+                      {%- assign p_shown = p_shown | plus: 1 -%}
+                      {%- assign p_alt = p.title | split: '–' | last | split: '|' | first | strip -%}
+                      <figure class="set-gal__slide" data-gal-product="{{ p.id }}">{{ m.preview_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 560px, 100vw', alt: p_alt }}<figcaption class="set-gal__cap">{{ p_alt }}</figcaption></figure>
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endfor -%}
+              </div>
+              <button type="button" class="set-gal__nav set-gal__nav--prev" data-set-gal-prev aria-label="Foto anterior"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+              <button type="button" class="set-gal__nav set-gal__nav--next" data-set-gal-next aria-label="Foto siguiente"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+              <span class="set-gal__count" data-set-gal-count></span>
+            </div>
             <div class="set-sheet__body">
               <div class="set-sheet__head">
                 <div>
@@ -121,7 +139,7 @@
                     endfor
                   -%}
                   <li class="set-item" data-set-item data-a4="{{ v_a4.id }}" data-a4-price="{{ v_a4.price }}" data-a3="{{ v_a3.id }}" data-a3-price="{{ v_a3.price }}">
-                    <a href="{{ p.url }}" class="set-item__img">{{ p.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', width: 64, height: 80, alt: p.title }}</a>
+                    <a href="{{ p.url }}" class="set-item__img" data-gal-jump="{{ p.id }}" title="Ver fotos de esta lámina">{{ p.featured_image | image_url: width: 160 | image_tag: loading: 'lazy', width: 64, height: 80, alt: p.title }}</a>
                     <span class="set-item__name">{{ p.title | split: '–' | last | split: '|' | first | strip }}
                       <span class="set-item__sizes" role="group" aria-label="Tamaño de esta lámina">
                         <button type="button" class="set-item__size is-active" data-item-size="A4" aria-pressed="true">A4</button>

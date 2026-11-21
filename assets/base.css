@@ -1186,6 +1186,19 @@ body.overflow-hidden .cart-fab { opacity: 0; pointer-events: none; }
 .set-sheet__close { position: absolute; top: 8px; right: 10px; z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(255,255,255,.9); font-size: 22px; line-height: 1; cursor: pointer; }
 .set-sheet__media { aspect-ratio: 4 / 3; overflow: hidden; background: var(--color-bg-alt); }
 .set-sheet__media img { width: 100%; height: 100%; object-fit: cover; }
+/* Galería del set: foto del set + fotos de cada lámina, deslizable */
+.set-gal { position: relative; }
+.set-gal__track { display: flex; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.set-gal__track::-webkit-scrollbar { display: none; }
+.set-gal__slide { position: relative; flex: 0 0 100%; height: 100%; margin: 0; scroll-snap-align: start; }
+.set-gal__slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.set-gal__slide[data-gal-product] img { object-fit: contain; background: #f3ede4; }
+.set-gal__cap { position: absolute; left: 10px; bottom: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.9); font-size: 12px; }
+.set-gal__nav { position: absolute; top: 50%; z-index: 1; display: grid; place-items: center; width: 34px; height: 34px; margin-top: -17px; border: 0; border-radius: 50%; background: rgba(255,255,255,.92); box-shadow: 0 2px 8px rgba(0,0,0,.15); cursor: pointer; }
+.set-gal__nav--prev { left: 10px; } .set-gal__nav--next { right: 10px; }
+.set-gal__nav[disabled] { opacity: 0; pointer-events: none; }
+.set-gal__count { position: absolute; right: 10px; bottom: 10px; padding: 3px 9px; border-radius: 999px; background: rgba(35,31,28,.75); color: #fff; font-size: 11.5px; letter-spacing: .04em; }
+.set-item__img { cursor: zoom-in; }
 .set-sheet__body { padding: 16px 18px 20px; }
 .set-sheet__eyebrow { margin: 0; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-muted); }
 .set-sheet__title { margin: 2px 0 12px; font-size: 22px; }
