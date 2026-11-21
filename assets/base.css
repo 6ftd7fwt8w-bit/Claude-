@@ -1383,7 +1383,7 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .vp-coupon__input:focus-visible + .vp-coupon__box { outline: 2px solid #231F1C; outline-offset: 2px; }
 .vp-coupon__body { flex: 1; min-width: 0; display: grid; gap: 3px; }
 .vp-coupon__kicker { display: flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8a6a24; }
-.vp-coupon__title { font-family: var(--font-heading, Georgia, serif); font-size: 19px; line-height: 1.25; color: #2C2218; }
+.vp-coupon__title { font-family: var(--font-serif, Georgia, serif); font-size: 19px; line-height: 1.25; color: #2C2218; }
 .vp-coupon__price { font-size: 14.5px; line-height: 1.35; color: #2C2218; }
 .vp-coupon__price:empty, .vp-coupon__timer:empty { display: none; }
 .vp-coupon__price b { color: #2f6b3a; font-weight: 700; }
@@ -1393,7 +1393,7 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .vp-coupon__timer > span { flex-basis: 100%; }
 .vp-coupon__timer b { display: inline-flex; align-items: baseline; padding: 4px 5px 3px; border-radius: 5px; background: #f2d16b; color: #15110d; font-size: 14px; font-weight: 700; letter-spacing: 0; font-variant-numeric: tabular-nums; line-height: 1; }
 .vp-coupon__timer b small { font-size: 10px; font-weight: 600; margin-left: 1px; }
-.vp-coupon__stamp { flex: none; display: flex; align-items: center; justify-content: center; white-space: nowrap; width: 54px; height: 54px; border-radius: 50%; background: #231F1C; color: #f2d16b; font-family: var(--font-heading, Georgia, serif); font-size: 18px; line-height: 1; transform: rotate(-10deg); box-shadow: 0 0 0 3px #fbf1dc, 0 0 0 4.5px #c9a24f; }
+.vp-coupon__stamp { flex: none; display: flex; align-items: center; justify-content: center; white-space: nowrap; width: 54px; height: 54px; border-radius: 50%; background: #231F1C; color: #f2d16b; font-family: var(--font-serif, Georgia, serif); font-size: 18px; line-height: 1; transform: rotate(-10deg); box-shadow: 0 0 0 3px #fbf1dc, 0 0 0 4.5px #c9a24f; }
 .vp-coupon__stamp small { font-size: 11px; margin-left: 1px; }
 .vp-coupon.is-on .vp-coupon__box { background: #2f6b3a; border-color: #2f6b3a; color: #fff; }
 .vp-coupon.is-on .vp-coupon__ticket { cursor: default; }
