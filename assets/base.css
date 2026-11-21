@@ -102,6 +102,9 @@ ul { margin: 0; padding: 0; list-style: none; }
 .announcement a { text-decoration: underline; text-underline-offset: 3px; }
 .announcement__track { display: flex; justify-content: center; gap: 36px; flex-wrap: wrap; }
 .announcement__item { margin: 0; }
+.announcement__track.is-rotating { display: grid; gap: 0; }
+.announcement__track.is-rotating .announcement__item { grid-area: 1 / 1; opacity: 0; visibility: hidden; transition: opacity .5s ease, visibility .5s; }
+.announcement__track.is-rotating .announcement__item.is-active { opacity: 1; visibility: visible; }
 @media (max-width: 749px) {
   .announcement { font-size: 11px; letter-spacing: .04em; padding: 8px 12px; }
   .announcement__track { display: grid; gap: 0; }

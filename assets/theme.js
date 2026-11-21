@@ -48,13 +48,21 @@
     if (e.key === 'Escape') $$('.drawer.is-open').forEach(closeDrawer);
   });
 
-  /* Announcement rotation (móvil) -------------------------------------- */
+  /* Announcement rotation (móvil, y en ordenador si los anuncios no caben en una línea) -- */
   $$('[data-announcement]').forEach(function (bar) {
     var items = $$('.announcement__item', bar);
     if (items.length < 2) return;
     var i = 0;
+    var fit = function () {
+      bar.classList.remove('is-rotating');
+      if (window.matchMedia('(max-width: 749px)').matches) return;
+      var tops = items.map(function (it) { return it.offsetTop; });
+      if (Math.max.apply(null, tops) - Math.min.apply(null, tops) > 4) bar.classList.add('is-rotating');
+    };
+    fit();
+    window.addEventListener('resize', fit);
     setInterval(function () {
-      if (!window.matchMedia('(max-width: 749px)').matches) return;
+      if (!window.matchMedia('(max-width: 749px)').matches && !bar.classList.contains('is-rotating')) return;
       items[i].classList.remove('is-active');
       i = (i + 1) % items.length;
       items[i].classList.add('is-active');
