@@ -95,11 +95,11 @@
                 <figure class="set-gal__slide">{{ photo | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 560px, 100vw', alt: block.settings.name }}</figure>
                 {%- for p in block.settings.products -%}
                   {%- assign p_shown = 0 -%}
-                  {%- for m in p.media -%}
-                    {%- if m.media_type == 'image' and m.preview_image.id != photo.id and p_shown < 4 -%}
+                  {%- assign p_alt = p.title | split: '–' | last | split: '|' | first | strip -%}<!--gal {{ p.handle }} {{ p.images.size }} {{ p.media.size }}-->
+                  {%- for img in p.images -%}
+                    {%- if img.src != photo.src and p_shown < 4 -%}
                       {%- assign p_shown = p_shown | plus: 1 -%}
-                      {%- assign p_alt = p.title | split: '–' | last | split: '|' | first | strip -%}
-                      <figure class="set-gal__slide" data-gal-product="{{ p.id }}">{{ m.preview_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 560px, 100vw', alt: p_alt }}<figcaption class="set-gal__cap">{{ p_alt }}</figcaption></figure>
+                      <figure class="set-gal__slide" data-gal-product="{{ p.id }}">{{ img | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 560px, 100vw', alt: p_alt }}<figcaption class="set-gal__cap">{{ p_alt }}</figcaption></figure>
                     {%- endif -%}
                   {%- endfor -%}
                 {%- endfor -%}
