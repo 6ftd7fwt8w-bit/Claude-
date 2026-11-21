@@ -12,7 +12,7 @@
         "announcement_bf": {
           "type": "announcement",
           "settings": {
-            "text": "🖤 BLACK FRIDAY −15 % en ilustraciones personalizadas · BLACKFRIDAY15 · hasta el 30/11",
+            "text": "🖤 BLACK FRIDAY −15 % en ilustraciones personalizadas · hasta el 30/11",
             "link": "/discount/BLACKFRIDAY15?redirect=/collections/laminas-personalizadas",
             "until": "2026-11-30",
             "urgent": true,
@@ -25,10 +25,21 @@
             "text": "🚚 ENVÍO GRATIS a toda la península",
             "pill": true
           }
+        },
+        "announcement_bf_sets": {
+          "type": "announcement",
+          "settings": {
+            "text": "🖤 −10 % en sets de 3 láminas infantiles · hasta el 30/11",
+            "link": "shopify://collections/infantil",
+            "until": "2026-11-30",
+            "urgent": true,
+            "bf": true
+          }
         }
       },
       "block_order": [
         "announcement_bf",
+        "announcement_bf_sets",
         "announcement_1"
       ]
     },
