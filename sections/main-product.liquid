@@ -162,7 +162,7 @@
                       {% render 'price', product: product, variant: current_variant %}
                     {%- endif -%}
                   </div>
-                  {%- if cart.taxes_included -%}<div class="product__tax">{{ 'products.tax_included' | t }}</div>{%- endif -%}
+                  {%- if cart.taxes_included and settings.free_shipping_always == false -%}<div class="product__tax">{{ 'products.tax_included' | t }}</div>{%- endif -%}
                 </div>
               </div>
 
@@ -214,6 +214,7 @@
               <div {{ block.shopify_attributes }}>
                 {%- form 'product', product, id: form_id, class: 'product-form', data-product-form: '' -%}
                   <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+                  {% render 'ship-note' %}
                   <div class="product__buy">
                     <div class="qty">
                       <button type="button" data-qty-minus aria-label="-">&minus;</button>

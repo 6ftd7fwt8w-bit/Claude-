@@ -1438,3 +1438,10 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
   .set-promo__title { font-size: 20px; }
   .set-promo__stamp { width: 58px; height: 58px; font-size: 20px; }
 }
+
+/* Envío gratis + IVA incluido encima del botón (snippet ship-note) */
+.ship-note { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 10px; }
+.ship-note__pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: #e3f1e0; border: 1px solid #b9d6b2; color: #24522d; font-size: 14px; }
+.ship-note__pill b { font-weight: 700; letter-spacing: .04em; }
+.ship-note__iva { font-size: 13px; color: var(--color-muted); }
+.set-sheet .ship-note { justify-content: flex-end; margin: 8px 0 10px; }
