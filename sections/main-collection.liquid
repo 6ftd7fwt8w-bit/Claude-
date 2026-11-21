@@ -48,6 +48,27 @@
 </div>
 {%- endif -%}
 
+{%- liquid
+  comment
+    «Sets primero» (ajuste del bloque de temáticas): en la dirección normal de la colección, sin temática,
+    salen los sets de 3; «Todas» lleva a ?view=todas (plantilla collection.todas, igual que la normal).
+  endcomment
+  assign show_sets = false
+  if template.suffix == 'sets'
+    assign show_sets = true
+  endif
+  assign sets_first = false
+  for block in section.blocks
+    if block.type == 'themes' and block.settings.collection.handle == collection.handle and block.settings.sets_first and block.settings.sets_label != blank
+      assign sets_first = true
+      if template.suffix == blank
+        if current_tags == blank or current_tags.size == 0
+          assign show_sets = true
+        endif
+      endif
+    endif
+  endfor
+-%}
 <section class="section" style="padding-top:24px">
   <div class="page-width">
     {%- for block in section.blocks -%}
@@ -56,15 +77,20 @@
         <nav class="theme-pills" aria-label="{{ block.settings.title | default: 'Temáticas' | escape }}" {{ block.shopify_attributes }}>
           {%- liquid
             assign all_active = true
-            if template.suffix == 'sets'
+            if show_sets
               assign all_active = false
             elsif current_tags != blank and current_tags.size > 0
               assign all_active = false
             endif
           -%}
-          <a href="{{ collection.url }}" class="theme-pill{% if all_active %} is-active{% endif %}">{{ block.settings.all_label | default: 'Todas' }}</a>
-          {%- if block.settings.sets_label != blank -%}
-            <a href="{{ collection.url }}?view=sets" class="theme-pill theme-pill--sets{% if template.suffix == 'sets' %} is-active{% endif %}">{{ block.settings.sets_label }}</a>
+          {%- if sets_first -%}
+            <a href="{{ collection.url }}" class="theme-pill theme-pill--sets{% if show_sets %} is-active{% endif %}">{{ block.settings.sets_label }}</a>
+            <a href="{{ collection.url }}?view=todas" class="theme-pill{% if all_active %} is-active{% endif %}">{{ block.settings.all_label | default: 'Todas' }}</a>
+          {%- else -%}
+            <a href="{{ collection.url }}" class="theme-pill{% if all_active %} is-active{% endif %}">{{ block.settings.all_label | default: 'Todas' }}</a>
+            {%- if block.settings.sets_label != blank -%}
+              <a href="{{ collection.url }}?view=sets" class="theme-pill theme-pill--sets{% if template.suffix == 'sets' %} is-active{% endif %}">{{ block.settings.sets_label }}</a>
+            {%- endif -%}
           {%- endif -%}
           {%- assign theme_lines = block.settings.themes | newline_to_br | split: '<br />' -%}
           {%- for line in theme_lines -%}
@@ -78,11 +104,12 @@
         {%- break -%}
       {%- endif -%}
     {%- endfor -%}
-    {%- if template.suffix == 'sets' -%}
+    {%- if show_sets -%}
       {% render 'collection-sets', blocks: section.blocks, collection: collection %}
     {%- else -%}
     {%- paginate collection.products by section.settings.per_page -%}
       <form class="facets" data-facets-form>
+        {%- if template.suffix == 'todas' -%}<input type="hidden" name="view" value="todas">{%- endif -%}
         <div class="facets__filters">
           {%- for filter in collection.filters -%}
             <details>
@@ -206,7 +233,9 @@
           {%- endif -%}
           <div class="load-more__actions">
             {%- if paginate.next -%}
-              <a class="button button--outline" href="{{ paginate.next.url }}" data-load-more-btn>{{ 'collections.load_more' | t }}</a>
+              {%- assign next_url = paginate.next.url -%}
+              {%- if template.suffix == 'todas' -%}{%- unless next_url contains 'view=' -%}{%- assign next_url = next_url | append: '&view=todas' -%}{%- endunless -%}{%- endif -%}
+              <a class="button button--outline" href="{{ next_url }}" data-load-more-btn>{{ 'collections.load_more' | t }}</a>
             {%- endif -%}
             {%- if show_all -%}
               <a class="button" href="{{ all_col.url }}">{{ section.settings.all_label | default: all_col.title }}</a>
@@ -218,6 +247,17 @@
     {%- endif -%}
   </div>
 </section>
+{%- if template.suffix == 'todas' -%}
+<script>
+  // Vista «Todas»: que paginación y quitar filtros sigan en esta vista (sin ?view=todas volverían a los sets)
+  document.querySelectorAll('.facets__active a, .facets a').forEach(function (a) {
+    try {
+      var u = new URL(a.getAttribute('href'), location.href);
+      if (u.pathname.indexOf('{{ collection.url }}') === 0 && !u.searchParams.has('view')) { u.searchParams.set('view', 'todas'); a.setAttribute('href', u.pathname + u.search); }
+    } catch (e) {}
+  });
+</script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -241,6 +281,7 @@
         { "type": "collection", "id": "collection", "label": "Colección" },
         { "type": "text", "id": "all_label", "label": "Texto del primer botón", "default": "Todas" },
         { "type": "text", "id": "sets_label", "label": "Botón «ver por sets»", "info": "Lleva a la vista de sets (plantilla de colección «sets»). Vacío = sin botón", "default": "🧩 Sets de 3" },
+        { "type": "checkbox", "id": "sets_first", "label": "Sets de 3 primero", "default": false, "info": "Al entrar en la colección salen los sets; «Todas» lleva a todas las láminas (plantilla de colección «todas»)." },
         { "type": "textarea", "id": "themes", "label": "Temáticas", "info": "Una por línea: etiqueta|texto. Ej.: tema-bosque|🦊 Animales del bosque. Los productos se marcan con esa etiqueta en Shopify." }
       ]
     },

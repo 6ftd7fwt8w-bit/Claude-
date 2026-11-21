@@ -295,7 +295,8 @@
             "collection": "infantil",
             "all_label": "Todas",
             "sets_label": "🧩 Sets de 3",
-            "themes": "tema-dulces-suenos|🌙 Dulces sueños\ntema-bosque|🦊 Animales del bosque\ntema-reyes|👑 Reyes y princesas\ntema-aventuras|⛵ Mar y aventuras\ntema-frases|😄 Frases con humor\ntema-palabras|✨ Palabras bonitas"
+            "themes": "tema-dulces-suenos|🌙 Dulces sueños\ntema-bosque|🦊 Animales del bosque\ntema-reyes|👑 Reyes y princesas\ntema-aventuras|⛵ Mar y aventuras\ntema-frases|😄 Frases con humor\ntema-palabras|✨ Palabras bonitas",
+            "sets_first": true
           }
         },
         "banner_24": {

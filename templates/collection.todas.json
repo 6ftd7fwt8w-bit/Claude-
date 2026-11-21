@@ -1,0 +1,506 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-collection",
+      "settings": {
+        "show_image": true,
+        "show_description": true,
+        "per_page": 12,
+        "columns": 4,
+        "all_collection": "infantil",
+        "all_label": "Ver toda la colección infantil",
+        "all_handles": "bosque-encantado, frases-con-sonrisa, estrellas-y-suenos"
+      },
+      "blocks": {
+        "banner_1": {
+          "type": "banner",
+          "settings": {
+            "collection": "laminas-personalizadas",
+            "image": "shopify://shop_images/vlh-portada-personalizadas-v4.jpg",
+            "image_mobile": "shopify://shop_images/vlh-portada-personalizadas-movil-v4.jpg",
+            "eyebrow": "Diseñadas a partir de tu foto",
+            "text": "Convertimos tu foto en una ilustración preciosa, cuidando cada detalle y adaptando el diseño con elegancia. Retratos, parejas, familias y mascotas."
+          }
+        },
+        "banner_2": {
+          "type": "banner",
+          "settings": {
+            "collection": "infantil",
+            "image": "shopify://shop_images/vlh-portada-infantil-v7.jpg",
+            "image_mobile": "shopify://shop_images/vlh-portada-infantil-movil-v2.jpg",
+            "eyebrow": "Para soñar despiertos",
+            "text": "Animales tiernos, cielos estrellados y frases que hacen sonreír. Combínalas en sets para su habitación."
+          }
+        },
+        "banner_3": {
+          "type": "banner",
+          "settings": {
+            "collection": "packs-regalo",
+            "image": "shopify://shop_images/vlh-portada-packs-v4.jpg",
+            "image_mobile": "shopify://shop_images/vlh-portada-packs-movil.jpg",
+            "eyebrow": "Listos para regalar",
+            "text": "Creados a mano, con apliques textiles, flores preservadas, mensaje personalizado y la lámina envuelta en papel de seda o kraft texturizado. Listos para abrir y sorprender a lo grande."
+          }
+        },
+        "banner_4": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "La reina de la casa",
+            "photo_product": "lamina-decorativa-infantil-el-rey-de-la-casa-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-la-princesa-del-bosque-vivalahome-copia",
+              "lamina-decorativa-infantil-la-reina-de-la-casa-vivalahome-copia",
+              "lamina-decorativa-infantil-el-rey-de-la-casa-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_5": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "El rey de la casa",
+            "photo_product": "lamina-decorativa-infantil-aqui-se-suena-con-alas-de-hada-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-aqui-se-suena-con-alas-de-hada-vivalahome-copia",
+              "lamina-decorativa-infantil-tesoro-del-mar-vivalahome-copia",
+              "lamina-decorativa-infantil-el-principe-de-los-cuentos-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_6": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Aquí manda la peque",
+            "photo_product": "lamina-decorativa-infantil-que-el-mundo-te-pille-sonando-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-un-reino-de-suenos-vivalahome-copia",
+              "lamina-decorativa-infantil-amigos-del-bosque-vivalahome-copia",
+              "lamina-decorativa-infantil-que-el-mundo-te-pille-sonando-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_7": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Aquí manda el peque",
+            "photo_product": "lamina-decorativa-infantil-no-molestar-creciendo-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-un-reino-de-suenos-vivalahome-copia",
+              "lamina-decorativa-infantil-amigos-del-bosque-vivalahome-copia",
+              "lamina-decorativa-infantil-no-molestar-creciendo-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_8": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Nube de sueños",
+            "photo_product": "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia-1",
+            "products": [
+              "lamina-decorativa-infantil-pequenas-aventuras-grandes-suenos-vivalahome-copia",
+              "lamina-decorativa-infantil-nube-de-suenos-vivalahome-copia",
+              "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia-1"
+            ]
+          }
+        },
+        "banner_9": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Bonito",
+            "photo_product": "lamina-decorativa-infantil-bonita-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-bonita-vivalahome-copia",
+              "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia-1",
+              "lamina-decorativa-infantil-nube-de-suenos-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_10": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Buenas noches, pequeño terremoto",
+            "photo_product": "lamina-decorativa-infantil-duerme-con-los-angelitos-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-duerme-con-los-angelitos-vivalahome-copia",
+              "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia-1",
+              "lamina-decorativa-infantil-nube-de-suenos-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_11": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Guardián de los sueños",
+            "photo_product": "lamina-decorativa-infantil-buenas-noches-pequeno-terremoto-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-guardian-de-los-suenos-vivalahome-copia",
+              "lamina-decorativa-infantil-buenas-noches-pequeno-terremoto-vivalahome-copia",
+              "lamina-decorativa-infantil-un-pequeno-mundo-por-descubrir-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_12": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Que el mundo te pille soñando",
+            "photo_product": "lamina-decorativa-infantil-nivel-de-energia-infinito-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-nivel-de-energia-infinito-vivalahome-copia",
+              "lamina-decorativa-infantil-buenas-noches-pequeno-terremoto-vivalahome-copia",
+              "lamina-decorativa-infantil-guardian-de-los-suenos-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_13": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Sueños en construcción",
+            "photo_product": "lamina-decorativa-infantil-hoy-puede-pasar-de-todo-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-hoy-puede-pasar-de-todo-vivalahome-copia",
+              "lamina-decorativa-infantil-buenas-noches-pequeno-terremoto-vivalahome-copia",
+              "lamina-decorativa-infantil-guardian-de-los-suenos-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_14": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Pequeña gran soñadora",
+            "photo_product": "lamina-decorativa-infantil-suenos-con-alas-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-suenos-con-alas-vivalahome-copia",
+              "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia",
+              "lamina-decorativa-infantil-aqui-manda-el-peque-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_15": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "La estrella más brillante",
+            "photo_product": "lamina-decorativa-infantil-la-estrella-mas-brillante-eres-tu-vivalahome",
+            "products": [
+              "lamina-decorativa-infantil-la-estrella-mas-brillante-eres-tu-vivalahome",
+              "lamina-decorativa-infantil-pequeno-gran-sonador-vivalahome-copia",
+              "lamina-decorativa-infantil-el-castillo-de-los-suenos-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_16": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Más abrazos, por favor",
+            "photo_product": "lamina-decorativa-infantil-suena-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-la-luz-que-te-guia-vivalahome-copia",
+              "lamina-decorativa-infantil-cucu-te-veo-vivalahome-copia",
+              "lamina-decorativa-infantil-suena-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_17": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Amigos del bosque",
+            "photo_product": "lamina-decorativa-infantil-mi-pequeno-hogar-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-cielo-de-colores-vivalahome-copia",
+              "lamina-decorativa-infantil-mi-pequeno-hogar-vivalahome-copia",
+              "lamina-decorativa-infantil-el-sueno-del-bosque-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_18": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Aventuras en el mar",
+            "photo_product": "lamina-decorativa-infantil-navegando-hacia-mis-suenos-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-aventuras-en-el-mar-vivalahome-copia",
+              "lamina-decorativa-infantil-navegando-hacia-mis-suenos-vivalahome-copia",
+              "lamina-decorativa-infantil-estrellita-de-mi-vida-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_19": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Rumbo a la aventura",
+            "photo_product": "lamina-decorativa-infantil-dulce-lunita-vivalahome-copia-1",
+            "products": [
+              "lamina-decorativa-infantil-rumbo-a-la-aventura-vivalahome-copia",
+              "lamina-decorativa-infantil-dulce-lunita-vivalahome-copia-1",
+              "lamina-decorativa-infantil-hola-caracola-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_20": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Pequeño gran lector",
+            "photo_product": "lamina-decorativa-infantil-la-estrella-mas-brillante-eres-tu-vivalahome-copia-1",
+            "products": [
+              "lamina-decorativa-infantil-donde-crecen-las-historias-vivalahome-copia",
+              "lamina-decorativa-infantil-persiguiendo-estrellas-vivalahome-copia",
+              "lamina-decorativa-infantil-la-estrella-mas-brillante-eres-tu-vivalahome-copia-1"
+            ]
+          }
+        },
+        "banner_21": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Pequeño humano, grandes planes",
+            "photo_product": "lamina-decorativa-infantil-aqui-manda-la-peque-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-aqui-manda-la-peque-vivalahome-copia",
+              "lamina-decorativa-infantil-donde-crecen-las-historias-vivalahome-copia",
+              "lamina-decorativa-infantil-persiguiendo-estrellas-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_22": {
+          "type": "set",
+          "settings": {
+            "collection": "infantil",
+            "name": "Sueña, ríe, salta",
+            "photo_product": "lamina-decorativa-infantil-rie-vivalahome-copia",
+            "products": [
+              "lamina-decorativa-infantil-rie-vivalahome-copia",
+              "lamina-decorativa-infantil-salta-vivalahome-copia",
+              "lamina-decorativa-infantil-mi-planeta-mis-reglas-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_23": {
+          "type": "themes",
+          "settings": {
+            "collection": "infantil",
+            "all_label": "Todas",
+            "sets_label": "🧩 Sets de 3",
+            "themes": "tema-dulces-suenos|🌙 Dulces sueños\ntema-bosque|🦊 Animales del bosque\ntema-reyes|👑 Reyes y princesas\ntema-aventuras|⛵ Mar y aventuras\ntema-frases|😄 Frases con humor\ntema-palabras|✨ Palabras bonitas",
+            "sets_first": true
+          }
+        },
+        "banner_24": {
+          "type": "featured",
+          "settings": {
+            "collection": "laminas-personalizadas",
+            "label": "Superventas",
+            "products": [
+              "ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales",
+              "sin-titulo-28ago_16-34-27"
+            ]
+          }
+        },
+        "banner_25": {
+          "type": "featured",
+          "settings": {
+            "collection": "infantil",
+            "label": "Superventas",
+            "products": [
+              "lamina-decorativa-infantil-bonito-vivalahome-copia",
+              "lamina-decorativa-infantil-el-sueno-del-bosque-vivalahome-copia",
+              "lamina-decorativa-infantil-dulce-lunita-vivalahome-copia-1",
+              "lamina-decorativa-infantil-el-castillo-de-los-suenos-vivalahome-copia"
+            ]
+          }
+        },
+        "banner_26": {
+          "type": "featured",
+          "settings": {
+            "collection": "packs-regalo",
+            "label": "Superventas",
+            "products": [
+              "vlh-extra-pack-valentina"
+            ]
+          }
+        }
+      },
+      "block_order": [
+        "banner_1",
+        "banner_2",
+        "banner_3",
+        "banner_4",
+        "banner_5",
+        "banner_6",
+        "banner_7",
+        "banner_8",
+        "banner_9",
+        "banner_10",
+        "banner_11",
+        "banner_12",
+        "banner_13",
+        "banner_14",
+        "banner_15",
+        "banner_16",
+        "banner_17",
+        "banner_18",
+        "banner_19",
+        "banner_20",
+        "banner_21",
+        "banner_22",
+        "banner_23",
+        "banner_24",
+        "banner_25",
+        "banner_26"
+      ]
+    },
+    "instagram": {
+      "type": "instagram-gallery",
+      "settings": {
+        "eyebrow": "@vivalahome.store",
+        "title": "Visto en Instagram",
+        "subtitle": "Son vuestras fotos y vídeos: así lucen nuestras ilustraciones cuando llegan a vuestras manos. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
+        "instagram_url": "https://www.instagram.com/vivalahome.store",
+        "columns": 6,
+        "background": "default"
+      },
+      "blocks": {
+        "foto_1": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/ECC08481-A155-4C38-A50E-1141BC671330.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3850372147470668852&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_2": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/094123fe66084a249edf742f5ce787af.mov",
+            "enlace": "https://www.instagram.com/reel/DWofTakDKy5/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_3": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/0cbc20e0-5b71-4707-bb77-adedcb1732ac.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3954772933400993938&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_4": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/c1295c5b56644f4283209856fd3099ab.mov",
+            "enlace": "https://www.instagram.com/reel/Dau__OURJk4/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_5": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/065453a5-68b1-4725-aa49-d760712f6c4a.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3953335224192736842&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_6": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/c90e1b7ef1814b45b304f81d42446219.mov",
+            "enlace": "https://www.instagram.com/reel/DcEPTv1AcD9/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_7": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/E8722423-0E60-4CD8-924B-B20D3A122948.jpg",
+            "enlace": "https://www.instagram.com/p/DZPvz9QjF9v/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_8": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/copy_7B5855E7-03B1-476E-A488-B95310A0410B.mov",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3854125653239287334&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_9": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/855F268F-0713-41B5-B8E6-A871AFE879AD.jpg",
+            "enlace": "https://www.instagram.com/p/DaFyMQpjGQk/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_10": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/B88930C7-F90A-4842-B898-5E1F8E3CFC89.mov",
+            "enlace": "https://www.instagram.com/reel/DbL_t0SxD3B/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_11": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/297A8ADB-988A-40B9-8628-12A70FB21197.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3849845511910346280&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_12": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/8a926983dd1048d8841c62d2e520031e.mov",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3909863916348153291&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_13": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/F95434CA-0879-4787-99D9-8231E6A18040.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3909867111680528825&igsi=enVzZWdqbnR2ZnF6"
+          }
+        },
+        "foto_14": {
+          "type": "foto",
+          "settings": {
+            "video": "shopify://files/videos/lv_0_20260214101144.mov",
+            "enlace": "https://www.instagram.com/reel/DU6TtrkCNR6/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+          }
+        },
+        "foto_15": {
+          "type": "foto",
+          "settings": {
+            "imagen": "shopify://shop_images/431da1f7-d3e7-43d8-8d8d-6f2262f6fecb.jpg",
+            "enlace": "https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MDg4ODIxNTgzOTM2ODMw?story_media_id=3982493473076688679&stkn=enVzZWdqbnR2ZnF6"
+          }
+        }
+      },
+      "block_order": [
+        "foto_1",
+        "foto_2",
+        "foto_3",
+        "foto_4",
+        "foto_5",
+        "foto_6",
+        "foto_7",
+        "foto_8",
+        "foto_9",
+        "foto_10",
+        "foto_11",
+        "foto_12",
+        "foto_13",
+        "foto_14",
+        "foto_15"
+      ]
+    }
+  },
+  "order": [
+    "main",
+    "instagram"
+  ]
+}
