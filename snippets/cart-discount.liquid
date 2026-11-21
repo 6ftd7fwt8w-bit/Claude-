@@ -35,7 +35,10 @@
     {%- for c in codes_list -%}
       <p class="cart-perk">
         <span class="cart-perk__star" aria-hidden="true">✦</span>
-        {%- if c == w_code -%}
+        {%- assign p_code = settings.pack_code | strip | upcase -%}
+        {%- if p_code != blank and c == p_code -%}
+          <span><b>Black Friday</b> −{{ settings.pack_percent }}&nbsp;% en tu set de 3 láminas</span>
+        {%- elsif c == w_code -%}
           {%- if settings.welcome_bf -%}
             <span><b>Black Friday</b> −{{ settings.welcome_percent }}&nbsp;% aplicado · hasta el {{ settings.welcome_end | date: '%-d/%-m' }}</span>
           {%- else -%}

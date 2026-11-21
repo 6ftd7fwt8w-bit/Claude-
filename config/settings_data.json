@@ -63,7 +63,11 @@
         "settings": {}
       }
     },
-    "welcome_bf": true
+    "welcome_bf": true,
+    "pack_code": "BLACKFRIDAYSET",
+    "pack_percent": 10,
+    "pack_end": "2026-11-30",
+    "pack_bf": true
   },
   "presets": {}
 }

@@ -6,10 +6,16 @@
   {%- comment -%} "Hacen pack": recomendaciones complementarias de Search & Discovery {%- endcomment -%}
   {%- liquid
     assign in_cross = false
-    if settings.cross_code != blank and settings.cross_collection != blank
+    assign in_pack = false
+    if settings.cross_collection != blank
       for c in product.collections
         if c.handle == settings.cross_collection.handle
-          assign in_cross = true
+          if settings.cross_code != blank
+            assign in_cross = true
+          endif
+          if settings.pack_code != blank
+            assign in_pack = true
+          endif
         endif
       endfor
     endif
@@ -47,10 +53,11 @@
                 <p class="pack__offer-code">{{ 'products.pack_code_note' | t: code: settings.cross_code }}</p>
               </div>
             {%- endif -%}
+            {%- if in_pack and in_cross == false -%}{% render 'pack-coupon' %}{%- endif -%}
             <p class="pack__intro" data-pack-intro>{{ 'products.pack_intro' | t }}</p>
             <div class="pack__lines" data-pack-lines hidden>
               <p class="pack__row" data-pack-sub-row hidden><span>{{ 'products.pack_subtotal' | t }}</span><span data-pack-subtotal></span></p>
-              {%- if in_cross -%}
+              {%- if in_cross or in_pack -%}
                 <p class="pack__row pack__row--save" data-pack-save-row hidden><span data-pack-save-label></span><span data-pack-save></span></p>
               {%- endif -%}
               <p class="pack__row pack__row--total"><span>{{ 'products.pack_total' | t }} · <span data-pack-count></span></span><strong data-pack-total></strong></p>

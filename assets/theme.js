@@ -446,7 +446,60 @@
   welcomeExpire();
   setInterval(welcomeExpire, 60000);
 
-  /* Sets de 3 láminas: panel con tamaño, total con 3x2 y «Añadir las 3» */
+  /* Cupón del descuento en sets de 3 (snippet pack-coupon): la casilla lo activa hasta la fecha de fin;
+     el panel de cada set y «Combínala con…» calculan el precio y añaden el código al comprar las 3. */
+  var packCoupon = (function () {
+    var els = $$('[data-pack-coupon]');
+    if (!els.length) return null;
+    var code = els[0].getAttribute('data-code'), pct = parseInt(els[0].getAttribute('data-percent'), 10) || 10;
+    var endAttr = els[0].getAttribute('data-end');
+    var end = endAttr ? new Date(endAttr + 'T23:59:59+01:00').getTime() : 0;
+    var key = 'vlh_promo_' + String(code).toUpperCase();
+    var api = { code: code, pct: pct, listeners: [] };
+    api.on = function () {
+      try { var w = JSON.parse(localStorage.getItem(key)) || {}; return w.status === 'accepted' && w.expires > Date.now(); } catch (e) { return false; }
+    };
+    api.off = function (cents) { return Math.round(cents * pct / 100); };
+    // el._full: importe de las láminas de la oferta · el._need: cuántas faltan para llegar a 3
+    api.render = function (el) {
+      var on = api.on(), need = el._need || 0, full = el._full || 0;
+      el.classList.toggle('is-on', on);
+      var chk = $('[data-pack-check]', el); chk.checked = on; chk.disabled = on;
+      var title = $('[data-pc-title]', el), price = $('[data-pc-price]', el), small = $('[data-pc-small]', el);
+      if (on) {
+        title.textContent = need ? '¡Black Friday activado!' : '¡Black Friday activado! Te ahorras ' + formatMoney(api.off(full));
+        price.innerHTML = need ? 'Elige ' + need + (need === 1 ? ' lámina más' : ' láminas más') + ' para conseguirlo' : '';
+        small.textContent = 'Se aplica al añadir las 3 a tu cesta';
+      } else {
+        title.textContent = '−' + pct + ' % en tu set de 3 láminas';
+        price.innerHTML = need ? 'Elige ' + need + (need === 1 ? ' lámina más' : ' láminas más') + ' para conseguirlo'
+          : (full ? 'Pagas <b>' + formatMoney(full - api.off(full)) + '</b> en lugar de <s>' + formatMoney(full) + '</s>' : '');
+        small.textContent = 'Marca la casilla y se aplica solo, sin códigos';
+      }
+    };
+    api.activate = function () {
+      try { localStorage.setItem(key, JSON.stringify({ status: 'accepted', at: Date.now(), expires: end || Date.now() + 864e5, code: code })); } catch (e) {}
+      api.listeners.forEach(function (fn) { fn(); });
+      $$('[data-pack-coupon]').forEach(api.render);
+    };
+    document.addEventListener('change', function (e) {
+      if (e.target.matches && e.target.matches('[data-pack-check]') && e.target.checked && !api.on()) api.activate();
+    });
+    if (end) {
+      var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      var tick = function () {
+        var ms = end - Date.now();
+        if (ms <= 0) { $$('[data-pack-coupon]').forEach(function (el) { el.hidden = true; }); clearInterval(tid); return; }
+        var d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, sec = Math.floor(ms / 1e3) % 60;
+        var html = '<span>⏳ La oferta termina en</span>' + (d ? '<b>' + d + '<small>d</small></b>' : '') + '<b>' + pad(h) + '<small>h</small></b><b>' + pad(m) + '<small>m</small></b><b>' + pad(sec) + '<small>s</small></b>';
+        $$('[data-pc-timer]').forEach(function (t) { t.innerHTML = html; });
+      };
+      var tid = setInterval(tick, 1000); tick();
+    }
+    return api;
+  })();
+
+  /* Sets de 3 láminas: panel con tamaño, total con 3x2 (o el cupón del set) y «Añadir las 3» */
   (function () {
     var sheets = $$('[data-set-sheet]');
     if (!sheets.length) return;
@@ -460,9 +513,14 @@
         it.classList.toggle('is-free', free);
         el.textContent = free ? 'GRATIS' : formatMoney(prices[i]);
       });
-      $('[data-set-old]', sh).textContent = hasCode ? formatMoney(total) : '';
-      $('[data-set-total]', sh).textContent = formatMoney(hasCode ? total - min : total);
+      var packEl = $('[data-pack-coupon]', sh);
+      var packOn = !hasCode && !!(packCoupon && packEl && packCoupon.on() && items.length >= 3);
+      sh._packOn = packOn;
+      if (packCoupon && packEl) { packEl._full = total; packEl._need = Math.max(0, 3 - items.length); packCoupon.render(packEl); }
+      $('[data-set-old]', sh).textContent = hasCode || packOn ? formatMoney(total) : '';
+      $('[data-set-total]', sh).textContent = formatMoney(hasCode ? total - min : packOn ? total - packCoupon.off(total) : total);
     };
+    if (packCoupon) packCoupon.listeners.push(function () { sheets.forEach(paint); });
     sheets.forEach(function (sh) {
       paint(sh);
       var setItemSize = function (it, size) {
@@ -495,7 +553,7 @@
         add.disabled = true; msg.hidden = true;
         fetch((theme.routes.cartAdd || '/cart/add') + '.js', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ items: items }) })
           .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-          .then(function () { var code = sh.getAttribute('data-code'); return code ? addCode(code).catch(function () {}) : null; })
+          .then(function () { var code = sh.getAttribute('data-code') || (sh._packOn ? packCoupon.code : ''); return code ? addCode(code).catch(function () {}) : null; })
           .then(function () { close(); add.disabled = false; if (window.vivaCartAdded) window.vivaCartAdded(); })
           .catch(function () { add.disabled = false; msg.hidden = false; msg.textContent = 'No se ha podido añadir el set. Inténtalo de nuevo.'; });
       });
@@ -811,7 +869,7 @@
       var want = sel ? parseInt(sel.value, 10) : null;
       return vs.filter(function (v) { return v.a && v.id === want; })[0] || vs.filter(function (v) { return v.a; })[0] || null;
     };
-    var saving = 0;
+    var saving = 0, packOn = false;
     var show = function (sel, on) { var el = q(sel); if (el) el.hidden = !on; };
     var update = function () {
       var chosen = $$('[data-pack-item]', grid).filter(function (i) { return i.classList.contains('is-on'); });
@@ -822,11 +880,17 @@
         subtotal += v.p; n++;
         if (item.getAttribute('data-cross') === 'true') crossPrices.push(v.p);
       });
-      // Compra 2 y llévate 1: gratis la más barata de cada grupo de 3
+      // Compra 2 y llévate 1 (solo con el código 3x2): gratis la más barata de cada grupo de 3
       crossPrices.sort(function (x, y) { return x - y; });
-      var free = Math.floor(crossPrices.length / 3);
+      var free = btn.getAttribute('data-code') ? Math.floor(crossPrices.length / 3) : 0;
       saving = 0;
       for (var i = 0; i < free; i++) saving += crossPrices[i];
+      // Cupón del set de 3: −% sobre las láminas de la oferta cuando hay 3 o más
+      var crossSum = crossPrices.reduce(function (a, b) { return a + b; }, 0);
+      var packEl = $('[data-pack-coupon]', sec);
+      packOn = !free && !!(packCoupon && packEl && packCoupon.on() && crossPrices.length >= 3);
+      if (packCoupon && packEl) { packEl._full = crossSum; packEl._need = Math.max(0, 3 - crossPrices.length); packCoupon.render(packEl); }
+      if (packOn) saving = packCoupon.off(crossSum);
       var extra = n > 1;
       show('[data-pack-intro]', !extra);
       show('[data-pack-lines]', extra);
@@ -846,7 +910,10 @@
       if (!extra) return;
       q('[data-pack-count]').textContent = btn.getAttribute('data-count-label').replace('[n]', n);
       q('[data-pack-subtotal]').textContent = money(subtotal);
-      if (saving > 0) {
+      if (saving > 0 && packOn) {
+        q('[data-pack-save-label]').textContent = 'Black Friday −' + packCoupon.pct + ' %';
+        q('[data-pack-save]').textContent = '−' + money(saving);
+      } else if (saving > 0) {
         q('[data-pack-save-label]').textContent = btn.getAttribute('data-save-label').replace('[n]', free);
         q('[data-pack-save]').textContent = '−' + money(saving);
       }
@@ -863,6 +930,7 @@
       update();
     });
     sec.addEventListener('change', function (e) { if (e.target.matches('[data-pack-variant]')) update(); });
+    if (packCoupon) packCoupon.listeners.push(update);
     btn.addEventListener('click', function () {
       var items = $$('[data-pack-item]', grid).filter(function (i) { return i.classList.contains('is-on'); })
         .map(function (i) { var v = pick(i); return v ? { id: v.id, quantity: 1 } : null; }).filter(Boolean);
@@ -873,7 +941,7 @@
         method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ items: items })
       }).then(function (r) { if (!r.ok) throw new Error('add'); return r.json(); })
-        .then(function () { return saving > 0 && code ? addCode(code).catch(function () {}) : null; })
+        .then(function () { var c = packOn ? packCoupon.code : code; return saving > 0 && c ? addCode(c).catch(function () {}) : null; })
         .then(function () { btn.disabled = false; window.vivaCartAdded(); })
         .catch(function () { btn.disabled = false; toast(theme.strings.unavailable); });
     });

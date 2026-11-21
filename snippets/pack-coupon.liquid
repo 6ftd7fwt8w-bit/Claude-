@@ -1,0 +1,35 @@
+{%- comment -%}
+  Cupón del descuento en sets de 3 láminas (ajustes «pack_*»): casilla que lo activa; theme.js calcula
+  el precio, la cuenta atrás y añade el código a la cesta al comprar las 3.
+{%- endcomment -%}
+{%- liquid
+  assign pc_code = settings.pack_code | strip | upcase
+  assign pc_ok = false
+  if pc_code != blank
+    assign pc_ok = true
+    if settings.pack_end != blank
+      assign pc_today = 'now' | date: '%Y%m%d' | plus: 0
+      assign pc_last = settings.pack_end | remove: '-' | plus: 0
+      if pc_today > pc_last
+        assign pc_ok = false
+      endif
+    endif
+  endif
+  assign pc_pct = settings.pack_percent | default: 10
+-%}
+{%- if pc_ok -%}
+  <div class="vp-coupon{% if settings.pack_bf %} vp-coupon--bf{% endif %}" data-pack-coupon data-code="{{ pc_code | escape }}" data-percent="{{ pc_pct }}" data-end="{{ settings.pack_end | strip }}">
+    <label class="vp-coupon__ticket">
+      <input type="checkbox" class="vp-coupon__input" data-pack-check>
+      <span class="vp-coupon__box" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      <span class="vp-coupon__body">
+        <span class="vp-coupon__kicker">{%- if settings.pack_bf -%}<i class="vp-coupon__live" aria-hidden="true"></i>Black Friday{% if settings.pack_end != blank %} · hasta el {{ settings.pack_end | date: '%-d/%-m' }}{% endif %}{%- else -%}🎁 Oferta sets de 3{%- endif -%}</span>
+        <span class="vp-coupon__title" data-pc-title>−{{ pc_pct }}&nbsp;% en tu set de 3 láminas</span>
+        <span class="vp-coupon__price" data-pc-price></span>
+        {%- if settings.pack_end != blank -%}<span class="vp-coupon__timer" data-pc-timer></span>{%- endif -%}
+        <span class="vp-coupon__small" data-pc-small>Marca la casilla y se aplica solo, sin códigos</span>
+      </span>
+      <span class="vp-coupon__stamp" aria-hidden="true">−{{ pc_pct }}<small>%</small></span>
+    </label>
+  </div>
+{%- endif -%}

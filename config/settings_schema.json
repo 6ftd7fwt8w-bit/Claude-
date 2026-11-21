@@ -316,6 +316,42 @@
       },
       {
         "type": "header",
+        "content": "Descuento en sets de 3 láminas"
+      },
+      {
+        "type": "paragraph",
+        "content": "Cupón con casilla en el panel de cada set y en «Combínala con…» de las fichas: el % se aplica al llevar 3 láminas de la colección de la oferta cruzada (infantil). El código debe existir en Descuentos de Shopify con mínimo 3 artículos."
+      },
+      {
+        "type": "text",
+        "id": "pack_code",
+        "label": "Código del descuento",
+        "info": "Vacío = sin cupón"
+      },
+      {
+        "type": "range",
+        "id": "pack_percent",
+        "label": "Porcentaje",
+        "min": 5,
+        "max": 50,
+        "step": 5,
+        "unit": "%",
+        "default": 10
+      },
+      {
+        "type": "text",
+        "id": "pack_end",
+        "label": "Último día (AAAA-MM-DD)",
+        "info": "Al día siguiente el cupón desaparece solo. Vacío = sin fecha."
+      },
+      {
+        "type": "checkbox",
+        "id": "pack_bf",
+        "label": "Estilo Black Friday (negro y dorado, con cuenta atrás)",
+        "default": false
+      },
+      {
+        "type": "header",
         "content": "Oferta cruzada en el carrito"
       },
       {

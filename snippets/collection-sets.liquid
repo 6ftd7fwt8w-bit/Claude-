@@ -96,6 +96,7 @@
                   </li>
                 {%- endfor -%}
               </ul>
+              {%- if set_code == blank -%}{% render 'pack-coupon' %}{%- endif -%}
               {%- if set_code != blank -%}
                 <p class="set-sheet__deal"><span aria-hidden="true">🎉</span> <span>¡Enhorabuena! Con el código <b>{{ set_code }}</b> la lámina más barata te sale <b>gratis</b>. Se aplica automáticamente al añadir el set.</span></p>
               {%- endif -%}
