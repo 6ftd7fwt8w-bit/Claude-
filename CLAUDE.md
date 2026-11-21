@@ -48,6 +48,11 @@
 - Después del 30/11 la barra Black Friday y el cupón se ocultan solos. Para volver a HOLA10: welcome_code HOLA10, percent 10, welcome_end vacío, welcome_bf desactivado y reactivar HOLA10 en Shopify.
 - «Quiénes somos» (home): «Dos apasionados de la informática y el arte (lo sabemos… ¡qué pareja más rara!)…» (sin decir quién es qué).
 
+## Black Friday: 10 % en sets de 3 láminas infantiles (21/11, borrador «Black Friday»)
+- Código BLACKFRIDAYSET (DiscountCodeNode 2272861454409): 10 % en la colección infantil con mínimo 3 artículos (cuenta solo las infantiles: con 2 no se aplica), hasta el 30/11 23:59, se combina con descuentos de producto (BLACKFRIDAY15) y envío. Shopify redondea el descuento lámina a lámina hacia abajo (3 × 17,95 → 48,48 €); theme.js (packCoupon.off) calcula igual.
+- Tema: ajustes nuevos pack_code (BLACKFRIDAYSET), pack_percent (10), pack_end (2026-11-30), pack_bf (estilo Black Friday). Snippet pack-coupon (mismo cupón negro y dorado con casilla y cuenta atrás que el configurador; CSS .vp-coupon en base.css), en el panel de cada set (collection-sets, si no hay código 3x2) y en «Combínala con…» de las fichas infantiles (product-recommendations, intent complementary). La casilla guarda el estado en localStorage «vlh_promo_BLACKFRIDAYSET» y, al añadir 3 láminas, añade el código a la cesta. Carrito: «Black Friday −10 % en tu set de 3 láminas». Desaparece solo el 1/12.
+- Arreglado: «Combínala con…» calculaba la lámina gratis del 3x2 aunque no hubiera código (ahora solo con cross_code).
+
 ## Colección infantil: sets de 3 primero (21/11, borrador «Black Friday»)
 - Checkbox nuevo «Sets de 3 primero» (sets_first) en el bloque de temáticas de main-collection, activado para infantil: /collections/infantil (sin temática) enseña los sets (bloques «set» de la plantilla collection.json) con la pastilla «🧩 Sets de 3» activa y primera; «Todas» lleva a ?view=todas (templates/collection.todas.json = copia de collection.json) con la cuadrícula normal; las temáticas (/collections/infantil/tema-…) siguen filtrando. En «todas» el «ver más» y los filtros conservan view=todas.
 - collection.json, collection.todas.json y collection.sets.json son iguales (copiados de la versión publicada del 21/11, la dueña había cambiado sets): si se cambia un set, cambiarlo en las tres o al menos en collection.json (la que enseña los sets).
