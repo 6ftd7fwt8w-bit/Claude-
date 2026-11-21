@@ -44,10 +44,10 @@
         <button type="button" class="set-card" data-set-open="set-{{ block.id }}" {{ block.shopify_attributes }}>
           <span class="set-card__media">
             {{ photo | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 990px) 25vw, 50vw', alt: block.settings.name }}
-            <span class="set-card__badge">3x2</span>
+            {%- if set_code != blank -%}<span class="set-card__badge">3x2</span>{%- endif -%}
           </span>
           <span class="set-card__name">Set «{{ block.settings.name }}»</span>
-          <span class="set-card__price">3 láminas · <s>{{ set_total | money }}</s> <b>{{ set_pay | money }}</b></span>
+          <span class="set-card__price">3 láminas · {% if set_code != blank %}<s>{{ set_total | money }}</s> <b>{{ set_pay | money }}</b>{% else %}<b>{{ set_total | money }}</b>{% endif %}</span>
         </button>
 
         <dialog class="set-sheet" id="set-{{ block.id }}" data-set-sheet data-code="{{ set_code | escape }}">
