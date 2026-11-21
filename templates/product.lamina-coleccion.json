@@ -41,8 +41,8 @@
           "type": "description",
           "settings": {
             "collapsible": true,
-            "heading": "Descripción",
-            "open": true
+            "heading": "Descripción y cómo trabajamos",
+            "open": false
           }
         },
         "block_7": {

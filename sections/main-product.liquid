@@ -230,6 +230,7 @@
                   {%- endif -%}
                   <p class="form-message form-message--error" data-form-error hidden></p>
                 {%- endform -%}
+                {% render 'pack-nudge', product: product %}
               </div>
 
             {%- when 'personalization_form' -%}

@@ -1,0 +1,27 @@
+{%- comment -%}
+  Aviso bajo «Añadir al carrito» en las láminas de la colección de la oferta: lleva al carrusel
+  «Combínala con…» para completar el set de 3 con el descuento (ajustes pack_*).
+{%- endcomment -%}
+{%- liquid
+  assign pn_ok = false
+  if settings.pack_code != blank and settings.cross_code == blank and settings.cross_collection != blank
+    assign pn_handles = product.collections | map: 'handle'
+    if pn_handles contains settings.cross_collection.handle
+      assign pn_ok = true
+    endif
+    if settings.pack_end != blank
+      assign pn_today = 'now' | date: '%Y%m%d' | plus: 0
+      assign pn_last = settings.pack_end | remove: '-' | plus: 0
+      if pn_today > pn_last
+        assign pn_ok = false
+      endif
+    endif
+  endif
+-%}
+{%- if pn_ok -%}
+  <a href="#combinala" class="pack-nudge{% if settings.pack_bf %} pack-nudge--bf{% endif %}" data-pack-nudge>
+    <span class="pack-nudge__tag">{% if settings.pack_bf %}Black Friday{% else %}Oferta{% endif %}</span>
+    <span class="pack-nudge__text">Añade 2 láminas más y llévate un <b>{{ settings.pack_percent }}&nbsp;% de descuento</b></span>
+    <span class="pack-nudge__arrow" aria-hidden="true">↓</span>
+  </a>
+{%- endif -%}

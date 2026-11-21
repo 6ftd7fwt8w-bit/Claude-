@@ -1445,3 +1445,15 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .ship-note__pill b { font-weight: 700; letter-spacing: .04em; }
 .ship-note__iva { font-size: 13px; color: var(--color-muted); }
 .set-sheet .ship-note { justify-content: flex-end; margin: 8px 0 10px; }
+
+/* Aviso «añade 2 más» bajo el botón de las láminas (snippet pack-nudge) */
+.pack-nudge { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 9px 12px; border-radius: 10px; border: 1px dashed #c9a24f; background: #fbf6ea; color: #2C2218; font-size: 13.5px; line-height: 1.35; text-decoration: none; }
+.pack-nudge__tag { flex: none; padding: 3px 8px; border-radius: 999px; background: #231F1C; color: #f2d16b; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.pack-nudge__text { flex: 1; min-width: 0; }
+.pack-nudge__text b { font-weight: 700; }
+.pack-nudge__arrow { flex: none; font-size: 16px; transition: transform .2s ease; }
+.pack-nudge:hover .pack-nudge__arrow { transform: translateY(2px); }
+.pack-nudge--bf { background: #15110d; border-color: #d8b45a; color: #e9e1d4; }
+.pack-nudge--bf .pack-nudge__tag { background: linear-gradient(135deg, #f7dc85, #c9a24f); color: #15110d; }
+.pack-nudge--bf .pack-nudge__text b { color: #f2d16b; }
+.pack-nudge--bf .pack-nudge__arrow { color: #f2d16b; }

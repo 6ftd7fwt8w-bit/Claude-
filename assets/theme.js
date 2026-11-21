@@ -509,6 +509,20 @@
     return api;
   })();
 
+  /* «Añade 2 láminas más»: baja al carrusel «Combínala con…» (sale cuando cargan las recomendaciones) */
+  document.addEventListener('click', function (e) {
+    var nudge = e.target.closest && e.target.closest('[data-pack-nudge]');
+    if (!nudge) return;
+    e.preventDefault();
+    var tries = 0;
+    var go = function () {
+      var recs = document.querySelector('[data-pack-recs]');
+      if (recs && !recs.hidden) { recs.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+      if (++tries < 15) setTimeout(go, 200);
+    };
+    go();
+  });
+
   /* Sets de 3 láminas: panel con tamaño, total con 3x2 (o el cupón del set) y «Añadir las 3» */
   (function () {
     var sheets = $$('[data-set-sheet]');
