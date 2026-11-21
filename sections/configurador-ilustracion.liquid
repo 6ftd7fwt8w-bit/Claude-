@@ -271,7 +271,7 @@
               <span class="cfg__total-label">Total</span>
               <span class="cfg__amounts"><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong><em class="cfg__off" data-cfg-off hidden></em></span>
             </div>
-            <p class="cfg__envio" id="vlh-envio">IVA incluido · Envío gratis{% if settings.free_shipping_zone != blank %} ({{ settings.free_shipping_zone }}){% endif %}</p>
+            <p class="cfg__envio" id="vlh-envio"><span class="cfg__ship"><span aria-hidden="true">🚚</span> Envío <b>GRATIS</b> a toda la {{ settings.free_shipping_zone | default: 'península' | downcase }}</span><span class="cfg__iva">IVA incluido</span></p>
           </div>
           <p class="cfg__error" id="vlh-error" data-cfg-error role="alert" hidden></p>
           <button type="submit" class="button button--full cfg__submit" data-cfg-submit>Añadir al carrito</button>
@@ -338,7 +338,7 @@
         <span class="cfg-bar__what" data-bar-what></span>
         <span class="cfg-bar__price"><b data-bar-price></b><em class="cfg__off" data-bar-off hidden></em></span>
         <s class="cfg-bar__old" data-bar-old hidden></s>
-        <span class="cfg-bar__rev">✓ Revisión incluida</span>
+        <span class="cfg-bar__tags"><span class="cfg-bar__rev">✓ Revisión incluida</span><span class="cfg-bar__rev cfg-bar__ship">🚚 Envío gratis</span></span>
       </span>
       <button type="button" class="cfg-bar__btn" data-bar-add tabindex="-1">Añadir al carrito</button>
     </div>
@@ -557,6 +557,13 @@
   .cfg-bar__price .cfg__off { font-size: 13.5px; padding: 2px 8px; white-space: nowrap; }
   .cfg-bar__old { font-size: 14.5px; color: #a8a096; }
   .cfg-bar__old[hidden] { display: none; }
+  .cfg-bar__tags { display: flex; gap: 6px; align-self: flex-start; }
+  .cfg-bar__ship { background: #231F1C !important; color: #fff !important; }
+  @media (max-width: 749px) { .cfg-bar__ship { display: none !important; } }
+  .cfg__checkout .cfg__envio { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px 10px; }
+  .cfg__ship { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: #e3f1e0; border: 1px solid #b9d6b2; color: #24522d; font-size: 14px; }
+  .cfg__ship b { font-weight: 700; letter-spacing: .04em; }
+  .cfg__iva { font-size: 13px; color: var(--color-muted); }
   .cfg-bar__rev { display: inline-flex; align-self: flex-start; margin-top: 3px; padding: 2px 8px; border-radius: 999px; background: #e3f1e0; color: #2f6b3a; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
   .cfg-bar__btn { flex: none; min-height: 48px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--color-text); color: #fff; font: inherit; font-size: 15.5px; font-weight: 600; letter-spacing: .02em; cursor: pointer; box-shadow: 0 4px 12px rgba(35,31,28,.18); }
   @media (max-width: 380px) { .cfg-bar__btn { padding: 0 14px; font-size: 13px; } .cfg-bar__img { width: 50px; height: 50px; } }

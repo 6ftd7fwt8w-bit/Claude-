@@ -40,6 +40,9 @@
   </div>
 {%- endif -%}
 {%- if cart.item_count > 0 and hide_discount != true -%}{% render 'cart-discount' %}{%- endif -%}
+{%- if cart.item_count > 0 and ship_is_free -%}
+  <p class="cart-ship-free"><span aria-hidden="true">🚚</span> <span>Tu pedido tiene <b>envío GRATIS</b>{% if settings.free_shipping_zone != blank %} a toda la {{ settings.free_shipping_zone | downcase }}{% endif %}</span></p>
+{%- endif -%}
 {%- if cart.item_count > 0 -%}
   <div class="cart-breakdown">
     <div class="cart-breakdown__row"><span>{{ 'cart.breakdown_products' | t }}</span><span>{{ cart.original_total_price | money }}</span></div>

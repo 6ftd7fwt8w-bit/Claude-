@@ -12,7 +12,7 @@
         "announcement_bf": {
           "type": "announcement",
           "settings": {
-            "text": "🖤 BLACK FRIDAY · −15 % en todas las láminas · código BLACKFRIDAY15 · hasta el 30/11",
+            "text": "🖤 BLACK FRIDAY · −15 % en ilustraciones personalizadas · código BLACKFRIDAY15 · hasta el 30/11",
             "link": "/discount/BLACKFRIDAY15?redirect=/collections/laminas-personalizadas",
             "until": "2026-11-30",
             "urgent": true,
@@ -22,13 +22,22 @@
         "announcement_1": {
           "type": "announcement",
           "settings": {
-            "text": "🚚 Envío gratis a toda la península"
+            "text": "🚚 ENVÍO GRATIS a toda la península",
+            "pill": true
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "text": "3x2 en láminas infantiles con el código PEQUES3X2",
+            "link": "shopify://collections/infantil"
           }
         }
       },
       "block_order": [
         "announcement_bf",
-        "announcement_1"
+        "announcement_1",
+        "announcement_2"
       ]
     },
     "header": {

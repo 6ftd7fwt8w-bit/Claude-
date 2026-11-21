@@ -73,9 +73,17 @@
             "text": "Atención cercana",
             "icon": "none"
           }
+        },
+        "item_ship": {
+          "type": "item",
+          "settings": {
+            "text": "Envío gratis a toda la península",
+            "icon": "truck"
+          }
         }
       },
       "block_order": [
+        "item_ship",
         "item_1",
         "item_2",
         "item_3",
