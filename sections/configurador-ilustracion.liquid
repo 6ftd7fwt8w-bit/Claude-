@@ -252,7 +252,7 @@
                 <span class="cfg-gift__box" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
                 <span class="cfg-gift__body">
                   {%- if w_bf -%}
-                    <span class="cfg-gift__kicker"><i class="cfg-gift__live" aria-hidden="true"></i>Black Friday · solo hasta el {{ settings.welcome_end | date: '%-d' }} de noviembre</span>
+                    <span class="cfg-gift__kicker"><i class="cfg-gift__live" aria-hidden="true"></i>Black Friday · hasta el {{ settings.welcome_end | date: '%-d/%-m' }}</span>
                     <span class="cfg-gift__title" data-gift-title>−{{ w_pct }}&nbsp;% en tu ilustración</span>
                   {%- else -%}
                     <span class="cfg-gift__kicker">🎁 Regalo de bienvenida</span>
@@ -700,9 +700,10 @@
   .cfg-gift--bf .cfg-gift__price b { color: #f2d16b; font-size: 17px; }
   .cfg-gift--bf .cfg-gift__price s { color: #a99d8c; }
   .cfg-gift--bf .cfg-gift__small { color: #cdbf9f; }
-  .cfg-gift__timer { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin: 4px 0 2px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #cdbf9f; }
+  .cfg-gift__timer { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 4px 0 2px; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: #cdbf9f; }
+  .cfg-gift__timer > span { flex-basis: 100%; }
   .cfg-gift__timer:empty { display: none; }
-  .cfg-gift__timer b { display: inline-grid; place-items: center; min-width: 34px; padding: 4px 5px 3px; border-radius: 5px; background: #f2d16b; color: #15110d; font-size: 15px; font-weight: 700; letter-spacing: 0; font-variant-numeric: tabular-nums; line-height: 1; }
+  .cfg-gift__timer b { display: inline-flex; align-items: baseline; justify-content: center; min-width: 34px; padding: 5px 5px 4px; border-radius: 5px; background: #f2d16b; color: #15110d; font-size: 15px; font-weight: 700; letter-spacing: 0; font-variant-numeric: tabular-nums; line-height: 1; }
   .cfg-gift__timer b small { font-size: 10px; font-weight: 600; margin-left: 1px; }
   .cfg-gift--bf .cfg-gift__stamp { background: linear-gradient(135deg, #f7dc85, #c9a24f); color: #15110d; font-weight: 700; box-shadow: 0 0 0 3px #15110d, 0 0 0 4.5px #d8b45a; }
   .cfg-gift--bf:not(.is-on) .cfg-gift__ticket .cfg-gift__body::after { background: linear-gradient(105deg, transparent 35%, rgba(242,209,107,.22) 50%, transparent 65%); }
@@ -722,7 +723,7 @@
     .cfg-gift__ticket { gap: 12px; padding: 14px 12px; }
     .cfg-gift__title { font-size: 17px; }
     .cfg-gift--bf .cfg-gift__title { font-size: 20px; }
-    .cfg-gift__timer b { min-width: 30px; font-size: 14px; }
+    .cfg-gift__timer b { min-width: 0; padding: 4px 5px 3px; font-size: 14px; }
     .cfg-gift__stamp { width: 50px; height: 50px; font-size: 17px; }
     .cfg-gift__stamp small { font-size: 11px; }
   }
@@ -995,7 +996,7 @@
       const ms = W_END - Date.now();
       if (ms <= 0) { giftEl.hidden = true; clearInterval(tid); return; }
       const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, sec = Math.floor(ms / 1e3) % 60;
-      timerEl.innerHTML = 'Termina en ' + (d ? '<b>' + d + '<small>d</small></b>' : '') + '<b>' + pad(h) + '<small>h</small></b><b>' + pad(m) + '<small>m</small></b><b>' + pad(sec) + '<small>s</small></b>';
+      timerEl.innerHTML = '<span>⏳ La oferta termina en</span>' + (d ? '<b>' + d + '<small>d</small></b>' : '') + '<b>' + pad(h) + '<small>h</small></b><b>' + pad(m) + '<small>m</small></b><b>' + pad(sec) + '<small>s</small></b>';
     };
     const tid = setInterval(tick, 1000); tick();
   }
