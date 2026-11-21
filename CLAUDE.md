@@ -48,6 +48,10 @@
 - Después del 30/11 la barra Black Friday y el cupón se ocultan solos. Para volver a HOLA10: welcome_code HOLA10, percent 10, welcome_end vacío, welcome_bf desactivado y reactivar HOLA10 en Shopify.
 - «Quiénes somos» (home): «Dos apasionados de la informática y el arte (lo sabemos… ¡qué pareja más rara!)…» (sin decir quién es qué).
 
+## Colección infantil: sets de 3 primero (21/11, borrador «Black Friday»)
+- Checkbox nuevo «Sets de 3 primero» (sets_first) en el bloque de temáticas de main-collection, activado para infantil: /collections/infantil (sin temática) enseña los sets (bloques «set» de la plantilla collection.json) con la pastilla «🧩 Sets de 3» activa y primera; «Todas» lleva a ?view=todas (templates/collection.todas.json = copia de collection.json) con la cuadrícula normal; las temáticas (/collections/infantil/tema-…) siguen filtrando. En «todas» el «ver más» y los filtros conservan view=todas.
+- collection.json, collection.todas.json y collection.sets.json son iguales (copiados de la versión publicada del 21/11, la dueña había cambiado sets): si se cambia un set, cambiarlo en las tres o al menos en collection.json (la que enseña los sets).
+
 ## Lienzos XL
 - Tamaños (variantes de las 9 ilustraciones personalizadas): "Lienzo 70x100 cm" (proporción como A3) y "Lienzo 80x120 cm". Precio = precio A4 (misma 2ª opción) + 63 / + 93 € (desde sept. 2026: láminas personalizadas +3 € y lienzos +6 € para cubrir el envío gratis desde 60 € en península). El 60x90 se eliminó por ser casi igual que el 70x100.
 - Tela 100 % algodón en bastidor, listo para colgar. Al elegir lienzo el formulario desactiva marco y packs regalo.
