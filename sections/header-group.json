@@ -25,19 +25,11 @@
             "text": "🚚 ENVÍO GRATIS a toda la península",
             "pill": true
           }
-        },
-        "announcement_2": {
-          "type": "announcement",
-          "settings": {
-            "text": "3x2 en láminas infantiles con el código PEQUES3X2",
-            "link": "shopify://collections/infantil"
-          }
         }
       },
       "block_order": [
         "announcement_bf",
-        "announcement_1",
-        "announcement_2"
+        "announcement_1"
       ]
     },
     "header": {
