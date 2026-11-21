@@ -95,7 +95,7 @@
                 <figure class="set-gal__slide">{{ photo | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 560px, 100vw', alt: block.settings.name }}</figure>
                 {%- for p in block.settings.products -%}
                   {%- assign p_shown = 0 -%}
-                  {%- assign p_alt = p.title | split: '–' | last | split: '|' | first | strip -%}<!--gal {{ p.handle }} {{ p.images.size }} {{ p.media.size }}-->
+                  {%- assign p_alt = p.title | split: '–' | last | split: '|' | first | strip -%}
                   {%- for img in p.images -%}
                     {%- if img.src != photo.src and p_shown < 4 -%}
                       {%- assign p_shown = p_shown | plus: 1 -%}
