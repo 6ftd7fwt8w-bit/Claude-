@@ -1,16 +1,16 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "main-collection",
-      "settings": {
-        "show_image": true,
-        "show_description": true,
-        "per_page": 12,
-        "columns": 4,
-        "all_collection": "infantil",
-        "all_label": "Ver toda la colección infantil",
-        "all_handles": "bosque-encantado, frases-con-sonrisa, estrellas-y-suenos"
-      },
       "blocks": {
         "banner_1": {
           "type": "banner",
@@ -47,11 +47,11 @@
           "settings": {
             "collection": "infantil",
             "name": "La reina de la casa",
-            "photo_product": "lamina-decorativa-infantil-el-rey-de-la-casa-vivalahome-copia",
+            "photo_product": "lamina-infantil-la-reina-de-la-casa",
             "products": [
-              "lamina-decorativa-infantil-la-princesa-del-bosque-vivalahome-copia",
-              "lamina-decorativa-infantil-la-reina-de-la-casa-vivalahome-copia",
-              "lamina-decorativa-infantil-el-rey-de-la-casa-vivalahome-copia"
+              "lamina-infantil-espiritu-del-bosque",
+              "lamina-infantil-la-princesa-del-bosque",
+              "lamina-infantil-la-reina-de-la-casa"
             ]
           }
         },
@@ -63,8 +63,8 @@
             "photo_product": "lamina-decorativa-infantil-aqui-se-suena-con-alas-de-hada-vivalahome-copia",
             "products": [
               "lamina-decorativa-infantil-aqui-se-suena-con-alas-de-hada-vivalahome-copia",
-              "lamina-decorativa-infantil-tesoro-del-mar-vivalahome-copia",
-              "lamina-decorativa-infantil-el-principe-de-los-cuentos-vivalahome-copia"
+              "lamina-infantil-el-principe-de-los-cuentos",
+              "lamina-infantil-mi-pequeno-hogar"
             ]
           }
         },
@@ -75,8 +75,8 @@
             "name": "Aquí manda la peque",
             "photo_product": "lamina-decorativa-infantil-que-el-mundo-te-pille-sonando-vivalahome-copia",
             "products": [
-              "lamina-decorativa-infantil-un-reino-de-suenos-vivalahome-copia",
-              "lamina-decorativa-infantil-amigos-del-bosque-vivalahome-copia",
+              "lamina-infantil-el-castillo-de-los-suenos",
+              "lamina-infantil-un-reino-de-suenos",
               "lamina-decorativa-infantil-que-el-mundo-te-pille-sonando-vivalahome-copia"
             ]
           }
@@ -86,11 +86,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Aquí manda el peque",
-            "photo_product": "lamina-decorativa-infantil-no-molestar-creciendo-vivalahome-copia",
+            "photo_product": "lamina-infantil-aqui-manda-el-peque",
             "products": [
-              "lamina-decorativa-infantil-un-reino-de-suenos-vivalahome-copia",
-              "lamina-decorativa-infantil-amigos-del-bosque-vivalahome-copia",
-              "lamina-decorativa-infantil-no-molestar-creciendo-vivalahome-copia"
+              "lamina-infantil-el-castillo-de-los-suenos",
+              "lamina-infantil-un-reino-de-suenos",
+              "lamina-infantil-aqui-manda-el-peque"
             ]
           }
         },
@@ -99,11 +99,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Nube de sueños",
-            "photo_product": "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia-1",
+            "photo_product": "lamina-infantil-nube-de-suenos",
             "products": [
-              "lamina-decorativa-infantil-pequenas-aventuras-grandes-suenos-vivalahome-copia",
+              "lamina-infantil-duerme-con-los-angelitos",
               "lamina-decorativa-infantil-nube-de-suenos-vivalahome-copia",
-              "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia-1"
+              "lamina-infantil-nube-de-suenos"
             ]
           }
         },
@@ -115,7 +115,7 @@
             "photo_product": "lamina-decorativa-infantil-bonita-vivalahome-copia",
             "products": [
               "lamina-decorativa-infantil-bonita-vivalahome-copia",
-              "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia-1",
+              "lamina-infantil-nube-de-suenos",
               "lamina-decorativa-infantil-nube-de-suenos-vivalahome-copia"
             ]
           }
@@ -128,7 +128,7 @@
             "photo_product": "lamina-decorativa-infantil-duerme-con-los-angelitos-vivalahome-copia",
             "products": [
               "lamina-decorativa-infantil-duerme-con-los-angelitos-vivalahome-copia",
-              "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia-1",
+              "lamina-infantil-nube-de-suenos",
               "lamina-decorativa-infantil-nube-de-suenos-vivalahome-copia"
             ]
           }
@@ -138,11 +138,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Guardián de los sueños",
-            "photo_product": "lamina-decorativa-infantil-buenas-noches-pequeno-terremoto-vivalahome-copia",
+            "photo_product": "lamina-infantil-guardian-de-los-suenos",
             "products": [
-              "lamina-decorativa-infantil-guardian-de-los-suenos-vivalahome-copia",
-              "lamina-decorativa-infantil-buenas-noches-pequeno-terremoto-vivalahome-copia",
-              "lamina-decorativa-infantil-un-pequeno-mundo-por-descubrir-vivalahome-copia"
+              "lamina-infantil-persiguiendo-estrellas",
+              "lamina-infantil-guardian-de-los-suenos",
+              "lamina-infantil-pequenas-aventuras-grandes-suenos"
             ]
           }
         },
@@ -151,11 +151,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Que el mundo te pille soñando",
-            "photo_product": "lamina-decorativa-infantil-nivel-de-energia-infinito-vivalahome-copia",
+            "photo_product": "lamina-infantil-que-el-mundo-te-pille-sonando",
             "products": [
-              "lamina-decorativa-infantil-nivel-de-energia-infinito-vivalahome-copia",
-              "lamina-decorativa-infantil-buenas-noches-pequeno-terremoto-vivalahome-copia",
-              "lamina-decorativa-infantil-guardian-de-los-suenos-vivalahome-copia"
+              "lamina-infantil-que-el-mundo-te-pille-sonando",
+              "lamina-infantil-guardian-de-los-suenos",
+              "lamina-infantil-persiguiendo-estrellas"
             ]
           }
         },
@@ -164,11 +164,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Sueños en construcción",
-            "photo_product": "lamina-decorativa-infantil-hoy-puede-pasar-de-todo-vivalahome-copia",
+            "photo_product": "lamina-infantil-suenos-en-construccion",
             "products": [
-              "lamina-decorativa-infantil-hoy-puede-pasar-de-todo-vivalahome-copia",
-              "lamina-decorativa-infantil-buenas-noches-pequeno-terremoto-vivalahome-copia",
-              "lamina-decorativa-infantil-guardian-de-los-suenos-vivalahome-copia"
+              "lamina-infantil-suenos-en-construccion",
+              "lamina-infantil-guardian-de-los-suenos",
+              "lamina-infantil-persiguiendo-estrellas"
             ]
           }
         },
@@ -177,11 +177,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Pequeña gran soñadora",
-            "photo_product": "lamina-decorativa-infantil-suenos-con-alas-vivalahome-copia",
+            "photo_product": "lamina-infantil-pequena-gran-sonadora",
             "products": [
-              "lamina-decorativa-infantil-suenos-con-alas-vivalahome-copia",
-              "lamina-decorativa-infantil-bajo-las-estrellas-vivalahome-copia",
-              "lamina-decorativa-infantil-aqui-manda-el-peque-vivalahome-copia"
+              "lamina-infantil-pequena-gran-sonadora",
+              "lamina-infantil-un-viaje-entre-las-nubes",
+              "lamina-infantil-bajo-las-estrellas"
             ]
           }
         },
@@ -193,8 +193,8 @@
             "photo_product": "lamina-decorativa-infantil-la-estrella-mas-brillante-eres-tu-vivalahome",
             "products": [
               "lamina-decorativa-infantil-la-estrella-mas-brillante-eres-tu-vivalahome",
-              "lamina-decorativa-infantil-pequeno-gran-sonador-vivalahome-copia",
-              "lamina-decorativa-infantil-el-castillo-de-los-suenos-vivalahome-copia"
+              "lamina-infantil-dulce-lunita",
+              "lamina-infantil-la-luz-que-te-guia"
             ]
           }
         },
@@ -203,11 +203,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Más abrazos, por favor",
-            "photo_product": "lamina-decorativa-infantil-suena-vivalahome-copia",
+            "photo_product": "lamina-infantil-mas-abrazos-por-favor",
             "products": [
-              "lamina-decorativa-infantil-la-luz-que-te-guia-vivalahome-copia",
-              "lamina-decorativa-infantil-cucu-te-veo-vivalahome-copia",
-              "lamina-decorativa-infantil-suena-vivalahome-copia"
+              "lamina-infantil-cucu-te-veo",
+              "lamina-infantil-todo-bajo-control",
+              "lamina-infantil-mas-abrazos-por-favor"
             ]
           }
         },
@@ -216,10 +216,10 @@
           "settings": {
             "collection": "infantil",
             "name": "Amigos del bosque",
-            "photo_product": "lamina-decorativa-infantil-mi-pequeno-hogar-vivalahome-copia",
+            "photo_product": "lamina-infantil-aqui-duerme-un-bichito",
             "products": [
-              "lamina-decorativa-infantil-cielo-de-colores-vivalahome-copia",
-              "lamina-decorativa-infantil-mi-pequeno-hogar-vivalahome-copia",
+              "lamina-infantil-amigos-del-bosque",
+              "lamina-infantil-aqui-duerme-un-bichito",
               "lamina-decorativa-infantil-el-sueno-del-bosque-vivalahome-copia"
             ]
           }
@@ -229,11 +229,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Aventuras en el mar",
-            "photo_product": "lamina-decorativa-infantil-navegando-hacia-mis-suenos-vivalahome-copia",
+            "photo_product": "lamina-infantil-aventuras-en-el-mar",
             "products": [
-              "lamina-decorativa-infantil-aventuras-en-el-mar-vivalahome-copia",
-              "lamina-decorativa-infantil-navegando-hacia-mis-suenos-vivalahome-copia",
-              "lamina-decorativa-infantil-estrellita-de-mi-vida-vivalahome-copia"
+              "lamina-infantil-tesoro-del-mar",
+              "lamina-infantil-aventuras-en-el-mar",
+              "lamina-infantil-hola-caracola"
             ]
           }
         },
@@ -244,9 +244,9 @@
             "name": "Rumbo a la aventura",
             "photo_product": "lamina-decorativa-infantil-dulce-lunita-vivalahome-copia-1",
             "products": [
-              "lamina-decorativa-infantil-rumbo-a-la-aventura-vivalahome-copia",
+              "lamina-infantil-navegando-hacia-mis-suenos",
               "lamina-decorativa-infantil-dulce-lunita-vivalahome-copia-1",
-              "lamina-decorativa-infantil-hola-caracola-vivalahome-copia"
+              "lamina-infantil-pequeno-gran-sonador"
             ]
           }
         },
@@ -255,11 +255,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Pequeño gran lector",
-            "photo_product": "lamina-decorativa-infantil-la-estrella-mas-brillante-eres-tu-vivalahome-copia-1",
+            "photo_product": "lamina-infantil-pequeno-gran-lector",
             "products": [
-              "lamina-decorativa-infantil-donde-crecen-las-historias-vivalahome-copia",
-              "lamina-decorativa-infantil-persiguiendo-estrellas-vivalahome-copia",
-              "lamina-decorativa-infantil-la-estrella-mas-brillante-eres-tu-vivalahome-copia-1"
+              "lamina-infantil-rumbo-a-tus-suenos",
+              "lamina-infantil-donde-crecen-las-historias",
+              "lamina-infantil-pequeno-gran-lector"
             ]
           }
         },
@@ -268,11 +268,11 @@
           "settings": {
             "collection": "infantil",
             "name": "Pequeño humano, grandes planes",
-            "photo_product": "lamina-decorativa-infantil-aqui-manda-la-peque-vivalahome-copia",
+            "photo_product": "lamina-infantil-pequeno-humano-grandes-planes",
             "products": [
-              "lamina-decorativa-infantil-aqui-manda-la-peque-vivalahome-copia",
-              "lamina-decorativa-infantil-donde-crecen-las-historias-vivalahome-copia",
-              "lamina-decorativa-infantil-persiguiendo-estrellas-vivalahome-copia"
+              "lamina-infantil-pequeno-humano-grandes-planes",
+              "lamina-infantil-rumbo-a-tus-suenos",
+              "lamina-infantil-donde-crecen-las-historias"
             ]
           }
         },
@@ -281,9 +281,9 @@
           "settings": {
             "collection": "infantil",
             "name": "Sueña, ríe, salta",
-            "photo_product": "lamina-decorativa-infantil-rie-vivalahome-copia",
+            "photo_product": "lamina-infantil-suena",
             "products": [
-              "lamina-decorativa-infantil-rie-vivalahome-copia",
+              "lamina-infantil-suena",
               "lamina-decorativa-infantil-salta-vivalahome-copia",
               "lamina-decorativa-infantil-mi-planeta-mis-reglas-vivalahome-copia"
             ]
@@ -295,41 +295,42 @@
             "collection": "infantil",
             "all_label": "Todas",
             "sets_label": "🧩 Sets de 3",
-            "themes": "tema-dulces-suenos|🌙 Dulces sueños\ntema-bosque|🦊 Animales del bosque\ntema-reyes|👑 Reyes y princesas\ntema-aventuras|⛵ Mar y aventuras\ntema-frases|😄 Frases con humor\ntema-palabras|✨ Palabras bonitas"
+            "themes": "tema-dulces-suenos|🌙 Dulces sueños\ntema-bosque|🦊 Animales del bosque\ntema-reyes|👑 Reyes y princesas\ntema-aventuras|⛵ Mar y aventuras\ntema-frases|😄 Frases con humor\ntema-palabras|✨ Palabras bonitas",
+            "sets_first": true
           }
         },
         "banner_24": {
           "type": "featured",
           "settings": {
             "collection": "laminas-personalizadas",
-            "label": "Superventas",
             "products": [
               "ilustracion-especial-tradicion-fallera-sevillana-trajes-regionales",
               "sin-titulo-28ago_16-34-27"
-            ]
+            ],
+            "label": "Superventas"
           }
         },
         "banner_25": {
           "type": "featured",
           "settings": {
             "collection": "infantil",
-            "label": "Superventas",
             "products": [
               "lamina-decorativa-infantil-bonito-vivalahome-copia",
               "lamina-decorativa-infantil-el-sueno-del-bosque-vivalahome-copia",
               "lamina-decorativa-infantil-dulce-lunita-vivalahome-copia-1",
-              "lamina-decorativa-infantil-el-castillo-de-los-suenos-vivalahome-copia"
-            ]
+              "lamina-infantil-la-luz-que-te-guia"
+            ],
+            "label": "Superventas"
           }
         },
         "banner_26": {
           "type": "featured",
           "settings": {
             "collection": "packs-regalo",
-            "label": "Superventas",
             "products": [
               "vlh-extra-pack-valentina"
-            ]
+            ],
+            "label": "Superventas"
           }
         }
       },
@@ -360,18 +361,19 @@
         "banner_24",
         "banner_25",
         "banner_26"
-      ]
+      ],
+      "settings": {
+        "show_image": true,
+        "show_description": true,
+        "per_page": 12,
+        "columns": 4,
+        "all_collection": "infantil",
+        "all_label": "Ver toda la colección infantil",
+        "all_handles": "bosque-encantado, frases-con-sonrisa, estrellas-y-suenos"
+      }
     },
     "instagram": {
       "type": "instagram-gallery",
-      "settings": {
-        "eyebrow": "@vivalahome.store",
-        "title": "Visto en Instagram",
-        "subtitle": "Son vuestras fotos y vídeos: así lucen nuestras ilustraciones cuando llegan a vuestras manos. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
-        "instagram_url": "https://www.instagram.com/vivalahome.store",
-        "columns": 6,
-        "background": "default"
-      },
       "blocks": {
         "foto_1": {
           "type": "foto",
@@ -495,7 +497,15 @@
         "foto_13",
         "foto_14",
         "foto_15"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "@vivalahome.store",
+        "title": "Visto en Instagram",
+        "subtitle": "Son vuestras fotos y vídeos: así lucen nuestras ilustraciones cuando llegan a vuestras manos. ¡Gracias por compartirlas! Etiquétanos y sal aquí tú también.",
+        "instagram_url": "https://www.instagram.com/vivalahome.store",
+        "columns": 6,
+        "background": "default"
+      }
     }
   },
   "order": [
