@@ -45,7 +45,7 @@
     <div class="cart-breakdown__row"><span>{{ 'cart.breakdown_products' | t }}</span><span>{{ cart.original_total_price | money }}</span></div>
     {%- if disc_cents > 0 -%}
       <div class="cart-breakdown__row is-saving">
-        <span>Te ahorras {{ disc_cents | money }} en este pedido{% if w_applied %}<small class="cart-breakdown__hint">si finalizas el pedido antes de 24&nbsp;h</small>{% endif %}</span>
+        <span>Te ahorras {{ disc_cents | money }} en este pedido{% if w_applied %}<small class="cart-breakdown__hint">{% if settings.welcome_bf %}oferta Black Friday hasta el {{ settings.welcome_end | date: '%-d/%-m' }}{% else %}si finalizas el pedido antes de 24&nbsp;h{% endif %}</small>{% endif %}</span>
         <span>−{{ disc_cents | money }}</span>
       </div>
     {%- endif -%}

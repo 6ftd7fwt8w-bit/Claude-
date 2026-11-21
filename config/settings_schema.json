@@ -308,6 +308,13 @@
         "info": "A partir del día siguiente se ocultan solos los avisos del descuento. Pon también la fecha de fin en el descuento de Shopify."
       },
       {
+        "type": "checkbox",
+        "id": "welcome_bf",
+        "label": "Modo Black Friday",
+        "default": false,
+        "info": "El código es para todas (no solo la primera compra), dura hasta el «Último día» y el configurador lo enseña con estilo Black Friday y cuenta atrás."
+      },
+      {
         "type": "header",
         "content": "Oferta cruzada en el carrito"
       },

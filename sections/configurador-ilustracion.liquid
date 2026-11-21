@@ -22,10 +22,19 @@
       assign w_ok = false
     endif
   endif
-  if customer and customer.orders_count > 0
+  assign w_bf = false
+  if settings.welcome_bf and settings.welcome_end != blank
+    assign w_bf = true
+  endif
+  if customer and customer.orders_count > 0 and w_bf == false
     assign w_ok = false
   endif
   assign w_pct = settings.welcome_percent | default: 10
+  if w_bf
+    assign w_key = 'vlh_promo_' | append: w_code
+  else
+    assign w_key = 'vlh_welcome'
+  endif
   comment
     Modo «pack»: en la ficha de un pack regalo (plantilla product.packs-regalo) el configurador sale con
     las fotos y el nombre del pack, y con «Pack regalo» y ese pack ya elegidos.
@@ -237,14 +246,20 @@
           </div>
           {%- if w_ok and w_code != blank -%}
             {%- comment -%} Regalo de bienvenida dentro de la tarjeta (sin ventana): casilla que activa el descuento y enseña cuánto se ahorra {%- endcomment -%}
-            <div class="cfg-gift" data-cfg-gift data-code="{{ w_code | escape }}" data-percent="{{ w_pct }}" hidden>
+            <div class="cfg-gift{% if w_bf %} cfg-gift--bf{% endif %}" data-cfg-gift data-code="{{ w_code | escape }}" data-percent="{{ w_pct }}" data-key="{{ w_key }}"{% if w_bf %} data-bf data-end="{{ settings.welcome_end | strip }}"{% endif %} hidden>
               <label class="cfg-gift__ticket">
                 <input type="checkbox" class="cfg-gift__input" data-gift-check>
                 <span class="cfg-gift__box" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
                 <span class="cfg-gift__body">
-                  <span class="cfg-gift__kicker">🎁 Regalo de bienvenida</span>
-                  <span class="cfg-gift__title" data-gift-title>Activa tu {{ w_pct }}&nbsp;% en tu primera ilustración</span>
+                  {%- if w_bf -%}
+                    <span class="cfg-gift__kicker"><i class="cfg-gift__live" aria-hidden="true"></i>Black Friday · solo hasta el {{ settings.welcome_end | date: '%-d' }} de noviembre</span>
+                    <span class="cfg-gift__title" data-gift-title>−{{ w_pct }}&nbsp;% en tu ilustración</span>
+                  {%- else -%}
+                    <span class="cfg-gift__kicker">🎁 Regalo de bienvenida</span>
+                    <span class="cfg-gift__title" data-gift-title>Activa tu {{ w_pct }}&nbsp;% en tu primera ilustración</span>
+                  {%- endif -%}
                   <span class="cfg-gift__price" data-gift-price></span>
+                  {%- if w_bf -%}<span class="cfg-gift__timer" data-gift-timer aria-live="off"></span>{%- endif -%}
                   <span class="cfg-gift__small" data-gift-small>Un clic y se aplica solo, sin códigos · válido 24&nbsp;h</span>
                 </span>
                 <span class="cfg-gift__stamp" aria-hidden="true">−{{ w_pct }}<small>%</small></span>
@@ -672,6 +687,33 @@
   .cfg-gift.is-on .cfg-gift__stamp { background: #2f6b3a; color: #fff; box-shadow: 0 0 0 3px #e3f0de, 0 0 0 4.5px #8fbf88; }
   .cfg-gift.is-popping .cfg-gift__stamp { animation: cfgGiftStamp .6s cubic-bezier(.2,1.6,.4,1); }
   .cfg__total.is-popping strong { animation: cfgTotalPop .6s cubic-bezier(.2,1.6,.4,1); }
+  /* Black Friday: cupón negro y dorado con cuenta atrás */
+  .cfg-gift--bf .cfg-gift__ticket { background: radial-gradient(120% 140% at 100% 0%, #3a2f1c 0%, #15110d 55%, #0d0b09 100%); border: 1.5px dashed #d8b45a; color: #fff; box-shadow: 0 10px 26px rgba(13,11,9,.28); }
+  .cfg-gift--bf .cfg-gift__ticket::before, .cfg-gift--bf .cfg-gift__ticket::after { border-color: #d8b45a; }
+  .cfg-gift--bf .cfg-gift__box { background: transparent; border-color: #d8b45a; }
+  .cfg-gift--bf:not(.is-on) .cfg-gift__box { animation-name: cfgGiftPulseBf; }
+  .cfg-gift--bf .cfg-gift__input:focus-visible + .cfg-gift__box { outline-color: #f2d16b; }
+  .cfg-gift--bf .cfg-gift__kicker { display: flex; align-items: center; gap: 7px; color: #f2d16b; letter-spacing: .14em; font-weight: 700; }
+  .cfg-gift__live { width: 8px; height: 8px; border-radius: 50%; background: #ff5a3c; box-shadow: 0 0 0 0 rgba(255,90,60,.7); animation: cfgGiftLive 1.4s ease-out infinite; }
+  .cfg-gift--bf .cfg-gift__title { color: #fff; font-size: 23px; }
+  .cfg-gift--bf .cfg-gift__price { color: #e9e1d4; }
+  .cfg-gift--bf .cfg-gift__price b { color: #f2d16b; font-size: 17px; }
+  .cfg-gift--bf .cfg-gift__price s { color: #a99d8c; }
+  .cfg-gift--bf .cfg-gift__small { color: #cdbf9f; }
+  .cfg-gift__timer { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin: 4px 0 2px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #cdbf9f; }
+  .cfg-gift__timer:empty { display: none; }
+  .cfg-gift__timer b { display: inline-grid; place-items: center; min-width: 34px; padding: 4px 5px 3px; border-radius: 5px; background: #f2d16b; color: #15110d; font-size: 15px; font-weight: 700; letter-spacing: 0; font-variant-numeric: tabular-nums; line-height: 1; }
+  .cfg-gift__timer b small { font-size: 10px; font-weight: 600; margin-left: 1px; }
+  .cfg-gift--bf .cfg-gift__stamp { background: linear-gradient(135deg, #f7dc85, #c9a24f); color: #15110d; font-weight: 700; box-shadow: 0 0 0 3px #15110d, 0 0 0 4.5px #d8b45a; }
+  .cfg-gift--bf:not(.is-on) .cfg-gift__ticket .cfg-gift__body::after { background: linear-gradient(105deg, transparent 35%, rgba(242,209,107,.22) 50%, transparent 65%); }
+  .cfg-gift--bf.is-on .cfg-gift__ticket { background: radial-gradient(120% 140% at 100% 0%, #3a2f1c 0%, #15110d 55%, #0d0b09 100%); border-style: solid; border-color: #d8b45a; }
+  .cfg-gift--bf.is-on .cfg-gift__ticket::before, .cfg-gift--bf.is-on .cfg-gift__ticket::after { border-style: solid; border-color: #d8b45a; }
+  .cfg-gift--bf.is-on .cfg-gift__box { background: #f2d16b; border-color: #f2d16b; color: #15110d; }
+  .cfg-gift--bf.is-on .cfg-gift__kicker { color: #f2d16b; }
+  .cfg-gift--bf.is-on .cfg-gift__small { color: #9fd49a; }
+  .cfg-gift--bf.is-on .cfg-gift__stamp { background: linear-gradient(135deg, #f7dc85, #c9a24f); color: #15110d; box-shadow: 0 0 0 3px #15110d, 0 0 0 4.5px #d8b45a; }
+  @keyframes cfgGiftPulseBf { 0%, 100% { box-shadow: 0 0 0 0 rgba(242,209,107,.55); } 50% { box-shadow: 0 0 0 8px rgba(242,209,107,0); } }
+  @keyframes cfgGiftLive { 0% { box-shadow: 0 0 0 0 rgba(255,90,60,.7); } 100% { box-shadow: 0 0 0 9px rgba(255,90,60,0); } }
   @keyframes cfgGiftPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(176,138,62,.45); } 50% { box-shadow: 0 0 0 7px rgba(176,138,62,0); } }
   @keyframes cfgGiftShine { 0% { transform: translateX(-120%); } 30%, 100% { transform: translateX(120%); } }
   @keyframes cfgGiftStamp { 0% { transform: rotate(-10deg) scale(.6); } 100% { transform: rotate(-10deg) scale(1); } }
@@ -679,11 +721,13 @@
   @media (max-width: 749px) {
     .cfg-gift__ticket { gap: 12px; padding: 14px 12px; }
     .cfg-gift__title { font-size: 17px; }
+    .cfg-gift--bf .cfg-gift__title { font-size: 20px; }
+    .cfg-gift__timer b { min-width: 30px; font-size: 14px; }
     .cfg-gift__stamp { width: 50px; height: 50px; font-size: 17px; }
     .cfg-gift__stamp small { font-size: 11px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .cfg-gift__box, .cfg-gift__body::after, .cfg-gift__stamp, .cfg__total strong { animation: none !important; }
+    .cfg-gift__box, .cfg-gift__body::after, .cfg-gift__stamp, .cfg-gift__live, .cfg__total strong { animation: none !important; }
   }
 </style>
 
@@ -763,7 +807,13 @@
 
   // ---- Pintar todo ----
   let welcomeOn = false;
-  const readWelcome = () => { try { const w = JSON.parse(localStorage.getItem('vlh_welcome')) || {}; return w.status === 'accepted' && w.expires > Date.now(); } catch (e) { return false; } };
+  // Descuento de bienvenida o, en modo Black Friday, el de la promoción (otra clave y otra fecha de fin)
+  const giftBox = $('[data-cfg-gift]');
+  const W_KEY = (giftBox && giftBox.dataset.key) || 'vlh_welcome';
+  const W_PCT = (giftBox && +giftBox.dataset.percent) || 10;
+  const W_BF = !!(giftBox && giftBox.hasAttribute('data-bf'));
+  const W_END = W_BF ? new Date(giftBox.dataset.end + 'T23:59:59+01:00').getTime() : 0;
+  const readWelcome = () => { try { const w = JSON.parse(localStorage.getItem(W_KEY)) || {}; return w.status === 'accepted' && w.expires > Date.now(); } catch (e) { return false; } };
   const paint = () => {
     welcomeOn = readWelcome();
     const type = data.types[st.type];
@@ -816,7 +866,7 @@
     // Total: precio de antes (compare at) tachado, % de descuento y bienvenida si está activa
     const v = findVariant(t, st.count, st.size, presFor(st.finish, st.color, st.pack));
     const totalEl = $('#vlh-total-price'), oldEl = $('#vlh-total-old'), offEl = $('[data-cfg-off]');
-    const now = v ? (welcomeOn ? Math.round(v.price * 0.9) : v.price) : 0;
+    const now = v ? (welcomeOn ? Math.round(v.price * (100 - W_PCT) / 100) : v.price) : 0;
     const before = v ? Math.max(v.cmp || 0, v.price) : 0;
     totalEl.textContent = v ? fmt(now) : '—';
     const pct = before > now ? Math.round((1 - now / before) * 100) : 0;
@@ -826,13 +876,17 @@
     // Regalo de bienvenida en la tarjeta: cuánto se ahorra con la selección de ahora
     const gEl = $('[data-cfg-gift]');
     if (gEl) {
-      let ws = {}; try { ws = JSON.parse(localStorage.getItem('vlh_welcome')) || {}; } catch (e) {}
-      gEl.hidden = ws.status === 'purchased';
+      let ws = {}; try { ws = JSON.parse(localStorage.getItem(W_KEY)) || {}; } catch (e) {}
+      gEl.hidden = W_BF ? Date.now() > W_END : ws.status === 'purchased';
       gEl.classList.toggle('is-on', welcomeOn);
       const chk = gEl.querySelector('[data-gift-check]'); chk.checked = welcomeOn; chk.disabled = welcomeOn;
       const wp = +gEl.dataset.percent || 10, full = v ? v.price : 0, disc = Math.round(full * (100 - wp) / 100);
       const priceEl = gEl.querySelector('[data-gift-price]'), titleEl = gEl.querySelector('[data-gift-title]'), smallEl = gEl.querySelector('[data-gift-small]');
-      if (welcomeOn) {
+      if (W_BF) {
+        titleEl.textContent = welcomeOn ? (v ? '¡Black Friday activado! Te ahorras ' + fmt(full - disc) : '¡Black Friday activado!') : '−' + wp + ' % en tu ilustración';
+        priceEl.innerHTML = !welcomeOn && v ? 'Pagas <b>' + fmt(disc) + '</b> en lugar de <s>' + fmt(full) + '</s>' : '';
+        smallEl.textContent = welcomeOn ? 'Ya está descontado en tu total y en tu cesta' : 'Marca la casilla y se aplica solo, sin códigos';
+      } else if (welcomeOn) {
         titleEl.textContent = v ? '¡Regalo activado! Te ahorras ' + fmt(full - disc) : '¡Regalo activado!';
         priceEl.innerHTML = '';
         const exp = new Date(window.vivaWelcome ? window.vivaWelcome.expires() : ws.expires || Date.now());
@@ -933,10 +987,22 @@
 
   // Regalo de bienvenida: al marcar la casilla se activa (24 h) y el total baja al momento
   const giftEl = $('[data-cfg-gift]');
+  // Black Friday: cuenta atrás hasta el final del último día
+  const timerEl = giftEl && giftEl.querySelector('[data-gift-timer]');
+  if (timerEl && W_END) {
+    const pad = (n) => String(n).padStart(2, '0');
+    const tick = () => {
+      const ms = W_END - Date.now();
+      if (ms <= 0) { giftEl.hidden = true; clearInterval(tid); return; }
+      const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, sec = Math.floor(ms / 1e3) % 60;
+      timerEl.innerHTML = 'Termina en ' + (d ? '<b>' + d + '<small>d</small></b>' : '') + '<b>' + pad(h) + '<small>h</small></b><b>' + pad(m) + '<small>m</small></b><b>' + pad(sec) + '<small>s</small></b>';
+    };
+    const tid = setInterval(tick, 1000); tick();
+  }
   if (giftEl) giftEl.querySelector('[data-gift-check]').addEventListener('change', (e) => {
     if (!e.target.checked || readWelcome()) return;
     if (window.vivaWelcome) window.vivaWelcome.activate(giftEl.dataset.code);
-    else { try { localStorage.setItem('vlh_welcome', JSON.stringify({ status: 'accepted', at: Date.now(), expires: Date.now() + 864e5, code: giftEl.dataset.code })); } catch (x) {} }
+    else { try { localStorage.setItem(W_KEY, JSON.stringify({ status: 'accepted', at: Date.now(), expires: W_BF ? W_END : Date.now() + 864e5, code: giftEl.dataset.code })); } catch (x) {} }
     paint();
     const tot = $('.cfg__total');
     giftEl.classList.add('is-popping'); tot.classList.add('is-popping');

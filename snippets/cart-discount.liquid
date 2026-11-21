@@ -36,7 +36,11 @@
       <p class="cart-perk">
         <span class="cart-perk__star" aria-hidden="true">✦</span>
         {%- if c == w_code -%}
-          <span>Descuento de bienvenida del {{ settings.welcome_percent | default: 10 }}&nbsp;% · <b>válido durante 24&nbsp;h</b></span>
+          {%- if settings.welcome_bf -%}
+            <span><b>Black Friday</b> −{{ settings.welcome_percent }}&nbsp;% aplicado · hasta el {{ settings.welcome_end | date: '%-d/%-m' }}</span>
+          {%- else -%}
+            <span>Descuento de bienvenida del {{ settings.welcome_percent | default: 10 }}&nbsp;% · <b>válido durante 24&nbsp;h</b></span>
+          {%- endif -%}
         {%- else -%}
           <span>Código <b>{{ c }}</b> aplicado</span>
         {%- endif -%}

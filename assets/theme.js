@@ -383,9 +383,15 @@
   };
 
   /* Descuento de bienvenida: dura 24 h desde que se activa en el aviso del formulario.
-     Al caducar se quita el código de la cesta. */
-  var WKEY = 'vlh_welcome';
+     Al caducar se quita el código de la cesta.
+     Modo promoción (Black Friday, ajuste «welcome_bf»): para todas, sin límite de primera compra,
+     dura hasta el final del último día (hora de Madrid) y se guarda en otra clave para no mezclarlo
+     con el estado del descuento de bienvenida. */
+  var PROMO = !!(discountState && discountState.promo && discountState.promoEnd);
+  var PROMO_END = PROMO ? new Date(discountState.promoEnd + 'T23:59:59+01:00').getTime() : 0;
+  var WKEY = PROMO ? 'vlh_promo_' + String(discountState.code || '').toUpperCase() : 'vlh_welcome';
   var WELCOME_MS = 24 * 3600000;
+  var newExpiry = function () { return PROMO ? PROMO_END : Date.now() + WELCOME_MS; };
   var readWelcome = function () { try { return JSON.parse(localStorage.getItem(WKEY)) || {}; } catch (e) { return {}; } };
   var writeWelcome = function (o) { try { localStorage.setItem(WKEY, JSON.stringify(o)); } catch (e) {} };
   var welcome = readWelcome();
@@ -399,10 +405,16 @@
   window.vivaWelcome = {
     active: welcomeActive,
     // Se ofrece hasta la primera compra; «No, gracias» solo lo oculta en esta visita
-    canOffer: function () { return welcome.status !== 'purchased' && !welcomeActive() && !dismissedThisSession(); },
+    canOffer: function () {
+      if (PROMO) return !welcomeActive() && Date.now() < PROMO_END;
+      return welcome.status !== 'purchased' && !welcomeActive() && !dismissedThisSession();
+    },
+    promo: PROMO,
+    promoEnd: PROMO_END,
+    storageKey: WKEY,
     expires: function () { return welcome.expires || 0; },
     activate: function (code) {
-      welcome = { status: 'accepted', at: Date.now(), expires: Date.now() + WELCOME_MS, code: code };
+      welcome = { status: 'accepted', at: Date.now(), expires: newExpiry(), code: code };
       writeWelcome(welcome);
       return addCode(code).then(function () { refreshDrawer().then(refreshDiscount); }).catch(function () {});
     },
@@ -411,7 +423,7 @@
   // Primera compra hecha: la cesta con el descuento desaparece (Shopify la vacía y crea otra al pagar)
   // o la clienta ha iniciado sesión y ya tiene pedidos. A partir de ahí no se vuelve a ofrecer.
   discountListeners.push(function (ds) {
-    if (!ds || welcome.status === 'purchased') return;
+    if (!ds || PROMO || welcome.status === 'purchased') return;
     if (ds.customerOrders > 0 || (welcome.status === 'accepted' && welcome.items > 0 && welcome.token && ds.token !== welcome.token)) {
       welcome = { status: 'purchased', at: Date.now() };
       writeWelcome(welcome);
@@ -426,7 +438,7 @@
   // Código ya aplicado sin activación (p. ej. de antes de este cambio): sus 24 h empiezan ahora
   discountListeners.push(function (ds) {
     if (ds && ds.applied > 0 && welcome.status !== 'accepted' && welcome.status !== 'purchased') {
-      welcome = { status: 'accepted', at: Date.now(), expires: Date.now() + WELCOME_MS, code: ds.code };
+      welcome = { status: 'accepted', at: Date.now(), expires: newExpiry(), code: ds.code };
       writeWelcome(welcome);
     }
   });

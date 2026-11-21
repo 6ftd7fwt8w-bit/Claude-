@@ -52,6 +52,8 @@
   {
     "code": {{ settings.welcome_code | strip | json }},
     "percent": {{ settings.welcome_percent | json }},
+    "promo": {% if settings.welcome_bf and settings.welcome_end != blank %}true{% else %}false{% endif %},
+    "promoEnd": {{ settings.welcome_end | strip | json }},
     "collectionUrl": {{ settings.welcome_collection.url | default: routes.all_products_collection_url | json }},
     "collectionTitle": {{ settings.welcome_collection.title | default: '' | downcase | json }},
     "applied": {{ w_applied | json }},

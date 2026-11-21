@@ -35,12 +35,12 @@
     "free_shipping_threshold": 60,
     "free_shipping_always": true,
     "cart_show_note": true,
-    "welcome_code": "HOLA10",
+    "welcome_code": "BLACKFRIDAY15",
     "welcome_collection": "laminas-personalizadas",
-    "welcome_percent": 10,
+    "welcome_percent": 15,
     "welcome_until": "",
-    "welcome_end": "",
-    "cross_code": "PEQUES3X2",
+    "welcome_end": "2026-11-30",
+    "cross_code": "",
     "cross_collection": "infantil",
     "cross_teaser": "¡Tenemos otro descuento para ti!",
     "cross_button": "Quiero verlo",
@@ -56,8 +56,14 @@
         "type": "shopify://apps/mida-replay-heatmaps/blocks/mida_recorder/e4c350c5-eabf-426d-8014-47ef50412bd0",
         "disabled": false,
         "settings": {}
+      },
+      "14060646107696862457": {
+        "type": "shopify://apps/judge-me-reviews/blocks/judgeme_core/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+        "disabled": false,
+        "settings": {}
       }
-    }
+    },
+    "welcome_bf": true
   },
   "presets": {}
 }
