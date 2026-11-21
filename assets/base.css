@@ -1417,3 +1417,24 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 @keyframes vpPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(216,180,90,.55); } 50% { box-shadow: 0 0 0 8px rgba(216,180,90,0); } }
 @keyframes vpLive { 0% { box-shadow: 0 0 0 0 rgba(255,90,60,.7); } 100% { box-shadow: 0 0 0 9px rgba(255,90,60,0); } }
 @media (prefers-reduced-motion: reduce) { .vp-coupon__box, .vp-coupon__live { animation: none !important; } }
+
+/* Recuadro del descuento en sets de 3 (arriba de los sets) y etiqueta en cada set */
+.set-promo { display: flex; align-items: center; gap: 16px; max-width: 720px; margin: 6px auto 22px; padding: 16px 18px; border: 1.5px dashed #c9a24f; border-radius: 14px; background: linear-gradient(135deg, #fffaf0 0%, #fbf1dc 100%); text-align: left; }
+.set-promo p { margin: 0; }
+.set-promo__body { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.set-promo__kicker { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #8a6a24; }
+.set-promo__title { font-family: var(--font-serif, Georgia, serif); font-size: 24px; line-height: 1.2; color: #2C2218; }
+.set-promo__text { font-size: 14px; line-height: 1.45; color: #5d5248; }
+.set-promo__stamp { flex: none; display: flex; align-items: center; justify-content: center; white-space: nowrap; width: 74px; height: 74px; border-radius: 50%; background: #231F1C; color: #f2d16b; font-family: var(--font-serif, Georgia, serif); font-size: 25px; line-height: 1; transform: rotate(-10deg); box-shadow: 0 0 0 3px #fbf1dc, 0 0 0 4.5px #c9a24f; }
+.set-promo__stamp small { font-size: 14px; margin-left: 1px; }
+.set-promo--bf { background: radial-gradient(120% 160% at 100% 0%, #3a2f1c 0%, #15110d 55%, #0d0b09 100%); border-color: #d8b45a; box-shadow: 0 12px 30px rgba(13,11,9,.25); }
+.set-promo--bf .set-promo__kicker { color: #f2d16b; }
+.set-promo--bf .set-promo__title { color: #fff; }
+.set-promo--bf .set-promo__text, .set-promo--bf .set-promo__timer { color: #cdbf9f; }
+.set-promo--bf .set-promo__stamp { background: linear-gradient(135deg, #f7dc85, #c9a24f); color: #15110d; font-weight: 700; box-shadow: 0 0 0 3px #15110d, 0 0 0 4.5px #d8b45a; }
+.set-card__badge--bf { background: #0d0b09; color: #f2d16b; border: 1px solid #d8b45a; }
+@media (max-width: 749px) {
+  .set-promo { gap: 12px; padding: 14px 14px; }
+  .set-promo__title { font-size: 20px; }
+  .set-promo__stamp { width: 58px; height: 58px; font-size: 20px; }
+}

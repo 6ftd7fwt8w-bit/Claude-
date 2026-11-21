@@ -14,7 +14,36 @@
     endif
   endfor
 -%}
+{%- liquid
+  comment
+    Descuento en sets de 3 (ajustes pack_*): recuadro arriba y precio rebajado en cada set
+  endcomment
+  assign pk_code = settings.pack_code | strip
+  assign pk_ok = false
+  if pk_code != blank and set_code == blank
+    assign pk_ok = true
+    if settings.pack_end != blank
+      assign pk_today = 'now' | date: '%Y%m%d' | plus: 0
+      assign pk_last = settings.pack_end | remove: '-' | plus: 0
+      if pk_today > pk_last
+        assign pk_ok = false
+      endif
+    endif
+  endif
+  assign pk_pct = settings.pack_percent | default: 10
+-%}
 {%- if has_sets -%}
+  {%- if pk_ok -%}
+    <div class="set-promo{% if settings.pack_bf %} set-promo--bf{% endif %}" data-set-promo>
+      <span class="set-promo__stamp" aria-hidden="true">−{{ pk_pct }}<small>%</small></span>
+      <div class="set-promo__body">
+        <p class="set-promo__kicker">{%- if settings.pack_bf -%}<i class="vp-coupon__live" aria-hidden="true"></i>Black Friday{% else %}Oferta{% endif %}{% if settings.pack_end != blank %} · solo hasta el {{ settings.pack_end | date: '%-d/%-m' }}{% endif %}</p>
+        <p class="set-promo__title">−{{ pk_pct }}&nbsp;% en todos los sets de 3 láminas</p>
+        <p class="set-promo__text">Elige tu set, marca la casilla del descuento y se aplica solo al añadir las 3.</p>
+        {%- if settings.pack_end != blank -%}<p class="vp-coupon__timer set-promo__timer" data-pc-timer></p>{%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
   <div class="set-intro">
     <p class="set-intro__title">🧩 Sets de 3 láminas que combinan</p>
     {%- if set_code != blank -%}
@@ -40,14 +69,21 @@
             endif
           endfor
           assign set_pay = set_total | minus: set_min
+          if pk_ok
+            assign set_pay = 0
+            for p in block.settings.products
+              assign p_off = p.price_min | times: pk_pct | divided_by: 100
+              assign set_pay = set_pay | plus: p.price_min | minus: p_off
+            endfor
+          endif
         -%}
         <button type="button" class="set-card" data-set-open="set-{{ block.id }}" {{ block.shopify_attributes }}>
           <span class="set-card__media">
             {{ photo | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 500, 700', sizes: '(min-width: 990px) 25vw, 50vw', alt: block.settings.name }}
-            {%- if set_code != blank -%}<span class="set-card__badge">3x2</span>{%- endif -%}
+            {%- if set_code != blank -%}<span class="set-card__badge">3x2</span>{%- elsif pk_ok -%}<span class="set-card__badge set-card__badge--bf">{% if settings.pack_bf %}Black Friday {% endif %}−{{ pk_pct }}&nbsp;%</span>{%- endif -%}
           </span>
           <span class="set-card__name">Set «{{ block.settings.name }}»</span>
-          <span class="set-card__price">3 láminas · {% if set_code != blank %}<s>{{ set_total | money }}</s> <b>{{ set_pay | money }}</b>{% else %}<b>{{ set_total | money }}</b>{% endif %}</span>
+          <span class="set-card__price">3 láminas · {% if set_code != blank or pk_ok %}<s>{{ set_total | money }}</s> <b>{{ set_pay | money }}</b>{% else %}<b>{{ set_total | money }}</b>{% endif %}</span>
         </button>
 
         <dialog class="set-sheet" id="set-{{ block.id }}" data-set-sheet data-code="{{ set_code | escape }}">
