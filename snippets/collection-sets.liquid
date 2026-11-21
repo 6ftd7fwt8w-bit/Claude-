@@ -94,14 +94,11 @@
               <div class="set-gal__track" data-set-gal-track>
                 <figure class="set-gal__slide">{{ photo | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 560px, 100vw', alt: block.settings.name }}</figure>
                 {%- for p in block.settings.products -%}
-                  {%- assign p_shown = 0 -%}
+                  {%- comment -%} Solo la primera foto de cada lámina {%- endcomment -%}
                   {%- assign p_alt = p.title | split: '–' | last | split: '|' | first | strip -%}
-                  {%- for img in p.images -%}
-                    {%- if img.src != photo.src and p_shown < 4 -%}
-                      {%- assign p_shown = p_shown | plus: 1 -%}
-                      <figure class="set-gal__slide" data-gal-product="{{ p.id }}">{{ img | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 560px, 100vw', alt: p_alt }}<figcaption class="set-gal__cap">{{ p_alt }}</figcaption></figure>
-                    {%- endif -%}
-                  {%- endfor -%}
+                  {%- if p.featured_image -%}
+                    <figure class="set-gal__slide" data-gal-product="{{ p.id }}">{{ p.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500, 700, 900', sizes: '(min-width: 750px) 560px, 100vw', alt: p_alt }}<figcaption class="set-gal__cap">{{ p_alt }}</figcaption></figure>
+                  {%- endif -%}
                 {%- endfor -%}
               </div>
               <button type="button" class="set-gal__nav set-gal__nav--prev" data-set-gal-prev aria-label="Foto anterior"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
