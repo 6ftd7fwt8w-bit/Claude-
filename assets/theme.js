@@ -459,21 +459,23 @@
     api.on = function () {
       try { var w = JSON.parse(localStorage.getItem(key)) || {}; return w.status === 'accepted' && w.expires > Date.now(); } catch (e) { return false; }
     };
-    api.off = function (cents) { return Math.round(cents * pct / 100); };
-    // el._full: importe de las láminas de la oferta · el._need: cuántas faltan para llegar a 3
+    // Descuento de una lista de precios, redondeado lámina a lámina como lo hace Shopify en la cesta
+    api.off = function (prices) { return prices.reduce(function (a, p) { return a + Math.floor(p * pct / 100); }, 0); };
+    // el._prices: precios de las láminas de la oferta · el._need: cuántas faltan para llegar a 3
     api.render = function (el) {
-      var on = api.on(), need = el._need || 0, full = el._full || 0;
+      var on = api.on(), need = el._need || 0, prices = el._prices || [];
+      var full = prices.reduce(function (a, p) { return a + p; }, 0), off = api.off(prices);
       el.classList.toggle('is-on', on);
       var chk = $('[data-pack-check]', el); chk.checked = on; chk.disabled = on;
       var title = $('[data-pc-title]', el), price = $('[data-pc-price]', el), small = $('[data-pc-small]', el);
       if (on) {
-        title.textContent = need ? '¡Black Friday activado!' : '¡Black Friday activado! Te ahorras ' + formatMoney(api.off(full));
+        title.textContent = need ? '¡Black Friday activado!' : '¡Black Friday activado! Te ahorras ' + formatMoney(off);
         price.innerHTML = need ? 'Elige ' + need + (need === 1 ? ' lámina más' : ' láminas más') + ' para conseguirlo' : '';
         small.textContent = 'Se aplica al añadir las 3 a tu cesta';
       } else {
         title.textContent = '−' + pct + ' % en tu set de 3 láminas';
         price.innerHTML = need ? 'Elige ' + need + (need === 1 ? ' lámina más' : ' láminas más') + ' para conseguirlo'
-          : (full ? 'Pagas <b>' + formatMoney(full - api.off(full)) + '</b> en lugar de <s>' + formatMoney(full) + '</s>' : '');
+          : (full ? 'Pagas <b>' + formatMoney(full - off) + '</b> en lugar de <s>' + formatMoney(full) + '</s>' : '');
         small.textContent = 'Marca la casilla y se aplica solo, sin códigos';
       }
     };
@@ -516,9 +518,9 @@
       var packEl = $('[data-pack-coupon]', sh);
       var packOn = !hasCode && !!(packCoupon && packEl && packCoupon.on() && items.length >= 3);
       sh._packOn = packOn;
-      if (packCoupon && packEl) { packEl._full = total; packEl._need = Math.max(0, 3 - items.length); packCoupon.render(packEl); }
+      if (packCoupon && packEl) { packEl._prices = prices; packEl._need = Math.max(0, 3 - items.length); packCoupon.render(packEl); }
       $('[data-set-old]', sh).textContent = hasCode || packOn ? formatMoney(total) : '';
-      $('[data-set-total]', sh).textContent = formatMoney(hasCode ? total - min : packOn ? total - packCoupon.off(total) : total);
+      $('[data-set-total]', sh).textContent = formatMoney(hasCode ? total - min : packOn ? total - packCoupon.off(prices) : total);
     };
     if (packCoupon) packCoupon.listeners.push(function () { sheets.forEach(paint); });
     sheets.forEach(function (sh) {
@@ -886,11 +888,10 @@
       saving = 0;
       for (var i = 0; i < free; i++) saving += crossPrices[i];
       // Cupón del set de 3: −% sobre las láminas de la oferta cuando hay 3 o más
-      var crossSum = crossPrices.reduce(function (a, b) { return a + b; }, 0);
       var packEl = $('[data-pack-coupon]', sec);
       packOn = !free && !!(packCoupon && packEl && packCoupon.on() && crossPrices.length >= 3);
-      if (packCoupon && packEl) { packEl._full = crossSum; packEl._need = Math.max(0, 3 - crossPrices.length); packCoupon.render(packEl); }
-      if (packOn) saving = packCoupon.off(crossSum);
+      if (packCoupon && packEl) { packEl._prices = crossPrices; packEl._need = Math.max(0, 3 - crossPrices.length); packCoupon.render(packEl); }
+      if (packOn) saving = packCoupon.off(crossPrices);
       var extra = n > 1;
       show('[data-pack-intro]', !extra);
       show('[data-pack-lines]', extra);
