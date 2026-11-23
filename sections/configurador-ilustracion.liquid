@@ -69,8 +69,10 @@
     endif
   endif
 -%}
-{%- if s.mode == 'product' and product or s.mode == 'pack' and product -%}
-  <script type="application/ld+json">{{ product | structured_data }}</script>
+{%- if product -%}
+  {%- if s.mode == 'product' or s.mode == 'pack' -%}
+    <script type="application/ld+json">{{ product | structured_data }}</script>
+  {%- endif -%}
 {%- endif -%}
 <section class="cfg section{% if s.embedded %} cfg--embedded{% endif %}" id="{{ s.anchor | default: 'configurador' }}" data-cfg>
   <div class="page-width">
