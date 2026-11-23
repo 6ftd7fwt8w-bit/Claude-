@@ -147,3 +147,6 @@
 - 24/11 checkout (lo cambió la dueña): contacto solo email, una página, teléfono de envío opcional con etiquetas «Teléfono/WhatsApp» / «(recomendado)», placeholder y tooltip explicando la revisión por WhatsApp (Editar contenido predeterminado). Shop Pay («Guardar mi información») se deja.
 - Tema «aviso contacto carrito» (192422674505, PUBLICADO 24/11): snippet cart-contact-note (ajuste cart_contact_text, icono WhatsApp) encima de «Tramitar pedido» en carrito y cajón: «Al continuar, aceptas que Viva la Home se ponga en contacto contigo por WhatsApp o correo electrónico…».
 - Abandono del 23/11 (122,40 €, A3 3 personas Pack Valentina, BLACKFRIDAY15): el teléfono SÍ quedó guardado en la dirección (no falló la validación); se fue en el paso de pago.
+
+## Klarna On-Site Messaging (24/11/2026)
+- La dueña instaló la app Klarna On-Site Messaging; decía «Vintage theme detected» porque ninguna sección principal aceptaba bloques @app. Borrador «Viva Galería – Klarna» (192423133257): main-product (bloque @app dentro del case, div .product__app) y main-cart («blocks»: [@app], se pintan bajo cart-summary) aceptan bloques de apps. El cajón del carrito (snippet) y el configurador no los aceptan. Pendiente: publicar y colocar el bloque de Klarna desde el editor (bajo el precio en la ficha y en el carrito).
