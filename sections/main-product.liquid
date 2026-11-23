@@ -310,6 +310,9 @@
 
             {%- when 'custom_liquid' -%}
               <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>
+
+            {%- when '@app' -%}
+              <div class="product__app">{% render block %}</div>
           {%- endcase -%}
         {%- endfor -%}
       </div>
@@ -325,6 +328,7 @@
 {
   "name": "Producto",
   "blocks": [
+    { "type": "@app" },
     { "type": "breadcrumb", "name": "Enlace a la colección", "limit": 1, "settings": [
       { "type": "collection", "id": "collection", "label": "Colección", "info": "Si está vacío, la colección desde la que se llegó" },
       { "type": "text", "id": "label", "label": "Texto", "info": "Si está vacío, el nombre de la colección" }

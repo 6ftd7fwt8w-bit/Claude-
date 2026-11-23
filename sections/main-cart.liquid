@@ -9,6 +9,7 @@
         <div data-cart-page-items>{% render 'cart-items' %}</div>
         <div class="cart-page__summary">
           {% render 'cart-summary', form_id: 'page' %}
+          {%- for block in section.blocks -%}<div class="cart-page__app">{% render block %}</div>{%- endfor -%}
           <form action="{{ routes.cart_url }}" method="post" id="CartForm">
             {%- if settings.cart_show_note -%}
               <div class="cart-note">
@@ -33,5 +34,5 @@
 </section>
 
 {% schema %}
-{ "name": "Carrito" }
+{ "name": "Carrito", "blocks": [ { "type": "@app" } ] }
 {% endschema %}
