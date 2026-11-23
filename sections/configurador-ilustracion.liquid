@@ -911,6 +911,19 @@
     oldEl.hidden = !pct; oldEl.textContent = pct ? fmt(before) : '';
     offEl.hidden = !pct; offEl.textContent = pct ? '−' + pct + ' %' : '';
     totalEl.closest('.cfg__total').classList.toggle('has-discount', !!pct);
+    // Klarna (bloque de app bajo el total): plazos calculados con el total de la selección.
+    // La app vuelve a poner el precio de la variante en cada cambio del DOM; el observador lo corrige.
+    if (v) {
+      const amt = String(now);
+      document.querySelectorAll('.cfg__app klarna-placement').forEach((k) => {
+        k._vlhAmt = amt;
+        if (!k._vlhObs) {
+          k._vlhObs = new MutationObserver(() => { if (k.getAttribute('data-purchase-amount') !== k._vlhAmt) k.setAttribute('data-purchase-amount', k._vlhAmt); });
+          k._vlhObs.observe(k, { attributes: true, attributeFilter: ['data-purchase-amount'] });
+        }
+        if (k.getAttribute('data-purchase-amount') !== amt) k.setAttribute('data-purchase-amount', amt);
+      });
+    }
     // Regalo de bienvenida en la tarjeta: cuánto se ahorra con la selección de ahora
     const gEl = $('[data-cfg-gift]');
     if (gEl) {
