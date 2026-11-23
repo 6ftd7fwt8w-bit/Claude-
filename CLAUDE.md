@@ -140,3 +140,8 @@
 - El widget de Judge.me que la dueña añadió a product.simplif-v2 (review_widget, review_data sample_data, empty_state hide_widget) no enseña nada en la web mientras no haya reseñas.
 - Títulos y descripciones SEO rellenados en todos los productos y colecciones (sept. 2026). Productos nuevos: rellenar también «Vista previa del motor de búsqueda».
 - Cambio de handles aplazado (la dueña prefiere esperar a ver cómo indexa). Las láminas infantiles tienen handles desordenados (p. ej. «Ríe» en .../salta-vivalahome-copia). Si se cambian, hacerlo con redirección (redirectNewHandle) y actualizar a la vez los handles en templates/index.json, collection.json y collection.sets.json (sets_def.py).
+
+## Carritos abandonados / registro del checkout (23/11/2026)
+- MIDA (y Clarity, Hotjar…) no pueden grabar el checkout: las grabaciones (Advanced DOM events) solo funcionan en Shopify Plus.
+- Alternativa preparada en herramientas/registro-checkout: píxel personalizado (Configuración → Eventos de clientes) que envía pasos del checkout + alert_displayed (errores que ve la clienta) + dispositivo a una hoja de Google vía Apps Script. Sin datos personales. Pendiente de que la dueña cree la hoja y pase la URL.
+- Abandono del 23/11 (122,40 €, A3 3 personas Pack Valentina, BLACKFRIDAY15): el teléfono SÍ quedó guardado en la dirección (no falló la validación); se fue en el paso de pago.
