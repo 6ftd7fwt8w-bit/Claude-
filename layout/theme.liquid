@@ -39,6 +39,10 @@
     {% endif %}
 
     {% render 'meta-tags', description: vlh_description %}
+    {%- comment -%} SEO: el carrito y el buscador no deben salir en Google {%- endcomment -%}
+    {%- if request.page_type == 'cart' or request.page_type == 'search' -%}
+      <meta name="robots" content="noindex, follow">
+    {%- endif -%}
 
     {%- if request.page_type == 'index' -%}
       <script type="application/ld+json">

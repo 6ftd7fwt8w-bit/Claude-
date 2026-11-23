@@ -69,6 +69,9 @@
     endif
   endif
 -%}
+{%- if s.mode == 'product' and product -%}
+  <script type="application/ld+json">{{ product | structured_data }}</script>
+{%- endif -%}
 <section class="cfg section{% if s.embedded %} cfg--embedded{% endif %}" id="{{ s.anchor | default: 'configurador' }}" data-cfg>
   <div class="page-width">
     <header class="cfg__head">
@@ -79,8 +82,24 @@
       {%- elsif s.embedded -%}
       <h2 class="cfg__title">{{ s.title }}</h2>
       {%- else -%}
-      <h1 class="cfg__title">{{ s.title }}</h1>
-      {%- if s.subtitle != blank -%}<p class="cfg__subtitle">{{ s.subtitle }}</p>{%- endif -%}
+      {%- comment -%}
+        SEO: en las fichas de cada tipo y en la colección, el título principal es el título SEO de esa página
+        (p. ej. «Retrato de mascota personalizado desde tu foto») y «Configura tu ilustración» va encima, pequeño;
+        en las fichas, el subtítulo es su descripción SEO (texto propio de cada tipo).
+      {%- endcomment -%}
+      {%- liquid
+        assign cfg_h1 = s.title
+        assign cfg_sub = s.subtitle
+        if request.page_type == 'product' or request.page_type == 'collection'
+          assign cfg_h1 = page_title | split: ' &ndash; ' | first | split: ' – ' | first | strip
+          if request.page_type == 'product' and page_description != blank
+            assign cfg_sub = page_description
+          endif
+        endif
+      -%}
+      {%- if cfg_h1 != s.title -%}<p class="cfg__kicker">{{ s.title }}</p>{%- endif -%}
+      <h1 class="cfg__title">{{ cfg_h1 }}</h1>
+      {%- if cfg_sub != blank -%}<p class="cfg__subtitle">{{ cfg_sub }}</p>{%- endif -%}
       {%- endif -%}
       <p class="cfg__see"{% if pack_mode or s.embedded %} style="display:none"{% endif %}>Ver ejemplos:</p>
       <div class="cfg__types" role="tablist" aria-label="Tipos de ilustración"{% if pack_mode or s.embedded %} style="display:none"{% endif %}>
@@ -92,7 +111,7 @@
 
     <div class="cfg__grid">
       <div class="cfg__gallery">
-        <div class="cfg__main">{%- assign first_p = section.blocks.first.settings.product -%}{%- if pack_mode -%}{%- assign first_p = product -%}{%- endif -%}{%- if first_p.featured_image -%}{{ first_p.featured_image | image_url: width: 1100 | image_tag: data-cfg-main: "", alt: "", width: 900, height: 1125 }}{%- else -%}<img data-cfg-main alt="" width="900" height="1125">{%- endif -%}</div>
+        <div class="cfg__main">{%- assign first_p = section.blocks.first.settings.product -%}{%- if pack_mode -%}{%- assign first_p = product -%}{%- endif -%}{%- if first_p.featured_image -%}{{ first_p.featured_image | image_url: width: 1100 | image_tag: data-cfg-main: "", alt: first_p.featured_image.alt | default: first_p.title, width: 900, height: 1125 }}{%- else -%}<img data-cfg-main alt="" width="900" height="1125">{%- endif -%}</div>
         <div class="cfg__thumbs" data-cfg-thumbs></div>
       </div>
 
@@ -321,10 +340,12 @@
           {%- endfor -%}
         </ol>
       </div>
-      {%- if s.how_text != blank -%}
+      {%- assign cfg_desc = '' -%}
+      {%- if s.mode == 'product' and product and product.description != blank -%}{%- assign cfg_desc = product.description -%}{%- endif -%}
+      {%- if s.how_text != blank or cfg_desc != blank -%}
         <details class="accordion pdesc__merged">
           <summary>Descripción y cómo trabajamos</summary>
-          <div class="accordion__content rte">{{ s.how_text }}</div>
+          <div class="accordion__content rte">{{ cfg_desc }}{{ s.how_text }}</div>
         </details>
       {%- endif -%}
     </div>
@@ -790,7 +811,7 @@
     if (!imgs.length) return;
     cur = (i + imgs.length) % imgs.length;
     mainImg.removeAttribute('srcset'); mainImg.removeAttribute('sizes');
-    mainImg.src = imgs[cur].src; mainImg.alt = imgs[cur].alt || '';
+    mainImg.src = imgs[cur].src; mainImg.alt = imgs[cur].alt || ((data.pack ? data.pack.name : data.types[st.type].label) + ' · ilustración personalizada de ejemplo ' + (cur + 1));
     $$('.cfg__thumb', thumbs).forEach((b, k) => b.classList.toggle('is-active', k === cur));
     const a = thumbs.children[cur]; if (a) thumbs.scrollTo({ left: a.offsetLeft - thumbs.clientWidth / 2 + a.clientWidth / 2, behavior: 'smooth' });
   };
