@@ -69,7 +69,7 @@
     endif
   endif
 -%}
-{%- if s.mode == 'product' and product -%}
+{%- if s.mode == 'product' and product or s.mode == 'pack' and product -%}
   <script type="application/ld+json">{{ product | structured_data }}</script>
 {%- endif -%}
 <section class="cfg section{% if s.embedded %} cfg--embedded{% endif %}" id="{{ s.anchor | default: 'configurador' }}" data-cfg>
@@ -91,7 +91,7 @@
         assign cfg_h1 = s.title
         assign cfg_sub = s.subtitle
         if request.page_type == 'product' or request.page_type == 'collection'
-          assign cfg_h1 = page_title | split: ' &ndash; ' | first | split: ' – ' | first | strip
+          assign cfg_h1 = page_title | split: ' &ndash; ' | first | split: ' – ' | first | split: ' | ' | first | strip
           if request.page_type == 'product' and page_description != blank
             assign cfg_sub = page_description
           endif
