@@ -144,4 +144,6 @@
 ## Carritos abandonados / registro del checkout (23/11/2026)
 - MIDA (y Clarity, Hotjar…) no pueden grabar el checkout: las grabaciones (Advanced DOM events) solo funcionan en Shopify Plus.
 - Alternativa preparada en herramientas/registro-checkout: píxel personalizado (Configuración → Eventos de clientes) que envía pasos del checkout + alert_displayed (errores que ve la clienta) + dispositivo a una hoja de Google vía Apps Script. Sin datos personales. Pendiente de que la dueña cree la hoja y pase la URL.
+- 24/11 checkout (lo cambió la dueña): contacto solo email, una página, teléfono de envío opcional con etiquetas «Teléfono/WhatsApp» / «(recomendado)», placeholder y tooltip explicando la revisión por WhatsApp (Editar contenido predeterminado). Shop Pay («Guardar mi información») se deja.
+- Borrador «aviso contacto carrito» (192422674505): snippet cart-contact-note (ajuste cart_contact_text, icono WhatsApp) encima de «Tramitar pedido» en carrito y cajón: «Al continuar, aceptas que Viva la Home se ponga en contacto contigo por WhatsApp o correo electrónico…».
 - Abandono del 23/11 (122,40 €, A3 3 personas Pack Valentina, BLACKFRIDAY15): el teléfono SÍ quedó guardado en la dirección (no falló la validación); se fue en el paso de pago.
