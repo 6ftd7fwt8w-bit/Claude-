@@ -263,6 +263,13 @@
         "id": "cart_show_note",
         "label": "Permitir nota de pedido",
         "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "cart_contact_text",
+        "label": "Aviso de contacto encima del botón de pago",
+        "info": "Déjalo vacío para no mostrarlo.",
+        "default": "Al continuar, aceptas que Viva la Home se ponga en contacto contigo por WhatsApp o correo electrónico para la revisión de tu diseño, si procede, y para consultas sobre tu pedido."
       }
     ]
   },

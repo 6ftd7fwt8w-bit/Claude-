@@ -1475,3 +1475,7 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .frame-note { display: flex; align-items: center; gap: 8px; margin: -2px 0 12px; font-size: 13.5px; color: #4a4038; }
 .frame-note__icon { flex: none; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: #8aa0b4; color: #fff; font-size: 11px; font-weight: 700; font-style: italic; font-family: Georgia, serif; }
 .set-sheet .frame-note { justify-content: flex-end; }
+
+/* Aviso de contacto encima de «Finalizar pedido» */
+.cart-contact-note { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 10px; font-size: 12px; line-height: 1.45; color: var(--color-text); opacity: .78; text-align: left; }
+.cart-contact-note svg { flex: 0 0 14px; width: 14px; height: 14px; margin-top: 2px; opacity: .7; }

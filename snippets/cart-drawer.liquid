@@ -19,6 +19,7 @@
             <strong>{{ cart.total_price | money }}</strong>
           </div>
           <form action="{{ routes.cart_url }}" method="post">
+            {% render 'cart-contact-note' %}
             <button type="submit" name="checkout" class="button button--full">{% render 'icon', name: 'lock' %}{{ 'cart.checkout' | t }}</button>
           </form>
           {% render 'cart-trust' %}

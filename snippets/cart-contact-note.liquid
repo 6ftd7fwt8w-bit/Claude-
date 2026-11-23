@@ -1,0 +1,5 @@
+{%- comment -%} Aviso de contacto (WhatsApp / email) encima del botón de tramitar pedido {%- endcomment -%}
+{%- assign t = settings.cart_contact_text | strip -%}
+{%- if t != blank -%}
+  <p class="cart-contact-note">{% render 'icon', name: 'whatsapp' %}<span>{{ t }}</span></p>
+{%- endif -%}
