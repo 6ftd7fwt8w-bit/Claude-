@@ -296,10 +296,10 @@
               <span class="cfg__amounts"><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong><em class="cfg__off" data-cfg-off hidden></em></span>
             </div>
             <p class="cfg__envio" id="vlh-envio"><span class="cfg__ship"><span aria-hidden="true">🚚</span> Envío estándar <b>GRATIS</b></span><span class="cfg__iva">IVA incluido</span></p>
-            {%- for block in section.blocks -%}{%- if block.type == '@app' -%}{%- unless block.id contains 'judge' -%}<div class="cfg__app">{% render block %}</div>{%- endunless -%}{%- endif -%}{%- endfor -%}
           </div>
           <p class="cfg__error" id="vlh-error" data-cfg-error role="alert" hidden></p>
           <button type="submit" class="button button--full cfg__submit" data-cfg-submit>Añadir al carrito</button>
+          {%- for block in section.blocks -%}{%- if block.type == '@app' -%}{%- unless block.id contains 'judge' -%}<div class="cfg__app">{% render block %}</div>{%- endunless -%}{%- endif -%}{%- endfor -%}
           <p class="cfg__secure">🔒 Pago 100 % seguro</p>
 
           <div class="cfg__facts">
@@ -591,6 +591,7 @@
   .cfg__ship { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: #e3f1e0; border: 1px solid #b9d6b2; color: #24522d; font-size: 14px; }
   .cfg__ship b { font-weight: 700; letter-spacing: .04em; }
   .cfg__app { margin: 10px 0 0; text-align: center; }
+  .cfg__submit + .cfg__app { margin: 10px 0 4px; }
   .cfg__reviews { margin: -6px 0 18px; }
   /* Carrusel de reseñas compacto bajo «Tu ilustración, en solo 3 pasos»: sin título ni número de reseñas */
   .cfg__reviews .jdgm-carousel-title-and-link { display: none !important; }
