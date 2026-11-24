@@ -19,7 +19,25 @@
   /* Judge.me: sin «Sé el primero…» ni título duplicado (ya va el de la sección) */
   .section--apps .jm-no-reviews-state__text,
   .section--apps .jm-review-widget-minimal-header__title { display: none !important; }
+  /* Sin número de reseñas: ni «1 reseña» junto a la media, ni título/contador del carrusel (va el título de la sección) */
+  .section--apps .jm-average-rating-display p + p,
+  .section--apps .jdgm-carousel-title-and-link { display: none !important; }
 </style>
+
+<script>
+  /* Judge.me: quita el «(n)» de las pestañas «Reseñas de productos (1)» / «Reseñas de la tienda (3)» */
+  (function () {
+    var root = document.getElementById('{{ section.settings.anchor | default: 'apps' | handleize }}');
+    if (!root || root._vlhCounts) return; root._vlhCounts = true;
+    var clean = function () {
+      root.querySelectorAll('.jdgm-tab, .jdgm-tab-dropdown__label, .jdgm-tab-dropdown__select option, .jdgm-tab-dropdown__select option span').forEach(function (el) {
+        el.childNodes.forEach(function (n) { if (n.nodeType === 3 && /\(\d+\)/.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace(/\s*\(\d+\)/, ''); });
+      });
+    };
+    new MutationObserver(clean).observe(root, { childList: true, subtree: true, characterData: true });
+    clean();
+  })();
+</script>
 
 {%- if section.settings.auto_open_review -%}
 <script>
