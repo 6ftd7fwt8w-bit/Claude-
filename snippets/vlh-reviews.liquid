@@ -1,14 +1,14 @@
 {%- comment -%}
   Reseñas de Judge.me pintadas por el tema (las del carrusel de Judge.me no enseñan las fotos de las clientas
   ni dejan ordenar). Lee la API pública de Judge.me (tienda + productos), pone primero las que tienen foto y
-  luego las más recientes, y no muestra el número de reseñas.
+  luego las más recientes, y no muestra el número de reseñas. La media («★★★★★ 5 · Valoración media») solo sale con más de 20 reseñas.
   mode: 'mini'  → una reseña cada vez, compacta (configurador, bajo «Tu ilustración, en solo 3 pasos»)
         'cards' → fila deslizable de tarjetas (portada)
         'list'  → todas en rejilla + botón «Escribir una reseña» (bajo el configurador)
 {%- endcomment -%}
 {%- assign vr_mode = mode | default: 'cards' -%}
 <div class="vrv vrv--{{ vr_mode }}" data-vlh-reviews data-mode="{{ vr_mode }}" data-shop="{{ shop.permanent_domain }}" hidden>
-  <p class="vrv__score" data-vrv-score hidden><span class="vrv__score-stars" aria-hidden="true">★★★★★</span> <b data-vrv-avg></b> de 5<span class="vrv__score-label"> · Valoración media</span></p>
+  <p class="vrv__score" data-vrv-score hidden><span class="vrv__score-stars" aria-hidden="true">★★★★★</span> <b data-vrv-avg></b><span class="vrv__score-label"> · Valoración media</span></p>
   <div class="vrv__track" data-vrv-track></div>
   {%- if vr_mode != 'list' -%}
     <div class="vrv__nav">
@@ -18,7 +18,7 @@
     </div>
   {%- endif -%}
   {%- if vr_mode != 'mini' -%}
-    <p class="vrv__legal">Opiniones recogidas con Judge.me y publicadas todas, sin filtrar por puntuación. «Compra verificada» indica que la persona hizo un pedido en nuestra tienda.</p>
+    <p class="vrv__legal">Opiniones recogidas con Judge.me (plataforma externa de reseñas para tiendas online), sin filtrar por puntuación ni modificar.</p>
   {%- endif -%}
   {%- if write_url != blank -%}
     <p class="vrv__write"><a class="button button--outline" href="{{ write_url }}">{{ write_label | default: 'Escribir una reseña' }}</a></p>
@@ -53,7 +53,7 @@
       var c = el('figure', 'vrv__card' + (r.p.length ? ' has-photo' : ''));
       if (r.p.length) {
         var a = el('a', 'vrv__photo'); a.href = r.p[0].l; a.target = '_blank'; a.rel = 'noopener';
-        var img = el('img'); img.src = mode === 'mini' ? r.p[0].s : r.p[0].l.replace('width=1024', 'width=640'); img.alt = 'Foto de ' + r.n; img.loading = 'lazy';
+        var img = el('img'); img.src = mode === 'mini' ? r.p[0].s : r.p[0].l.replace('width=1024', 'width=320'); img.alt = 'Foto de ' + r.n; img.loading = 'lazy';
         a.appendChild(img); c.appendChild(a);
       }
       var body = el('figcaption', 'vrv__body');
@@ -73,9 +73,9 @@
       track.innerHTML = '';
       list.forEach(function (r) { track.appendChild(card(r, mode)); });
       var rated = list.filter(function (r) { return r.st > 0; });
-      if (rated.length) {
+      if (rated.length > 20) {
         var avg = rated.reduce(function (a, r) { return a + r.st; }, 0) / rated.length;
-        box.querySelector('[data-vrv-avg]').textContent = (Math.round(avg * 10) / 10).toFixed(1).replace('.', ',');
+        var a1 = Math.round(avg * 10) / 10; box.querySelector('[data-vrv-avg]').textContent = a1 % 1 ? a1.toFixed(1).replace('.', ',') : String(a1);
         box.querySelector('[data-vrv-score]').hidden = false;
       }
       box.hidden = false;
