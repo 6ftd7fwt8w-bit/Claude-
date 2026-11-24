@@ -1484,7 +1484,7 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .section--vrv { padding-block: 40px; }
 .section--vrv .section-title { margin-bottom: 20px; }
 .vrv { --vrv-star: #C9A24A; }
-.vrv__track { display: grid; grid-auto-flow: column; grid-auto-columns: min(78%, 300px); gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 2px 2px 6px; }
+.vrv__track { display: grid; grid-auto-flow: column; grid-auto-columns: min(78%, 300px); gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 2px 2px 6px; align-items: start; }
 .vrv__track::-webkit-scrollbar { display: none; }
 .vrv__card { scroll-snap-align: start; margin: 0; background: #fff; border: 1px solid var(--color-border, #E3DBD0); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
 .vrv__photo { display: block; position: relative; height: 0; padding-top: 80%; overflow: hidden; background: var(--color-background-alt, #EFE8DE); flex: none; }
