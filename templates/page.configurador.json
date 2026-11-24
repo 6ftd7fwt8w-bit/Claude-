@@ -92,9 +92,14 @@
             "count_default": "",
             "generic": true
           }
+        },
+        "judge_me_reviews_featured_carousel_cfg": {
+          "type": "shopify://apps/judge-me-reviews/blocks/featured_carousel/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
         }
       },
       "block_order": [
+        "judge_me_reviews_featured_carousel_cfg",
         "pareja",
         "familia",
         "fallera",
@@ -254,10 +259,35 @@
         "foto_14",
         "foto_15"
       ]
+    },
+    "opiniones": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_review_widget_cfg": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 250,
+            "show_shop_reviews": true,
+            "empty_state": "hide_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_cfg"
+      ],
+      "settings": {
+        "title": "",
+        "text": "",
+        "anchor": "opiniones",
+        "background": "default",
+        "auto_open_review": false
+      }
     }
   },
   "order": [
     "main",
+    "opiniones",
     "instagram"
   ]
 }
