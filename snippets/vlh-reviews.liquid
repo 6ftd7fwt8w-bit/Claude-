@@ -72,6 +72,15 @@
       var mode = box.dataset.mode, track = box.querySelector('[data-vrv-track]');
       track.innerHTML = '';
       list.forEach(function (r) { track.appendChild(card(r, mode)); });
+      box.hidden = false;
+      if (mode !== 'mini') requestAnimationFrame(function () {
+        track.querySelectorAll('.vrv__text').forEach(function (t) {
+          if (t.scrollHeight <= t.clientHeight + 2) return;
+          var more = el('button', 'vrv__more', 'Leer más'); more.type = 'button';
+          more.onclick = function () { var o = t.classList.toggle('is-open'); more.textContent = o ? 'Leer menos' : 'Leer más'; };
+          t.after(more);
+        });
+      });
       var rated = list.filter(function (r) { return r.st > 0; });
       if (rated.length > 20) {
         var avg = rated.reduce(function (a, r) { return a + r.st; }, 0) / rated.length;

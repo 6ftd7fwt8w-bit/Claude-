@@ -1528,3 +1528,6 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .vrv--cards .vrv__card.has-photo, .vrv--list .vrv__card.has-photo { display: grid; grid-template-columns: 92px 1fr; gap: 12px; padding: 14px; align-items: start; }
 .vrv--cards .vrv__card.has-photo .vrv__photo, .vrv--list .vrv__card.has-photo .vrv__photo { width: 92px; height: 92px; border-radius: 10px; }
 .vrv--cards .vrv__card.has-photo .vrv__body, .vrv--list .vrv__card.has-photo .vrv__body { padding: 0; }
+.vrv--cards .vrv__text, .vrv--list .vrv__text { display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; }
+.vrv__text.is-open { -webkit-line-clamp: unset; display: block; }
+.vrv__more { align-self: flex-start; background: none; border: 0; padding: 0; font-size: 13px; text-decoration: underline; color: var(--color-text); cursor: pointer; }
