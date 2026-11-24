@@ -781,6 +781,9 @@
   .cfg-gift--bf .cfg-gift__stamp { width: 42px; height: 42px; font-size: 15px; box-shadow: 0 0 0 2px #15110d, 0 0 0 3px #d8b45a; }
   .cfg-gift--bf .cfg-gift__stamp small { font-size: 10px; }
   .cfg-gift--bf.is-on .cfg-gift__stamp { box-shadow: 0 0 0 2px #15110d, 0 0 0 3px #d8b45a; }
+  .cfg-gift__save { display: block; font-family: var(--font-body); font-size: 13px; color: #e9e1d4; margin-top: 2px; }
+  .cfg-gift__save b { font-family: var(--font-serif, Georgia, serif); font-size: 21px; font-weight: 700; color: #f2d16b; letter-spacing: .01em; }
+  .cfg__off.is-bf { background: #15110d !important; color: #f2d16b !important; border: 1px solid #d8b45a; font-weight: 700; white-space: nowrap; }
   @keyframes cfgGiftPulseBf { 0%, 100% { box-shadow: 0 0 0 0 rgba(242,209,107,.55); } 50% { box-shadow: 0 0 0 8px rgba(242,209,107,0); } }
   @keyframes cfgGiftLive { 0% { box-shadow: 0 0 0 0 rgba(255,90,60,.7); } 100% { box-shadow: 0 0 0 9px rgba(255,90,60,0); } }
   @keyframes cfgGiftPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(176,138,62,.45); } 50% { box-shadow: 0 0 0 7px rgba(176,138,62,0); } }
@@ -948,7 +951,8 @@
     totalEl.textContent = v ? fmt(now) : '—';
     const pct = before > now ? Math.round((1 - now / before) * 100) : 0;
     oldEl.hidden = !pct; oldEl.textContent = pct ? fmt(before) : '';
-    offEl.hidden = !pct; offEl.textContent = pct ? '−' + pct + ' %' : '';
+    offEl.hidden = !pct; offEl.textContent = pct ? (welcomeOn && W_BF ? 'Black Friday −' + pct + ' %' : '−' + pct + ' %') : '';
+    offEl.classList.toggle('is-bf', !!pct && welcomeOn && W_BF);
     totalEl.closest('.cfg__total').classList.toggle('has-discount', !!pct);
     // Klarna (bloque de app bajo el total): plazos calculados con el total de la selección.
     // La app vuelve a poner el precio de la variante en cada cambio del DOM; el observador lo corrige.
@@ -973,7 +977,8 @@
       const wp = +gEl.dataset.percent || 10, full = v ? v.price : 0, disc = Math.round(full * (100 - wp) / 100);
       const priceEl = gEl.querySelector('[data-gift-price]'), titleEl = gEl.querySelector('[data-gift-title]'), smallEl = gEl.querySelector('[data-gift-small]');
       if (W_BF) {
-        titleEl.textContent = welcomeOn ? (v ? '¡Black Friday activado! Te ahorras ' + fmt(full - disc) : '¡Black Friday activado!') : '−' + wp + ' % en tu ilustración';
+        if (welcomeOn) titleEl.innerHTML = '¡Black Friday aplicado!' + (v ? '<span class="cfg-gift__save">Te ahorras <b>' + fmt(full - disc) + '</b></span>' : '');
+        else titleEl.textContent = '−' + wp + ' % en tu ilustración';
         priceEl.innerHTML = !welcomeOn && v ? 'Pagas <b>' + fmt(disc) + '</b> en lugar de <s>' + fmt(full) + '</s>' : '';
         smallEl.textContent = welcomeOn ? 'Ya está descontado en tu total y en tu cesta' : 'Marca la casilla y se aplica solo, sin códigos';
       } else if (welcomeOn) {
