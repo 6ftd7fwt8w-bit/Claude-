@@ -1,0 +1,36 @@
+<section class="section section--vrv bg-{{ section.settings.background }}" id="{{ section.settings.anchor | default: 'opiniones' | handleize }}">
+  <div class="page-width">
+    {%- if section.settings.title != blank -%}<h2 class="section-title">{{ section.settings.title }}</h2>{%- endif -%}
+    {%- liquid
+      assign write_url = blank
+      if section.settings.show_write
+        assign write_url = section.settings.write_url | default: '/opiniones'
+      endif
+    -%}
+    {% render 'vlh-reviews', mode: section.settings.mode, write_url: write_url, write_label: section.settings.write_label %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Reseñas (Judge.me)",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Título", "default": "Lo que dicen de nosotros" },
+    {
+      "type": "select", "id": "mode", "label": "Formato",
+      "options": [{ "value": "cards", "label": "Carrusel de tarjetas" }, { "value": "list", "label": "Todas las reseñas" }],
+      "default": "cards"
+    },
+    { "type": "checkbox", "id": "show_write", "label": "Botón «Escribir una reseña»", "default": false },
+    { "type": "text", "id": "write_label", "label": "Texto del botón", "default": "Escribir una reseña" },
+    { "type": "url", "id": "write_url", "label": "Enlace del botón", "info": "Vacío: /opiniones (formulario de Judge.me)" },
+    { "type": "text", "id": "anchor", "label": "Ancla (#)", "default": "opiniones" },
+    {
+      "type": "select", "id": "background", "label": "Fondo",
+      "options": [{ "value": "default", "label": "Crema" }, { "value": "alt", "label": "Arena" }],
+      "default": "default"
+    }
+  ],
+  "presets": [{ "name": "Reseñas (Judge.me)" }]
+}
+{% endschema %}

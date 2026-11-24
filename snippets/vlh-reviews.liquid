@@ -1,0 +1,104 @@
+{%- comment -%}
+  Reseñas de Judge.me pintadas por el tema (las del carrusel de Judge.me no enseñan las fotos de las clientas
+  ni dejan ordenar). Lee la API pública de Judge.me (tienda + productos), pone primero las que tienen foto y
+  luego las más recientes, y no muestra el número de reseñas.
+  mode: 'mini'  → una reseña cada vez, compacta (configurador, bajo «Tu ilustración, en solo 3 pasos»)
+        'cards' → fila deslizable de tarjetas (portada)
+        'list'  → todas en rejilla + botón «Escribir una reseña» (bajo el configurador)
+{%- endcomment -%}
+{%- assign vr_mode = mode | default: 'cards' -%}
+<div class="vrv vrv--{{ vr_mode }}" data-vlh-reviews data-mode="{{ vr_mode }}" data-shop="{{ shop.permanent_domain }}" hidden>
+  <div class="vrv__track" data-vrv-track></div>
+  {%- if vr_mode != 'list' -%}
+    <div class="vrv__nav">
+      <button type="button" class="vrv__arrow" data-vrv-prev aria-label="Reseña anterior">&#8249;</button>
+      <span class="vrv__dots" data-vrv-dots></span>
+      <button type="button" class="vrv__arrow" data-vrv-next aria-label="Reseña siguiente">&#8250;</button>
+    </div>
+  {%- endif -%}
+  {%- if write_url != blank -%}
+    <p class="vrv__write"><a class="button button--outline" href="{{ write_url }}">{{ write_label | default: 'Escribir una reseña' }}</a></p>
+  {%- endif -%}
+</div>
+
+<script>
+  (function () {
+    if (window.vlhReviews) { window.vlhReviews.init(); return; }
+    var cache = null;
+    function load(shop) {
+      if (cache) return cache;
+      var key = 'vlh_reviews_v1';
+      try { var c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 600000) { cache = Promise.resolve(c.r); return cache; } } catch (e) {}
+      var base = 'https://cdn.judge.me/reviews/all_reviews_js_based?widget_type=review-widget&page=1&sort_by=created_at&sort_dir=desc&platform=shopify&shop_domain=' + encodeURIComponent(shop) + '&review_type=';
+      var get = function (t) { return fetch(base + t).then(function (r) { return r.ok ? r.json() : { reviews: [] }; }).then(function (d) { return d.reviews || []; }).catch(function () { return []; }); };
+      cache = Promise.all([get('shop-reviews'), get('product-reviews')]).then(function (a) {
+        var seen = {}, all = [];
+        a[0].concat(a[1]).forEach(function (r) {
+          if (!r || seen[r.uuid] || (r.rating || 0) < 4 || !(r.body || '').trim()) return; seen[r.uuid] = 1;
+          var pics = (r.pictures_urls || []).map(function (p) { return { s: p.compact || p.small || p.original, l: p.huge || p.original }; });
+          all.push({ n: r.reviewer_name || '', b: (r.body || '').trim(), st: r.rating || 5, p: pics, d: r.created_at || '', u: r.product_url && r.product_url !== '/' ? r.product_url : '' });
+        });
+        all.sort(function (x, y) { return (y.p.length ? 1 : 0) - (x.p.length ? 1 : 0) || (y.d > x.d ? 1 : y.d < x.d ? -1 : 0); });
+        try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), r: all })); } catch (e) {}
+        return all;
+      });
+      return cache;
+    }
+    function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+    function card(r, mode) {
+      var c = el('figure', 'vrv__card' + (r.p.length ? ' has-photo' : ''));
+      if (r.p.length) {
+        var a = el('a', 'vrv__photo'); a.href = r.p[0].l; a.target = '_blank'; a.rel = 'noopener';
+        var img = el('img'); img.src = mode === 'mini' ? r.p[0].s : r.p[0].l.replace('width=1024', 'width=640'); img.alt = 'Foto de ' + r.n; img.loading = 'lazy';
+        a.appendChild(img); c.appendChild(a);
+      }
+      var body = el('figcaption', 'vrv__body');
+      body.appendChild(el('span', 'vrv__stars', '★★★★★'.slice(0, r.st)));
+      body.appendChild(el('blockquote', 'vrv__text', r.b));
+      body.appendChild(el('cite', 'vrv__name', r.n));
+      c.appendChild(body);
+      return c;
+    }
+    function build(box, list) {
+      var mode = box.dataset.mode, track = box.querySelector('[data-vrv-track]');
+      track.innerHTML = '';
+      list.forEach(function (r) { track.appendChild(card(r, mode)); });
+      box.hidden = false;
+      if (mode === 'list') return;
+      var dots = box.querySelector('[data-vrv-dots]'), cards = track.children;
+      var perView = function () { return Math.max(1, Math.round(track.clientWidth / (cards[0] ? cards[0].getBoundingClientRect().width : 1))); };
+      var pages = function () { return Math.max(1, cards.length - perView() + 1); };
+      var idx = function () { return cards[0] ? Math.round(track.scrollLeft / (cards[0].getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0))) : 0; };
+      var go = function (i) { var n = pages(); i = (i + n) % n; var w = cards[0].getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0); track.scrollTo({ left: i * w, behavior: 'smooth' }); };
+      var paint = function () {
+        var n = pages(), cur = Math.min(idx(), n - 1);
+        if (dots.children.length !== n) { dots.innerHTML = ''; for (var i = 0; i < n; i++) { var d = el('i'); dots.appendChild(d); } }
+        [].forEach.call(dots.children, function (d, i) { d.classList.toggle('is-on', i === cur); });
+        box.classList.toggle('vrv--single', n < 2);
+      };
+      box.querySelector('[data-vrv-prev]').onclick = function () { go(idx() - 1); stop(); };
+      box.querySelector('[data-vrv-next]').onclick = function () { go(idx() + 1); stop(); };
+      track.addEventListener('scroll', function () { clearTimeout(track._t); track._t = setTimeout(paint, 80); }, { passive: true });
+      window.addEventListener('resize', paint);
+      var timer = null, stop = function () { clearInterval(timer); timer = null; };
+      if (mode === 'mini' && cards.length > 1) {
+        timer = setInterval(function () { if (!document.hidden) go(idx() + 1); }, 6000);
+        track.addEventListener('pointerdown', stop, { once: true });
+      }
+      paint();
+    }
+    window.vlhReviews = {
+      init: function () {
+        document.querySelectorAll('[data-vlh-reviews]:not([data-ready])').forEach(function (box) {
+          box.setAttribute('data-ready', '');
+          load(box.dataset.shop).then(function (list) {
+            if (!list.length) return;
+            var max = +box.dataset.max || 0;
+            build(box, max ? list.slice(0, max) : list);
+          });
+        });
+      }
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', window.vlhReviews.init); else window.vlhReviews.init();
+  })();
+</script>

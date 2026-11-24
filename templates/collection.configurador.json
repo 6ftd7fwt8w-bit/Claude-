@@ -120,14 +120,9 @@
             "match": "",
             "generic": true
           }
-        },
-        "judge_me_reviews_featured_carousel_cfg": {
-          "type": "shopify://apps/judge-me-reviews/blocks/featured_carousel/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
-          "settings": {}
         }
       },
       "block_order": [
-        "judge_me_reviews_featured_carousel_cfg",
         "klarna_on_site_messaging_app_block_Tg96Xg",
         "pareja",
         "familia",
@@ -326,27 +321,15 @@
       }
     },
     "opiniones": {
-      "type": "apps",
-      "blocks": {
-        "judge_me_reviews_review_widget_cfg": {
-          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
-          "settings": {
-            "review_data": "sample_data",
-            "max_width": 250,
-            "show_shop_reviews": true,
-            "empty_state": "hide_widget"
-          }
-        }
-      },
-      "block_order": [
-        "judge_me_reviews_review_widget_cfg"
-      ],
+      "type": "reviews-vlh",
       "settings": {
         "title": "Lo que dicen de nosotros",
-        "text": "",
+        "mode": "list",
+        "show_write": true,
+        "write_label": "Escribir una reseña",
+        "write_url": "",
         "anchor": "opiniones",
-        "background": "default",
-        "auto_open_review": false
+        "background": "default"
       }
     }
   },

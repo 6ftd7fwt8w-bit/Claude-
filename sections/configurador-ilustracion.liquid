@@ -120,6 +120,7 @@
 
       <form class="cfg__form" id="vlh-form" data-cfg-form novalidate>
         <h2 class="cfg__easy">{{ s.steps_title }}{%- if s.steps_sub != blank -%}<span>{{ s.steps_sub }}</span>{%- endif -%}</h2>
+        {%- if s.reviews_mini -%}<div class="cfg__reviews">{% render 'vlh-reviews', mode: 'mini' %}</div>{%- endif -%}
         {%- for block in section.blocks -%}{%- if block.type == '@app' -%}{%- if block.id contains 'judge' -%}<div class="cfg__reviews">{% render block %}</div>{%- endif -%}{%- endif -%}{%- endfor -%}
 
         <fieldset class="cfg__step">
@@ -1151,6 +1152,7 @@
     { "type": "text", "id": "step_4_title", "label": "Paso 4", "default": "La recibes en casa" },
     { "type": "text", "id": "step_4_text", "label": "Paso 4: texto", "default": "En 10-15 días, envío gratis" },
     { "type": "richtext", "id": "how_text", "label": "Descripción y cómo trabajamos" },
+    { "type": "checkbox", "id": "reviews_mini", "label": "Reseñas bajo «Tu ilustración, en solo 3 pasos»", "info": "Carrusel pequeño con las reseñas de Judge.me (primero las que tienen foto)", "default": true },
     { "type": "image_picker", "id": "guide_art", "label": "Comparar tamaños: ilustración de ejemplo", "info": "Solo la ilustración, sin fondo" },
     { "type": "image_picker", "id": "guide_art_a3", "label": "Comparar tamaños: ejemplo lámina A3" }
   ],

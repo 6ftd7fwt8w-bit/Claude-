@@ -1479,3 +1479,38 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 /* Aviso de contacto encima de «Finalizar pedido» */
 .cart-contact-note { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 10px; font-size: 12px; line-height: 1.45; color: var(--color-text); opacity: .78; text-align: left; }
 .cart-contact-note svg { flex: 0 0 14px; width: 14px; height: 14px; margin-top: 2px; opacity: .7; }
+
+/* Reseñas de Judge.me pintadas por el tema (snippet vlh-reviews) */
+.section--vrv { padding-block: 40px; }
+.section--vrv .section-title { margin-bottom: 20px; }
+.vrv { --vrv-star: #C9A24A; }
+.vrv__track { display: grid; grid-auto-flow: column; grid-auto-columns: min(78%, 300px); gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 2px 2px 6px; }
+.vrv__track::-webkit-scrollbar { display: none; }
+.vrv__card { scroll-snap-align: start; margin: 0; background: #fff; border: 1px solid var(--color-border, #E3DBD0); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+.vrv__photo { display: block; aspect-ratio: 4 / 3; background: var(--color-background-alt, #EFE8DE); }
+.vrv__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vrv__body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; }
+.vrv__stars { color: var(--vrv-star); letter-spacing: 2px; font-size: 15px; line-height: 1; }
+.vrv__text { margin: 0; font-size: 15px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.vrv__name { font-style: normal; font-size: 13px; color: var(--color-muted, #7B7168); }
+.vrv__nav { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
+.vrv--single .vrv__nav { display: none; }
+.vrv__arrow { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--color-border, #E3DBD0); background: #fff; font-size: 20px; line-height: 1; color: var(--color-text); cursor: pointer; padding: 0 0 2px; }
+.vrv__dots { display: inline-flex; gap: 6px; }
+.vrv__dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--color-border, #E3DBD0); }
+.vrv__dots i.is-on { background: var(--color-text); }
+.vrv__write { text-align: center; margin: 22px 0 0; }
+@media (min-width: 990px) { .vrv--cards .vrv__track { grid-auto-columns: calc((100% - 48px) / 4); } }
+/* mini: una reseña cada vez, en fila (foto pequeña a la izquierda) */
+.vrv--mini .vrv__track { grid-auto-columns: 100%; gap: 0; }
+.vrv--mini .vrv__card { flex-direction: row; align-items: center; gap: 12px; background: transparent; border: 0; border-radius: 0; padding: 0 4px; }
+.vrv--mini .vrv__photo { flex: 0 0 64px; width: 64px; aspect-ratio: 1; border-radius: 10px; overflow: hidden; }
+.vrv--mini .vrv__body { padding: 0; gap: 3px; flex: 1; min-width: 0; }
+.vrv--mini .vrv__stars { font-size: 13px; }
+.vrv--mini .vrv__text { font-size: 14px; -webkit-line-clamp: 3; }
+.vrv--mini .vrv__name { font-size: 12px; }
+.vrv--mini .vrv__nav { margin-top: 6px; }
+.vrv--mini .vrv__arrow { width: 24px; height: 24px; font-size: 16px; }
+/* list: todas en rejilla */
+.vrv--list .vrv__track { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); grid-auto-columns: auto; overflow: visible; align-items: start; }
+.vrv--list .vrv__text { -webkit-line-clamp: unset; display: block; }
