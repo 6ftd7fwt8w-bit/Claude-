@@ -295,7 +295,7 @@
               <span class="cfg__total-label">Total</span>
               <span class="cfg__amounts"><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong><em class="cfg__off" data-cfg-off hidden></em></span>
             </div>
-            <p class="cfg__envio" id="vlh-envio"><span class="cfg__ship"><span aria-hidden="true">🚚</span> Envío <b>GRATIS</b> a toda la {{ settings.free_shipping_zone | default: 'península' | downcase }}</span><span class="cfg__iva">IVA incluido</span></p>
+            <p class="cfg__envio" id="vlh-envio"><span class="cfg__ship"><span aria-hidden="true">🚚</span> Envío estándar <b>GRATIS</b></span><span class="cfg__iva">IVA incluido</span></p>
             {%- for block in section.blocks -%}{%- if block.type == '@app' -%}{%- unless block.id contains 'judge' -%}<div class="cfg__app">{% render block %}</div>{%- endunless -%}{%- endif -%}{%- endfor -%}
           </div>
           <p class="cfg__error" id="vlh-error" data-cfg-error role="alert" hidden></p>

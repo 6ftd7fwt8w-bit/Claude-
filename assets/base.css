@@ -1531,3 +1531,5 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .vrv--cards .vrv__text, .vrv--list .vrv__text { display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; }
 .vrv__text.is-open { -webkit-line-clamp: unset; display: block; }
 .vrv__more { align-self: flex-start; background: none; border: 0; padding: 0; font-size: 13px; text-decoration: underline; color: var(--color-text); cursor: pointer; }
+.vrv__seemore-wrap { text-align: center; margin: 18px 0 0; }
+.vrv__card[hidden] { display: none !important; }

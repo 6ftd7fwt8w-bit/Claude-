@@ -88,7 +88,17 @@
         box.querySelector('[data-vrv-score]').hidden = false;
       }
       box.hidden = false;
-      if (mode === 'list') return;
+      if (mode === 'list') {
+        // Se ven las primeras 4; «Ver más reseñas» enseña 4 más cada vez
+        var STEP = 4, all = [].slice.call(track.children), shown = STEP;
+        if (all.length <= STEP) return;
+        var btn = el('button', 'button button--outline vrv__seemore', 'Ver más reseñas'); btn.type = 'button';
+        var show = function () { all.forEach(function (c, i) { c.hidden = i >= shown; }); btn.hidden = shown >= all.length; };
+        btn.onclick = function () { shown += STEP; show(); };
+        var wrap = el('p', 'vrv__seemore-wrap'); wrap.appendChild(btn); track.after(wrap);
+        show();
+        return;
+      }
       var dots = box.querySelector('[data-vrv-dots]'), cards = track.children;
       var perView = function () { return Math.max(1, Math.round(track.clientWidth / (cards[0] ? cards[0].getBoundingClientRect().width : 1))); };
       var pages = function () { return Math.max(1, cards.length - perView() + 1); };

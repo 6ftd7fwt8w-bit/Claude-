@@ -1309,7 +1309,7 @@
     if (shipEl.dataset.always === 'true') {
       shipEl.hidden = !final;
       shipEl.classList.add('is-free');
-      shipEl.innerHTML = `<span aria-hidden="true">🚚</span><span>Envío gratis a toda la ${shipEl.dataset.zone || 'península'}</span>`;
+      shipEl.innerHTML = `<span aria-hidden="true">🚚</span><span>Envío estándar gratis</span>`;
       if (envioEl) envioEl.textContent = 'IVA incluido · Envío gratis' + (shipEl.dataset.zone ? ' (' + shipEl.dataset.zone + ')' : '');
       return;
     }

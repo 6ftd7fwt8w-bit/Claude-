@@ -22,7 +22,7 @@
         "announcement_1": {
           "type": "announcement",
           "settings": {
-            "text": "🚚 ENVÍO GRATIS a toda la península",
+            "text": "🚚 ENVÍO ESTÁNDAR GRATIS",
             "pill": true
           }
         },

@@ -51,7 +51,7 @@
         "item_ship": {
           "type": "item",
           "settings": {
-            "text": "Envío gratis a toda la península",
+            "text": "Envío estándar gratis",
             "icon": "truck"
           }
         },
@@ -582,7 +582,8 @@
         "columns": 4,
         "ratio": "3 / 4",
         "background": "default"
-      }
+      },
+      "disabled": true
     },
     "kids": {
       "type": "featured-collection",
@@ -604,7 +605,8 @@
         "background": "alt",
         "show_view_all": true,
         "view_all_label": "Ver colección"
-      }
+      },
+      "disabled": true
     },
     "reviews": {
       "type": "testimonials",
