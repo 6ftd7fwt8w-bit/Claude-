@@ -760,6 +760,27 @@
   .cfg-gift--bf.is-on .cfg-gift__kicker { color: #f2d16b; }
   .cfg-gift--bf.is-on .cfg-gift__small { color: #9fd49a; }
   .cfg-gift--bf.is-on .cfg-gift__stamp { background: linear-gradient(135deg, #f7dc85, #c9a24f); color: #15110d; box-shadow: 0 0 0 3px #15110d, 0 0 0 4.5px #d8b45a; }
+  /* Black Friday compacto (24/11): mismo estilo negro y dorado pero más fino */
+  .cfg-gift--bf { margin-bottom: 12px; }
+  .cfg-gift--bf .cfg-gift__ticket { gap: 10px; padding: 9px 12px; border-radius: 10px; box-shadow: 0 4px 14px rgba(13,11,9,.18); }
+  .cfg-gift--bf .cfg-gift__ticket::before, .cfg-gift--bf .cfg-gift__ticket::after { width: 12px; height: 12px; margin-top: -6px; }
+  .cfg-gift--bf .cfg-gift__ticket::before { left: -7px; } .cfg-gift--bf .cfg-gift__ticket::after { right: -7px; }
+  .cfg-gift--bf .cfg-gift__box { width: 22px; height: 22px; border-radius: 6px; border-width: 1.5px; }
+  .cfg-gift--bf .cfg-gift__box svg { width: 13px; height: 13px; }
+  .cfg-gift--bf .cfg-gift__body { gap: 1px; }
+  .cfg-gift--bf .cfg-gift__kicker { font-size: 10px; letter-spacing: .12em; gap: 6px; }
+  .cfg-gift__live { width: 6px; height: 6px; }
+  .cfg-gift--bf .cfg-gift__title { font-size: 16px; line-height: 1.2; }
+  .cfg-gift--bf .cfg-gift__price { font-size: 13px; }
+  .cfg-gift--bf .cfg-gift__price b { font-size: 14px; }
+  .cfg-gift--bf .cfg-gift__timer { margin: 2px 0 0; gap: 3px; font-size: 10px; flex-wrap: nowrap; }
+  .cfg-gift--bf .cfg-gift__timer > span { flex-basis: auto; margin-right: 3px; white-space: nowrap; }
+  .cfg-gift--bf .cfg-gift__timer b { min-width: 0; padding: 3px 4px 2px; border-radius: 4px; font-size: 11.5px; }
+  .cfg-gift--bf .cfg-gift__timer b small { font-size: 8.5px; }
+  .cfg-gift--bf .cfg-gift__small { display: none; }
+  .cfg-gift--bf .cfg-gift__stamp { width: 42px; height: 42px; font-size: 15px; box-shadow: 0 0 0 2px #15110d, 0 0 0 3px #d8b45a; }
+  .cfg-gift--bf .cfg-gift__stamp small { font-size: 10px; }
+  .cfg-gift--bf.is-on .cfg-gift__stamp { box-shadow: 0 0 0 2px #15110d, 0 0 0 3px #d8b45a; }
   @keyframes cfgGiftPulseBf { 0%, 100% { box-shadow: 0 0 0 0 rgba(242,209,107,.55); } 50% { box-shadow: 0 0 0 8px rgba(242,209,107,0); } }
   @keyframes cfgGiftLive { 0% { box-shadow: 0 0 0 0 rgba(255,90,60,.7); } 100% { box-shadow: 0 0 0 9px rgba(255,90,60,0); } }
   @keyframes cfgGiftPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(176,138,62,.45); } 50% { box-shadow: 0 0 0 7px rgba(176,138,62,0); } }
@@ -769,7 +790,9 @@
   @media (max-width: 749px) {
     .cfg-gift__ticket { gap: 12px; padding: 14px 12px; }
     .cfg-gift__title { font-size: 17px; }
-    .cfg-gift--bf .cfg-gift__title { font-size: 20px; }
+    .cfg-gift--bf .cfg-gift__title { font-size: 15.5px; }
+    .cfg-gift--bf .cfg-gift__timer b { padding: 3px 4px 2px; font-size: 11.5px; }
+    .cfg-gift--bf .cfg-gift__stamp { width: 38px; height: 38px; font-size: 13.5px; }
     .cfg-gift__timer b { min-width: 0; padding: 4px 5px 3px; font-size: 14px; }
     .cfg-gift__stamp { width: 50px; height: 50px; font-size: 17px; }
     .cfg-gift__stamp small { font-size: 11px; }
