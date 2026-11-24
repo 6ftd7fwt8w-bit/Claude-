@@ -8,6 +8,7 @@
 {%- endcomment -%}
 {%- assign vr_mode = mode | default: 'cards' -%}
 <div class="vrv vrv--{{ vr_mode }}" data-vlh-reviews data-mode="{{ vr_mode }}" data-shop="{{ shop.permanent_domain }}" hidden>
+  <p class="vrv__score" data-vrv-score hidden><span class="vrv__score-stars" aria-hidden="true">★★★★★</span> <b data-vrv-avg></b> de 5<span class="vrv__score-label"> · Valoración media de nuestras clientas</span></p>
   <div class="vrv__track" data-vrv-track></div>
   {%- if vr_mode != 'list' -%}
     <div class="vrv__nav">
@@ -15,6 +16,9 @@
       <span class="vrv__dots" data-vrv-dots></span>
       <button type="button" class="vrv__arrow" data-vrv-next aria-label="Reseña siguiente">&#8250;</button>
     </div>
+  {%- endif -%}
+  {%- if vr_mode != 'mini' -%}
+    <p class="vrv__legal">Opiniones recogidas con Judge.me y publicadas todas, sin filtrar por puntuación. «Compra verificada» indica que la persona hizo un pedido en nuestra tienda.</p>
   {%- endif -%}
   {%- if write_url != blank -%}
     <p class="vrv__write"><a class="button button--outline" href="{{ write_url }}">{{ write_label | default: 'Escribir una reseña' }}</a></p>
@@ -27,16 +31,16 @@
     var cache = null;
     function load(shop) {
       if (cache) return cache;
-      var key = 'vlh_reviews_v1';
+      var key = 'vlh_reviews_v2';
       try { var c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 600000) { cache = Promise.resolve(c.r); return cache; } } catch (e) {}
       var base = 'https://cdn.judge.me/reviews/all_reviews_js_based?widget_type=review-widget&page=1&sort_by=created_at&sort_dir=desc&platform=shopify&shop_domain=' + encodeURIComponent(shop) + '&review_type=';
       var get = function (t) { return fetch(base + t).then(function (r) { return r.ok ? r.json() : { reviews: [] }; }).then(function (d) { return d.reviews || []; }).catch(function () { return []; }); };
       cache = Promise.all([get('shop-reviews'), get('product-reviews')]).then(function (a) {
         var seen = {}, all = [];
         a[0].concat(a[1]).forEach(function (r) {
-          if (!r || seen[r.uuid] || (r.rating || 0) < 4 || !(r.body || '').trim()) return; seen[r.uuid] = 1;
+          if (!r || seen[r.uuid]) return; seen[r.uuid] = 1;
           var pics = (r.pictures_urls || []).map(function (p) { return { s: p.compact || p.small || p.original, l: p.huge || p.original }; });
-          all.push({ n: r.reviewer_name || '', b: (r.body || '').trim(), st: r.rating || 5, p: pics, d: r.created_at || '', u: r.product_url && r.product_url !== '/' ? r.product_url : '' });
+          all.push({ n: r.reviewer_name || '', b: (r.body || '').trim(), st: r.rating || 0, v: !!r.verified_buyer, p: pics, d: r.created_at || '' });
         });
         all.sort(function (x, y) { return (y.p.length ? 1 : 0) - (x.p.length ? 1 : 0) || (y.d > x.d ? 1 : y.d < x.d ? -1 : 0); });
         try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), r: all })); } catch (e) {}
@@ -53,9 +57,14 @@
         a.appendChild(img); c.appendChild(a);
       }
       var body = el('figcaption', 'vrv__body');
-      body.appendChild(el('span', 'vrv__stars', '★★★★★'.slice(0, r.st)));
+      var stars = el('span', 'vrv__stars'); stars.setAttribute('aria-label', r.st + ' de 5 estrellas');
+      stars.appendChild(document.createTextNode('★★★★★'.slice(0, r.st)));
+      if (r.st < 5) stars.appendChild(el('span', 'vrv__stars-off', '★★★★★'.slice(0, 5 - r.st)));
+      body.appendChild(stars);
       body.appendChild(el('blockquote', 'vrv__text', r.b));
-      body.appendChild(el('cite', 'vrv__name', r.n));
+      var who = el('cite', 'vrv__name', r.n);
+      if (r.v) who.appendChild(el('span', 'vrv__verified', '✓ Compra verificada'));
+      body.appendChild(who);
       c.appendChild(body);
       return c;
     }
@@ -63,6 +72,12 @@
       var mode = box.dataset.mode, track = box.querySelector('[data-vrv-track]');
       track.innerHTML = '';
       list.forEach(function (r) { track.appendChild(card(r, mode)); });
+      var rated = list.filter(function (r) { return r.st > 0; });
+      if (rated.length) {
+        var avg = rated.reduce(function (a, r) { return a + r.st; }, 0) / rated.length;
+        box.querySelector('[data-vrv-avg]').textContent = (Math.round(avg * 10) / 10).toFixed(1).replace('.', ',');
+        box.querySelector('[data-vrv-score]').hidden = false;
+      }
       box.hidden = false;
       if (mode === 'list') return;
       var dots = box.querySelector('[data-vrv-dots]'), cards = track.children;

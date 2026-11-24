@@ -1515,3 +1515,13 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .vrv--list .vrv__track { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); grid-auto-columns: auto; overflow: visible; align-items: start; }
 .vrv--list .vrv__text { -webkit-line-clamp: unset; display: block; }
 .vrv--list .vrv__photo { padding-top: 70%; }
+.vrv__score { text-align: center; margin: -8px 0 18px; font-size: 15px; }
+.vrv__score-stars { color: var(--vrv-star); letter-spacing: 2px; }
+.vrv__score b { font-weight: 700; }
+.vrv__score-label { color: var(--color-muted, #7B7168); }
+.vrv__stars-off { color: var(--color-border, #E3DBD0); }
+.vrv__name { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.vrv__verified { font-size: 11px; color: #2f6b3a; background: #e3f1e0; border-radius: 99px; padding: 2px 8px; }
+.vrv__legal { text-align: center; font-size: 12px; color: var(--color-muted, #7B7168); margin: 14px auto 0; max-width: 560px; line-height: 1.45; }
+.vrv--mini .vrv__score { margin: 0 0 6px; font-size: 13px; }
+.vrv--mini .vrv__score-label { display: none; }
