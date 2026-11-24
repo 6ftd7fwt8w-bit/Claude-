@@ -295,12 +295,12 @@
               <span class="cfg__total-label">Total</span>
               <span class="cfg__amounts"><s class="cfg__old" id="vlh-total-old" hidden></s><strong id="vlh-total-price">—</strong><em class="cfg__off" data-cfg-off hidden></em></span>
             </div>
-            <p class="cfg__envio" id="vlh-envio"><span class="cfg__ship"><span aria-hidden="true">🚚</span> Envío estándar <b>GRATIS</b></span><span class="cfg__iva">IVA incluido</span></p>
+            <p class="cfg__envio" id="vlh-envio"><span class="cfg__ok">Envío estándar gratis</span><span class="cfg__ok">IVA incluido</span></p>
           </div>
           <p class="cfg__error" id="vlh-error" data-cfg-error role="alert" hidden></p>
           <button type="submit" class="button button--full cfg__submit" data-cfg-submit>Añadir al carrito</button>
-          {%- for block in section.blocks -%}{%- if block.type == '@app' -%}{%- unless block.id contains 'judge' -%}<div class="cfg__app">{% render block %}</div>{%- endunless -%}{%- endif -%}{%- endfor -%}
           <p class="cfg__secure">🔒 Pago 100 % seguro</p>
+          {%- for block in section.blocks -%}{%- if block.type == '@app' -%}{%- unless block.id contains 'judge' -%}<div class="cfg__app">{% render block %}</div>{%- endunless -%}{%- endif -%}{%- endfor -%}
 
           <div class="cfg__facts">
             <div class="cfg__fact">
@@ -591,7 +591,7 @@
   .cfg__ship { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: #e3f1e0; border: 1px solid #b9d6b2; color: #24522d; font-size: 14px; }
   .cfg__ship b { font-weight: 700; letter-spacing: .04em; }
   .cfg__app { margin: 10px 0 0; text-align: center; }
-  .cfg__submit + .cfg__app { margin: 10px 0 4px; }
+  .cfg__secure + .cfg__app { margin: 12px 0 4px; }
   .cfg__reviews { margin: -6px 0 18px; }
   /* Carrusel de reseñas compacto bajo «Tu ilustración, en solo 3 pasos»: sin título ni número de reseñas */
   .cfg__reviews .jdgm-carousel-title-and-link { display: none !important; }
@@ -785,6 +785,18 @@
   .cfg-gift__save { display: block; font-family: var(--font-body); font-size: 13px; color: #e9e1d4; margin-top: 2px; }
   .cfg-gift__save b { font-family: var(--font-serif, Georgia, serif); font-size: 21px; font-weight: 700; color: #f2d16b; letter-spacing: .01em; }
   .cfg__off.is-bf { background: #15110d !important; color: #f2d16b !important; border: 1px solid #d8b45a; font-weight: 700; white-space: nowrap; }
+  /* 24/11 zona de compra más limpia: el precio y el botón mandan; lo demás, discreto */
+  .cfg__off.is-bf { font-size: 12px; padding: 3px 8px; letter-spacing: .02em; }
+  .cfg__checkout .cfg__envio { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 14px; margin: 2px 0 0; font-size: 13px; color: var(--color-muted); }
+  .cfg__ok { display: inline-flex; align-items: center; gap: 5px; }
+  .cfg__ok::before { content: '✓'; color: #2f8a46; font-weight: 700; }
+  .cfg__checkout .cfg__submit { margin-top: 14px; }
+  .cfg__checkout .cfg__secure { margin: 7px 0 0; font-size: 12.5px; }
+  .cfg__guarantee { gap: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .cfg__guarantee-title { font-size: 17px; }
+  .cfg__guarantee-text { font-size: 13.5px; line-height: 1.45; margin-top: 4px !important; }
+  .cfg__seal { width: 34px; height: 34px; box-shadow: 0 0 0 3px #fff, 0 0 0 4px #b9d6b2; }
+  .cfg__seal svg { width: 18px; height: 18px; }
   @keyframes cfgGiftPulseBf { 0%, 100% { box-shadow: 0 0 0 0 rgba(242,209,107,.55); } 50% { box-shadow: 0 0 0 8px rgba(242,209,107,0); } }
   @keyframes cfgGiftLive { 0% { box-shadow: 0 0 0 0 rgba(255,90,60,.7); } 100% { box-shadow: 0 0 0 9px rgba(255,90,60,0); } }
   @keyframes cfgGiftPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(176,138,62,.45); } 50% { box-shadow: 0 0 0 7px rgba(176,138,62,0); } }
