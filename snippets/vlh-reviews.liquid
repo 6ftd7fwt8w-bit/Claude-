@@ -31,10 +31,18 @@
     var cache = null;
     function load(shop) {
       if (cache) return cache;
-      var key = 'vlh_reviews_v2';
+      var key = 'vlh_reviews_v3';
       try { var c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 600000) { cache = Promise.resolve(c.r); return cache; } } catch (e) {}
-      var base = 'https://cdn.judge.me/reviews/all_reviews_js_based?widget_type=review-widget&page=1&sort_by=created_at&sort_dir=desc&platform=shopify&shop_domain=' + encodeURIComponent(shop) + '&review_type=';
-      var get = function (t) { return fetch(base + t).then(function (r) { return r.ok ? r.json() : { reviews: [] }; }).then(function (d) { return d.reviews || []; }).catch(function () { return []; }); };
+      var base = 'https://cdn.judge.me/reviews/all_reviews_js_based?widget_type=review-widget&sort_by=created_at&sort_dir=desc&platform=shopify&shop_domain=' + encodeURIComponent(shop) + '&review_type=';
+      // Judge.me devuelve 5 por página: se piden todas las páginas
+      var page = function (t, n) { return fetch(base + t + '&page=' + n).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }); };
+      var get = function (t) {
+        return page(t, 1).then(function (d) {
+          var total = Math.min((d.pagination && d.pagination.total_pages) || 1, 30), reqs = [];
+          for (var i = 2; i <= total; i++) reqs.push(page(t, i));
+          return Promise.all(reqs).then(function (rest) { return rest.reduce(function (a, x) { return a.concat(x.reviews || []); }, d.reviews || []); });
+        });
+      };
       cache = Promise.all([get('shop-reviews'), get('product-reviews')]).then(function (a) {
         var seen = {}, all = [];
         a[0].concat(a[1]).forEach(function (r) {
