@@ -243,6 +243,21 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 
 ---
 
+## 10. Novedades v9: añadir fácil y diseño premium
+
+| | Funcionalidad |
+|---|---|
+| ✅ | **Eventos concretos con el +**: «el sábado voy a almorzar con mis padres de 10 a 2» se apunta ese día a esa hora, sin buscar huecos |
+| ✅ | El asistente pregunta **¿se repite?** (no / cada semana / cada mes) y lo guarda como cita, hábito semanal o mensual |
+| ✅ | **Favoritos**: guarda lo que añades a menudo y repítelo de un toque desde el + |
+| ✅ | **Crear como proyecto** desde el + (aparece en Objetivos con su progreso) |
+| ✅ | Nueva categoría **Amor y pareja** (también como valor, con pauta de tiempo en pareja) |
+| ✅ | **Horas sin límite**: en proyectos y duraciones puedes escribir las horas y minutos que quieras |
+| ✅ | **Eliminar** cualquier tarea, proyecto o sesión |
+| ✅ | **Rediseño minimalista**: tipografía fina, papel y tinta, glifos propios en vez de emojis de colores, iconos de línea, modo claro y oscuro |
+
+---
+
 ## Hoja de ruta técnica
 
 1. ✅ **v0.1** — Web app instalable (PWA) en React + TypeScript. La lógica (`src/lib`) son funciones
