@@ -9,8 +9,8 @@
  *
  * Todas las funciones son puras: reciben un AppState y devuelven uno nuevo.
  */
-import type { AppState, Profile, Session, Task } from '../types';
-import { addDays, ceilTo, fmtRelative, minToHm, rangeDays, weekStart, weekday } from './time';
+import type { AppState, Profile, Session, Task, WorkHours } from '../types';
+import { addDays, ceilTo, fmtRelative, fmtTo, minToHm, rangeDays, weekStart, weekday } from './time';
 
 export interface Ctx {
   today: string;
@@ -49,9 +49,16 @@ export function isWorkDay(p: Profile, date: string): boolean {
   return p.works && p.workDays.includes(weekday(date));
 }
 
+/** horario de trabajo de ese día (o null si no se trabaja) */
+export function workHours(p: Profile, date: string): WorkHours | null {
+  if (!isWorkDay(p, date)) return null;
+  return p.workByDay?.[weekday(date)] ?? { start: p.workStart, end: p.workEnd };
+}
+
 export function baseBusy(p: Profile, date: string): Interval[] {
   const busy: Interval[] = [{ start: 0, end: p.wake + p.morningRoutine }];
-  if (isWorkDay(p, date)) busy.push({ start: p.workStart - p.commute, end: p.workEnd + p.commute });
+  const w = workHours(p, date);
+  if (w) busy.push({ start: w.start - p.commute, end: w.end + p.commute });
   busy.push({ start: p.lunch, end: p.lunch + p.lunchDuration });
   busy.push({ start: p.dinner, end: p.dinner + p.dinnerDuration });
   busy.push({ start: Math.max(0, bedEff(p) - p.relaxMinutes), end: 1440 });
@@ -166,6 +173,13 @@ export function splitChunks(total: number, size: number): number[] {
   return arr;
 }
 
+/** la vida social y el autocuidado, por la tarde; los proyectos, cuando mejor te concentras */
+export function prefersLate(p: Profile, task: Task): boolean {
+  if (task.category === 'social' || task.category === 'autocuidado') return true;
+  if (task.category === 'proyectos' || task.category === 'trabajo') return p.chronotype === 'noche';
+  return false;
+}
+
 interface PlaceResult {
   sessions: Session[];
   placed: Session[];
@@ -186,7 +200,7 @@ export function placeChunks(
   const placed: Session[] = [];
   let unplaced = 0;
   if (!p || days.length === 0) return { sessions, placed, unplaced: chunks.reduce((a, b) => a + b, 0) };
-  const preferLate = task.category === 'social' || task.category === 'autocuidado';
+  const preferLate = prefersLate(p, task);
 
   for (const chunk of chunks) {
     const scored = days
@@ -446,7 +460,7 @@ export function postponeSession(state: AppState, id: string, ctx: Ctx): Result {
           : 'No encuentro hueco antes del deadline. ¿Ampliamos la fecha?',
     };
   }
-  return { state: s, message: `Sin culpa 🌿 Lo he movido a ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.` };
+  return { state: s, message: `Sin culpa 🌿 Lo he movido ${fmtTo(next.date, ctx.today)} a las ${minToHm(next.start)}.` };
 }
 
 /** Si la energía del día baja, quitamos peso moviendo lo que tenga margen. */
@@ -456,7 +470,7 @@ export function lightenDay(state: AppState, date: string, ctx: Ctx): { state: Ap
   for (let guard = 0; guard < 20; guard++) {
     if (plannedMinutes(s.sessions, date) <= capacity(s, date)) break;
     const candidates = sessionsOn(s.sessions, date)
-      .filter((x) => x.status === 'planned' && !x.fixed)
+      .filter((x) => x.status === 'planned' && !x.fixed && !x.pinned)
       .map((x) => ({ x, task: s.tasks.find((t) => t.id === x.taskId) }))
       .filter(({ task }) => task && (task.kind === 'habito' || !task.deadline || task.deadline > date))
       .sort((a, b) => (b.task?.deadline ?? '9999').localeCompare(a.task?.deadline ?? '9999'));
@@ -491,7 +505,7 @@ export function pullForward(state: AppState, ctx: Ctx): Result {
   const p = state.profile;
   if (!p) return { state };
   const future = state.sessions
-    .filter((x) => x.status === 'planned' && !x.fixed && x.date > ctx.today)
+    .filter((x) => x.status === 'planned' && !x.fixed && !x.pinned && x.date > ctx.today)
     .map((x) => ({ x, task: state.tasks.find((t) => t.id === x.taskId) }))
     .filter(({ task }) => task?.kind === 'flexible')
     .sort(
@@ -546,11 +560,181 @@ function sortByUrgency(state: AppState, ids: string[]): string[] {
 export function replanAll(state: AppState, ctx: Ctx): AppState {
   let s: AppState = {
     ...state,
-    sessions: state.sessions.filter((x) => x.status === 'done' || x.fixed),
+    sessions: state.sessions.filter((x) => x.status === 'done' || x.fixed || (x.pinned && x.date >= ctx.today)),
     unplaced: {},
   };
   s = ensureHabits(s, ctx);
   const flex = s.tasks.filter((t) => t.kind === 'flexible' && !t.archived).map((t) => t.id);
   for (const id of sortByUrgency(s, flex)) s = replanMissing(s, id, ctx.today, ctx);
   return s;
+}
+
+// ---------------------------------------------------------------- edición manual
+
+/** Mover una sesión a mano: queda "fijada" y el planificador la respeta. */
+export function moveSession(state: AppState, id: string, date: string, start: number, ctx: Ctx): Result {
+  const s0 = state.sessions.find((x) => x.id === id);
+  if (!s0) return { state };
+  const task = state.tasks.find((t) => t.id === s0.taskId);
+  const moved: Session = { ...s0, date, start, pinned: !s0.fixed, status: s0.status };
+  const others = state.sessions.filter((x) => x.id !== id);
+  let s: AppState = { ...state, sessions: [...others, moved] };
+  if (task?.kind === 'evento') {
+    s = { ...s, tasks: s.tasks.map((t) => (t.id === task.id ? { ...t, date, start } : t)) };
+  }
+  const clash = others.find(
+    (x) => x.date === date && x.start < start + moved.duration && start < x.start + x.duration,
+  );
+  const p = s.profile;
+  const inBusy =
+    p && baseBusy(p, date).some((b) => b.start < start + moved.duration && start < b.end && b.start > 0 && b.end < 1440);
+  let message = `Movido ${fmtTo(date, ctx.today)} a las ${minToHm(start)} 📌`;
+  if (clash) {
+    const other = s.tasks.find((t) => t.id === clash.taskId);
+    message += ` Ojo: coincide con «${other?.title ?? 'otra cosa'}».`;
+  } else if (inBusy) message += ' Ojo: cae en tu horario de trabajo o comidas.';
+  if (task?.deadline && date > task.deadline) message += ' Queda después de la fecha límite.';
+  return { state: s, message };
+}
+
+export interface TaskPatch {
+  title?: string;
+  category?: Task['category'];
+  totalMinutes?: number;
+  sessionMinutes?: number;
+  deadline?: string | null;
+  date?: string;
+  start?: number;
+  timesPerWeek?: number;
+}
+
+/** Editar una tarea. Si cambia algo de planificación, se recoloca lo pendiente. */
+export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx: Ctx): Result {
+  const old = state.tasks.find((t) => t.id === taskId);
+  if (!old) return { state };
+  const task: Task = {
+    ...old,
+    title: patch.title?.trim() || old.title,
+    category: patch.category ?? old.category,
+    totalMinutes: Math.max(5, Math.round(patch.totalMinutes ?? old.totalMinutes)),
+    sessionMinutes: Math.max(15, Math.round(patch.sessionMinutes ?? old.sessionMinutes)),
+    deadline: patch.deadline === null ? undefined : (patch.deadline ?? old.deadline),
+    date: patch.date ?? old.date,
+    start: patch.start ?? old.start,
+    timesPerWeek: patch.timesPerWeek ?? old.timesPerWeek,
+  };
+  let s: AppState = { ...state, tasks: state.tasks.map((t) => (t.id === taskId ? task : t)) };
+  const changed = (k: keyof Task) => task[k] !== old[k];
+
+  if (task.kind === 'evento') {
+    const ev = s.sessions.find((x) => x.taskId === taskId && x.fixed);
+    if (ev && (changed('date') || changed('start') || changed('totalMinutes'))) {
+      const nev = { ...ev, date: task.date ?? ev.date, start: task.start ?? ev.start, duration: task.totalMinutes };
+      s = { ...s, sessions: s.sessions.map((x) => (x.id === ev.id ? nev : x)) };
+      s = resolveConflicts(s, nev, ctx).state;
+    }
+    return { state: s, message: 'Guardado ✨' };
+  }
+
+  if (task.kind === 'habito' && (changed('timesPerWeek') || changed('totalMinutes'))) {
+    s = {
+      ...s,
+      sessions: s.sessions.filter((x) => !(x.taskId === taskId && x.status === 'planned' && x.date >= ctx.today)),
+    };
+    s = ensureHabits(s, ctx);
+    return { state: s, message: 'Hábito actualizado y recolocado 🔁' };
+  }
+
+  if (
+    task.kind === 'flexible' &&
+    (changed('totalMinutes') || changed('sessionMinutes') || changed('deadline'))
+  ) {
+    s = {
+      ...s,
+      sessions: s.sessions.filter((x) => !(x.taskId === taskId && x.status === 'planned' && !x.pinned)),
+    };
+    s = replanMissing(s, taskId, ctx.today, ctx);
+    const next = firstPlanned(s, taskId, ctx.today);
+    if (doneMinutes(s, taskId) >= task.totalMinutes) {
+      s = { ...s, sessions: s.sessions.filter((x) => !(x.taskId === taskId && x.status === 'planned')) };
+      return { state: s, message: '¡Con este cambio ya está conseguido! 🏆' };
+    }
+    return {
+      state: s,
+      message: next
+        ? `Recolocado. Lo siguiente: ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.`
+        : 'Guardado, pero no encuentro hueco antes de la fecha límite.',
+    };
+  }
+  return { state: s, message: 'Guardado ✨' };
+}
+
+// ---------------------------------------------------------------- calendario externo
+
+export interface ExternalEvent {
+  uid: string;
+  title: string;
+  date: string;
+  start: number;
+  duration: number;
+}
+
+/**
+ * Importa citas de otro calendario (.ics o calendario del iPhone) como eventos fijos.
+ * Las que ya existían se actualizan; lo flexible que pisen se recoloca.
+ */
+export function importEvents(
+  state: AppState,
+  events: ExternalEvent[],
+  source: 'ics' | 'ios',
+  ctx: Ctx,
+  guessCategory: (title: string) => Task['category'],
+): Result {
+  let s = state;
+  let added = 0;
+  let moved = 0;
+  for (const e of events) {
+    if (e.date < ctx.today || e.duration <= 0) continue;
+    const externalId = `${e.uid}@${e.date}`;
+    const existing = s.tasks.find((t) => t.externalId === externalId && !t.archived);
+    if (existing) {
+      const ev = s.sessions.find((x) => x.taskId === existing.id);
+      if (ev && (ev.start !== e.start || ev.duration !== e.duration)) {
+        s = editTask(s, existing.id, { start: e.start, totalMinutes: e.duration }, ctx).state;
+      }
+      continue;
+    }
+    const task: Task = {
+      id: uid(),
+      title: e.title || 'Cita',
+      category: guessCategory(e.title),
+      kind: 'evento',
+      totalMinutes: Math.min(e.duration, 1440 - e.start),
+      sessionMinutes: e.duration,
+      date: e.date,
+      start: e.start,
+      createdAt: ctx.today,
+      source,
+      externalId,
+    };
+    const ev: Session = {
+      id: uid(),
+      taskId: task.id,
+      date: e.date,
+      start: e.start,
+      duration: task.totalMinutes,
+      status: 'planned',
+      fixed: true,
+    };
+    s = { ...s, tasks: [...s.tasks, task], sessions: [...s.sessions, ev] };
+    const r = resolveConflicts(s, ev, ctx);
+    s = r.state;
+    moved += r.moved;
+    added++;
+  }
+  const extra = moved ? ` He recolocado ${moved} ${moved === 1 ? 'sesión' : 'sesiones'} que coincidían.` : '';
+  return {
+    state: s,
+    message: added ? `He traído ${added} ${added === 1 ? 'cita' : 'citas'} de tu calendario 📅.${extra}` : 'Tu calendario ya estaba al día 📅',
+  };
 }

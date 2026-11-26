@@ -1,7 +1,7 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import type { AppState, Session } from '../types';
 import { catById } from '../types';
-import { bedEff, dayLoad, energyFor, isWorkDay, sessionsOn } from '../lib/scheduler';
+import { bedEff, dayLoad, energyFor, sessionsOn, workHours } from '../lib/scheduler';
 import { phraseOfDay } from '../lib/phrases';
 import { LEVEL_TEXT, tipsFor, type Tip } from '../lib/tips';
 import { fmtDuration, fmtLong, minToHm } from '../lib/time';
@@ -14,6 +14,8 @@ interface Props {
   onComplete: (s: Session) => void;
   onUndo: (s: Session) => void;
   onPostpone: (s: Session) => void;
+  onMove: (s: Session) => void;
+  onJournal: (text: string) => void;
   onEnergy: () => void;
   onPull: () => void;
   onTipAction: (t: Tip) => void;
@@ -47,6 +49,7 @@ export function SessionCard({
   onComplete,
   onUndo,
   onPostpone,
+  onMove,
   compact,
 }: {
   state: AppState;
@@ -54,6 +57,7 @@ export function SessionCard({
   onComplete?: (s: Session) => void;
   onUndo?: (s: Session) => void;
   onPostpone?: (s: Session) => void;
+  onMove?: (s: Session) => void;
   compact?: boolean;
 }) {
   const task = state.tasks.find((t) => t.id === s.taskId);
@@ -66,15 +70,28 @@ export function SessionCard({
         <span>{fmtDuration(s.duration)}</span>
       </div>
       <div className="session-body">
-        <div className="session-title">{task?.title ?? '—'}</div>
+        <div className="session-title">
+          {task?.title ?? '—'}
+          {s.pinned && <span title="Colocada a mano"> 📌</span>}
+          {task?.source && <span title="De tu calendario"> 📅</span>}
+        </div>
         <div className="session-meta">
           <span className="cat-dot" /> {cat.emoji} {cat.label}
           {!compact && <span className="muted"> · {sessionLabel(state, s)}</span>}
         </div>
-        {!done && onPostpone && (
-          <button className="link" onClick={() => onPostpone(s)}>
-            {task?.kind === 'evento' ? 'Quitar' : 'Hoy no puedo'}
-          </button>
+        {!done && (onPostpone || onMove) && (
+          <div className="session-actions">
+            {onPostpone && (
+              <button className="link" onClick={() => onPostpone(s)}>
+                {task?.kind === 'evento' ? 'Quitar' : 'Hoy no puedo'}
+              </button>
+            )}
+            {onMove && (
+              <button className="link muted-link" onClick={() => onMove(s)}>
+                Mover
+              </button>
+            )}
+          </div>
         )}
       </div>
       {onComplete && (
@@ -105,11 +122,12 @@ export function TodayView(props: Props) {
   const items: Item[] = [
     { t: p.wake, key: 'wake', node: <Marker icon="🌅" text={`Despertar · ${minToHm(p.wake)}`} /> },
   ];
-  if (isWorkDay(p, today)) {
+  const work = workHours(p, today);
+  if (work) {
     items.push({
-      t: p.workStart,
+      t: work.start,
       key: 'work',
-      node: <Marker icon="💼" text={`Trabajo · ${minToHm(p.workStart)}–${minToHm(p.workEnd)}`} />,
+      node: <Marker icon="💼" text={`Trabajo · ${minToHm(work.start)}–${minToHm(work.end)}`} />,
     });
   }
   items.push({ t: p.dinner, key: 'dinner', node: <Marker icon="🍽️" text={`Cena · ${minToHm(p.dinner)}`} /> });
@@ -122,7 +140,9 @@ export function TodayView(props: Props) {
     items.push({
       t: s.start,
       key: s.id,
-      node: <SessionCard state={state} s={s} onComplete={props.onComplete} onUndo={props.onUndo} onPostpone={props.onPostpone} />,
+      node: (
+        <SessionCard state={state} s={s} onComplete={props.onComplete} onUndo={props.onUndo} onPostpone={props.onPostpone} onMove={props.onMove} />
+      ),
     });
   }
   items.sort((a, b) => a.t - b.t);
@@ -194,7 +214,41 @@ export function TodayView(props: Props) {
           🫧 Respirar
         </button>
       </div>
+
+      {(new Date().getHours() >= 17 || state.journal[today]) && (
+        <JournalCard key={today} initial={state.journal[today] ?? ''} onSave={props.onJournal} />
+      )}
     </div>
+  );
+}
+
+function JournalCard({ initial, onSave }: { initial: string; onSave: (t: string) => void }) {
+  const [text, setText] = useState(initial);
+  const [editing, setEditing] = useState(!initial);
+  return (
+    <section className="card journal">
+      <p className="h3">🌙 Antes de dormir</p>
+      {editing ? (
+        <>
+          <p className="muted small">¿Qué te ha hecho bien hoy? Una cosa pequeña basta.</p>
+          <textarea value={text} rows={2} placeholder="Hoy agradezco…" onChange={(e) => setText(e.target.value)} />
+          <button
+            className="btn primary"
+            disabled={!text.trim()}
+            onClick={() => {
+              onSave(text);
+              setEditing(false);
+            }}
+          >
+            Guardar en mi diario
+          </button>
+        </>
+      ) : (
+        <p className="journal-text" onClick={() => setEditing(true)}>
+          “{text}”
+        </p>
+      )}
+    </section>
   );
 }
 

@@ -1,10 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useStore } from './store';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { hydrate, useStore, type Action } from './store';
 import type { AppState, Profile, Session, Task } from './types';
 import {
   addTask,
   archiveTask,
   completeSession,
+  editTask,
+  importEvents,
+  moveSession,
   postponeSession,
   pullForward,
   replanAll,
@@ -14,8 +17,21 @@ import {
   type NewTaskInput,
 } from './lib/scheduler';
 import { randomDonePhrase } from './lib/phrases';
+import { buy, claimAchievements, writeJournal } from './lib/rewards';
+import { icsToEvents } from './lib/ics';
+import { guessCategory } from './lib/parse';
 import type { Tip } from './lib/tips';
 import { todayKey } from './lib/time';
+import {
+  isNative,
+  onOpenUrl,
+  onResume,
+  readIphoneCalendar,
+  scheduleNotifications,
+  syncWidget,
+  takeWidgetActions,
+  tapFeedback,
+} from './native';
 import { Onboarding, type HabitSuggestion } from './components/Onboarding';
 import { EnergyCheck } from './components/EnergyCheck';
 import { TodayView } from './components/TodayView';
@@ -24,6 +40,7 @@ import { GoalsView } from './components/GoalsView';
 import { BonsaiView } from './components/BonsaiView';
 import { SettingsView } from './components/SettingsView';
 import { AddTask, type AddPreset } from './components/AddTask';
+import { MoveSheet } from './components/MoveSheet';
 import { Breathe, Celebration, Toast } from './components/ui';
 
 type Tab = 'hoy' | 'calendario' | 'objetivos' | 'bonsai';
@@ -37,22 +54,54 @@ const TABS: { id: Tab; icon: string; label: string }[] = [
 ];
 
 export default function App() {
-  const { state, act, reset } = useStore();
+  const { state, act: rawAct, reset, replace } = useStore();
   const [today, setToday] = useState(todayKey());
   const [tab, setTab] = useState<Tab>('hoy');
   const [modal, setModal] = useState<Modal>(null);
   const [preset, setPreset] = useState<AddPreset | undefined>();
+  const [editing, setEditing] = useState<Task | undefined>();
+  const [moving, setMoving] = useState<Session | undefined>();
   const [toast, setToast] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<{ text: string; sub?: string } | null>(null);
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   const say = (m?: string) => m && setToast(m);
 
-  // nuevo día: recolocar lo pendiente y preguntar por la energía
-  const wakeUp = useCallback(() => {
+  /** Cada acción comprueba además si se ha desbloqueado algún logro. */
+  const act = useCallback(
+    (fn: Action): string | undefined => {
+      const msg = rawAct(fn);
+      let fresh: string[] = [];
+      rawAct((s, ctx) => {
+        const r = claimAchievements(s, ctx.today);
+        fresh = r.fresh.map((a) => `${a.emoji} ¡Logro: ${a.name}! +${a.reward} gotas`);
+        return r.state;
+      });
+      if (fresh.length) setTimeout(() => setToast(fresh.join(' · ')), msg ? 3000 : 0);
+      return msg;
+    },
+    [rawAct],
+  );
+
+  const openAction = useCallback((a: string) => {
+    if (a === 'add') {
+      setPreset(undefined);
+      setEditing(undefined);
+      setModal('add');
+    }
+    if (a === 'breathe') setModal('breathe');
+    if (a === 'energy') setModal('energy');
+    if (a === 'today') setTab('hoy');
+    if (a === 'bonsai') setTab('bonsai');
+  }, []);
+
+  // nuevo día / volver a la app: recolocar lo pendiente, aplicar lo hecho desde el widget, energía
+  const wakeUp = useCallback(async () => {
     setToday(todayKey());
     let moved = 0;
     let needEnergy = false;
-    act((s, ctx) => {
+    rawAct((s, ctx) => {
       if (!s.profile) return s;
       needEnergy = s.energy[ctx.today] == null;
       if (s.lastOpen === ctx.today) return s;
@@ -62,7 +111,24 @@ export default function App() {
     });
     if (moved > 0) setToast(`Lo que quedó pendiente lo he recolocado (${moved}) 🌿 Sin culpa.`);
     if (needEnergy) setModal((m) => m ?? 'energy');
-  }, [act]);
+
+    const actions = await takeWidgetActions();
+    const ids = actions.filter((a) => a.type === 'complete').map((a) => a.sessionId);
+    if (ids.length) {
+      act((s) =>
+        ids.reduce(
+          (acc, id) => (acc.sessions.find((x) => x.id === id && x.status === 'planned') ? completeSession(acc, id).state : acc),
+          s,
+        ),
+      );
+      setToast(`Desde el widget: ${ids.length} ${ids.length === 1 ? 'cosa hecha' : 'cosas hechas'} 🍃`);
+    }
+    // si ya sincronizaste el calendario del iPhone alguna vez, se mantiene al día solo
+    if (isNative && stateRef.current.tasks.some((t) => t.source === 'ios')) {
+      const events = await readIphoneCalendar(todayKey()).catch(() => null);
+      if (events) rawAct((s, ctx) => importEvents(s, events, 'ios', ctx, guessCategory));
+    }
+  }, [rawAct, act]);
 
   useEffect(() => {
     wakeUp();
@@ -71,15 +137,29 @@ export default function App() {
     return () => document.removeEventListener('visibilitychange', onVis);
   }, [wakeUp]);
 
-  // acciones rápidas (atajos del icono de la app / widget): ?action=add | breathe | energy
+  useEffect(() => {
+    onResume(() => wakeUp());
+    onOpenUrl(openAction);
+    // solo una vez: los listeners nativos viven lo que la app
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // acciones rápidas del icono (web): ?action=add | breathe | energy
   useEffect(() => {
     const a = new URLSearchParams(location.search).get('action');
     if (!a || !state.profile) return;
-    if (a === 'add') setModal('add');
-    if (a === 'breathe') setModal('breathe');
-    if (a === 'energy') setModal('energy');
+    openAction(a);
     history.replaceState(null, '', location.pathname);
-  }, [state.profile]);
+  }, [state.profile, openAction]);
+
+  // widget y avisos siempre al día (con un pequeño retraso para agrupar cambios)
+  useEffect(() => {
+    const t = setTimeout(() => {
+      syncWidget(state, today);
+      scheduleNotifications(state, today);
+    }, 1200);
+    return () => clearTimeout(t);
+  }, [state, today]);
 
   if (!state.profile) {
     return (
@@ -100,8 +180,10 @@ export default function App() {
   }
 
   const complete = (s: Session) => {
+    tapFeedback();
     const msg = act((st) => completeSession(st, s.id));
-    setCelebration({ text: msg?.startsWith('🎉') ? msg : randomDonePhrase(), sub: msg?.startsWith('🎉') ? undefined : msg });
+    const big = msg?.startsWith('🎉');
+    setCelebration({ text: big ? msg! : randomDonePhrase(), sub: big ? undefined : msg });
   };
   const undo = (s: Session) => act((st) => uncompleteSession(st, s.id));
   const postpone = (s: Session) => say(act((st, ctx) => postponeSession(st, s.id, ctx)));
@@ -113,13 +195,48 @@ export default function App() {
   };
   const onTip = (t: Tip) => {
     if (t.action === 'breathe') setModal('breathe');
-    if (t.action === 'add-social') {
-      setPreset({ category: 'social', kind: 'flexible', minutes: 60, title: 'Quedar con alguien' });
+    if (t.action === 'add-social' || t.action === 'add-bienestar') {
+      setPreset(
+        t.action === 'add-social'
+          ? { category: 'social', kind: 'flexible', minutes: 60, title: 'Quedar con alguien' }
+          : { category: 'bienestar', kind: 'flexible', minutes: 20, title: 'Paseo tranquilo' },
+      );
+      setEditing(undefined);
       setModal('add');
     }
-    if (t.action === 'add-bienestar') {
-      setPreset({ category: 'bienestar', kind: 'flexible', minutes: 20, title: 'Paseo tranquilo' });
-      setModal('add');
+  };
+
+  const exportBackup = async () => {
+    const json = JSON.stringify(state, null, 2);
+    const name = `sereno-copia-${today}.json`;
+    const file = new File([json], name, { type: 'application/json' });
+    try {
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Copia de Sereno' });
+        return;
+      }
+    } catch {
+      /* cancelado: probamos la descarga */
+    }
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    say('Copia exportada 💾');
+  };
+
+  const importBackup = (json: string) => {
+    try {
+      const next = hydrate(JSON.parse(json));
+      if (!next.profile) throw new Error('sin perfil');
+      if (!confirm('¿Sustituir tus datos actuales por los de la copia?')) return;
+      replace(next);
+      setModal(null);
+      say('Copia restaurada 🌳');
+    } catch {
+      say('Ese archivo no parece una copia de Sereno.');
     }
   };
 
@@ -133,25 +250,32 @@ export default function App() {
             onComplete={complete}
             onUndo={undo}
             onPostpone={postpone}
+            onMove={setMoving}
+            onJournal={(text) => say(act((st, ctx) => writeJournal(st, ctx.today, text)))}
             onEnergy={() => setModal('energy')}
             onPull={() => say(act((st, ctx) => pullForward(st, ctx)))}
             onTipAction={onTip}
             onBreathe={() => setModal('breathe')}
           />
         )}
-        {tab === 'calendario' && <CalendarView state={state} today={today} onComplete={complete} onUndo={undo} onPostpone={postpone} />}
-        {tab === 'objetivos' && <GoalsView state={state} today={today} onArchive={archive} />}
-        {tab === 'bonsai' && <BonsaiView state={state} today={today} />}
+        {tab === 'calendario' && (
+          <CalendarView state={state} today={today} onComplete={complete} onUndo={undo} onPostpone={postpone} onMove={setMoving} />
+        )}
+        {tab === 'objetivos' && (
+          <GoalsView
+            state={state}
+            today={today}
+            onArchive={archive}
+            onEdit={(t) => {
+              setEditing(t);
+              setModal('add');
+            }}
+          />
+        )}
+        {tab === 'bonsai' && <BonsaiView state={state} today={today} onBuy={(id) => say(act((st) => buy(st, id)))} />}
       </main>
 
-      <button
-        className="fab"
-        aria-label="Añadir"
-        onClick={() => {
-          setPreset(undefined);
-          setModal('add');
-        }}
-      >
+      <button className="fab" aria-label="Añadir" onClick={() => openAction('add')}>
         +
       </button>
 
@@ -170,11 +294,34 @@ export default function App() {
 
       {modal === 'add' && (
         <AddTask
+          key={editing?.id ?? 'new'}
           preset={preset}
-          onClose={() => setModal(null)}
+          editing={editing}
+          onClose={() => {
+            setModal(null);
+            setEditing(undefined);
+          }}
           onAdd={(input: NewTaskInput) => {
             setModal(null);
             say(act((st, ctx) => addTask(st, input, ctx)));
+          }}
+          onEdit={(id, patch) => {
+            setModal(null);
+            setEditing(undefined);
+            say(act((st, ctx) => editTask(st, id, patch, ctx)));
+          }}
+        />
+      )}
+      {moving && (
+        <MoveSheet
+          state={state}
+          session={moving}
+          today={today}
+          onClose={() => setMoving(undefined)}
+          onMove={(date, start) => {
+            const id = moving.id;
+            setMoving(undefined);
+            say(act((st, ctx) => moveSession(st, id, date, start, ctx)));
           }}
         />
       )}
@@ -208,6 +355,22 @@ export default function App() {
             setModal(null);
             reset();
           }}
+          onImportIcs={(text) => {
+            setModal(null);
+            const events = icsToEvents(text, todayKey());
+            say(act((st, ctx) => importEvents(st, events, 'ics', ctx, guessCategory)));
+          }}
+          onSyncIphone={async () => {
+            setModal(null);
+            const events = await readIphoneCalendar(todayKey()).catch(() => null);
+            if (!events) {
+              say('Necesito permiso para ver tu calendario: Ajustes del iPhone → Sereno → Calendarios.');
+              return;
+            }
+            say(act((st, ctx) => importEvents(st, events, 'ios', ctx, guessCategory)));
+          }}
+          onExport={exportBackup}
+          onImport={importBackup}
         />
       )}
 

@@ -41,7 +41,7 @@ export function Toast({ text, onDone }: { text: string; onDone: () => void }) {
 export function TimeInput({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
     <label className="field">
-      <span>{label}</span>
+      {label && <span>{label}</span>}
       <input type="time" value={minToHm(value)} onChange={(e) => e.target.value && onChange(hmToMin(e.target.value))} />
     </label>
   );

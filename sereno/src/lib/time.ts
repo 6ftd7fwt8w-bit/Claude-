@@ -85,3 +85,10 @@ export function fmtRelative(k: string, today: string): string {
   if (d > 1 && d < 7) return `el ${longFmt.format(fromKey(k)).split(',')[0]}`;
   return `el ${fmtShort(k)}`;
 }
+
+/** "a hoy", "a mañana", "al jueves", "al 15 dic" */
+export function fmtTo(k: string, today: string): string {
+  const r = fmtRelative(k, today);
+  if (r === 'hoy') return 'para hoy';
+  return r.startsWith('el ') ? `al ${r.slice(3)}` : `a ${r}`;
+}

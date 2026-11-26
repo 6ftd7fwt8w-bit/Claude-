@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from 'react';
-import { DEFAULT_PROFILE, catById, type CategoryId, type Profile } from '../types';
+import { DEFAULT_PROFILE, catById, type CategoryId, type Chronotype, type Profile, type WorkHours } from '../types';
 import { baseFreeMinutes } from '../lib/scheduler';
 import { addDays, fmtDuration, todayKey, weekStart } from '../lib/time';
 import { NumberChips, TimeInput } from './ui';
@@ -24,6 +24,7 @@ export const HABIT_SUGGESTIONS: HabitSuggestion[] = [
 
 const DAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0];
+const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
 export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Partial<Profile>) => void; step: string }) {
   if (step === 'despertar')
@@ -33,6 +34,23 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
         <div className="field">
           <span>¿Cuánto tardas en arrancar? (ducha, desayuno…)</span>
           <NumberChips value={p.morningRoutine} options={[15, 30, 45, 60, 90]} onChange={(morningRoutine) => set({ morningRoutine })} fmt={fmtDuration} />
+        </div>
+        <div className="field">
+          <span>¿Cuándo te concentras mejor?</span>
+          <div className="chips">
+            {(
+              [
+                ['manana', '🌅 Por la mañana'],
+                ['neutro', '🌤️ Me da igual'],
+                ['noche', '🌙 Por la tarde-noche'],
+              ] as [Chronotype, string][]
+            ).map(([v, label]) => (
+              <button key={v} type="button" className={`chip ${p.chronotype === v ? 'on' : ''}`} onClick={() => set({ chronotype: v })}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <small className="muted">Ahí colocaré tus proyectos, que piden más foco.</small>
         </div>
       </>
     );
@@ -73,6 +91,29 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
               <TimeInput label="Empiezo" value={p.workStart} onChange={(workStart) => set({ workStart })} />
               <TimeInput label="Termino" value={p.workEnd} onChange={(workEnd) => set({ workEnd })} />
             </div>
+            <label className="toggle">
+              <input
+                type="checkbox"
+                checked={!!p.workByDay}
+                onChange={(e) => set({ workByDay: e.target.checked ? {} : undefined })}
+              />
+              <span>Algún día tengo otro horario (intensivo, media jornada…)</span>
+            </label>
+            {p.workByDay && (
+              <div className="per-day">
+                {DAY_VALUES.filter((d) => p.workDays.includes(d)).map((d) => {
+                  const h = p.workByDay?.[d] ?? { start: p.workStart, end: p.workEnd };
+                  const setDay = (patch: Partial<WorkHours>) => set({ workByDay: { ...p.workByDay, [d]: { ...h, ...patch } } });
+                  return (
+                    <div key={d} className="per-day-row">
+                      <strong>{DAY_NAMES[d]}</strong>
+                      <TimeInput label="" value={h.start} onChange={(start) => setDay({ start })} />
+                      <TimeInput label="" value={h.end} onChange={(end) => setDay({ end })} />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             <div className="field">
               <span>Desplazamiento (cada trayecto)</span>
               <NumberChips value={p.commute} options={[0, 15, 30, 45, 60]} onChange={(commute) => set({ commute })} fmt={(v) => (v ? fmtDuration(v) : 'Teletrabajo')} />

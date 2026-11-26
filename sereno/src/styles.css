@@ -1189,3 +1189,247 @@ input[type='range'] {
     transition-duration: 0.01ms !important;
   }
 }
+
+.flutter {
+  animation: flutter 4s ease-in-out infinite;
+}
+.flutter.slow {
+  animation-duration: 6s;
+}
+@keyframes flutter {
+  50% {
+    transform: translate(-8px, -10px);
+  }
+}
+.lantern rect:nth-child(3) {
+  animation: glow 3s ease-in-out infinite;
+}
+@keyframes glow {
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.bonsai-stage .btn.soft {
+  margin-top: 8px;
+}
+.achievements {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+.achievement {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  opacity: 0.55;
+}
+.achievement.on {
+  opacity: 1;
+  background: var(--accent-soft);
+}
+.ach-emoji {
+  grid-row: span 2;
+  font-size: 1.5rem;
+  text-align: center;
+}
+.ach-name {
+  font-weight: 800;
+  font-size: 0.86rem;
+}
+.ach-desc {
+  font-size: 0.74rem;
+  color: var(--ink-2);
+  line-height: 1.25;
+}
+.journal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  font-family: var(--serif);
+  line-height: 1.4;
+}
+.shop-title {
+  font-weight: 800;
+  margin: 18px 0 8px;
+}
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+.shop-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 10px 12px;
+}
+.shop-item.on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.shop-item.locked {
+  opacity: 0.55;
+}
+.shop-emoji {
+  font-size: 1.5rem;
+}
+.shop-name {
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+.shop-desc {
+  font-size: 0.75rem;
+  color: var(--ink-2);
+  line-height: 1.25;
+}
+.shop-price {
+  margin-top: 4px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+.session-actions {
+  display: flex;
+  gap: 14px;
+}
+.muted-link {
+  color: var(--ink-3);
+}
+.journal {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: linear-gradient(135deg, color-mix(in srgb, #7e98d1 14%, var(--surface)), var(--surface));
+}
+.journal textarea {
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  resize: vertical;
+}
+.journal-text {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1.45;
+  cursor: text;
+}
+.segmented.two {
+  grid-template-columns: 1fr 1fr;
+  margin-top: 0;
+}
+.week {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.week-hours {
+  position: relative;
+  height: 16px;
+  margin-left: 58px;
+  font-size: 0.68rem;
+  color: var(--ink-3);
+}
+.week-hours span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+.week-row {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 6px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  padding: 4px 0;
+  border-radius: 14px;
+}
+.week-row.sel {
+  background: var(--accent-soft);
+}
+.week-day {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  padding-left: 6px;
+}
+.week-row.today .week-day strong {
+  color: var(--accent);
+}
+.week-bar {
+  position: relative;
+  height: 34px;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.blk {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  border-radius: 6px;
+}
+.blk.busy {
+  top: 0;
+  bottom: 0;
+  border-radius: 0;
+  background: repeating-linear-gradient(135deg, var(--track), var(--track) 4px, transparent 4px, transparent 8px);
+}
+.blk.done {
+  opacity: 0.45;
+}
+.per-day {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+.per-day-row {
+  display: grid;
+  grid-template-columns: 48px 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+.per-day-row .field {
+  margin: 0;
+}
+.settings-section {
+  border-top: 1px solid var(--line);
+  margin-top: 18px;
+  padding-top: 14px;
+}
+.settings-section .btn {
+  margin-top: 8px;
+}
+.file-btn {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  text-align: center;
+}
+.file-btn input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.week-title {
+  font-size: 1.35rem;
+}

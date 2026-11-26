@@ -4,7 +4,17 @@ import { catById } from '../types';
 import { doneMinutes, firstPlanned } from '../lib/scheduler';
 import { addDays, diffDays, fmtDuration, fmtRelative, fmtShort, minToHm, weekStart } from '../lib/time';
 
-export function GoalsView({ state, today, onArchive }: { state: AppState; today: string; onArchive: (t: Task) => void }) {
+export function GoalsView({
+  state,
+  today,
+  onArchive,
+  onEdit,
+}: {
+  state: AppState;
+  today: string;
+  onArchive: (t: Task) => void;
+  onEdit: (t: Task) => void;
+}) {
   const active = state.tasks.filter((t) => !t.archived);
   const flex = active.filter((t) => t.kind === 'flexible').sort((a, b) => (a.deadline ?? '9999').localeCompare(b.deadline ?? '9999'));
   const habits = active.filter((t) => t.kind === 'habito');
@@ -41,6 +51,9 @@ export function GoalsView({ state, today, onArchive }: { state: AppState; today:
                   {t.deadline && ` · vence ${fmtRelative(t.deadline, today)}${diffDays(today, t.deadline) > 6 ? ` (${diffDays(today, t.deadline)} días)` : ''}`}
                 </p>
               </div>
+              <button className="icon-btn" aria-label={`Editar ${t.title}`} onClick={() => onEdit(t)}>
+                ✏️
+              </button>
               <button className="icon-btn" aria-label={`Archivar ${t.title}`} onClick={() => onArchive(t)}>
                 🗑
               </button>
@@ -77,6 +90,9 @@ export function GoalsView({ state, today, onArchive }: { state: AppState; today:
                   {fmtDuration(t.totalMinutes)} · {t.timesPerWeek}× por semana
                 </p>
               </div>
+              <button className="icon-btn" aria-label={`Editar ${t.title}`} onClick={() => onEdit(t)}>
+                ✏️
+              </button>
               <button className="icon-btn" aria-label={`Archivar ${t.title}`} onClick={() => onArchive(t)}>
                 🗑
               </button>
@@ -101,6 +117,9 @@ export function GoalsView({ state, today, onArchive }: { state: AppState; today:
               {fmtRelative(t.date!, today)} a las {minToHm(t.start ?? 0)} · {fmtDuration(t.totalMinutes)}
             </p>
           </div>
+          <button className="icon-btn" aria-label={`Editar ${t.title}`} onClick={() => onEdit(t)}>
+            ✏️
+          </button>
           <button className="icon-btn" aria-label={`Quitar ${t.title}`} onClick={() => onArchive(t)}>
             🗑
           </button>

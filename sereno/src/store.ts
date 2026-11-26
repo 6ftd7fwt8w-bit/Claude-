@@ -1,14 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { emptyState, type AppState } from './types';
+import { DEFAULT_PROFILE, emptyState, type AppState } from './types';
 import type { Ctx, Result } from './lib/scheduler';
 import { nowMinutes, todayKey } from './lib/time';
+import { persist, restore } from './native';
 
 const KEY = 'sereno:v1';
+
+/** Completa datos guardados con versiones anteriores de la app. */
+export function hydrate(raw: unknown): AppState {
+  const base = emptyState();
+  const s = { ...base, ...(raw as Partial<AppState>) };
+  if (s.profile) s.profile = { ...DEFAULT_PROFILE, ...s.profile };
+  s.equipped = { ...base.equipped, ...s.equipped };
+  return s;
+}
 
 function load(): AppState {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return { ...emptyState(), ...JSON.parse(raw) };
+    if (raw) return hydrate(JSON.parse(raw));
   } catch {
     /* sin almacenamiento: empezamos de cero */
   }
@@ -25,13 +35,26 @@ export function useStore() {
   const [state, setState] = useState<AppState>(load);
   const ref = useRef(state);
 
+  // en iPhone, si iOS borró localStorage, recuperamos la copia de Preferences
+  useEffect(() => {
+    if (ref.current.profile) return;
+    restore().then((raw) => {
+      if (raw && !ref.current.profile) {
+        ref.current = hydrate(JSON.parse(raw));
+        setState(ref.current);
+      }
+    });
+  }, []);
+
   useEffect(() => {
     ref.current = state;
+    const json = JSON.stringify(state);
     try {
-      localStorage.setItem(KEY, JSON.stringify(state));
+      localStorage.setItem(KEY, json);
     } catch {
       /* ignorado */
     }
+    persist(json).catch(() => undefined);
   }, [state]);
 
   /** Ejecuta una acción pura y devuelve su mensaje (si lo hay). */
@@ -43,15 +66,12 @@ export function useStore() {
     return res.message;
   }, []);
 
-  const reset = useCallback(() => {
-    try {
-      localStorage.removeItem(KEY);
-    } catch {
-      /* ignorado */
-    }
-    ref.current = emptyState();
-    setState(ref.current);
+  const replace = useCallback((next: AppState) => {
+    ref.current = next;
+    setState(next);
   }, []);
 
-  return { state, act, reset };
+  const reset = useCallback(() => replace(emptyState()), [replace]);
+
+  return { state, act, reset, replace };
 }

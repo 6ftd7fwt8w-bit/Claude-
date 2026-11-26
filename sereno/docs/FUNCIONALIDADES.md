@@ -5,7 +5,7 @@
 > rutina, se adapta a tu energía de cada día y se asegura de que no se te olvide vivir
 > (amigos, descanso, cuidarte).
 
-Leyenda: ✅ hecho en la v0.1 · 🔜 siguiente fase · 💡 idea para más adelante
+Leyenda: ✅ hecho · 🔜 siguiente fase · 💡 idea para más adelante
 
 ---
 
@@ -22,8 +22,8 @@ Leyenda: ✅ hecho en la v0.1 · 🔜 siguiente fase · 💡 idea para más adel
 | ✅ | Fines de semana más suaves (opcional) |
 | ✅ | Hábitos de equilibrio sugeridos: meditar, ejercicio, quedar con amigos, llamar a alguien, leer… |
 | ✅ | Resumen: «tienes X h libres reales a la semana» |
-| 🔜 | Horarios distintos por día (p. ej. viernes intensivo, días de teletrabajo) |
-| 🔜 | Cronotipo: ¿eres de mañanas o de noches? → colocar lo que exige foco en tu mejor franja |
+| ✅ | Horarios distintos por día (p. ej. viernes intensivo) |
+| ✅ | Cronotipo: ¿eres de mañanas o de noches? → los proyectos van a tu mejor franja |
 
 ## 2. Energía del día
 
@@ -47,7 +47,7 @@ Leyenda: ✅ hecho en la v0.1 · 🔜 siguiente fase · 💡 idea para más adel
 | ✅ | Tras añadir, te dice dónde lo ha puesto: «Repartido en 10 sesiones. Propuesta: hoy a las 18:30» |
 | ✅ | Avisa si no cabe antes del deadline y propone ampliar la fecha o reducir horas |
 | 🔜 | Entrada por voz («Oye Sereno, apunta…») |
-| 🔜 | Editar una tarea existente (horas, fecha, categoría) |
+| ✅ | Editar una tarea existente (horas, fecha, categoría, hora del evento, veces por semana) |
 | 💡 | Subtareas / checklist dentro de un proyecto |
 
 ## 4. El planificador inteligente
@@ -72,8 +72,10 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Un evento con hora fija **desplaza** lo flexible que pise |
 | ✅ | Los hábitos se colocan cada semana en días distintos |
 | ✅ | Al cambiar la rutina, reorganiza todo el calendario |
-| 🔜 | Arrastrar una sesión a otro día/hora a mano (y que lo respete) |
-| 🔜 | Sincronizar con Google Calendar / Calendario de iPhone (leer tus citas como ocupadas) |
+| ✅ | **Mover** una sesión a mano a otro día/hora, con sugerencia de huecos libres; queda fijada 📌 y el planificador la respeta |
+| ✅ | Importar citas de Google / iCloud / Outlook (archivo .ics, con repeticiones) |
+| ✅ | Leer el **Calendario del iPhone** (app nativa) y mantenerlo al día al abrir la app |
+| 🔜 | Sincronización directa con Google Calendar (necesita cuenta de Google Cloud) |
 | 💡 | Prioridad / importancia además del deadline |
 
 ## 5. Calendario con colores
@@ -83,7 +85,7 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Vista mensual: cada día de color según su carga — **libre · verde (tranquilo) · naranja (con ritmo) · rojo (intenso)** |
 | ✅ | Puntitos de color por categoría en cada día |
 | ✅ | Al tocar un día: carga, energía, consejo y lista de lo planeado |
-| 🔜 | Vista semanal tipo agenda con bloques por hora |
+| ✅ | Vista semanal tipo agenda: cada día es una barra con trabajo/comidas en gris y tus cosas en color |
 
 ## 6. Consejos del día
 
@@ -95,7 +97,7 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Deadlines cercanos: «Mañana vence X, vas por el 70 %» |
 | ✅ | Frase motivadora diferente cada día («Los pequeños progresos también son avances») |
 | ✅ | Respiración guiada (4-4-6) desde el consejo o un botón |
-| 🔜 | Resumen de la noche: «Hoy has hecho 3 cosas. ¿Qué agradeces del día?» (mini-diario) |
+| ✅ | Diario de gratitud por la noche («¿Qué te ha hecho bien hoy?»), +2 gotas |
 | 💡 | Consejos generados con IA a partir de tu semana |
 
 ## 7. Juego y satisfacción
@@ -110,8 +112,9 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Racha de días seguidos cuidándote |
 | ✅ | Celebración al completar: hojas cayendo, vibración suave y frase de ánimo |
 | ✅ | **Equilibrio del mes**: tiempo dedicado a cada área de tu vida |
-| 🔜 | Canjear gotas: macetas, estaciones (cerezo en primavera, hojas rojas en otoño), fondos, sonidos |
-| 🔜 | Logros suaves: «Primera semana equilibrada», «5 quedadas este mes»… |
+| ✅ | **Tienda del bonsái**: estaciones (cerezo, verano, arce de otoño, nieve), macetas (celadón, índigo, kintsugi…), paisajes (amanecer, luna, montañas) y detalles (farolillo, mariposas, pajarito, piedras zen) |
+| 💡 | Sonidos ambiente comprables |
+| ✅ | 10 logros suaves (Primera hoja, Te escuchas, Semana equilibrada, Buena compañía…) que regalan gotas |
 | 💡 | Jardín de bonsáis: la colección de todos tus meses |
 | 💡 | Sonidos ambiente relajantes (lluvia, bosque) mientras trabajas en una sesión + temporizador |
 
@@ -122,8 +125,10 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Botón **+** siempre visible |
 | ✅ | **Accesos directos** del icono de la app (mantener pulsado en Android / escritorio): *Añadir tarea · Energía · Respirar* |
 | ✅ | Funciona sin conexión e instalable en la pantalla de inicio (PWA) |
-| 🔜 | **Widget nativo** de pantalla de inicio (iOS/Android): próxima sesión, botón ✓, botón «+ añadir», mini-bonsái |
-| 🔜 | Notificaciones amables: «En 10 min empieza tu rato de lectura», resumen de la mañana |
+| ✅ | **Widget de iPhone** (pequeño, mediano, grande): progreso, lo siguiente, círculos para marcar como hecho sin abrir la app |
+| ✅ | Widget de **pantalla de bloqueo** (circular, rectangular y en línea) |
+| ✅ | Widget **Acciones rápidas**: Añadir · Respirar · Energía · Bonsái |
+| ✅ | Avisos amables (app nativa): buenos días, 10 min antes de cada cosa y hora de desconectar |
 | 💡 | Atajos de Siri / Live Activity durante una sesión |
 
 ## 9. Privacidad y datos
@@ -131,18 +136,19 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | | Funcionalidad |
 |---|---|
 | ✅ | Todo se guarda solo en tu dispositivo |
-| 🔜 | Exportar / importar copia de seguridad |
+| ✅ | Exportar / restaurar copia de seguridad |
+| ✅ | En iPhone, copia extra en el almacenamiento nativo por si iOS borra el de la web |
 | 💡 | Cuenta opcional para sincronizar entre móvil y ordenador |
 
 ---
 
-## Hoja de ruta técnica propuesta
+## Hoja de ruta técnica
 
-1. **v0.1 (esta)** — Web app instalable (PWA) en React + TypeScript. Toda la lógica del planificador
-   está en funciones puras y probadas (`src/lib`), independientes de la interfaz.
-2. **v0.2** — Editar tareas, arrastrar sesiones, notificaciones, vista semanal, exportar datos.
-3. **v0.3 — App nativa con widget**: empaquetar la misma web con **Capacitor** para iOS y Android y
-   añadir el widget nativo (WidgetKit en iOS, App Widgets en Android) que lea el estado compartido.
-   Así reutilizamos el 100 % del código actual. (Alternativa: reescribir la UI en React Native/Expo
-   reutilizando `src/lib` tal cual.)
-4. **v0.4** — Sincronizar con Google Calendar / iCloud, cuenta opcional y tienda de recompensas.
+1. ✅ **v0.1** — Web app instalable (PWA) en React + TypeScript. La lógica (`src/lib`) son funciones
+   puras con tests, independientes de la interfaz.
+2. ✅ **v0.2** — Editar y mover, vista semanal, horario por día, cronotipo, calendario externo,
+   tienda del bonsái, logros, diario y copia de seguridad.
+3. ✅ **v0.3** — **App de iPhone** con Capacitor: widget (WidgetKit, interactivo), avisos, Calendario
+   del iPhone. Guía de instalación: [`GUIA-IPHONE.md`](GUIA-IPHONE.md).
+4. 🔜 **v0.4** — Probarla en tu iPhone y pulir lo que notes; TestFlight; Google Calendar directo;
+   cuenta opcional para sincronizar entre dispositivos; Atajos de Siri («Oye Siri, añade a Sereno…»).

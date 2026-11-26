@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import type { CategoryId, TaskKind } from '../types';
+import type { CategoryId, Task, TaskKind } from '../types';
 import { catById } from '../types';
-import type { NewTaskInput } from '../lib/scheduler';
+import type { NewTaskInput, TaskPatch } from '../lib/scheduler';
 import { parseQuick } from '../lib/parse';
 import { addDays, fmtDuration, fmtShort, hmToMin, minToHm, todayKey } from '../lib/time';
 import { CategoryPicker, NumberChips, Sheet } from './ui';
@@ -21,30 +21,37 @@ export interface AddPreset {
 
 export function AddTask({
   onAdd,
+  onEdit,
   onClose,
   preset,
+  editing,
 }: {
   onAdd: (t: NewTaskInput) => void;
+  onEdit?: (id: string, patch: TaskPatch) => void;
   onClose: () => void;
   preset?: AddPreset;
+  editing?: Task;
 }) {
   const today = todayKey();
-  const [text, setText] = useState(preset?.title ?? '');
-  const [kind, setKind] = useState<TaskKind>(preset?.kind ?? 'flexible');
-  const [category, setCategory] = useState<CategoryId>(preset?.category ?? 'proyectos');
-  const [total, setTotal] = useState(preset?.minutes ?? 120);
-  const [session, setSession] = useState(60);
-  const [deadline, setDeadline] = useState<string>(addDays(today, 7));
-  const [hasDeadline, setHasDeadline] = useState(true);
-  const [date, setDate] = useState(today);
-  const [start, setStart] = useState(19 * 60);
-  const [times, setTimes] = useState(3);
-  const [touchedCat, setTouchedCat] = useState(!!preset?.category);
+  const e = editing;
+  const [text, setText] = useState(e?.title ?? preset?.title ?? '');
+  const [kind, setKind] = useState<TaskKind>(e?.kind ?? preset?.kind ?? 'flexible');
+  const [category, setCategory] = useState<CategoryId>(e?.category ?? preset?.category ?? 'proyectos');
+  const [total, setTotal] = useState(e?.totalMinutes ?? preset?.minutes ?? 120);
+  const [session, setSession] = useState(e?.sessionMinutes ?? 60);
+  const [deadline, setDeadline] = useState<string>(e?.deadline ?? addDays(today, 7));
+  const [hasDeadline, setHasDeadline] = useState(e ? !!e.deadline : true);
+  const [date, setDate] = useState(e?.date ?? today);
+  const [start, setStart] = useState(e?.start ?? 19 * 60);
+  const [times, setTimes] = useState(e?.timesPerWeek ?? 3);
+  const [touchedCat, setTouchedCat] = useState(!!preset?.category || !!e);
+  const [typed, setTyped] = useState(false);
 
   const parsed = parseQuick(text, today);
 
-  // lo que se entiende del texto rellena el formulario
+  // lo que se entiende del texto rellena el formulario (al editar, solo si se reescribe)
   useEffect(() => {
+    if (e && !typed) return;
     if (parsed.kind) setKind(parsed.kind);
     if (parsed.totalMinutes) setTotal(parsed.totalMinutes);
     if (parsed.deadline) {
@@ -65,9 +72,22 @@ export function AddTask({
   if (parsed.timesPerWeek) understood.push(`🔁 ${parsed.timesPerWeek}×/semana`);
   if (parsed.category) understood.push(`${catById(parsed.category).emoji} ${catById(parsed.category).label}`);
 
-  const title = parsed.title || text.trim();
+  const title = e && !typed ? text.trim() : parsed.title || text.trim();
   const submit = () => {
     if (!title) return;
+    if (e && onEdit) {
+      onEdit(e.id, {
+        title,
+        category,
+        totalMinutes: total,
+        sessionMinutes: Math.min(session, total),
+        deadline: kind === 'flexible' ? (hasDeadline ? deadline : null) : undefined,
+        date,
+        start,
+        timesPerWeek: times,
+      });
+      return;
+    }
     onAdd({
       title,
       category,
@@ -82,7 +102,7 @@ export function AddTask({
   };
 
   return (
-    <Sheet title="¿Qué quieres conseguir?" onClose={onClose}>
+    <Sheet title={e ? 'Editar' : '¿Qué quieres conseguir?'} onClose={onClose}>
       <label className="field">
         <span className="sr-only">Descripción</span>
         <input
@@ -90,23 +110,26 @@ export function AddTask({
           className="quick-input"
           value={text}
           placeholder="Ej.: Proyecto personal 10h antes del 15/12"
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && submit()}
+          onChange={(ev) => {
+            setText(ev.target.value);
+            setTyped(true);
+          }}
+          onKeyDown={(ev) => ev.key === 'Enter' && submit()}
         />
       </label>
-      {understood.length > 0 && (
+      {understood.length > 0 && (!e || typed) && (
         <div className="understood">
           <span className="muted small">Entendido:</span> {understood.map((u) => <span key={u} className="tag">{u}</span>)}
         </div>
       )}
 
-      <div className="segmented">
+      {!e && <div className="segmented">
         {KINDS.map((k) => (
           <button key={k.id} className={kind === k.id ? 'on' : ''} onClick={() => setKind(k.id)}>
             {k.label}
           </button>
         ))}
-      </div>
+      </div>}
       <p className="muted small">{KINDS.find((k) => k.id === kind)?.hint}</p>
 
       <div className="field">
@@ -131,7 +154,7 @@ export function AddTask({
               max={3000}
               step={15}
               value={total}
-              onChange={(e) => setTotal(Number(e.target.value))}
+              onChange={(ev) => setTotal(Number(ev.target.value))}
               aria-label="Tiempo total"
             />
             <small className="muted">{fmtDuration(total)}</small>
@@ -142,10 +165,10 @@ export function AddTask({
           </div>
           <div className="field">
             <label className="toggle">
-              <input type="checkbox" checked={hasDeadline} onChange={(e) => setHasDeadline(e.target.checked)} />
+              <input type="checkbox" checked={hasDeadline} onChange={(ev) => setHasDeadline(ev.target.checked)} />
               <span>Tiene fecha límite</span>
             </label>
-            {hasDeadline && <input type="date" value={deadline} min={today} onChange={(e) => e.target.value && setDeadline(e.target.value)} />}
+            {hasDeadline && <input type="date" value={deadline} min={today} onChange={(ev) => ev.target.value && setDeadline(ev.target.value)} />}
           </div>
         </>
       )}
@@ -154,11 +177,11 @@ export function AddTask({
         <div className="row2">
           <label className="field">
             <span>Día</span>
-            <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} />
+            <input type="date" value={date} onChange={(ev) => ev.target.value && setDate(ev.target.value)} />
           </label>
           <label className="field">
             <span>Hora</span>
-            <input type="time" value={minToHm(start)} onChange={(e) => e.target.value && setStart(hmToMin(e.target.value))} />
+            <input type="time" value={minToHm(start)} onChange={(ev) => ev.target.value && setStart(hmToMin(ev.target.value))} />
           </label>
         </div>
       )}
@@ -183,7 +206,7 @@ export function AddTask({
       )}
 
       <button className="btn primary wide" disabled={!title} onClick={submit}>
-        {kind === 'evento' ? 'Apuntar' : 'Buscar hueco ✨'}
+        {e ? 'Guardar cambios' : kind === 'evento' ? 'Apuntar' : 'Buscar hueco ✨'}
       </button>
     </Sheet>
   );

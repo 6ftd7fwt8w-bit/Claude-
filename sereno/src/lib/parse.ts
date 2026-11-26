@@ -37,6 +37,18 @@ const KEYWORDS: [CategoryId, RegExp][] = [
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
+/** categoría por palabras clave (o undefined si no hay pistas) */
+export function detectCategory(text: string): CategoryId | undefined {
+  const low = norm(text);
+  for (const [cat, re] of KEYWORDS) if (re.test(low)) return cat;
+  return undefined;
+}
+
+/** para citas importadas: si no hay pistas, se asume trabajo */
+export function guessCategory(text: string): CategoryId {
+  return detectCategory(text) ?? 'trabajo';
+}
+
 function nextWeekday(today: string, target: number): string {
   const diff = (target - weekday(today) + 7) % 7 || 7;
   return addDays(today, diff);
@@ -133,13 +145,7 @@ export function parseQuick(input: string, today: string): Parsed {
     }
   }
 
-  const low = norm(input);
-  for (const [cat, re] of KEYWORDS) {
-    if (re.test(low)) {
-      out.category = cat;
-      break;
-    }
-  }
+  out.category = detectCategory(input);
 
   const title = text.replace(/\s+/g, ' ').replace(/\s([,.;:])/g, '$1').replace(/^[\s,.;:-]+|[\s,.;:-]+$/g, '').trim();
   out.title = title ? title[0].toUpperCase() + title.slice(1) : '';

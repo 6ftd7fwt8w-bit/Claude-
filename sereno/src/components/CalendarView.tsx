@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import type { AppState, Session } from '../types';
 import { catById } from '../types';
-import { dayLoad, energyFor, sessionsOn } from '../lib/scheduler';
+import { baseBusy, bedEff, dayLoad, energyFor, sessionsOn } from '../lib/scheduler';
 import { LEVEL_TEXT, tipsFor } from '../lib/tips';
-import { addDays, fmtDuration, fmtLong, fmtMonth, fromKey, monthKey, pad, weekStart } from '../lib/time';
+import { addDays, fmtDuration, fmtLong, fmtMonth, fmtShort, fromKey, minToHm, monthKey, pad, weekStart } from '../lib/time';
 import { SessionCard } from './TodayView';
 
 const WEEK = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -14,15 +14,19 @@ export function CalendarView({
   onComplete,
   onUndo,
   onPostpone,
+  onMove,
 }: {
   state: AppState;
   today: string;
   onComplete: (s: Session) => void;
   onUndo: (s: Session) => void;
   onPostpone: (s: Session) => void;
+  onMove: (s: Session) => void;
 }) {
   const [month, setMonth] = useState(monthKey(today));
   const [selected, setSelected] = useState(today);
+  const [mode, setMode] = useState<'mes' | 'semana'>('mes');
+  const [week, setWeek] = useState(weekStart(today));
 
   const first = `${month}-01`;
   const gridStart = weekStart(first);
@@ -42,6 +46,18 @@ export function CalendarView({
 
   return (
     <div className="view">
+      <div className="segmented two">
+        <button className={mode === 'mes' ? 'on' : ''} onClick={() => setMode('mes')}>
+          Mes
+        </button>
+        <button className={mode === 'semana' ? 'on' : ''} onClick={() => setMode('semana')}>
+          Semana
+        </button>
+      </div>
+      {mode === 'semana' ? (
+        <WeekView state={state} week={week} setWeek={setWeek} today={today} selected={selected} onSelect={setSelected} />
+      ) : (
+      <>
       <header className="cal-head">
         <button className="icon-btn" onClick={() => shift(-1)} aria-label="Mes anterior">
           ‹
@@ -84,6 +100,8 @@ export function CalendarView({
         <span><i className="lg naranja" /> Con ritmo</span>
         <span><i className="lg rojo" /> Intenso</span>
       </div>
+      </>
+      )}
 
       <section className="card day-detail">
         <p className="eyebrow cap">{fmtLong(selected)}</p>
@@ -105,10 +123,95 @@ export function CalendarView({
               onComplete={selected <= today ? onComplete : undefined}
               onUndo={onUndo}
               onPostpone={selected >= today ? onPostpone : undefined}
+              onMove={selected >= today ? onMove : undefined}
             />
           ))}
         </div>
       </section>
     </div>
+  );
+}
+
+/** Semana como agenda: cada día es una barra desde que te levantas hasta que te acuestas. */
+function WeekView({
+  state,
+  week,
+  setWeek,
+  today,
+  selected,
+  onSelect,
+}: {
+  state: AppState;
+  week: string;
+  setWeek: (w: string) => void;
+  today: string;
+  selected: string;
+  onSelect: (d: string) => void;
+}) {
+  const p = state.profile!;
+  const from = p.wake;
+  const to = bedEff(p);
+  const span = Math.max(60, to - from);
+  const pct = (m: number) => `${((Math.min(to, Math.max(from, m)) - from) / span) * 100}%`;
+  const taskOf = new Map(state.tasks.map((t) => [t.id, t]));
+  const hours = Array.from({ length: Math.floor(span / 180) + 1 }, (_, i) => from + i * 180).filter((h) => h < to);
+  return (
+    <>
+      <header className="cal-head">
+        <button className="icon-btn" onClick={() => setWeek(addDays(week, -7))} aria-label="Semana anterior">
+          ‹
+        </button>
+        <h1 className="cap week-title">
+          {fmtShort(week).replace(/^\S+ /, '')} – {fmtShort(addDays(week, 6)).replace(/^\S+ /, '')}
+        </h1>
+        <button className="icon-btn" onClick={() => setWeek(addDays(week, 7))} aria-label="Semana siguiente">
+          ›
+        </button>
+      </header>
+      <div className="week">
+        <div className="week-hours">
+          {hours.map((h) => (
+            <span key={h} style={{ left: pct(h) }}>
+              {minToHm(h)}
+            </span>
+          ))}
+        </div>
+        {Array.from({ length: 7 }, (_, i) => addDays(week, i)).map((d) => {
+          const load = dayLoad(state, d);
+          return (
+            <button key={d} className={`week-row ${d === selected ? 'sel' : ''} ${d === today ? 'today' : ''}`} onClick={() => onSelect(d)}>
+              <span className="week-day">
+                <strong>{WEEK[(new Date(fromKey(d)).getDay() + 6) % 7]}</strong>
+                <span>{Number(d.slice(8))}</span>
+                <i className={`lg ${load.level}`} />
+              </span>
+              <span className="week-bar">
+                {baseBusy(p, d)
+                  .filter((b) => b.end > from && b.start < to)
+                  .map((b, k) => (
+                    <span key={k} className="blk busy" style={{ left: pct(b.start), width: `calc(${pct(b.end)} - ${pct(b.start)})` }} />
+                  ))}
+                {sessionsOn(state.sessions, d).map((x) => {
+                  const t = taskOf.get(x.taskId);
+                  return (
+                    <span
+                      key={x.id}
+                      className={`blk ${x.status === 'done' ? 'done' : ''}`}
+                      title={`${minToHm(x.start)} ${t?.title ?? ''}`}
+                      style={{
+                        left: pct(x.start),
+                        width: `max(4px, calc(${pct(x.start + x.duration)} - ${pct(x.start)}))`,
+                        background: catById(t?.category ?? 'bienestar').color,
+                      }}
+                    />
+                  );
+                })}
+              </span>
+            </button>
+          );
+        })}
+        <p className="muted small center">Gris: trabajo, comidas y descanso · Color: tus cosas · Toca un día para verlo</p>
+      </div>
+    </>
   );
 }

@@ -42,6 +42,9 @@ export interface Task {
   timesPerWeek?: number;
   createdAt: string;
   archived?: boolean;
+  /** de dónde viene: creada en Sereno, importada de un .ics o del calendario del iPhone */
+  source?: 'ics' | 'ios';
+  externalId?: string;
 }
 
 export type SessionStatus = 'planned' | 'done';
@@ -54,7 +57,16 @@ export interface Session {
   duration: number; // minutos
   status: SessionStatus;
   fixed?: boolean;
+  /** colocada a mano: el planificador no la mueve */
+  pinned?: boolean;
   completedAt?: string;
+}
+
+export type Chronotype = 'manana' | 'neutro' | 'noche';
+
+export interface WorkHours {
+  start: number;
+  end: number;
 }
 
 export interface Profile {
@@ -65,7 +77,12 @@ export interface Profile {
   workDays: number[]; // Date.getDay(): 0 = domingo
   workStart: number;
   workEnd: number;
+  /** horario distinto para algún día (clave: Date.getDay()) */
+  workByDay?: Record<number, WorkHours>;
   commute: number;
+  /** cuándo se concentra mejor: ahí van los proyectos */
+  chronotype: Chronotype;
+  notifications: boolean;
   lunch: number;
   lunchDuration: number;
   dinner: number;
@@ -86,9 +103,23 @@ export interface AppState {
   energy: Record<string, number>;
   /** minutos que no cupieron antes del deadline, por tarea */
   unplaced: Record<string, number>;
-  /** gotas de agua: los puntos del juego */
+  /** gotas de agua: los puntos del juego (saldo actual) */
   drops: number;
   lastOpen?: string;
+  /** recompensas compradas con gotas y las que están puestas */
+  owned: string[];
+  equipped: Equipped;
+  /** diario de gratitud: una línea por día */
+  journal: Record<string, string>;
+  /** logros ya celebrados */
+  seenAchievements: string[];
+}
+
+export interface Equipped {
+  season: string;
+  pot: string;
+  scene: string;
+  extras: string[];
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -100,6 +131,8 @@ export const DEFAULT_PROFILE: Profile = {
   workStart: 9 * 60,
   workEnd: 18 * 60,
   commute: 30,
+  chronotype: 'neutro',
+  notifications: true,
   lunch: 14 * 60,
   lunchDuration: 60,
   dinner: 21 * 60,
@@ -112,5 +145,17 @@ export const DEFAULT_PROFILE: Profile = {
 };
 
 export function emptyState(): AppState {
-  return { version: 1, profile: null, tasks: [], sessions: [], energy: {}, unplaced: {}, drops: 0 };
+  return {
+    version: 1,
+    profile: null,
+    tasks: [],
+    sessions: [],
+    energy: {},
+    unplaced: {},
+    drops: 0,
+    owned: [],
+    equipped: { season: 'auto', pot: 'terracota', scene: 'ninguno', extras: [] },
+    journal: {},
+    seenAchievements: [],
+  };
 }
