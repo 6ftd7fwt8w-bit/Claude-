@@ -32,7 +32,8 @@ const MONTHS: Record<string, number> = {
 
 // el orden importa: gana la primera que encaje
 const KEYWORDS: [CategoryId, RegExp][] = [
-  ['social', /\b(amig|cena con|comida con|cafe con|quedar|quedada|familia|cumple|boda|fiesta|cita con|(llamar|escribir|visitar|ver) a (mi |mis |la |el )?(mama|papa|madre|padre|abuel|herman|hij|tia|tio|prim|novi|pareja|amig|suegr))/],
+  ['familia', /\b(mama|papa|madre|padre|abuel|herman|hijo|hija|hijos|famili|ninos|peques|sobrin|suegr|tia |tio |prim[oa]s?\b|bebe)/],
+  ['social', /\b(amig|cena con|comida con|cafe con|quedar|quedada|cumple|boda|fiesta|cita con|novi|pareja)/],
   ['gestiones', /\b(reclam|vuelo|prorroga|alquiler|contrato|seguro|papeles|papeleo|document|tramite|factura|hacienda|impuesto|renta|declaracion|gasto|finanz|presupuesto|pagar|pago|recibo|devoluc|reembolso|banco|transferencia|gestor|notari|dni|pasaporte|carnet|renovar|matricul|inscrib|apuntar|cancelar|darse de baja|dar de baja|suscripc|cita previa|multa|ayuntamiento|seguimiento|follow ?up|garantia|abogad|nomina|hipoteca|factura de)/],
   ['bienestar', /\b(medit|yoga|correr|running|gym|gimnasio|deporte|entren|paseo|pasear|caminar|respir|nadar|piscina|bici|pilates|estirar|abdominal)/],
   ['aficiones', /\b(videojuego|jugar a|jugar al|consola|play|switch|guitarra|piano|ukelele|bateria|bajo electrico|instrumento|tocar el|tocar la|cantar|acuarela|pintar un|pintar cuadro|manualidad|ganchillo|punto|costura|bordar|puzzle|lego|fotografia|serie|peli|cine|jardineria|ajedrez|juego de mesa|bailar|danza|novela|poesia|afici|hobby)/],
@@ -66,7 +67,7 @@ export function estimateMinutes(text: string, cat: CategoryId): { minutes: numbe
   if (/\b(gasto|finanz|presupuesto|declaracion|renta)/.test(t)) return { minutes: 45, big: false };
   if (/\b(revisar|leer|mirar|comparar|buscar)/.test(t)) return { minutes: 30, big: false };
   if (/\b(reclam|follow|seguimiento|email|correo|mail|enviar|mandar|pedir|cancelar|pagar|reservar|confirmar)/.test(t)) return { minutes: 20, big: false };
-  const byCat: Record<CategoryId, number> = { gestiones: 20, proyectos: 120, aficiones: 60, hogar: 45, trabajo: 60, bienestar: 30, autocuidado: 45, social: 90 };
+  const byCat: Record<CategoryId, number> = { gestiones: 20, proyectos: 120, aficiones: 60, familia: 90, hogar: 45, trabajo: 60, bienestar: 30, autocuidado: 45, social: 90 };
   return { minutes: byCat[cat], big: cat === 'proyectos' };
 }
 
@@ -78,6 +79,9 @@ export function detectCategory(text: string, learned?: Record<string, CategoryId
     for (const w of keywordsOf(text)) if (learned[w]) return learned[w];
   }
   const low = norm(text);
+  if (KEYWORDS[0][1].test(low)) return 'familia';
+  // «Llamar a Laura», «Ver a Marcos»: un nombre propio suele ser una persona
+  if (/\b(?:[Ll]lamar|[Ee]scribir|[Vv]isitar|[Vv]er|[Ff]elicitar) a [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+/.test(text)) return 'social';
   for (const [cat, re] of KEYWORDS) if (re.test(low)) return cat;
   return undefined;
 }

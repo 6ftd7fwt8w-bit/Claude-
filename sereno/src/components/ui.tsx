@@ -266,3 +266,40 @@ export function DurationPicker({ value, onChange, options = DURATIONS }: { value
     </div>
   );
 }
+
+/** ¿Cuándo? Cuando haya hueco · a una hora fija · a partir de una hora */
+export function TimeMode({
+  fixed,
+  after,
+  onChange,
+}: {
+  fixed?: number;
+  after?: number;
+  onChange: (v: { fixed?: number; after?: number }) => void;
+}) {
+  const mode = fixed != null ? 'fija' : after != null ? 'desde' : 'hueco';
+  const value = fixed ?? after;
+  return (
+    <div className="time-mode">
+      <div className="chips">
+        <button type="button" className={`chip ${mode === 'hueco' ? 'on' : ''}`} onClick={() => onChange({})}>
+          ✨ Cuando haya hueco
+        </button>
+        <button type="button" className={`chip ${mode === 'fija' ? 'on' : ''}`} onClick={() => onChange({ fixed: value ?? 20 * 60 })}>
+          🕐 A una hora fija
+        </button>
+        <button type="button" className={`chip ${mode === 'desde' ? 'on' : ''}`} onClick={() => onChange({ after: value ?? 17 * 60 })}>
+          ⏩ A partir de las…
+        </button>
+      </div>
+      {mode !== 'hueco' && (
+        <input
+          type="time"
+          aria-label={mode === 'fija' ? 'Hora fija' : 'A partir de'}
+          value={minToHm(value ?? 0)}
+          onChange={(e) => e.target.value && onChange(mode === 'fija' ? { fixed: hmToMin(e.target.value) } : { after: hmToMin(e.target.value) })}
+        />
+      )}
+    </div>
+  );
+}

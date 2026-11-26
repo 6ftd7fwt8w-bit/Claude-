@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent } from 'react';
 import type { AppState, Session } from '../types';
 import { catById, taskColor } from '../types';
-import { bedAbs, bedEff, breaksFor, complement, isRemote, relaxStart, sessionsOn, workHours, type Interval } from '../lib/scheduler';
+import { bedAbs, bedEff, breaksFor, complement, isRemote, mealsFor, relaxStart, sessionsOn, workHours, type Interval } from '../lib/scheduler';
 import { fmtDuration, minToHm } from '../lib/time';
 
 const HOUR = 64; // px por hora
 
-interface Block extends Interval {
+export interface Block extends Interval {
   label: string;
   kind: 'routine' | 'work' | 'commute' | 'pause' | 'meal' | 'relax';
+  key?: 'lunch' | 'dinner';
 }
 
 /** Bloques fijos del día según la rutina (lo que en Google Calendar serían tus eventos de siempre) */
@@ -28,8 +29,9 @@ function baseBlocks(state: AppState, date: string): Block[] {
     }
     for (const b of breaks) out.push({ ...b, label: '☕ Pausa', kind: 'pause' });
   }
-  out.push({ start: p.lunch, end: p.lunch + p.lunchDuration, label: '🥗 Comida', kind: 'meal' });
-  out.push({ start: p.dinner, end: p.dinner + p.dinnerDuration, label: '🍽️ Cena', kind: 'meal' });
+  const meals = mealsFor(p, date);
+  out.push({ ...meals.lunch, label: '🥗 Comida', kind: 'meal', key: 'lunch' });
+  out.push({ ...meals.dinner, label: '🍽️ Cena', kind: 'meal', key: 'dinner' });
   // si te acuestas después de medianoche, la desconexión empieza más tarde (y puede seguir pasadas las 00:00)
   const rs = relaxStart(p);
   if (rs < 1440) {
@@ -88,6 +90,7 @@ export function DayAgenda({
   onTapTime,
   onTapGap,
   onDrop,
+  onTapBlock,
 }: {
   state: AppState;
   date: string;
@@ -101,6 +104,8 @@ export function DayAgenda({
   onTapGap?: (gap: Interval) => void;
   /** soltar un bloque arrastrado en otra hora */
   onDrop?: (s: Session, start: number) => void;
+  /** tocar un bloque de la rutina (comida, trabajo…) */
+  onTapBlock?: (b: Block, minute: number) => void;
 }) {
   const p = state.profile!;
   const ref = useRef<HTMLDivElement>(null);
@@ -161,7 +166,17 @@ export function DayAgenda({
         </div>
       ))}
       {blocks.map((b, k) => (
-        <div key={`b${k}`} className={`ag-block ${b.kind}`} style={{ top: y(b.start), height: Math.max(14, y(b.end) - y(b.start)) }}>
+        <div
+          key={`b${k}`}
+          className={`ag-block ${b.kind}`}
+          style={{ top: y(b.start), height: Math.max(14, y(b.end) - y(b.start)) }}
+          onClick={(e) => {
+            if (!onTapBlock || !ref.current) return;
+            e.stopPropagation();
+            const rect = ref.current.getBoundingClientRect();
+            onTapBlock(b, Math.max(0, Math.min(1440 - 15, snap(from + ((e.clientY - rect.top) / HOUR) * 60))));
+          }}
+        >
           {y(b.end) - y(b.start) >= 18 && (
             <span>
               {b.label} <small>{minToHm(b.start)}–{minToHm(b.end)}</small>

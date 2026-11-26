@@ -9,7 +9,7 @@
  *
  * Todas las funciones son puras: reciben un AppState y devuelven uno nuevo.
  */
-import { TASK_COLORS, type AppState, type DayRecord, type Profile, type Session, type Task, type TimeOfDay, type WorkBreak, type WorkHours } from '../types';
+import { TASK_COLORS, type AppState, type DayOverride, type DayRecord, type Profile, type Session, type Task, type TimeOfDay, type WorkBreak, type WorkHours } from '../types';
 import { addDays, ceilTo, fmtDuration, fmtRelative, fmtTo, minToHm, monthEnd, rangeDays, weekStart, weekday } from './time';
 
 export interface Ctx {
@@ -61,8 +61,23 @@ export function isWorkDay(p: Profile, date: string): boolean {
 
 /** horario de trabajo de ese día (o null si no se trabaja) */
 export function workHours(p: Profile, date: string): WorkHours | null {
+  const ov = p.dayOverrides?.[date];
+  if (ov?.noWork) return null;
+  const usual = p.workByDay?.[weekday(date)] ?? { start: p.workStart, end: p.workEnd };
+  if (ov && (ov.workStart != null || ov.workEnd != null)) return { start: ov.workStart ?? usual.start, end: ov.workEnd ?? usual.end };
   if (!isWorkDay(p, date)) return null;
-  return p.workByDay?.[weekday(date)] ?? { start: p.workStart, end: p.workEnd };
+  return usual;
+}
+
+/** comida y cena de ese día (con los cambios de ese día, si los hay) */
+export function mealsFor(p: Profile, date: string): { lunch: Interval; dinner: Interval } {
+  const ov = p.dayOverrides?.[date] ?? {};
+  const l = ov.lunch ?? p.lunch;
+  const d = ov.dinner ?? p.dinner;
+  return {
+    lunch: { start: l, end: l + (ov.lunchDuration ?? p.lunchDuration) },
+    dinner: { start: d, end: d + (ov.dinnerDuration ?? p.dinnerDuration) },
+  };
 }
 
 export function isRemote(p: Profile, date: string): boolean {
@@ -84,8 +99,8 @@ export function baseBusy(p: Profile, date: string): Interval[] {
     const gaps = breaksFor(p, date).map((b) => ({ start: b.start, end: b.start + b.duration }));
     busy.push(...complement(gaps, work.start, work.end));
   }
-  busy.push({ start: p.lunch, end: p.lunch + p.lunchDuration });
-  busy.push({ start: p.dinner, end: p.dinner + p.dinnerDuration });
+  const meals = mealsFor(p, date);
+  busy.push(meals.lunch, meals.dinner);
   busy.push({ start: Math.min(1440, Math.max(0, relaxStart(p))), end: 1440 });
   return busy;
 }
@@ -252,7 +267,8 @@ export function placeChunks(
   const allowed = days.filter((d) => dayAllowed(p, task, d));
   if (allowed.length) days = allowed;
   const preferLate = prefersLate(p, task);
-  const range = TIME_RANGES[task.timeOfDay ?? 'cualquiera'];
+  const baseRange = TIME_RANGES[task.timeOfDay ?? 'cualquiera'];
+  const range = task.after != null ? { start: Math.max(baseRange.start, task.after), end: baseRange.end } : baseRange;
 
   for (const chunk of chunks) {
     const scored = days
@@ -410,6 +426,7 @@ export interface NewTaskInput {
   days?: number[];
   timesPerMonth?: number;
   fixedStart?: number;
+  after?: number;
   dayType?: Task['dayType'];
   notes?: string;
   steps?: Task['steps'];
@@ -440,6 +457,7 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
     timesPerMonth: input.kind === 'habito' && input.timesPerMonth && !input.days?.length ? input.timesPerMonth : undefined,
     icon: input.icon,
     fixedStart: input.kind !== 'evento' ? input.fixedStart : undefined,
+    after: input.kind !== 'evento' && input.fixedStart == null ? input.after : undefined,
     dayType: input.dayType && input.dayType !== 'any' ? input.dayType : undefined,
     notes: input.notes?.trim() || undefined,
     steps: input.steps?.length ? input.steps : undefined,
@@ -773,6 +791,8 @@ export interface TaskPatch {
   timesPerMonth?: number | null;
   /** null = sin hora fija */
   fixedStart?: number | null;
+  /** null = sin "a partir de" */
+  after?: number | null;
   dayType?: Task['dayType'];
   notes?: string;
   steps?: Task['steps'];
@@ -798,6 +818,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
     days: patch.days === null ? undefined : patch.days?.length ? [...patch.days].sort() : old.days,
     timesPerMonth: patch.timesPerMonth === null ? undefined : (patch.timesPerMonth ?? old.timesPerMonth),
     fixedStart: patch.fixedStart === null ? undefined : (patch.fixedStart ?? old.fixedStart),
+    after: patch.after === null ? undefined : (patch.after ?? old.after),
     dayType: patch.dayType ? (patch.dayType === 'any' ? undefined : patch.dayType) : old.dayType,
     notes: patch.notes !== undefined ? patch.notes.trim() || undefined : old.notes,
     steps: patch.steps !== undefined ? (patch.steps.length ? patch.steps : undefined) : old.steps,
@@ -819,7 +840,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
 
   if (
     task.kind === 'habito' &&
-    (changed('timesPerWeek') || changed('timesPerMonth') || changed('totalMinutes') || changed('timeOfDay') || changed('fixedStart') || changed('dayType') || JSON.stringify(task.days) !== JSON.stringify(old.days))
+    (changed('timesPerWeek') || changed('timesPerMonth') || changed('totalMinutes') || changed('timeOfDay') || changed('fixedStart') || changed('after') || changed('dayType') || JSON.stringify(task.days) !== JSON.stringify(old.days))
   ) {
     s = {
       ...s,
@@ -831,7 +852,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
 
   if (
     task.kind === 'flexible' &&
-    (changed('totalMinutes') || changed('sessionMinutes') || changed('deadline') || changed('fixedStart') || changed('dayType'))
+    (changed('totalMinutes') || changed('sessionMinutes') || changed('deadline') || changed('fixedStart') || changed('after') || changed('dayType'))
   ) {
     s = {
       ...s,
@@ -1226,4 +1247,30 @@ export function gapCandidates(state: AppState, date: string, gapStart: number, m
     .filter((c, i, arr) => arr.findIndex((o) => o.task.id === c.task.id) === i)
     .filter(({ session }) => session.date >= ctx.today)
     .slice(0, 6);
+}
+
+// ---------------------------------------------------------------- rutina distinta un día
+
+/** Cambiar la comida, la cena o el trabajo solo un día. Lo que choque se recoloca. null = volver a lo de siempre. */
+export function setDayOverride(state: AppState, date: string, patch: DayOverride | null, ctx: Ctx): Result {
+  const p = state.profile;
+  if (!p) return { state };
+  const all = { ...(p.dayOverrides ?? {}) };
+  if (patch === null) delete all[date];
+  else all[date] = { ...(all[date] ?? {}), ...patch };
+  // limpiamos días viejos
+  for (const d of Object.keys(all)) if (d < addDays(ctx.today, -14)) delete all[d];
+  let s: AppState = { ...state, profile: { ...p, dayOverrides: all } };
+  const busy = baseBusy(s.profile!, date).filter((b) => b.start > 0 && b.end < 1440);
+  const clash = s.sessions.filter(
+    (x) => x.date === date && x.status === 'planned' && !x.fixed && !x.pinned && busy.some((b) => b.start < x.start + x.duration && x.start < b.end),
+  );
+  if (clash.length) {
+    const ids = new Set(clash.map((c) => c.id));
+    const before = s;
+    s = { ...s, sessions: s.sessions.filter((x) => !ids.has(x.id)) };
+    for (const c of clash) s = rehome(s, c, date < ctx.today ? ctx.today : date, ctx);
+    return { state: s, message: `Cambiado solo para este día.${movedNote(before, s, clash, date, ctx)}` };
+  }
+  return { state: s, message: patch === null ? 'Vuelve a tu rutina de siempre para este día.' : 'Cambiado solo para este día ✨' };
 }

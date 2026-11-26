@@ -1,5 +1,7 @@
 import { useState, type CSSProperties } from 'react';
-import { DEFAULT_PROFILE, catById, type Chronotype, type Profile, type WorkHours } from '../types';
+import { DEFAULT_PROFILE, catById, type Chronotype, type Profile, type ValueGoal, type WorkHours } from '../types';
+import { VISIONS, goalsFromVision } from '../lib/values';
+import { ValuesEditor } from './ValuesEditor';
 import type { NewTaskInput } from '../lib/scheduler';
 import { parseQuick } from '../lib/parse';
 import {
@@ -15,7 +17,7 @@ import { BreaksEditor } from './BreaksEditor';
 import { RecurringEditor } from './RecurringEditor';
 import { PlanAnalysisView } from './PlanAnalysis';
 import { RECHARGE_TASK, analyzePlan } from '../lib/mind';
-import { DayPicker, NumberChips, TimeInput } from './ui';
+import { DayPicker, DurationPicker, NumberChips, TimeInput } from './ui';
 
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0];
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -139,7 +141,7 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
         <TimeInput label="¿A qué hora te acuestas?" value={p.bed} onChange={(bed) => set({ bed })} />
         <div className="field">
           <span>¿Cuánto tiempo necesitas para desconectar antes de dormir?</span>
-          <NumberChips value={p.relaxMinutes} options={[30, 45, 60, 90, 120]} onChange={(relaxMinutes) => set({ relaxMinutes })} fmt={fmtDuration} />
+          <DurationPicker value={p.relaxMinutes} onChange={(relaxMinutes) => set({ relaxMinutes })} options={[30, 45, 60, 90, 120, 150, 180, 240]} />
           <small className="muted">Ese tiempo queda protegido: nunca te pondré tareas ahí 🌙</small>
         </div>
         <div className="field">
@@ -245,6 +247,7 @@ export function recurringToTask(s: RecurringSuggestion, routine: boolean): NewTa
     timesPerWeek: s.days?.length ? s.days.length : s.times,
     timesPerMonth: s.perMonth,
     fixedStart: s.fixedStart,
+    after: s.after,
     dayType: s.dayType,
     routine,
     timeOfDay: s.timeOfDay,
@@ -328,7 +331,7 @@ function ProjectsStep({ projects, setProjects }: { projects: NewTaskInput[]; set
   );
 }
 
-type Step = 'hola' | 'nombre' | 'despertar' | 'trabajo' | 'pausas' | 'comidas' | 'noche' | 'cotidianas' | 'cuidar' | 'proyectos' | 'listo';
+type Step = 'hola' | 'nombre' | 'despertar' | 'trabajo' | 'pausas' | 'comidas' | 'noche' | 'valores' | 'cotidianas' | 'cuidar' | 'proyectos' | 'listo';
 
 const TITLES: Record<Step, string> = {
   hola: '',
@@ -338,13 +341,14 @@ const TITLES: Record<Step, string> = {
   pausas: '¿Puedes hacer pausas?',
   comidas: 'Tus comidas',
   noche: 'Tus noches',
+  valores: '¿Qué es importante para ti?',
   cotidianas: 'Lo de cada día',
   cuidar: '¿Qué quieres cuidar?',
   proyectos: '¿Qué quieres conseguir?',
   listo: 'Preparando tu plan',
 };
 
-export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInput[]) => void }) {
+export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInput[], values: ValueGoal[], vision?: string) => void }) {
   const [i, setI] = useState(0);
   const [p, setP] = useState<Profile>({ ...DEFAULT_PROFILE });
   const [routines, setRoutines] = useState<string[]>([]);
@@ -356,8 +360,10 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
   const [tweaks, setTweaks] = useState<Record<string, RecurringSuggestion>>({});
   const [editing, setEditing] = useState<{ title: string; list: 'routine' | 'habit' } | null>(null);
   const [addRecharge, setAddRecharge] = useState(true);
+  const [values, setValues] = useState<ValueGoal[]>(goalsFromVision(VISIONS[3]));
+  const [vision, setVision] = useState<string | undefined>();
 
-  const steps: Step[] = ['hola', 'nombre', 'despertar', 'trabajo', ...(p.works ? (['pausas'] as Step[]) : []), 'comidas', 'noche', 'cotidianas', 'cuidar', 'proyectos', 'listo'];
+  const steps: Step[] = ['hola', 'nombre', 'despertar', 'trabajo', ...(p.works ? (['pausas'] as Step[]) : []), 'comidas', 'noche', 'valores', 'cotidianas', 'cuidar', 'proyectos', 'listo'];
   const step = steps[Math.min(i, steps.length - 1)];
   const set = (patch: Partial<Profile>) => setP((x) => ({ ...x, ...patch }));
   const next = () => setI((x) => Math.min(steps.length - 1, x + 1));
@@ -380,7 +386,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
     ...projects,
   ];
   const needsRecharge = analyzePlan(p, chosen).suggestRecharge;
-  const finish = () => onDone(p, needsRecharge && addRecharge ? [...chosen, RECHARGE_TASK] : chosen);
+  const finish = () => onDone(p, needsRecharge && addRecharge ? [...chosen, RECHARGE_TASK] : chosen, values, vision);
 
   return (
     <div className="onboarding">
@@ -410,6 +416,16 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
             </label>
           )}
           <ProfileFields p={p} set={set} step={step} />
+          {step === 'valores' && (
+            <ValuesEditor
+              vision={vision}
+              goals={values}
+              onChange={(g, v) => {
+                setValues(g);
+                setVision(v);
+              }}
+            />
+          )}
           {step === 'cotidianas' && (
             <>
               <p className="muted">
@@ -450,7 +466,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
             </>
           )}
           {step === 'proyectos' && <ProjectsStep projects={projects} setProjects={setProjects} />}
-          {step === 'listo' && <PlanAnalysisView profile={p} tasks={chosen} addRecharge={addRecharge} setAddRecharge={setAddRecharge} />}
+          {step === 'listo' && <PlanAnalysisView profile={p} tasks={chosen} values={values} addRecharge={addRecharge} setAddRecharge={setAddRecharge} />}
         </div>
       )}
 

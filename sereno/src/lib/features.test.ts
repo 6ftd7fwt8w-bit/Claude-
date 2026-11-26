@@ -104,7 +104,7 @@ describe('calendario externo', () => {
     const ev = icsToEvents(ICS, TODAY, 30);
     let r = importEvents(base(), ev, 'ics', ctx, guessCategory);
     expect(r.state.tasks).toHaveLength(5);
-    expect(r.state.tasks.find((t) => t.title === 'Cena con mi hermana')?.category).toBe('social');
+    expect(r.state.tasks.find((t) => t.title === 'Cena con mi hermana')?.category).toBe('familia');
     r = importEvents(r.state, ev, 'ics', ctx, guessCategory);
     expect(r.state.tasks).toHaveLength(5);
     expect(r.message).toMatch(/al día/);

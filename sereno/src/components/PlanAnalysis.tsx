@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { Profile } from '../types';
+import type { Profile, ValueGoal } from '../types';
+import { areaInfo, monthlyHours } from '../lib/values';
 import type { NewTaskInput } from '../lib/scheduler';
 import { DISCLAIMER, analyzePlan } from '../lib/mind';
 import { fmtDuration } from '../lib/time';
@@ -13,15 +14,32 @@ const STEP_MS = 1100;
 export function PlanAnalysisView({
   profile,
   tasks,
+  values,
   addRecharge,
   setAddRecharge,
 }: {
   profile: Profile;
   tasks: NewTaskInput[];
+  values: ValueGoal[];
   addRecharge: boolean;
   setAddRecharge: (v: boolean) => void;
 }) {
-  const a = analyzePlan(profile, tasks);
+  const base = analyzePlan(profile, tasks);
+  const top = [...values].sort((x, y) => monthlyHours(y) - monthlyHours(x)).slice(0, 3);
+  const a = {
+    ...base,
+    steps: [
+      ...base.steps.slice(0, 2),
+      {
+        icon: '🧭',
+        doing: 'Repartiendo tu tiempo según tus valores…',
+        result: values.length
+          ? `Tus prioridades: ${top.map((g) => `${areaInfo(g.area).emoji} ${areaInfo(g.area).label.toLowerCase()} ${g.hours} h/${g.per === 'semana' ? 'sem' : 'mes'}`).join(', ')}. Reservaré tiempo para cada una.`
+          : 'Sin valores definidos: podrás añadirlos cuando quieras en la pestaña Valores.',
+      },
+      ...base.steps.slice(2),
+    ],
+  };
   const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const [done, setDone] = useState(reduced ? a.steps.length : 0);
   useEffect(() => {

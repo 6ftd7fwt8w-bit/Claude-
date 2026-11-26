@@ -5,7 +5,7 @@ import type { NewTaskInput, TaskPatch } from '../lib/scheduler';
 import { parseQuick } from '../lib/parse';
 import { ROUTINE_ICONS, TIME_OF_DAY_LABEL } from '../lib/suggestions';
 import { addDays, fmtDuration, fmtShort, hmToMin, minToHm, todayKey } from '../lib/time';
-import { CategoryPicker, DayPicker, DurationPicker, NumberChips, Sheet } from './ui';
+import { CategoryPicker, DayPicker, DurationPicker, NumberChips, Sheet, TimeMode } from './ui';
 import { FreqTabs, type Freq } from './RecurringEditor';
 
 type Mode = TaskKind | 'cotidiana';
@@ -47,6 +47,7 @@ export function AddTask({
   const [icon, setIcon] = useState(e?.icon ?? '🧺');
   const [days, setDays] = useState<number[]>(e?.days ?? []);
   const [fixed, setFixed] = useState<number | undefined>(e?.fixedStart);
+  const [after, setAfter] = useState<number | undefined>(e?.after);
   const [dayType, setDayType] = useState<DayType>(e?.dayType ?? 'any');
   const [notes, setNotes] = useState(e?.notes ?? '');
   const [freq, setFreq] = useState<Freq>(e?.timesPerMonth ? 'mes' : e?.days?.length ? 'dias' : 'semana');
@@ -119,6 +120,7 @@ export function AddTask({
         days: kind === 'habito' ? (byDays && days.length ? days : null) : undefined,
         timesPerMonth: kind === 'habito' ? (freq === 'mes' ? perMonth : null) : undefined,
         fixedStart: kind !== 'evento' ? (fixed ?? null) : undefined,
+        after: kind !== 'evento' ? (after ?? null) : undefined,
         dayType,
         notes,
       });
@@ -137,6 +139,7 @@ export function AddTask({
       days: byDays && days.length ? days : undefined,
       timesPerMonth: freq === 'mes' ? perMonth : undefined,
       fixedStart: kind !== 'evento' ? fixed : undefined,
+      after: kind !== 'evento' ? after : undefined,
       dayType,
       notes,
       routine: mode === 'cotidiana',
@@ -282,16 +285,15 @@ export function AddTask({
       {kind !== 'evento' && (
         <>
           <div className="field">
-            <span>¿A una hora fija?</span>
-            <div className="chips">
-              <button type="button" className={`chip ${fixed == null ? 'on' : ''}`} onClick={() => setFixed(undefined)}>
-                ✨ Cuando haya hueco
-              </button>
-              <button type="button" className={`chip ${fixed != null ? 'on' : ''}`} onClick={() => setFixed(fixed ?? 20 * 60)}>
-                🕐 A las…
-              </button>
-            </div>
-            {fixed != null && <input type="time" value={minToHm(fixed)} onChange={(ev) => ev.target.value && setFixed(hmToMin(ev.target.value))} />}
+            <span>¿A qué hora?</span>
+            <TimeMode
+              fixed={fixed}
+              after={after}
+              onChange={(v) => {
+                setFixed(v.fixed);
+                setAfter(v.after);
+              }}
+            />
           </div>
           <div className="field">
             <span>¿Qué días?</span>

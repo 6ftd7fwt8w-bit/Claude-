@@ -1,10 +1,10 @@
 import { useState, type CSSProperties } from 'react';
 import type { CategoryId, DayType } from '../types';
-import { catById } from '../types';
+import { CATEGORIES, catById } from '../types';
 import type { NewTaskInput } from '../lib/scheduler';
 import { detectCategory, estimateMinutes, parseQuick } from '../lib/parse';
 import { addDays, fmtShort, hmToMin, minToHm, monthEnd, todayKey, weekday } from '../lib/time';
-import { CategoryPicker, DurationPicker, NumberChips, Sheet } from './ui';
+import { DurationPicker, NumberChips, Sheet, TimeMode } from './ui';
 
 type Repeat = 'una' | 'semana' | 'mes' | 'hora';
 type When = 'hoy' | 'manana' | 'semana' | 'proxima' | 'mes' | 'sinprisa' | 'fecha';
@@ -22,6 +22,7 @@ interface Draft {
   times: number;
   /** hora fija (si la quiere) */
   fixedStart?: number;
+  after?: number;
   dayType: DayType;
   /** proyectos: por partes o todo seguido */
   whole: boolean;
@@ -95,7 +96,7 @@ function toDraft(line: string, today: string, learned?: Record<string, CategoryI
 }
 
 function toTask(d: Draft, today: string): NewTaskInput {
-  const extra = { fixedStart: d.fixedStart, dayType: d.dayType };
+  const extra = { fixedStart: d.fixedStart, after: d.after, dayType: d.dayType };
   if (d.repeat === 'hora') return { title: d.title, category: d.category, kind: 'evento', totalMinutes: d.minutes, date: d.date, start: d.start };
   if (d.repeat === 'semana') return { title: d.title, category: d.category, kind: 'habito', totalMinutes: d.minutes, timesPerWeek: d.times, ...extra };
   if (d.repeat === 'mes') return { title: d.title, category: d.category, kind: 'habito', totalMinutes: d.minutes, timesPerMonth: d.times, ...extra };
@@ -130,7 +131,6 @@ export function QuickCapture({
   const [text, setText] = useState('');
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [i, setI] = useState(0);
-  const [pickCat, setPickCat] = useState(false);
   const [results, setResults] = useState<CaptureResult[]>([]);
 
   const lines = text
@@ -219,21 +219,30 @@ export function QuickCapture({
         <span className="ask-icon">{cat.emoji}</span>
         <div className="grow">
           <input className="ask-title" value={d.title} aria-label="Nombre" onChange={(e) => set({ title: e.target.value })} />
-          <button className="ask-cat" onClick={() => setPickCat((v) => !v)}>
-            {d.detected ? 'Lo he puesto en' : 'Lo pongo en'} <strong>{cat.label}</strong> · cambiar
-          </button>
+          <span className="ask-cat">
+            {d.detected ? 'Creo que es' : 'Elige qué es'} <strong>{cat.label}</strong>
+          </span>
         </div>
       </div>
-      {pickCat && (
-        <CategoryPicker
-          value={d.category}
-          onChange={(c) => {
-            const est = estimateMinutes(d.title, c);
-            set({ category: c, ...(d.big !== est.big ? { minutes: est.minutes, big: est.big } : {}) });
-            setPickCat(false);
-          }}
-        />
-      )}
+      <div className="field">
+        <span>¿De qué tipo es? (cuenta para tus valores)</span>
+        <div className="cat-grid">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c.id}
+              className={`cat-tile ${d.category === c.id ? 'on' : ''}`}
+              style={{ '--cat': c.color } as CSSProperties}
+              onClick={() => {
+                const est = estimateMinutes(d.title, c.id);
+                set({ category: c.id, ...(d.big !== est.big ? { minutes: est.minutes, big: est.big } : {}) });
+              }}
+            >
+              <span>{c.emoji}</span>
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="field">
         <span>¿Es algo de una vez o se repite?</span>
@@ -313,17 +322,7 @@ export function QuickCapture({
         <>
           <div className="field">
             <span>¿A qué hora?</span>
-            <div className="chips">
-              <button className={`chip ${d.fixedStart == null ? 'on' : ''}`} onClick={() => set({ fixedStart: undefined })}>
-                ✨ Cuando haya hueco
-              </button>
-              <button className={`chip ${d.fixedStart != null ? 'on' : ''}`} onClick={() => set({ fixedStart: d.fixedStart ?? 20 * 60 })}>
-                🕐 A una hora fija
-              </button>
-            </div>
-            {d.fixedStart != null && (
-              <input type="time" value={minToHm(d.fixedStart)} onChange={(e) => e.target.value && set({ fixedStart: hmToMin(e.target.value) })} />
-            )}
+            <TimeMode fixed={d.fixedStart} after={d.after} onChange={(v) => set({ fixedStart: v.fixed, after: v.after })} />
           </div>
           <div className="field">
             <span>¿Qué días?</span>
@@ -351,7 +350,14 @@ export function QuickCapture({
           </button>
         )}
         {i < drafts.length - 1 ? (
-          <button className="btn primary" disabled={!ready} onClick={() => setI(i + 1)}>
+          <button
+            className="btn primary"
+            disabled={!ready}
+            onClick={() => {
+              setI(i + 1);
+              document.querySelector('.sheet')?.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          >
             Siguiente
           </button>
         ) : (

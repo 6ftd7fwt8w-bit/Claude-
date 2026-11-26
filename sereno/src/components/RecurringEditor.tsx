@@ -2,8 +2,8 @@ import { useState } from 'react';
 import type { TimeOfDay } from '../types';
 import { catById } from '../types';
 import { ROUTINE_ICONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
-import { fmtDuration, hmToMin, minToHm } from '../lib/time';
-import { DayPicker, DurationPicker, NumberChips, Sheet } from './ui';
+import { fmtDuration, minToHm } from '../lib/time';
+import { DayPicker, DurationPicker, NumberChips, Sheet, TimeMode } from './ui';
 
 export type Freq = 'semana' | 'mes' | 'dias';
 
@@ -109,18 +109,8 @@ export function RecurringEditor({
       )}
 
       <div className="field">
-        <span>🕐 ¿A una hora fija?</span>
-        <div className="chips">
-          <button type="button" className={`chip ${v.fixedStart == null ? 'on' : ''}`} onClick={() => set({ fixedStart: undefined })}>
-            ✨ No, cuando haya hueco
-          </button>
-          <button type="button" className={`chip ${v.fixedStart != null ? 'on' : ''}`} onClick={() => set({ fixedStart: v.fixedStart ?? 20 * 60 })}>
-            Sí, a las…
-          </button>
-        </div>
-        {v.fixedStart != null && (
-          <input type="time" value={minToHm(v.fixedStart)} onChange={(e) => e.target.value && set({ fixedStart: hmToMin(e.target.value) })} />
-        )}
+        <span>🕐 ¿A qué hora?</span>
+        <TimeMode fixed={v.fixedStart} after={v.after} onChange={(t) => set({ fixedStart: t.fixed, after: t.after })} />
       </div>
 
       {v.fixedStart == null && (

@@ -14,6 +14,8 @@ export interface RecurringSuggestion {
   perMonth?: number;
   /** hora fija (p. ej. llamar a mamá a las 20:00) */
   fixedStart?: number;
+  /** a partir de una hora */
+  after?: number;
   /** entre semana / fines de semana */
   dayType?: 'any' | 'weekdays' | 'weekends';
 }

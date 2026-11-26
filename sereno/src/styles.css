@@ -3086,3 +3086,140 @@ textarea.note {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+.cat-tile {
+  --cat: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 9px 10px;
+  font-weight: 700;
+  font-size: 0.84rem;
+}
+.cat-tile span {
+  font-size: 1.2rem;
+}
+.cat-tile.on {
+  border-color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 20%, var(--surface));
+}
+.time-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------------------------------------------------------------- valores */
+.values-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.visions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.vision {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 12px;
+}
+.vision.on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.vision-emoji {
+  font-size: 1.6rem;
+}
+.vision .small {
+  line-height: 1.3;
+}
+.values-sub {
+  margin-top: 6px;
+}
+.value-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.value-row {
+  --cat: var(--accent);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-left: 5px solid var(--line);
+  border-radius: 16px;
+  padding: 10px 12px;
+}
+.value-row.on {
+  border-left-color: var(--cat);
+}
+.vr-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vr-emoji {
+  font-size: 1.3rem;
+}
+.small-stepper button {
+  width: 30px;
+  height: 30px;
+  font-size: 1rem;
+}
+.small-stepper strong {
+  min-width: 44px;
+}
+.per-toggle {
+  display: flex;
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 2px;
+}
+.per-toggle button {
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--ink-3);
+}
+.per-toggle button.on {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-card);
+}
+.vr-note {
+  margin-top: 4px;
+}
+.vr-why {
+  margin-top: 6px;
+  font-size: 0.82rem;
+}
+.vr-why summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 700;
+}
+.vr-why p {
+  margin-top: 6px;
+  color: var(--ink-2);
+  line-height: 1.45;
+}

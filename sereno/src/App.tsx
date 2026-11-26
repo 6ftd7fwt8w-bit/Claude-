@@ -7,6 +7,7 @@ import {
   moveAfter,
   setSessionDuration,
   setSessionNote,
+  setDayOverride,
   type Interval,
   archiveTask,
   breaksFor,
@@ -26,6 +27,7 @@ import {
 } from './lib/scheduler';
 import { randomDonePhrase } from './lib/phrases';
 import { buy, claimAchievements, writeJournal } from './lib/rewards';
+import { applyValues } from './lib/values';
 import { icsToEvents } from './lib/ics';
 import { guessCategory, learnCategory } from './lib/parse';
 import type { Tip } from './lib/tips';
@@ -46,6 +48,8 @@ import { MindSheet } from './components/MindCard';
 import { QuickCapture, type CaptureResult } from './components/QuickCapture';
 import { SessionSheet } from './components/SessionSheet';
 import { AddAtSheet, FillGapSheet } from './components/AgendaSheets';
+import { BlockSheet } from './components/BlockSheet';
+import type { Block } from './components/DayAgenda';
 import { EnergyCheck } from './components/EnergyCheck';
 import { TodayView } from './components/TodayView';
 import { CalendarView } from './components/CalendarView';
@@ -78,6 +82,7 @@ export default function App() {
   const [acting, setActing] = useState<Session | undefined>();
   const [addAt, setAddAt] = useState<{ date: string; start: number; max?: number } | null>(null);
   const [gapAt, setGapAt] = useState<{ date: string; gap: Interval } | null>(null);
+  const [blockAt, setBlockAt] = useState<{ date: string; block: Block; minute: number } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<{ text: string; sub?: string } | null>(null);
   const [question, setQuestion] = useState<{ text: string; yes: string; onYes: () => void } | null>(null);
@@ -183,13 +188,15 @@ export default function App() {
   if (!state.profile) {
     return (
       <Onboarding
-        onDone={(p: Profile, tasks: NewTaskInput[]) => {
+        onDone={(p: Profile, tasks: NewTaskInput[], values, vision) => {
           const t = todayKey();
           act((s, ctx) => {
             let st: AppState = { ...s, profile: { ...p, createdAt: t }, lastOpen: t };
             // primero lo recurrente (cotidianas y cuidarte), después los proyectos en los huecos que queden
             for (const task of tasks.filter((x) => x.kind === 'habito')) st = addTask(st, task, ctx).state;
             for (const task of tasks.filter((x) => x.kind !== 'habito')) st = addTask(st, task, ctx).state;
+            // y por último, tiempo reservado para llegar a tus valores
+            st = applyValues({ ...st, vision }, values, ctx).state;
             return st;
           });
           setModal('energy');
@@ -289,6 +296,7 @@ export default function App() {
             onTap={setActing}
             onTapTime={(min) => setAddAt({ date: today, start: min })}
             onTapGap={(gap) => setGapAt({ date: today, gap })}
+            onTapBlock={(block, minute) => setBlockAt({ date: today, block, minute })}
             onDrop={(x, start) => say(act((st, ctx) => moveSession(st, x.id, x.date, start, ctx)))}
           />
         )}
@@ -297,6 +305,7 @@ export default function App() {
             onTap={setActing}
             onTapTime={(date, min) => setAddAt({ date, start: min })}
             onTapGap={(date, gap) => setGapAt({ date, gap })}
+            onTapBlock={(date, block, minute) => setBlockAt({ date, block, minute })}
             onDrop={(x, start) => say(act((st, ctx) => moveSession(st, x.id, x.date, start, ctx)))}
           />
         )}
@@ -329,7 +338,14 @@ export default function App() {
 
       <nav className="tabbar">
         {TABS.map((t) => (
-          <button key={t.id} className={tab === t.id ? 'on' : ''} onClick={() => setTab(t.id)}>
+          <button
+            key={t.id}
+            className={tab === t.id ? 'on' : ''}
+            onClick={() => {
+              setTab(t.id);
+              window.scrollTo({ top: 0 });
+            }}
+          >
             <span className="tab-icon">{t.icon}</span>
             <span>{t.label}</span>
           </button>
@@ -427,6 +443,39 @@ export default function App() {
           onAdd={(t) => {
             setAddAt(null);
             say(act((st, ctx) => addTask(st, t, ctx)));
+          }}
+        />
+      )}
+      {blockAt && (
+        <BlockSheet
+          profile={state.profile}
+          date={blockAt.date}
+          block={blockAt.block}
+          minute={blockAt.minute}
+          onClose={() => setBlockAt(null)}
+          onOverride={(patch) => {
+            const d = blockAt.date;
+            setBlockAt(null);
+            say(act((st, ctx) => setDayOverride(st, d, patch, ctx)));
+          }}
+          onReset={() => {
+            const d = blockAt.date;
+            setBlockAt(null);
+            say(act((st, ctx) => setDayOverride(st, d, null, ctx)));
+          }}
+          onRemovePause={(start) => {
+            const d = blockAt.date;
+            setBlockAt(null);
+            say(act((st, ctx) => setDayBreaks(st, d, breaksFor(st.profile!, d).filter((b) => b.start !== start), ctx)));
+          }}
+          onAddAt={(minute) => {
+            const d = blockAt.date;
+            setBlockAt(null);
+            setAddAt({ date: d, start: minute });
+          }}
+          onOpenRoutine={() => {
+            setBlockAt(null);
+            setModal('settings');
           }}
         />
       )}

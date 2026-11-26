@@ -8,7 +8,7 @@ import type { Tip } from '../lib/tips';
 import { fmtDuration, fmtLong, minToHm, nowMinutes } from '../lib/time';
 import { energyEmoji } from './EnergyCheck';
 import { Ring } from './ui';
-import { DayAgenda, freeGaps } from './DayAgenda';
+import { DayAgenda, freeGaps, type Block } from './DayAgenda';
 import { mindIndex } from '../lib/mind';
 
 interface Props {
@@ -29,6 +29,7 @@ interface Props {
   onTapTime: (minute: number) => void;
   onTapGap: (gap: Interval) => void;
   onDrop: (s: Session, start: number) => void;
+  onTapBlock: (b: Block, minute: number) => void;
 }
 
 function greeting(): string {
@@ -218,6 +219,7 @@ export function TodayView(props: Props) {
           onTapTime={props.onTapTime}
           onTapGap={props.onTapGap}
           onDrop={props.onDrop}
+          onTapBlock={props.onTapBlock}
         />
       </div>
 

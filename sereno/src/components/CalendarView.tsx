@@ -4,7 +4,7 @@ import { catById } from '../types';
 import { bedEff, dayLoad, energyFor, sessionsOn, type Interval } from '../lib/scheduler';
 import { LEVEL_TEXT, tipsFor } from '../lib/tips';
 import { addDays, fmtDuration, fmtLong, fmtMonth, fmtShort, fromKey, minToHm, monthKey, nowMinutes, pad, weekStart } from '../lib/time';
-import { DayAgenda } from './DayAgenda';
+import { DayAgenda, type Block } from './DayAgenda';
 import { DayStrip, StripLegend } from './DayStrip';
 
 const WEEK = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -18,6 +18,7 @@ export function CalendarView({
   onTapTime,
   onTapGap,
   onDrop,
+  onTapBlock,
 }: {
   state: AppState;
   today: string;
@@ -27,6 +28,7 @@ export function CalendarView({
   onTapTime: (date: string, minute: number) => void;
   onTapGap: (date: string, gap: Interval) => void;
   onDrop: (s: Session, start: number) => void;
+  onTapBlock: (date: string, b: Block, minute: number) => void;
 }) {
   const [month, setMonth] = useState(monthKey(today));
   const [selected, setSelected] = useState(today);
@@ -128,6 +130,7 @@ export function CalendarView({
           onTapTime={(m) => onTapTime(selected, m)}
           onTapGap={selected >= today ? (g) => onTapGap(selected, g) : undefined}
           onDrop={selected >= today ? onDrop : undefined}
+          onTapBlock={(b, m) => onTapBlock(selected, b, m)}
         />
       </section>
     </div>

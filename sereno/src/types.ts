@@ -1,4 +1,4 @@
-export type CategoryId = 'bienestar' | 'social' | 'proyectos' | 'aficiones' | 'autocuidado' | 'hogar' | 'gestiones' | 'trabajo';
+export type CategoryId = 'bienestar' | 'familia' | 'social' | 'proyectos' | 'aficiones' | 'autocuidado' | 'hogar' | 'gestiones' | 'trabajo';
 
 export interface Category {
   id: CategoryId;
@@ -9,7 +9,8 @@ export interface Category {
 
 export const CATEGORIES: Category[] = [
   { id: 'bienestar', label: 'Bienestar', emoji: '🧘', color: '#6FAF9A' },
-  { id: 'social', label: 'Vida social', emoji: '💛', color: '#E59A8C' },
+  { id: 'familia', label: 'Familia', emoji: '🏠', color: '#D9708F' },
+  { id: 'social', label: 'Amigos y vida social', emoji: '💛', color: '#E59A8C' },
   { id: 'proyectos', label: 'Proyectos', emoji: '✨', color: '#7E98D1' },
   { id: 'aficiones', label: 'Aficiones', emoji: '🎨', color: '#E8A33D' },
   { id: 'autocuidado', label: 'Cuidado personal', emoji: '🛁', color: '#B996D0' },
@@ -27,6 +28,15 @@ export const TASK_COLORS = ['#7E98D1', '#E07A8A', '#4FB3A9', '#9B8CE0', '#D49A4A
 
 export function taskColor(t: Pick<Task, 'category' | 'color'> | undefined): string {
   return t?.color ?? catById(t?.category ?? 'bienestar').color;
+}
+
+/** Áreas de la vida que se pueden marcar como valores */
+export type AreaId = 'familia' | 'social' | 'bienestar' | 'autocuidado' | 'proyectos' | 'aficiones';
+
+export interface ValueGoal {
+  area: AreaId;
+  hours: number;
+  per: 'semana' | 'mes';
 }
 
 /** paso de un proyecto (lista de cosas por hacer, en orden) */
@@ -74,6 +84,8 @@ export interface Task {
   icon?: string;
   /** a una hora fija (p. ej. llamar a mamá a las 20:00) */
   fixedStart?: number;
+  /** a partir de una hora (p. ej. no antes de las 17:00) */
+  after?: number;
   /** entre semana, fines de semana o cualquier día */
   dayType?: DayType;
   /** notas libres de la tarea o proyecto */
@@ -82,6 +94,8 @@ export interface Task {
   steps?: Step[];
   /** color propio (proyectos y aficiones) */
   color?: string;
+  /** bloque creado automáticamente para cumplir un valor (p. ej. tiempo en familia) */
+  valueBlock?: AreaId;
   /** de dónde viene: creada en Sereno, importada de un .ics o del calendario del iPhone */
   source?: 'ics' | 'ios';
   externalId?: string;
@@ -114,6 +128,18 @@ export interface WorkBreak {
   duration: number;
 }
 
+/** Rutina distinta solo un día concreto */
+export interface DayOverride {
+  lunch?: number;
+  lunchDuration?: number;
+  dinner?: number;
+  dinnerDuration?: number;
+  workStart?: number;
+  workEnd?: number;
+  /** ese día no se trabaja */
+  noWork?: boolean;
+}
+
 export interface WorkHours {
   start: number;
   end: number;
@@ -136,6 +162,8 @@ export interface Profile {
   breaks: WorkBreak[];
   /** pausas de un día concreto (las elige en el check-in de la mañana) */
   breaksOn?: Record<string, WorkBreak[]>;
+  /** cambios de rutina solo para un día (comer antes, trabajar más…) */
+  dayOverrides?: Record<string, DayOverride>;
   /** cuándo se concentra mejor: ahí van los proyectos */
   chronotype: Chronotype;
   notifications: boolean;
@@ -169,6 +197,10 @@ export interface AppState {
   equipped: Equipped;
   /** diario de gratitud: una línea por día */
   journal: Record<string, string>;
+  /** valores: cuánto tiempo quiere dedicar a cada área de su vida */
+  values?: ValueGoal[];
+  /** visión de vida elegida en la encuesta */
+  vision?: string;
   /** palabras que la persona ha asociado a una categoría (aprende de sus correcciones) */
   learned?: Record<string, CategoryId>;
   /** logros ya celebrados */
