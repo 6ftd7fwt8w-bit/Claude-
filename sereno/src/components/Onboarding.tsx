@@ -185,7 +185,7 @@ export function SuggestionTiles({
                 <span className="tile-icon">{s.icon}</span>
                 <span className="tile-title">{s.title}</span>
                 <span className="tile-meta">
-                  {fmtDuration(s.minutes)} · {timesLabel(s.times, s.days)}
+                  {fmtDuration(s.minutes)} · {timesLabel(s.times, s.days, s.perMonth)}
                   {s.timeOfDay !== 'cualquiera' && ` · ${TIME_OF_DAY_LABEL[s.timeOfDay].split(' ')[1].toLowerCase()}`}
                 </span>
                 {on && <span className="tile-spacer" />}
@@ -218,6 +218,7 @@ export function customRecurring(text: string, fallback: Partial<RecurringSuggest
     category: q.category ?? fallback.category ?? 'bienestar',
     minutes: q.totalMinutes ?? fallback.minutes ?? 30,
     times: q.timesPerWeek ?? fallback.times ?? 3,
+    perMonth: q.timesPerMonth,
     timeOfDay: fallback.timeOfDay ?? 'cualquiera',
   };
 }
@@ -229,6 +230,7 @@ export function recurringToTask(s: RecurringSuggestion, routine: boolean): NewTa
     kind: 'habito',
     totalMinutes: s.minutes,
     timesPerWeek: s.days?.length ? s.days.length : s.times,
+    timesPerMonth: s.perMonth,
     routine,
     timeOfDay: s.timeOfDay,
     icon: s.icon,

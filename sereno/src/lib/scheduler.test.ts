@@ -73,7 +73,7 @@ describe('tareas flexibles', () => {
     }
     // ningún día rojo por esta tarea sola
     for (const s of mine) expect(dayLoad(state, s.date).level).not.toBe('rojo');
-    expect(message).toMatch(/Propuesta/);
+    expect(message).toMatch(/Repartido en 10 sesiones. La primera/);
     expect(state.unplaced).toEqual({});
   });
 

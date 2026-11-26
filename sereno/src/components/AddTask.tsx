@@ -6,6 +6,7 @@ import { parseQuick } from '../lib/parse';
 import { ROUTINE_ICONS, TIME_OF_DAY_LABEL } from '../lib/suggestions';
 import { addDays, fmtDuration, fmtShort, hmToMin, minToHm, todayKey } from '../lib/time';
 import { CategoryPicker, DayPicker, NumberChips, Sheet } from './ui';
+import { FreqTabs, type Freq } from './RecurringEditor';
 
 type Mode = TaskKind | 'cotidiana';
 
@@ -45,7 +46,9 @@ export function AddTask({
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(e?.timeOfDay ?? 'cualquiera');
   const [icon, setIcon] = useState(e?.icon ?? '🧺');
   const [days, setDays] = useState<number[]>(e?.days ?? []);
-  const [byDays, setByDays] = useState(!!e?.days?.length);
+  const [freq, setFreq] = useState<Freq>(e?.timesPerMonth ? 'mes' : e?.days?.length ? 'dias' : 'semana');
+  const [perMonth, setPerMonth] = useState(e?.timesPerMonth ?? 2);
+  const byDays = freq === 'dias';
   const [category, setCategory] = useState<CategoryId>(e?.category ?? preset?.category ?? 'proyectos');
   const [total, setTotal] = useState(e?.totalMinutes ?? preset?.minutes ?? 120);
   const [session, setSession] = useState(e?.sessionMinutes ?? 60);
@@ -70,7 +73,14 @@ export function AddTask({
     }
     if (parsed.date) setDate(parsed.date);
     if (parsed.start != null) setStart(parsed.start);
-    if (parsed.timesPerWeek) setTimes(parsed.timesPerWeek);
+    if (parsed.timesPerWeek) {
+      setTimes(parsed.timesPerWeek);
+      setFreq('semana');
+    }
+    if (parsed.timesPerMonth) {
+      setPerMonth(parsed.timesPerMonth);
+      setFreq('mes');
+    }
     if (parsed.category && !touchedCat) setCategory(parsed.category);
   }, [text]);
 
@@ -86,6 +96,7 @@ export function AddTask({
   if (parsed.date) understood.push(`📅 ${fmtShort(parsed.date)}`);
   if (parsed.start != null) understood.push(`🕐 ${minToHm(parsed.start)}`);
   if (parsed.timesPerWeek) understood.push(`🔁 ${parsed.timesPerWeek}×/semana`);
+  if (parsed.timesPerMonth) understood.push(`🔁 ${parsed.timesPerMonth}×/mes`);
   if (parsed.category) understood.push(`${catById(parsed.category).emoji} ${catById(parsed.category).label}`);
 
   const title = e && !typed ? text.trim() : parsed.title || text.trim();
@@ -103,6 +114,7 @@ export function AddTask({
         timesPerWeek: byDays && days.length ? days.length : times,
         timeOfDay,
         days: kind === 'habito' ? (byDays && days.length ? days : null) : undefined,
+        timesPerMonth: kind === 'habito' ? (freq === 'mes' ? perMonth : null) : undefined,
       });
       return;
     }
@@ -117,6 +129,7 @@ export function AddTask({
       start,
       timesPerWeek: byDays && days.length ? days.length : times,
       days: byDays && days.length ? days : undefined,
+      timesPerMonth: freq === 'mes' ? perMonth : undefined,
       routine: mode === 'cotidiana',
       timeOfDay,
       icon: mode === 'cotidiana' ? icon : undefined,
@@ -232,19 +245,12 @@ export function AddTask({
         <>
           <div className="field">
             <span>¿Cuántas veces?</span>
-            <div className="segmented two">
-              <button className={!byDays ? 'on' : ''} onClick={() => setByDays(false)}>
-                Veces por semana
-              </button>
-              <button className={byDays ? 'on' : ''} onClick={() => setByDays(true)}>
-                Días concretos
-              </button>
-            </div>
-            {byDays ? (
-              <DayPicker value={days} onChange={setDays} />
-            ) : (
+            <FreqTabs value={freq} onChange={setFreq} />
+            {freq === 'dias' && <DayPicker value={days} onChange={setDays} />}
+            {freq === 'semana' && (
               <NumberChips value={times} options={[1, 2, 3, 4, 5, 7]} onChange={setTimes} fmt={(v) => (v === 7 ? 'Cada día' : `${v}×/sem`)} />
             )}
+            {freq === 'mes' && <NumberChips value={perMonth} options={[1, 2, 3, 4]} onChange={setPerMonth} fmt={(v) => `${v}× al mes`} />}
           </div>
           <div className="field">
             <span>Cada vez</span>

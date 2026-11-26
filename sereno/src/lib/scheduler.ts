@@ -10,7 +10,7 @@
  * Todas las funciones son puras: reciben un AppState y devuelven uno nuevo.
  */
 import type { AppState, DayRecord, Profile, Session, Task, TimeOfDay, WorkBreak, WorkHours } from '../types';
-import { addDays, ceilTo, fmtRelative, fmtTo, minToHm, rangeDays, weekStart, weekday } from './time';
+import { addDays, ceilTo, fmtRelative, fmtTo, minToHm, monthEnd, rangeDays, weekStart, weekday } from './time';
 
 export interface Ctx {
   today: string;
@@ -313,6 +313,10 @@ export function ensureHabits(state: AppState, ctx: Ctx): AppState {
   let s = state;
   const ws0 = weekStart(ctx.today);
   for (const habit of s.tasks.filter((t) => t.kind === 'habito' && !t.archived)) {
+    if (habit.timesPerMonth) {
+      s = ensureMonthly(s, habit, ctx);
+      continue;
+    }
     for (const ws of [ws0, addDays(ws0, 7)]) {
       const we = addDays(ws, 6);
       const mine = s.sessions.filter((x) => x.taskId === habit.id && x.date >= ws && x.date <= we);
@@ -335,6 +339,31 @@ export function ensureHabits(state: AppState, ctx: Ctx): AppState {
   return s;
 }
 
+/** Hábitos mensuales: N veces al mes, repartidas a lo largo del mes (este y el siguiente). */
+function ensureMonthly(state: AppState, habit: Task, ctx: Ctx): AppState {
+  let s = state;
+  const thisMonth = `${ctx.today.slice(0, 7)}-01`;
+  for (const ms of [thisMonth, addDays(monthEnd(thisMonth), 1)]) {
+    const me = monthEnd(ms);
+    const mine = s.sessions.filter((x) => x.taskId === habit.id && x.date >= ms && x.date <= me);
+    const need = (habit.timesPerMonth ?? 1) - mine.length;
+    if (need <= 0) continue;
+    const days = rangeDays(ms < ctx.today ? ctx.today : ms, me).filter((d) => !mine.some((x) => x.date === d));
+    if (!days.length) continue;
+    // en el mes en curso, solo lo que da tiempo de forma razonable
+    const fair = ms === thisMonth ? Math.min(need, Math.ceil(((habit.timesPerMonth ?? 1) * days.length) / rangeDays(ms, me).length)) : need;
+    // un trozo de mes para cada vez, para que queden repartidas
+    const size = Math.ceil(days.length / fair);
+    for (let i = 0; i < fair; i++) {
+      const seg = days.slice(i * size, (i + 1) * size);
+      if (!seg.length) break;
+      const res = placeChunks(s, habit, [habit.totalMinutes], seg, ctx, 1);
+      s = { ...s, sessions: res.sessions };
+    }
+  }
+  return s;
+}
+
 export interface NewTaskInput {
   title: string;
   category: Task['category'];
@@ -349,6 +378,7 @@ export interface NewTaskInput {
   timeOfDay?: TimeOfDay;
   icon?: string;
   days?: number[];
+  timesPerMonth?: number;
 }
 
 export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result {
@@ -366,6 +396,7 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
     routine: input.kind === 'habito' && input.routine ? true : undefined,
     timeOfDay: input.kind === 'habito' && input.timeOfDay && input.timeOfDay !== 'cualquiera' ? input.timeOfDay : undefined,
     days: input.kind === 'habito' && input.days?.length ? [...input.days].sort() : undefined,
+    timesPerMonth: input.kind === 'habito' && input.timesPerMonth && !input.days?.length ? input.timesPerMonth : undefined,
     icon: input.icon,
     createdAt: ctx.today,
   };
@@ -392,7 +423,7 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
     return {
       state: s,
       message: next
-        ? `${task.routine ? 'Cotidiana añadida' : 'Hábito creado'}: ${task.timesPerWeek === 7 ? 'cada día' : `${task.timesPerWeek}× por semana`}. La primera vez, ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.`
+        ? `${task.routine ? 'Cotidiana añadida' : 'Hábito creado'}: ${task.timesPerMonth ? `${task.timesPerMonth}× al mes` : task.timesPerWeek === 7 ? 'cada día' : `${task.timesPerWeek}× por semana`}. La primera vez, ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.`
         : 'Hábito creado. Esta semana ya no queda hueco, empezamos la que viene 🌱',
     };
   }
@@ -402,7 +433,9 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
   const next = firstPlanned(s, task.id);
   const left = s.unplaced[task.id];
   let message = next
-    ? `Repartido en ${mine.length} ${mine.length === 1 ? 'sesión' : 'sesiones'}. Propuesta: ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.`
+    ? mine.length === 1
+      ? `Propuesta: ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.`
+      : `Repartido en ${mine.length} sesiones. La primera, ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.`
     : 'No he encontrado hueco.';
   if (left) message += ` Ojo: faltan ${Math.round(left / 6) / 10} h que no caben antes del deadline.`;
   return { state: s, message };
@@ -690,6 +723,8 @@ export interface TaskPatch {
   timeOfDay?: TimeOfDay;
   /** null = sin días concretos */
   days?: number[] | null;
+  /** null = no es mensual */
+  timesPerMonth?: number | null;
   icon?: string;
 }
 
@@ -709,6 +744,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
     timesPerWeek: patch.timesPerWeek ?? old.timesPerWeek,
     timeOfDay: patch.timeOfDay ? (patch.timeOfDay === 'cualquiera' ? undefined : patch.timeOfDay) : old.timeOfDay,
     days: patch.days === null ? undefined : patch.days?.length ? [...patch.days].sort() : old.days,
+    timesPerMonth: patch.timesPerMonth === null ? undefined : (patch.timesPerMonth ?? old.timesPerMonth),
     icon: patch.icon ?? old.icon,
   };
   let s: AppState = { ...state, tasks: state.tasks.map((t) => (t.id === taskId ? task : t)) };
@@ -726,7 +762,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
 
   if (
     task.kind === 'habito' &&
-    (changed('timesPerWeek') || changed('totalMinutes') || changed('timeOfDay') || JSON.stringify(task.days) !== JSON.stringify(old.days))
+    (changed('timesPerWeek') || changed('timesPerMonth') || changed('totalMinutes') || changed('timeOfDay') || JSON.stringify(task.days) !== JSON.stringify(old.days))
   ) {
     s = {
       ...s,

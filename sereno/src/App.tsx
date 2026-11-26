@@ -23,7 +23,7 @@ import {
 import { randomDonePhrase } from './lib/phrases';
 import { buy, claimAchievements, writeJournal } from './lib/rewards';
 import { icsToEvents } from './lib/ics';
-import { guessCategory } from './lib/parse';
+import { guessCategory, learnCategory } from './lib/parse';
 import type { Tip } from './lib/tips';
 import { todayKey } from './lib/time';
 import {
@@ -39,6 +39,8 @@ import {
 import { Onboarding, recurringToTask } from './components/Onboarding';
 import { ProjectSheet } from './components/ProjectSheet';
 import { MindSheet } from './components/MindCard';
+import { QuickCapture, type CaptureResult } from './components/QuickCapture';
+import { SessionSheet } from './components/SessionSheet';
 import { EnergyCheck } from './components/EnergyCheck';
 import { TodayView } from './components/TodayView';
 import { CalendarView } from './components/CalendarView';
@@ -50,7 +52,7 @@ import { MoveSheet } from './components/MoveSheet';
 import { Breathe, Celebration, Confirm, Toast } from './components/ui';
 
 type Tab = 'hoy' | 'calendario' | 'objetivos' | 'bonsai';
-type Modal = null | 'add' | 'energy' | 'breathe' | 'settings' | 'mind';
+type Modal = null | 'add' | 'capture' | 'energy' | 'breathe' | 'settings' | 'mind';
 
 const TABS: { id: Tab; icon: string; label: string }[] = [
   { id: 'hoy', icon: '☀️', label: 'Hoy' },
@@ -68,6 +70,7 @@ export default function App() {
   const [editing, setEditing] = useState<Task | undefined>();
   const [moving, setMoving] = useState<Session | undefined>();
   const [openedId, setOpenedId] = useState<string | undefined>();
+  const [acting, setActing] = useState<Session | undefined>();
   const [toast, setToast] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<{ text: string; sub?: string } | null>(null);
   const [question, setQuestion] = useState<{ text: string; yes: string; onYes: () => void } | null>(null);
@@ -97,7 +100,7 @@ export default function App() {
     if (a === 'add') {
       setPreset(undefined);
       setEditing(undefined);
-      setModal('add');
+      setModal('capture');
     }
     if (a === 'breathe') setModal('breathe');
     if (a === 'energy') setModal('energy');
@@ -276,10 +279,11 @@ export default function App() {
             onBreathe={() => setModal('breathe')}
             onRecharge={(id) => say(act((st, ctx) => addRechargeBefore(st, id, ctx)))}
             onOpenMind={() => setModal('mind')}
+            onTap={setActing}
           />
         )}
         {tab === 'calendario' && (
-          <CalendarView state={state} today={today} onComplete={complete} onUndo={undo} onPostpone={postpone} onMove={setMoving} />
+          <CalendarView state={state} today={today} onComplete={complete} onUndo={undo} onTap={setActing} />
         )}
         {tab === 'objetivos' && (
           <GoalsView
@@ -293,6 +297,12 @@ export default function App() {
             onOpen={(t) => setOpenedId(t.id)}
             onQuickAdd={(sug, routine) => say(act((st, ctx) => addTask(st, recurringToTask(sug, routine), ctx)))}
             onPatch={(id, patch) => say(act((st, ctx) => editTask(st, id, patch, ctx)))}
+            onCompleteTask={(t) => {
+              const next = state.sessions
+                .filter((x) => x.taskId === t.id && x.status === 'planned')
+                .sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start)[0];
+              if (next) complete(next);
+            }}
           />
         )}
         {tab === 'bonsai' && <BonsaiView state={state} today={today} onBuy={(id) => say(act((st) => buy(st, id)))} />}
@@ -315,6 +325,31 @@ export default function App() {
         </button>
       </nav>
 
+      {modal === 'capture' && (
+        <QuickCapture
+          learned={state.learned}
+          onClose={() => setModal(null)}
+          onFullForm={() => setModal('add')}
+          onFinish={(tasks, corrections) => {
+            const results: CaptureResult[] = [];
+            act((st, ctx) => {
+              let s2 = st;
+              if (corrections.length) {
+                let learned = s2.learned;
+                for (const c of corrections) learned = learnCategory(learned, c.title, c.category);
+                s2 = { ...s2, learned };
+              }
+              for (const t of tasks) {
+                const r = addTask(s2, t, ctx);
+                s2 = r.state;
+                results.push({ title: t.title, category: t.category, message: r.message });
+              }
+              return s2;
+            });
+            return results;
+          }}
+        />
+      )}
       {modal === 'add' && (
         <AddTask
           key={editing?.id ?? 'new'}
@@ -332,6 +367,28 @@ export default function App() {
             setModal(null);
             setEditing(undefined);
             say(act((st, ctx) => editTask(st, id, patch, ctx)));
+          }}
+        />
+      )}
+      {acting && (
+        <SessionSheet
+          state={state}
+          session={state.sessions.find((x) => x.id === acting.id) ?? acting}
+          today={today}
+          onClose={() => setActing(undefined)}
+          onComplete={complete}
+          onUndo={undo}
+          onMove={setMoving}
+          onPostpone={postpone}
+          onPrepare={() => setModal('breathe')}
+          onEdit={() => {
+            const t = state.tasks.find((x) => x.id === acting.taskId);
+            if (!t) return;
+            if (t.kind === 'flexible') setOpenedId(t.id);
+            else {
+              setEditing(t);
+              setModal('add');
+            }
           }}
         />
       )}

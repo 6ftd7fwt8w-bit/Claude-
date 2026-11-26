@@ -1,4 +1,4 @@
-export type CategoryId = 'bienestar' | 'social' | 'proyectos' | 'autocuidado' | 'hogar' | 'trabajo';
+export type CategoryId = 'bienestar' | 'social' | 'proyectos' | 'autocuidado' | 'hogar' | 'gestiones' | 'trabajo';
 
 export interface Category {
   id: CategoryId;
@@ -13,6 +13,7 @@ export const CATEGORIES: Category[] = [
   { id: 'proyectos', label: 'Proyectos', emoji: '✨', color: '#7E98D1' },
   { id: 'autocuidado', label: 'Cuidado personal', emoji: '🛁', color: '#B996D0' },
   { id: 'hogar', label: 'Hogar', emoji: '🏡', color: '#9DBB78' },
+  { id: 'gestiones', label: 'Gestiones y papeles', emoji: '📋', color: '#7FAFC2' },
   { id: 'trabajo', label: 'Trabajo', emoji: '💼', color: '#D3AC6A' },
 ];
 
@@ -44,6 +45,8 @@ export interface Task {
   archived?: boolean;
   /** tarea cotidiana (ducha, compra, cocinar…): se muestra como checklist rápido */
   routine?: boolean;
+  /** veces al mes (p. ej. quedar con amigas 2 veces al mes); si lo hay, manda sobre timesPerWeek */
+  timesPerMonth?: number;
   /** días concretos de la semana (Date.getDay); si los hay, se hace esos días */
   days?: number[];
   /** momento del día preferido (hábitos y cotidianas) */
@@ -133,6 +136,8 @@ export interface AppState {
   equipped: Equipped;
   /** diario de gratitud: una línea por día */
   journal: Record<string, string>;
+  /** palabras que la persona ha asociado a una categoría (aprende de sus correcciones) */
+  learned?: Record<string, CategoryId>;
   /** logros ya celebrados */
   seenAchievements: string[];
   /** resumen de cada día pasado (para el informe personal) */

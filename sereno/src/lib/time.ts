@@ -43,6 +43,13 @@ export function monthKey(k: string): string {
   return k.slice(0, 7);
 }
 
+/** último día del mes de k */
+export function monthEnd(k: string): string {
+  const d = fromKey(`${k.slice(0, 7)}-01`);
+  d.setMonth(d.getMonth() + 1, 0);
+  return toKey(d);
+}
+
 export function hmToMin(hm: string): number {
   const [h, m] = hm.split(':').map(Number);
   return (h || 0) * 60 + (m || 0);

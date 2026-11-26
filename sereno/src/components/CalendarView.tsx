@@ -4,7 +4,7 @@ import { catById } from '../types';
 import { bedEff, dayLoad, energyFor, sessionsOn } from '../lib/scheduler';
 import { LEVEL_TEXT, tipsFor } from '../lib/tips';
 import { addDays, fmtDuration, fmtLong, fmtMonth, fmtShort, fromKey, minToHm, monthKey, nowMinutes, pad, weekStart } from '../lib/time';
-import { SessionCard } from './TodayView';
+import { DayAgenda } from './DayAgenda';
 import { DayStrip, StripLegend } from './DayStrip';
 
 const WEEK = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -14,15 +14,13 @@ export function CalendarView({
   today,
   onComplete,
   onUndo,
-  onPostpone,
-  onMove,
+  onTap,
 }: {
   state: AppState;
   today: string;
   onComplete: (s: Session) => void;
   onUndo: (s: Session) => void;
-  onPostpone: (s: Session) => void;
-  onMove: (s: Session) => void;
+  onTap: (s: Session) => void;
 }) {
   const [month, setMonth] = useState(monthKey(today));
   const [selected, setSelected] = useState(today);
@@ -115,19 +113,13 @@ export function CalendarView({
           </p>
         ))}
         {selSessions.length === 0 && <p className="muted">Nada planeado. Espacio para respirar 🌿</p>}
-        <div className="timeline">
-          {selSessions.map((s) => (
-            <SessionCard
-              key={s.id}
-              state={state}
-              s={s}
-              onComplete={selected <= today ? onComplete : undefined}
-              onUndo={onUndo}
-              onPostpone={selected >= today ? onPostpone : undefined}
-              onMove={selected >= today ? onMove : undefined}
-            />
-          ))}
-        </div>
+        <DayAgenda
+          state={state}
+          date={selected}
+          now={selected === today ? nowMinutes() : undefined}
+          onTap={onTap}
+          onToggle={(s) => (s.status === 'done' ? onUndo(s) : selected <= today ? onComplete(s) : onTap(s))}
+        />
       </section>
     </div>
   );

@@ -1,13 +1,14 @@
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useState, type CSSProperties } from 'react';
 import type { AppState, Session } from '../types';
 import { catById } from '../types';
-import { bedEff, breaksFor, dayBudget, energyFor, isRemote, sessionsOn, workHours, type DayBudget } from '../lib/scheduler';
+import { dayBudget, energyFor, sessionsOn, type DayBudget } from '../lib/scheduler';
 import { phraseOfDay } from '../lib/phrases';
+import { timesLabel } from '../lib/suggestions';
 import { LEVEL_TEXT, tipsFor, type Tip } from '../lib/tips';
 import { fmtDuration, fmtLong, minToHm, nowMinutes } from '../lib/time';
 import { energyEmoji } from './EnergyCheck';
 import { Ring } from './ui';
-import { DayStrip, StripLegend } from './DayStrip';
+import { DayAgenda } from './DayAgenda';
 import { MindCard } from './MindCard';
 
 interface Props {
@@ -24,6 +25,7 @@ interface Props {
   onBreathe: () => void;
   onRecharge: (sessionId: string) => void;
   onOpenMind: () => void;
+  onTap: (s: Session) => void;
 }
 
 function greeting(): string {
@@ -43,7 +45,7 @@ export function sessionLabel(state: AppState, s: Session): string {
       .sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start);
     return `Sesión ${all.findIndex((x) => x.id === s.id) + 1} de ${all.length}`;
   }
-  if (task.kind === 'habito') return `${task.routine ? 'Cotidiana' : 'Hábito'} · ${(task.timesPerWeek ?? 1) >= 7 ? 'cada día' : `${task.timesPerWeek}×/semana`}`;
+  if (task.kind === 'habito') return `${task.routine ? 'Cotidiana' : 'Hábito'} · ${timesLabel(task.timesPerWeek ?? 1, task.days, task.timesPerMonth)}`;
   return 'Con hora fija';
 }
 
@@ -182,46 +184,6 @@ export function TodayView(props: Props) {
   const energy = energyFor(state, today);
   const declared = state.energy[today] != null;
 
-  // línea del día: rutina + sesiones
-  type Item = { t: number; key: string; node: ReactNode };
-  const items: Item[] = [
-    { t: p.wake, key: 'wake', node: <Marker icon="🌅" text={`Despertar · ${minToHm(p.wake)}`} /> },
-  ];
-  const work = workHours(p, today);
-  if (work) {
-    items.push({
-      t: work.start,
-      key: 'work',
-      node: <Marker icon={isRemote(p, today) ? '🏠' : '💼'} text={`${isRemote(p, today) ? 'Teletrabajo' : 'Trabajo'} · ${minToHm(work.start)}–${minToHm(work.end)}`} />,
-    });
-  }
-  for (const b of breaksFor(p, today)) {
-    items.push({ t: b.start - 0.5, key: `pausa${b.start}`, node: <Marker icon="☕" text={`Pausa · ${minToHm(b.start)} (${fmtDuration(b.duration)})`} /> });
-  }
-  items.push({ t: p.dinner, key: 'dinner', node: <Marker icon="🍽️" text={`Cena · ${minToHm(p.dinner)}`} /> });
-  items.push({
-    t: bedEff(p) - p.relaxMinutes,
-    key: 'relax',
-    node: <Marker icon="🌙" text={`Tiempo para desconectar · desde las ${minToHm(bedEff(p) - p.relaxMinutes)}`} protectedTime />,
-  });
-  for (const s of main) {
-    items.push({
-      t: s.start,
-      key: s.id,
-      node: (
-        <SessionCard
-          state={state}
-          s={s}
-          onComplete={props.onComplete}
-          onUndo={props.onUndo}
-          onPostpone={props.onPostpone}
-          onMove={props.onMove}
-          onPrepare={props.onBreathe}
-        />
-      ),
-    });
-  }
-  items.sort((a, b) => a.t - b.t);
 
   return (
     <div className="view">
@@ -286,21 +248,17 @@ export function TodayView(props: Props) {
         </section>
       ))}
 
-      <h2 className="section-title">Tu día</h2>
-      <div className="card strip-card">
-        <DayStrip state={state} date={today} now={nowMinutes()} tall showHours />
-        <StripLegend />
+      <div className="agenda-head">
+        <h2 className="section-title">Tu agenda</h2>
+        <span className="muted small">Toca cualquier bloque para ver opciones</span>
       </div>
-      {main.length === 0 && (
-        <p className="empty">
-          No tienes proyectos ni citas hoy. Disfruta del día 🌿 <br />
-          <span className="muted">Pulsa + para contarme qué quieres conseguir.</span>
+      {main.length === 0 && routines.length === 0 && (
+        <p className="empty small-empty">
+          Hoy no tienes nada planificado: disfruta 🌿 Pulsa <strong>+</strong> para contarme qué tienes en la cabeza.
         </p>
       )}
-      <div className="timeline">
-        {items.map((it) => (
-          <div key={it.key}>{it.node}</div>
-        ))}
+      <div className="card agenda-card">
+        <DayAgenda state={state} date={today} now={nowMinutes()} onTap={props.onTap} onToggle={(s) => (s.status === 'done' ? props.onUndo(s) : props.onComplete(s))} />
       </div>
 
       <div className="quick-row">
@@ -349,10 +307,3 @@ function JournalCard({ initial, onSave }: { initial: string; onSave: (t: string)
   );
 }
 
-function Marker({ icon, text, protectedTime }: { icon: string; text: string; protectedTime?: boolean }) {
-  return (
-    <div className={`marker ${protectedTime ? 'protected' : ''}`}>
-      <span>{icon}</span> {text}
-    </div>
-  );
-}

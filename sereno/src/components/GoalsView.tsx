@@ -1,10 +1,10 @@
 import { useState, type CSSProperties } from 'react';
 import type { AppState, Task } from '../types';
-import { catById } from '../types';
+import { CATEGORIES, catById } from '../types';
 import { projectStatus, type TaskPatch } from '../lib/scheduler';
 import { RecurringEditor } from './RecurringEditor';
 import { HABIT_SUGGESTIONS, ROUTINE_SUGGESTIONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
-import { addDays, diffDays, fmtDuration, fmtRelative, minToHm, weekStart } from '../lib/time';
+import { addDays, diffDays, fmtDuration, fmtRelative, minToHm, monthEnd, weekStart } from '../lib/time';
 
 function RecurringSection({
   title,
@@ -37,16 +37,19 @@ function RecurringSection({
       {items.length > 0 && (
         <div className="recurring-grid">
           {items.map((t) => {
-            const week = state.sessions.filter((s) => s.taskId === t.id && s.date >= ws && s.date <= we);
-            const doneW = week.filter((s) => s.status === 'done').length;
-            const target = t.timesPerWeek ?? 1;
+            // los mensuales se cuentan en el mes; el resto, en la semana
+            const from = t.timesPerMonth ? `${today.slice(0, 7)}-01` : ws;
+            const to = t.timesPerMonth ? monthEnd(today) : we;
+            const period = state.sessions.filter((s) => s.taskId === t.id && s.date >= from && s.date <= to);
+            const doneW = period.filter((s) => s.status === 'done').length;
+            const target = t.timesPerMonth ?? t.timesPerWeek ?? 1;
             return (
               <div key={t.id} className="recurring" style={{ '--cat': catById(t.category).color } as CSSProperties}>
                 <button className="recurring-main" onClick={() => onEdit(t)} aria-label={`Editar ${t.title}`}>
                   <span className="tile-icon">{t.icon ?? catById(t.category).emoji}</span>
                   <span className="tile-title">{t.title}</span>
                   <span className="tile-meta">
-                    {fmtDuration(t.totalMinutes)} · {timesLabel(target, t.days)}
+                    {fmtDuration(t.totalMinutes)} · {timesLabel(target, t.days, t.timesPerMonth)}
                     {t.timeOfDay ? ` · ${TIME_OF_DAY_LABEL[t.timeOfDay].split(' ')[1].toLowerCase()}` : ''}
                   </span>
                   <span className="pips small-pips">
@@ -87,6 +90,7 @@ export function GoalsView({
   onOpen,
   onQuickAdd,
   onPatch,
+  onCompleteTask,
 }: {
   state: AppState;
   today: string;
@@ -95,12 +99,20 @@ export function GoalsView({
   onOpen: (t: Task) => void;
   onQuickAdd: (s: RecurringSuggestion, routine: boolean) => void;
   onPatch: (id: string, patch: TaskPatch) => void;
+  onCompleteTask: (t: Task) => void;
 }) {
   const [tuning, setTuning] = useState<Task | null>(null);
   const active = state.tasks.filter((t) => !t.archived);
-  const flex = active.filter((t) => t.kind === 'flexible').sort((a, b) => (a.deadline ?? '9999').localeCompare(b.deadline ?? '9999'));
+  const allFlex = active.filter((t) => t.kind === 'flexible').sort((a, b) => (a.deadline ?? '9999').localeCompare(b.deadline ?? '9999'));
+  // lo corto (≤ 1 h) son tareas sueltas; lo largo, proyectos con su progreso
+  const isDone = (t: Task) => projectStatus(state, t.id, today).pct >= 1;
+  const flex = allFlex.filter((t) => t.totalMinutes > 60);
+  const loose = allFlex.filter((t) => t.totalMinutes <= 60);
+  const looseByCat = CATEGORIES.map((c) => ({ c, items: loose.filter((t) => t.category === c.id) })).filter((g) => g.items.length);
   const routines = active.filter((t) => t.kind === 'habito' && t.routine);
-  const habits = active.filter((t) => t.kind === 'habito' && !t.routine);
+  const CARE = ['bienestar', 'social', 'autocuidado'];
+  const habits = active.filter((t) => t.kind === 'habito' && !t.routine && CARE.includes(t.category));
+  const periodic = active.filter((t) => t.kind === 'habito' && !t.routine && !CARE.includes(t.category));
   const events = active
     .filter((t) => t.kind === 'evento' && (t.date ?? '') >= today)
     .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? '') || (a.start ?? 0) - (b.start ?? 0));
@@ -112,10 +124,52 @@ export function GoalsView({
         <h1>Objetivos</h1>
       </header>
 
+      {loose.length > 0 && (
+        <>
+          <h2 className="section-title">📝 Tareas sueltas</h2>
+          {looseByCat.map(({ c, items }) => (
+            <section key={c.id} className="card loose-group" style={{ '--cat': c.color } as CSSProperties}>
+              <p className="loose-head">
+                {c.emoji} {c.label}
+              </p>
+              {items.map((t) => {
+                const done = isDone(t);
+                const next = projectStatus(state, t.id, today).next;
+                const late = t.deadline && t.deadline < today && !done;
+                return (
+                  <div key={t.id} className={`loose-row ${done ? 'done' : ''}`}>
+                    <button className={`check small-check ${done ? 'on' : ''}`} aria-label={`Hecho: ${t.title}`} disabled={done || !next} onClick={() => onCompleteTask(t)}>
+                      {done ? '✓' : ''}
+                    </button>
+                    <button className="loose-main" onClick={() => onEdit(t)}>
+                      <span className="loose-title">{t.title}</span>
+                      <span className={`loose-meta ${late ? 'warn' : ''}`}>
+                        {done
+                          ? 'Hecha ✨'
+                          : [
+                              fmtDuration(t.totalMinutes),
+                              t.deadline ? `para ${fmtRelative(t.deadline, today).replace(/^el /, 'el ')}` : 'sin prisa',
+                              next ? `→ ${fmtRelative(next.date, today)} ${minToHm(next.start)}` : '',
+                            ]
+                              .filter(Boolean)
+                              .join(' · ')}
+                      </span>
+                    </button>
+                    <button className="recurring-x" aria-label={`Quitar ${t.title}`} onClick={() => onArchive(t)}>
+                      ✕
+                    </button>
+                  </div>
+                );
+              })}
+            </section>
+          ))}
+        </>
+      )}
+
       <h2 className="section-title">✨ Proyectos</h2>
       {flex.length === 0 && (
         <p className="empty small-empty">
-          Aún no hay proyectos. Pulsa <strong>+</strong> y escribe algo como «Proyecto personal 10h antes del 31/12».
+          Aún no hay proyectos. Pulsa <strong>+</strong> y escribe algo como «Trabajar en las láminas 10h antes del 31/12».
         </p>
       )}
       <div className="project-cards">
@@ -175,6 +229,7 @@ export function GoalsView({
             category: tuning.category,
             minutes: tuning.totalMinutes,
             times: tuning.timesPerWeek ?? 1,
+            perMonth: tuning.timesPerMonth,
             timeOfDay: tuning.timeOfDay ?? 'cualquiera',
             days: tuning.days,
           }}
@@ -189,11 +244,26 @@ export function GoalsView({
               icon: v.icon,
               totalMinutes: v.minutes,
               timesPerWeek: v.times,
+              timesPerMonth: v.perMonth ?? null,
               timeOfDay: v.timeOfDay,
               days: v.days?.length ? v.days : null,
             });
             setTuning(null);
           }}
+        />
+      )}
+
+      {periodic.length > 0 && (
+        <RecurringSection
+          title="🔁 Se repite"
+          hint="Gestiones y tareas periódicas: cada semana o cada mes."
+          state={state}
+          today={today}
+          items={periodic}
+          suggestions={[]}
+          onEdit={setTuning}
+          onArchive={onArchive}
+          onQuickAdd={(s) => onQuickAdd(s, false)}
         />
       )}
 

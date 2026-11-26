@@ -61,6 +61,18 @@ Leyenda: ✅ hecho · 🔜 siguiente fase · 💡 idea para más adelante
 
 | | Funcionalidad |
 |---|---|
+| ✅ | **El + es un asistente**: escribes todo lo que tienes en la cabeza (una cosa por línea) y Sereno lo clasifica y te pregunta, una por una: ¿una vez o se repite?, ¿para cuándo?, ¿cuánto tiempo? |
+| ✅ | Respuestas de un toque: hoy, mañana, esta semana, la próxima, este mes, sin prisa o una fecha |
+| ✅ | Calcula cuánto suele llevar cada cosa (llamar 15 min, reclamar 20 min, revisar 30 min…) y pregunta las horas en los proyectos grandes |
+| ✅ | Nueva categoría **📋 Gestiones y papeles** (trámites, reclamaciones, contratos, llamadas, gastos…) |
+| ✅ | **Aprende de ti**: si cambias la categoría de algo, lo recuerda para la próxima vez |
+| ✅ | Al terminar, te enseña dónde ha colocado cada cosa |
+| ✅ | **Periodicidad mensual**: «quedar con amigas 2 veces al mes», «revisar gastos cada mes»; se reparten a lo largo del mes |
+
+#### Formulario completo (sigue disponible)
+
+| | Funcionalidad |
+|---|---|
 | ✅ | **Entrada en lenguaje natural**: «Proyecto personal 10h antes del 15/12», «Cena con Ana el viernes a las 21:30», «Meditar 10 min 5 veces por semana» |
 | ✅ | Detecta duración, fecha límite, día y hora, repetición y **tipo** (por palabras clave) |
 | ✅ | Tres clases de cosas: **Objetivo** (horas + deadline, se trocea en sesiones), **Con hora** (evento fijo) y **Hábito** (X veces/semana) |
@@ -107,6 +119,17 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Tarjeta del día: **libres hoy · ocupadas · te quedan**, con barra visual y la rayita de lo recomendado según tu energía |
 | ✅ | Toca el nivel del día (tranquilo, con ritmo…) para ver qué significa |
 | ✅ | **Tu día de un vistazo**: tira con trabajo, pausas, tus cosas y la marca de «ahora» |
+
+## 4c. Agenda del día por horas
+
+| | Funcionalidad |
+|---|---|
+| ✅ | Vista tipo Google Calendar: horas a la izquierda y bloques para arrancar, trabajo o teletrabajo, trayectos, pausas, comidas y desconexión |
+| ✅ | Tus cosas encima, en el color de su categoría, con check para marcarlas; si coinciden, se ponen en columnas |
+| ✅ | Los **huecos libres** marcados («Libre · 19:45–21:00») y la **línea roja de ahora** |
+| ✅ | Toca un bloque para: hecho, prepárate, mover, hoy no puedo o editar |
+| ✅ | La misma agenda al tocar cualquier día del calendario |
+| ✅ | En Objetivos, las tareas cortas van en **Tareas sueltas** por categoría (con fecha límite y cuándo toca) y las periódicas en **Se repite** |
 
 ## 5. Calendario con colores
 

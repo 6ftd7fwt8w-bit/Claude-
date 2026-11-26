@@ -39,7 +39,7 @@ export interface PlanAnalysis {
 
 /** Minutos por semana que pide una tarea */
 export function weeklyMinutes(t: NewTaskInput, today = todayKey()): number {
-  if (t.kind === 'habito') return t.totalMinutes * (t.days?.length || t.timesPerWeek || 1);
+  if (t.kind === 'habito') return t.timesPerMonth ? (t.totalMinutes * t.timesPerMonth) / 4.3 : t.totalMinutes * (t.days?.length || t.timesPerWeek || 1);
   if (t.kind === 'flexible') {
     const weeks = t.deadline ? Math.max(1, (diffDays(today, t.deadline) + 1) / 7) : 2;
     return t.totalMinutes / weeks;

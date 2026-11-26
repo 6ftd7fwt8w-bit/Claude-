@@ -15,8 +15,12 @@ export interface Parsed {
   date?: string;
   start?: number;
   timesPerWeek?: number;
+  timesPerMonth?: number;
   category?: CategoryId;
 }
+
+const NUM: Record<string, number> = { una: 1, un: 1, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6 };
+const num = (w: string) => NUM[w] ?? Number(w);
 
 const DAYS: Record<string, number> = {
   domingo: 0, lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6,
@@ -26,19 +30,52 @@ const MONTHS: Record<string, number> = {
   septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12,
 };
 
+// el orden importa: gana la primera que encaje
 const KEYWORDS: [CategoryId, RegExp][] = [
-  ['social', /\b(amig|cena con|comida con|cafe con|quedar|quedada|llamar a|familia|cumple|mama|papa|abuel|herman|pareja|cita con|boda|fiesta)/],
-  ['bienestar', /\b(medit|yoga|correr|running|gym|gimnasio|deporte|entren|paseo|pasear|caminar|respir|nadar|piscina|bici|pilates|estirar)/],
-  ['autocuidado', /\b(medic|dentista|peluquer|bano|skincare|siesta|masaje|terapia|psicolog|leer|lectura|dormir|manicura|revision)/],
-  ['hogar', /\b(limpi|compra|lavadora|casa|cocinar|ordenar|factura|plancha|recados|super|banco|mudanza)/],
-  ['trabajo', /\b(informe|reunion|trabajo|cliente|email|correo|presentacion|oficina|jefe)/],
-  ['proyectos', /\b(proyecto|curso|estudi|aprend|escribir|web|app|tesis|examen|idioma|ingles|portfolio|blog)/],
+  ['social', /\b(amig|cena con|comida con|cafe con|quedar|quedada|familia|cumple|boda|fiesta|cita con|(llamar|escribir|visitar|ver) a (mi |mis |la |el )?(mama|papa|madre|padre|abuel|herman|hij|tia|tio|prim|novi|pareja|amig|suegr))/],
+  ['gestiones', /\b(reclam|vuelo|prorroga|alquiler|contrato|seguro|papeles|papeleo|document|tramite|factura|hacienda|impuesto|renta|declaracion|gasto|finanz|presupuesto|pagar|pago|recibo|devoluc|reembolso|banco|transferencia|gestor|notari|dni|pasaporte|carnet|renovar|matricul|inscrib|apuntar|cancelar|darse de baja|dar de baja|suscripc|cita previa|multa|ayuntamiento|seguimiento|follow ?up|garantia|abogad|nomina|hipoteca|factura de)/],
+  ['bienestar', /\b(medit|yoga|correr|running|gym|gimnasio|deporte|entren|paseo|pasear|caminar|respir|nadar|piscina|bici|pilates|estirar|abdominal)/],
+  ['autocuidado', /\b(medic|dentista|peluquer|bano|skincare|siesta|masaje|terapia|psicolog|leer|lectura|dormir|manicura|revision medica|analitica|fisio)/],
+  ['hogar', /\b(limpi|compra|lavadora|casa|cocinar|ordenar|plancha|recados|super|mudanza|regar|basura|fregar)/],
+  ['trabajo', /\b(informe|reunion|trabajo|cliente|presentacion|oficina|jefe|equipo)/],
+  ['proyectos', /\b(proyecto|curso|estudi|aprend|escribir|web|app|tesis|examen|idioma|ingles|portfolio|blog|trabajar en|lamina|ilustr|disen|dibuj|tienda|shop|etsy|producto|catalogo|coleccion|fotos de producto|newsletter|instagram|contenido)/],
+  // llamadas y correos sin más pistas: suelen ser gestiones
+  ['gestiones', /\b(llamar|telefonear|email|correo|mail|escribir a|enviar|mandar|pedir|preguntar|reservar|confirmar)/],
 ];
+
+const STOP = new Set(['para', 'con', 'que', 'del', 'las', 'los', 'una', 'uno', 'unos', 'unas', 'hacer', 'mi', 'mis', 'por', 'sobre', 'antes', 'esta', 'este']);
+
+/** palabras significativas de un título (para aprender categorías) */
+export function keywordsOf(text: string): string[] {
+  return [...new Set(norm(text).split(/[^a-z0-9ñ]+/).filter((w) => w.length >= 4 && !STOP.has(w)))];
+}
+
+/** recuerda que estas palabras van con esta categoría */
+export function learnCategory(learned: Record<string, CategoryId> | undefined, title: string, cat: CategoryId): Record<string, CategoryId> {
+  const out = { ...(learned ?? {}) };
+  for (const w of keywordsOf(title)) out[w] = cat;
+  return out;
+}
+
+/** minutos estimados para una tarea, y si parece un proyecto grande (mejor preguntar horas) */
+export function estimateMinutes(text: string, cat: CategoryId): { minutes: number; big: boolean } {
+  const t = norm(text);
+  if (/\b(trabajar en|preparar|disenar|crear|escribir|estudiar|terminar|desarrollar|montar|lanzar|organizar el|organizar la)/.test(t)) return { minutes: 180, big: true };
+  if (/\b(llamar|telefonear)/.test(t)) return { minutes: 15, big: false };
+  if (/\b(gasto|finanz|presupuesto|declaracion|renta)/.test(t)) return { minutes: 45, big: false };
+  if (/\b(revisar|leer|mirar|comparar|buscar)/.test(t)) return { minutes: 30, big: false };
+  if (/\b(reclam|follow|seguimiento|email|correo|mail|enviar|mandar|pedir|cancelar|pagar|reservar|confirmar)/.test(t)) return { minutes: 20, big: false };
+  const byCat: Record<CategoryId, number> = { gestiones: 20, proyectos: 120, hogar: 45, trabajo: 60, bienestar: 30, autocuidado: 45, social: 90 };
+  return { minutes: byCat[cat], big: cat === 'proyectos' };
+}
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-/** categoría por palabras clave (o undefined si no hay pistas) */
-export function detectCategory(text: string): CategoryId | undefined {
+/** categoría: primero lo que ha aprendido de ti, después palabras clave (o undefined si no hay pistas) */
+export function detectCategory(text: string, learned?: Record<string, CategoryId>): CategoryId | undefined {
+  if (learned) {
+    for (const w of keywordsOf(text)) if (learned[w]) return learned[w];
+  }
   const low = norm(text);
   for (const [cat, re] of KEYWORDS) if (re.test(low)) return cat;
   return undefined;
@@ -62,7 +99,7 @@ function makeDate(today: string, d: number, m: number, y?: number): string {
   return key;
 }
 
-export function parseQuick(input: string, today: string): Parsed {
+export function parseQuick(input: string, today: string, learned?: Record<string, CategoryId>): Parsed {
   let text = ` ${input} `;
   const n = () => norm(text);
   const out: Parsed = { title: '' };
@@ -76,10 +113,16 @@ export function parseQuick(input: string, today: string): Parsed {
   };
 
   // veces por semana / cada día
-  let m = cut(/\s(\d+)\s*(?:veces|vez|x)\s*(?:por|a la|cada|\/)\s*semana\b/);
+  let m = cut(/\s(\d+|una|un|dos|tres|cuatro|cinco|seis)\s*(?:veces|vez|x)\s*(?:al|por|cada|a|\/)\s*(?:el\s)?mes\b/);
   if (m) {
     out.kind = 'habito';
-    out.timesPerWeek = Number(m[1]);
+    out.timesPerMonth = num(m[1]);
+  } else if ((m = cut(/\s(?:cada mes|mensual(?:mente)?|todos los meses)\b/))) {
+    out.kind = 'habito';
+    out.timesPerMonth = 1;
+  } else if ((m = cut(/\s(\d+|una|un|dos|tres|cuatro|cinco|seis)\s*(?:veces|vez|x)\s*(?:por|a la|cada|\/)\s*semana\b/))) {
+    out.kind = 'habito';
+    out.timesPerWeek = num(m[1]);
   } else if ((m = cut(/\s(?:cada dia|todos los dias|a diario)\b/))) {
     out.kind = 'habito';
     out.timesPerWeek = 7;
@@ -145,7 +188,7 @@ export function parseQuick(input: string, today: string): Parsed {
     }
   }
 
-  out.category = detectCategory(input);
+  out.category = detectCategory(input, learned);
 
   const title = text.replace(/\s+/g, ' ').replace(/\s([,.;:])/g, '$1').replace(/^[\s,.;:-]+|[\s,.;:-]+$/g, '').trim();
   out.title = title ? title[0].toUpperCase() + title.slice(1) : '';
