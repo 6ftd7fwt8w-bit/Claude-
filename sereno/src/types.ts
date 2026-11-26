@@ -42,6 +42,12 @@ export interface Task {
   timesPerWeek?: number;
   createdAt: string;
   archived?: boolean;
+  /** tarea cotidiana (ducha, compra, cocinar…): se muestra como checklist rápido */
+  routine?: boolean;
+  /** momento del día preferido (hábitos y cotidianas) */
+  timeOfDay?: TimeOfDay;
+  /** icono propio (cotidianas) */
+  icon?: string;
   /** de dónde viene: creada en Sereno, importada de un .ics o del calendario del iPhone */
   source?: 'ics' | 'ios';
   externalId?: string;
@@ -64,6 +70,14 @@ export interface Session {
 
 export type Chronotype = 'manana' | 'neutro' | 'noche';
 
+export type TimeOfDay = 'manana' | 'tarde' | 'noche' | 'cualquiera';
+
+/** pausa durante la jornada (p. ej. teletrabajo: 11:00 durante 15 min) */
+export interface WorkBreak {
+  start: number;
+  duration: number;
+}
+
 export interface WorkHours {
   start: number;
   end: number;
@@ -80,6 +94,12 @@ export interface Profile {
   /** horario distinto para algún día (clave: Date.getDay()) */
   workByDay?: Record<number, WorkHours>;
   commute: number;
+  /** días de teletrabajo (sin desplazamiento) */
+  remoteDays: number[];
+  /** pausas habituales durante la jornada, para cosas cortas */
+  breaks: WorkBreak[];
+  /** pausas de un día concreto (las elige en el check-in de la mañana) */
+  breaksOn?: Record<string, WorkBreak[]>;
   /** cuándo se concentra mejor: ahí van los proyectos */
   chronotype: Chronotype;
   notifications: boolean;
@@ -131,6 +151,8 @@ export const DEFAULT_PROFILE: Profile = {
   workStart: 9 * 60,
   workEnd: 18 * 60,
   commute: 30,
+  remoteDays: [],
+  breaks: [],
   chronotype: 'neutro',
   notifications: true,
   lunch: 14 * 60,

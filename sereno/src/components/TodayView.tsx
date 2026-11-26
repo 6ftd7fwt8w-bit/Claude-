@@ -1,12 +1,13 @@
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import type { AppState, Session } from '../types';
 import { catById } from '../types';
-import { bedEff, dayLoad, energyFor, sessionsOn, workHours } from '../lib/scheduler';
+import { bedEff, breaksFor, dayBudget, energyFor, isRemote, sessionsOn, workHours, type DayBudget } from '../lib/scheduler';
 import { phraseOfDay } from '../lib/phrases';
 import { LEVEL_TEXT, tipsFor, type Tip } from '../lib/tips';
-import { fmtDuration, fmtLong, minToHm } from '../lib/time';
+import { fmtDuration, fmtLong, minToHm, nowMinutes } from '../lib/time';
 import { energyEmoji } from './EnergyCheck';
 import { Ring } from './ui';
+import { DayStrip, StripLegend } from './DayStrip';
 
 interface Props {
   state: AppState;
@@ -39,7 +40,7 @@ export function sessionLabel(state: AppState, s: Session): string {
       .sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start);
     return `Sesión ${all.findIndex((x) => x.id === s.id) + 1} de ${all.length}`;
   }
-  if (task.kind === 'habito') return `Hábito · ${task.timesPerWeek}×/semana`;
+  if (task.kind === 'habito') return `${task.routine ? 'Cotidiana' : 'Hábito'} · ${(task.timesPerWeek ?? 1) >= 7 ? 'cada día' : `${task.timesPerWeek}×/semana`}`;
   return 'Con hora fija';
 }
 
@@ -107,12 +108,66 @@ export function SessionCard({
   );
 }
 
+const LEVEL_HELP: Record<string, string> = {
+  libre: 'Hoy no tienes nada: el día es para ti.',
+  verde: 'Vas por debajo de lo recomendado: margen de sobra.',
+  naranja: 'Cerca de lo recomendado: día con ritmo, pero llevable.',
+  rojo: 'Por encima de lo recomendado. Si puedes, mueve algo con «Hoy no puedo».',
+};
+
+function BudgetCard({ b, done, total }: { b: DayBudget; done: number; total: number }) {
+  const [open, setOpen] = useState(false);
+  const pct = (m: number) => `${Math.min(100, (m / Math.max(1, b.free)) * 100)}%`;
+  return (
+    <section className="card budget">
+      <div className="budget-top">
+        <Ring value={total ? done / total : 0} label="Progreso de hoy" />
+        <div className="grow">
+          <p className="h3">{total === 0 ? 'Nada asignado hoy' : `${done} de ${total} hechas`}</p>
+          <button className={`level-chip ${b.level}`} onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+            {LEVEL_TEXT[b.level]} <span className="info">ⓘ</span>
+          </button>
+        </div>
+      </div>
+      <div className="budget-bar" aria-hidden="true">
+        <span className="seg done" style={{ width: pct(b.done) }} />
+        <span className="seg pending" style={{ width: pct(b.pending) }} />
+        <span className="reco" style={{ left: pct(b.recommended) }} />
+      </div>
+      <div className="budget-nums">
+        <div>
+          <strong>{fmtDuration(b.free)}</strong>
+          <span>libres hoy</span>
+        </div>
+        <div>
+          <strong>{fmtDuration(b.used)}</strong>
+          <span>ocupadas</span>
+        </div>
+        <div>
+          <strong>{fmtDuration(b.left)}</strong>
+          <span>te quedan</span>
+        </div>
+      </div>
+      {open && (
+        <p className="budget-help">
+          <strong>Libres hoy</strong> es lo que te queda tras dormir, tu rutina, trabajar, comer y desconectar.{' '}
+          Con tu energía de hoy ({b.energy}%) te recomiendo ocupar como mucho <strong>{fmtDuration(b.recommended)}</strong>{' '}
+          (la rayita de la barra), para que siempre te quede aire. {LEVEL_HELP[b.level]}
+        </p>
+      )}
+    </section>
+  );
+}
+
 export function TodayView(props: Props) {
   const { state, today } = props;
   const p = state.profile!;
+  const tasks = new Map(state.tasks.map((t) => [t.id, t]));
   const sessions = sessionsOn(state.sessions, today);
+  const routines = sessions.filter((s) => tasks.get(s.taskId)?.routine);
+  const main = sessions.filter((s) => !tasks.get(s.taskId)?.routine);
   const done = sessions.filter((s) => s.status === 'done').length;
-  const load = dayLoad(state, today);
+  const budget = dayBudget(state, today);
   const tips = tipsFor(state, today, today);
   const energy = energyFor(state, today);
   const declared = state.energy[today] != null;
@@ -127,8 +182,11 @@ export function TodayView(props: Props) {
     items.push({
       t: work.start,
       key: 'work',
-      node: <Marker icon="💼" text={`Trabajo · ${minToHm(work.start)}–${minToHm(work.end)}`} />,
+      node: <Marker icon={isRemote(p, today) ? '🏠' : '💼'} text={`${isRemote(p, today) ? 'Teletrabajo' : 'Trabajo'} · ${minToHm(work.start)}–${minToHm(work.end)}`} />,
     });
+  }
+  for (const b of breaksFor(p, today)) {
+    items.push({ t: b.start - 0.5, key: `pausa${b.start}`, node: <Marker icon="☕" text={`Pausa · ${minToHm(b.start)} (${fmtDuration(b.duration)})`} /> });
   }
   items.push({ t: p.dinner, key: 'dinner', node: <Marker icon="🍽️" text={`Cena · ${minToHm(p.dinner)}`} /> });
   items.push({
@@ -136,7 +194,7 @@ export function TodayView(props: Props) {
     key: 'relax',
     node: <Marker icon="🌙" text={`Tiempo para desconectar · desde las ${minToHm(bedEff(p) - p.relaxMinutes)}`} protectedTime />,
   });
-  for (const s of sessions) {
+  for (const s of main) {
     items.push({
       t: s.start,
       key: s.id,
@@ -167,17 +225,32 @@ export function TodayView(props: Props) {
         <p>{phraseOfDay(today)}</p>
       </section>
 
-      <section className="card progress-card">
-        <Ring value={sessions.length ? done / sessions.length : 0} label="Progreso de hoy" />
-        <div>
-          <p className="h3">
-            {sessions.length === 0 ? 'Nada asignado hoy' : `${done} de ${sessions.length} hechas`}
-          </p>
-          <p className={`level-chip ${load.level}`}>
-            {LEVEL_TEXT[load.level]} · {fmtDuration(load.planned)} de {fmtDuration(load.capacity)} disponibles
-          </p>
-        </div>
-      </section>
+      <BudgetCard b={budget} done={done} total={sessions.length} />
+
+      {routines.length > 0 && (
+        <section className="card routines-today">
+          <p className="h3">Lo de cada día</p>
+          <div className="routine-chips">
+            {routines.map((s) => {
+              const t = tasks.get(s.taskId)!;
+              const on = s.status === 'done';
+              return (
+                <button
+                  key={s.id}
+                  className={`routine-chip ${on ? 'on' : ''}`}
+                  style={{ '--cat': catById(t.category).color } as CSSProperties}
+                  onClick={() => (on ? props.onUndo(s) : props.onComplete(s))}
+                  aria-pressed={on}
+                >
+                  <span className="routine-icon">{on ? '✓' : t.icon ?? catById(t.category).emoji}</span>
+                  <span className="routine-name">{t.title}</span>
+                  <span className="routine-time">{minToHm(s.start)}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {tips.map((t) => (
         <section key={t.text} className="tip">
@@ -193,10 +266,14 @@ export function TodayView(props: Props) {
         </section>
       ))}
 
-      <h2 className="section-title">Tu propuesta para hoy</h2>
-      {sessions.length === 0 && (
+      <h2 className="section-title">Tu día</h2>
+      <div className="card strip-card">
+        <DayStrip state={state} date={today} now={nowMinutes()} tall showHours />
+        <StripLegend />
+      </div>
+      {main.length === 0 && (
         <p className="empty">
-          Hoy no tienes nada asignado. Disfruta del día 🌿 <br />
+          No tienes proyectos ni citas hoy. Disfruta del día 🌿 <br />
           <span className="muted">Pulsa + para contarme qué quieres conseguir.</span>
         </p>
       )}

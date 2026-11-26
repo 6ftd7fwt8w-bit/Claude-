@@ -39,7 +39,7 @@ export function SettingsView({
         <span>Nombre</span>
         <input value={p.name} onChange={(e) => set({ name: e.target.value })} />
       </label>
-      {['despertar', 'trabajo', 'comidas', 'noche'].map((s) => (
+      {['despertar', 'trabajo', ...(p.works ? ['pausas'] : []), 'comidas', 'noche'].map((s) => (
         <div key={s} className="settings-group">
           <ProfileFields p={p} set={set} step={s} />
         </div>

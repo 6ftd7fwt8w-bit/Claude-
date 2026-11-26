@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
-import type { CategoryId, Task, TaskKind } from '../types';
+import type { CategoryId, Task, TaskKind, TimeOfDay } from '../types';
 import { catById } from '../types';
 import type { NewTaskInput, TaskPatch } from '../lib/scheduler';
 import { parseQuick } from '../lib/parse';
+import { ROUTINE_ICONS, TIME_OF_DAY_LABEL } from '../lib/suggestions';
 import { addDays, fmtDuration, fmtShort, hmToMin, minToHm, todayKey } from '../lib/time';
 import { CategoryPicker, NumberChips, Sheet } from './ui';
 
-const KINDS: { id: TaskKind; label: string; hint: string }[] = [
-  { id: 'flexible', label: '🪴 Objetivo', hint: 'Tú dices cuánto tiempo y para cuándo; yo busco los huecos.' },
+type Mode = TaskKind | 'cotidiana';
+
+const KINDS: { id: Mode; label: string; hint: string }[] = [
+  { id: 'flexible', label: '🪴 Proyecto', hint: 'Tú dices cuánto tiempo y para cuándo; yo busco los huecos.' },
   { id: 'evento', label: '📌 Con hora', hint: 'Algo con día y hora fijos (una cena, el médico…).' },
-  { id: 'habito', label: '🔁 Hábito', hint: 'Se repite cada semana. Lo coloco en días distintos.' },
+  { id: 'habito', label: '💛 Cuidarte', hint: 'Bienestar o vida social que se repite cada semana.' },
+  { id: 'cotidiana', label: '🧺 Cotidiana', hint: 'Lo de siempre: ducha, compra, cocinar… Ocupa tiempo y lo tengo en cuenta.' },
 ];
 
 export interface AddPreset {
@@ -35,7 +39,11 @@ export function AddTask({
   const today = todayKey();
   const e = editing;
   const [text, setText] = useState(e?.title ?? preset?.title ?? '');
-  const [kind, setKind] = useState<TaskKind>(e?.kind ?? preset?.kind ?? 'flexible');
+  const [mode, setMode] = useState<Mode>(e?.routine ? 'cotidiana' : (e?.kind ?? preset?.kind ?? 'flexible'));
+  const kind: TaskKind = mode === 'cotidiana' ? 'habito' : mode;
+  const setKind = (k: TaskKind) => setMode((m) => (m === 'cotidiana' && k === 'habito' ? m : k));
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(e?.timeOfDay ?? 'cualquiera');
+  const [icon, setIcon] = useState(e?.icon ?? '🧺');
   const [category, setCategory] = useState<CategoryId>(e?.category ?? preset?.category ?? 'proyectos');
   const [total, setTotal] = useState(e?.totalMinutes ?? preset?.minutes ?? 120);
   const [session, setSession] = useState(e?.sessionMinutes ?? 60);
@@ -64,6 +72,12 @@ export function AddTask({
     if (parsed.category && !touchedCat) setCategory(parsed.category);
   }, [text]);
 
+  // categoría por defecto razonable según el tipo, mientras no la elija la persona
+  useEffect(() => {
+    if (touchedCat || parsed.category) return;
+    setCategory(mode === 'cotidiana' ? 'hogar' : mode === 'habito' ? 'bienestar' : mode === 'evento' ? 'social' : 'proyectos');
+  }, [mode]);
+
   const understood: string[] = [];
   if (parsed.totalMinutes) understood.push(`⏱ ${fmtDuration(parsed.totalMinutes)}`);
   if (parsed.deadline) understood.push(`🎯 antes del ${fmtShort(parsed.deadline)}`);
@@ -85,6 +99,7 @@ export function AddTask({
         date,
         start,
         timesPerWeek: times,
+        timeOfDay,
       });
       return;
     }
@@ -98,6 +113,9 @@ export function AddTask({
       date,
       start,
       timesPerWeek: times,
+      routine: mode === 'cotidiana',
+      timeOfDay,
+      icon: mode === 'cotidiana' ? icon : undefined,
     });
   };
 
@@ -123,14 +141,28 @@ export function AddTask({
         </div>
       )}
 
-      {!e && <div className="segmented">
-        {KINDS.map((k) => (
-          <button key={k.id} className={kind === k.id ? 'on' : ''} onClick={() => setKind(k.id)}>
-            {k.label}
-          </button>
-        ))}
-      </div>}
-      <p className="muted small">{KINDS.find((k) => k.id === kind)?.hint}</p>
+      {!e && (
+        <div className="segmented four">
+          {KINDS.map((k) => (
+            <button key={k.id} className={mode === k.id ? 'on' : ''} onClick={() => setMode(k.id)}>
+              {k.label}
+            </button>
+          ))}
+        </div>
+      )}
+      <p className="muted small">{KINDS.find((k) => k.id === mode)?.hint}</p>
+      {mode === 'cotidiana' && (
+        <div className="field">
+          <span>Icono</span>
+          <div className="chips icons">
+            {ROUTINE_ICONS.map((i) => (
+              <button key={i} type="button" className={`chip round ${icon === i ? 'on' : ''}`} onClick={() => setIcon(i)} aria-label={`Icono ${i}`}>
+                {i}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="field">
         <span>Tipo</span>
@@ -195,12 +227,23 @@ export function AddTask({
       {kind === 'habito' && (
         <>
           <div className="field">
-            <span>Veces por semana</span>
-            <NumberChips value={times} options={[1, 2, 3, 4, 5, 7]} onChange={setTimes} fmt={(v) => `${v}×`} />
+            <span>¿Cuántas veces?</span>
+            <NumberChips value={times} options={[1, 2, 3, 4, 5, 7]} onChange={setTimes} fmt={(v) => (v === 7 ? 'Cada día' : `${v}×/sem`)} />
           </div>
           <div className="field">
             <span>Cada vez</span>
-            <NumberChips value={total} options={[10, 20, 30, 45, 60, 90]} onChange={setTotal} fmt={fmtDuration} />
+            <NumberChips value={total} options={[5, 10, 15, 20, 30, 45, 60, 90]} onChange={setTotal} fmt={fmtDuration} />
+            {total <= 20 && <small className="muted">Cabe en tus pausas del trabajo ☕</small>}
+          </div>
+          <div className="field">
+            <span>¿Cuándo te va mejor?</span>
+            <div className="chips">
+              {(Object.keys(TIME_OF_DAY_LABEL) as TimeOfDay[]).map((t) => (
+                <button key={t} type="button" className={`chip ${timeOfDay === t ? 'on' : ''}`} onClick={() => setTimeOfDay(t)}>
+                  {TIME_OF_DAY_LABEL[t]}
+                </button>
+              ))}
+            </div>
           </div>
         </>
       )}

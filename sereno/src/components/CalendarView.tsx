@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import type { AppState, Session } from '../types';
 import { catById } from '../types';
-import { baseBusy, bedEff, dayLoad, energyFor, sessionsOn } from '../lib/scheduler';
+import { bedEff, dayLoad, energyFor, sessionsOn } from '../lib/scheduler';
 import { LEVEL_TEXT, tipsFor } from '../lib/tips';
-import { addDays, fmtDuration, fmtLong, fmtMonth, fmtShort, fromKey, minToHm, monthKey, pad, weekStart } from '../lib/time';
+import { addDays, fmtDuration, fmtLong, fmtMonth, fmtShort, fromKey, minToHm, monthKey, nowMinutes, pad, weekStart } from '../lib/time';
 import { SessionCard } from './TodayView';
+import { DayStrip, StripLegend } from './DayStrip';
 
 const WEEK = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
@@ -153,7 +154,6 @@ function WeekView({
   const to = bedEff(p);
   const span = Math.max(60, to - from);
   const pct = (m: number) => `${((Math.min(to, Math.max(from, m)) - from) / span) * 100}%`;
-  const taskOf = new Map(state.tasks.map((t) => [t.id, t]));
   const hours = Array.from({ length: Math.floor(span / 180) + 1 }, (_, i) => from + i * 180).filter((h) => h < to);
   return (
     <>
@@ -185,33 +185,13 @@ function WeekView({
                 <span>{Number(d.slice(8))}</span>
                 <i className={`lg ${load.level}`} />
               </span>
-              <span className="week-bar">
-                {baseBusy(p, d)
-                  .filter((b) => b.end > from && b.start < to)
-                  .map((b, k) => (
-                    <span key={k} className="blk busy" style={{ left: pct(b.start), width: `calc(${pct(b.end)} - ${pct(b.start)})` }} />
-                  ))}
-                {sessionsOn(state.sessions, d).map((x) => {
-                  const t = taskOf.get(x.taskId);
-                  return (
-                    <span
-                      key={x.id}
-                      className={`blk ${x.status === 'done' ? 'done' : ''}`}
-                      title={`${minToHm(x.start)} ${t?.title ?? ''}`}
-                      style={{
-                        left: pct(x.start),
-                        width: `max(4px, calc(${pct(x.start + x.duration)} - ${pct(x.start)}))`,
-                        background: catById(t?.category ?? 'bienestar').color,
-                      }}
-                    />
-                  );
-                })}
-              </span>
+              <DayStrip state={state} date={d} now={d === today ? nowMinutes() : undefined} />
             </button>
           );
         })}
-        <p className="muted small center">Gris: trabajo, comidas y descanso · Color: tus cosas · Toca un día para verlo</p>
+        <StripLegend />
       </div>
     </>
   );
 }
+

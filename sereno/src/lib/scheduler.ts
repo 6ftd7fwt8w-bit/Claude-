@@ -9,7 +9,7 @@
  *
  * Todas las funciones son puras: reciben un AppState y devuelven uno nuevo.
  */
-import type { AppState, Profile, Session, Task, WorkHours } from '../types';
+import type { AppState, Profile, Session, Task, TimeOfDay, WorkBreak, WorkHours } from '../types';
 import { addDays, ceilTo, fmtRelative, fmtTo, minToHm, rangeDays, weekStart, weekday } from './time';
 
 export interface Ctx {
@@ -55,10 +55,25 @@ export function workHours(p: Profile, date: string): WorkHours | null {
   return p.workByDay?.[weekday(date)] ?? { start: p.workStart, end: p.workEnd };
 }
 
+export function isRemote(p: Profile, date: string): boolean {
+  return (p.remoteDays ?? []).includes(weekday(date));
+}
+
+/** pausas de ese día: las elegidas para ese día o, si trabaja, las habituales */
+export function breaksFor(p: Profile, date: string): WorkBreak[] {
+  return p.breaksOn?.[date] ?? (isWorkDay(p, date) ? (p.breaks ?? []) : []);
+}
+
 export function baseBusy(p: Profile, date: string): Interval[] {
   const busy: Interval[] = [{ start: 0, end: p.wake + p.morningRoutine }];
   const w = workHours(p, date);
-  if (w) busy.push({ start: w.start - p.commute, end: w.end + p.commute });
+  if (w) {
+    const commute = isRemote(p, date) ? 0 : p.commute;
+    const work = { start: w.start - commute, end: w.end + commute };
+    // las pausas abren pequeños huecos dentro de la jornada
+    const gaps = breaksFor(p, date).map((b) => ({ start: b.start, end: b.start + b.duration }));
+    busy.push(...complement(gaps, work.start, work.end));
+  }
   busy.push({ start: p.lunch, end: p.lunch + p.lunchDuration });
   busy.push({ start: p.dinner, end: p.dinner + p.dinnerDuration });
   busy.push({ start: Math.max(0, bedEff(p) - p.relaxMinutes), end: 1440 });
@@ -144,6 +159,13 @@ export function freeWindows(p: Profile, date: string, sessions: Session[], notBe
   return complement(busy);
 }
 
+export const TIME_RANGES: Record<TimeOfDay, Interval> = {
+  manana: { start: 0, end: 14 * 60 },
+  tarde: { start: 14 * 60, end: 20 * 60 + 30 },
+  noche: { start: 19 * 60, end: 1440 },
+  cualquiera: { start: 0, end: 1440 },
+};
+
 export function findSlot(
   p: Profile,
   date: string,
@@ -151,8 +173,11 @@ export function findSlot(
   duration: number,
   notBefore = 0,
   preferLate = false,
+  range: Interval = TIME_RANGES.cualquiera,
 ): number | null {
-  const windows = freeWindows(p, date, sessions, notBefore);
+  const windows = freeWindows(p, date, sessions, notBefore)
+    .map((w) => ({ start: Math.max(w.start, range.start), end: Math.min(w.end, range.end) }))
+    .filter((w) => w.end > w.start);
   const ordered = preferLate ? [...windows].reverse() : windows;
   for (const w of ordered) {
     const s = ceilTo(w.start, STEP);
@@ -175,6 +200,8 @@ export function splitChunks(total: number, size: number): number[] {
 
 /** la vida social y el autocuidado, por la tarde; los proyectos, cuando mejor te concentras */
 export function prefersLate(p: Profile, task: Task): boolean {
+  if (task.timeOfDay === 'tarde' || task.timeOfDay === 'noche') return true;
+  if (task.timeOfDay === 'manana') return false;
   if (task.category === 'social' || task.category === 'autocuidado') return true;
   if (task.category === 'proyectos' || task.category === 'trabajo') return p.chronotype === 'noche';
   return false;
@@ -201,6 +228,7 @@ export function placeChunks(
   let unplaced = 0;
   if (!p || days.length === 0) return { sessions, placed, unplaced: chunks.reduce((a, b) => a + b, 0) };
   const preferLate = prefersLate(p, task);
+  const range = TIME_RANGES[task.timeOfDay ?? 'cualquiera'];
 
   for (const chunk of chunks) {
     const scored = days
@@ -221,7 +249,7 @@ export function placeChunks(
 
     const tryDays = (list: typeof scored): Session | null => {
       for (const x of list) {
-        const start = findSlot(p, x.d, sessions, chunk, notBeforeFor(x.d, ctx), preferLate);
+        const start = findSlot(p, x.d, sessions, chunk, notBeforeFor(x.d, ctx), preferLate, range);
         if (start != null) {
           return { id: uid(), taskId: task.id, date: x.d, start, duration: chunk, status: 'planned' };
         }
@@ -312,6 +340,9 @@ export interface NewTaskInput {
   date?: string;
   start?: number;
   timesPerWeek?: number;
+  routine?: boolean;
+  timeOfDay?: TimeOfDay;
+  icon?: string;
 }
 
 export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result {
@@ -325,7 +356,10 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
     deadline: input.kind === 'flexible' ? input.deadline : undefined,
     date: input.kind === 'evento' ? input.date : undefined,
     start: input.kind === 'evento' ? input.start : undefined,
-    timesPerWeek: input.kind === 'habito' ? Math.max(1, input.timesPerWeek ?? 1) : undefined,
+    timesPerWeek: input.kind === 'habito' ? Math.max(1, Math.min(7, input.timesPerWeek ?? 1)) : undefined,
+    routine: input.kind === 'habito' && input.routine ? true : undefined,
+    timeOfDay: input.kind === 'habito' && input.timeOfDay && input.timeOfDay !== 'cualquiera' ? input.timeOfDay : undefined,
+    icon: input.icon,
     createdAt: ctx.today,
   };
   let s: AppState = { ...state, tasks: [...state.tasks, task] };
@@ -341,8 +375,7 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
       fixed: true,
     };
     s = { ...s, sessions: [...s.sessions, ev] };
-    const { state: s2, moved } = resolveConflicts(s, ev, ctx);
-    const extra = moved > 0 ? ` He movido ${moved} ${moved === 1 ? 'cosa' : 'cosas'} para hacerle sitio.` : '';
+    const { state: s2, note: extra } = resolveConflicts(s, ev, ctx);
     return { state: s2, message: `Apuntado ${fmtRelative(ev.date, ctx.today)} a las ${minToHm(ev.start)}.${extra}` };
   }
 
@@ -352,7 +385,7 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
     return {
       state: s,
       message: next
-        ? `Hábito creado: ${task.timesPerWeek}× por semana. La primera vez, ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.`
+        ? `${task.routine ? 'Cotidiana añadida' : 'Hábito creado'}: ${task.timesPerWeek === 7 ? 'cada día' : `${task.timesPerWeek}× por semana`}. La primera vez, ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.`
         : 'Hábito creado. Esta semana ya no queda hueco, empezamos la que viene 🌱',
     };
   }
@@ -375,7 +408,7 @@ export function firstPlanned(state: AppState, taskId: string, from?: string): Se
 }
 
 /** Si un evento fijo pisa sesiones flexibles, las recolocamos. */
-function resolveConflicts(state: AppState, ev: Session, ctx: Ctx): { state: AppState; moved: number } {
+function resolveConflicts(state: AppState, ev: Session, ctx: Ctx): { state: AppState; moved: number; note: string } {
   const clash = state.sessions.filter(
     (x) =>
       x.id !== ev.id &&
@@ -385,11 +418,22 @@ function resolveConflicts(state: AppState, ev: Session, ctx: Ctx): { state: AppS
       x.start < ev.start + ev.duration + BUFFER &&
       ev.start < x.start + x.duration + BUFFER,
   );
-  if (!clash.length) return { state, moved: 0 };
+  if (!clash.length) return { state, moved: 0, note: '' };
   const ids = new Set(clash.map((c) => c.id));
+  const from = ev.date < ctx.today ? ctx.today : ev.date;
   let s: AppState = { ...state, sessions: state.sessions.filter((x) => !ids.has(x.id)) };
-  for (const c of clash) s = rehome(s, c, ev.date < ctx.today ? ctx.today : ev.date, ctx);
-  return { state: s, moved: clash.length };
+  for (const c of clash) s = rehome(s, c, from, ctx);
+  return { state: s, moved: clash.length, note: movedNote(state, s, clash, from, ctx) };
+}
+
+/** «Compra» → viernes 19:45, … (para que se entienda qué ha cambiado) */
+function movedNote(before: AppState, after: AppState, moved: Session[], from: string, ctx: Ctx): string {
+  const parts = [...new Set(moved.map((m) => m.taskId))].map((taskId) => {
+    const t = before.tasks.find((x) => x.id === taskId);
+    const next = firstPlanned(after, taskId, from);
+    return next ? `«${t?.title}» ${fmtTo(next.date, ctx.today)} a las ${minToHm(next.start)}` : `«${t?.title}» (esta semana ya no cabe)`;
+  });
+  return parts.length ? ` Para hacerle sitio he movido ${parts.join(', ')}.` : '';
 }
 
 /** Recoloca una sesión ya retirada del estado a partir del día `from`. */
@@ -606,6 +650,7 @@ export interface TaskPatch {
   date?: string;
   start?: number;
   timesPerWeek?: number;
+  timeOfDay?: TimeOfDay;
 }
 
 /** Editar una tarea. Si cambia algo de planificación, se recoloca lo pendiente. */
@@ -622,6 +667,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
     date: patch.date ?? old.date,
     start: patch.start ?? old.start,
     timesPerWeek: patch.timesPerWeek ?? old.timesPerWeek,
+    timeOfDay: patch.timeOfDay ? (patch.timeOfDay === 'cualquiera' ? undefined : patch.timeOfDay) : old.timeOfDay,
   };
   let s: AppState = { ...state, tasks: state.tasks.map((t) => (t.id === taskId ? task : t)) };
   const changed = (k: keyof Task) => task[k] !== old[k];
@@ -636,7 +682,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
     return { state: s, message: 'Guardado ✨' };
   }
 
-  if (task.kind === 'habito' && (changed('timesPerWeek') || changed('totalMinutes'))) {
+  if (task.kind === 'habito' && (changed('timesPerWeek') || changed('totalMinutes') || changed('timeOfDay'))) {
     s = {
       ...s,
       sessions: s.sessions.filter((x) => !(x.taskId === taskId && x.status === 'planned' && x.date >= ctx.today)),
@@ -736,5 +782,174 @@ export function importEvents(
   return {
     state: s,
     message: added ? `He traído ${added} ${added === 1 ? 'cita' : 'citas'} de tu calendario 📅.${extra}` : 'Tu calendario ya estaba al día 📅',
+  };
+}
+
+// ---------------------------------------------------------------- presupuesto del día (lo que ve el usuario)
+
+export interface DayBudget {
+  /** tiempo libre real: el día menos sueño, rutina, trabajo, comidas y desconexión */
+  free: number;
+  /** lo que te recomiendo usar como mucho, según tu energía */
+  recommended: number;
+  /** minutos con cosas (hechas o pendientes) dentro de tu tiempo libre */
+  used: number;
+  done: number;
+  pending: number;
+  /** lo que queda libre de verdad */
+  left: number;
+  energy: number;
+  level: Level;
+}
+
+function overlap(a: Interval, b: Interval): number {
+  return Math.max(0, Math.min(a.end, b.end) - Math.max(a.start, b.start));
+}
+
+export function dayBudget(state: AppState, date: string): DayBudget {
+  const p = state.profile!;
+  const free = complement(baseBusy(p, date));
+  const inFree = (s: Session) => free.reduce((a, w) => a + overlap(w, { start: s.start, end: s.start + s.duration }), 0);
+  const day = sessionsOn(state.sessions, date);
+  const done = day.filter((x) => x.status === 'done').reduce((a, x) => a + inFree(x), 0);
+  const pending = day.filter((x) => x.status === 'planned').reduce((a, x) => a + inFree(x), 0);
+  const freeMin = free.reduce((a, w) => a + w.end - w.start, 0);
+  return {
+    free: freeMin,
+    recommended: capacity(state, date),
+    used: done + pending,
+    done,
+    pending,
+    left: Math.max(0, freeMin - done - pending),
+    energy: energyFor(state, date),
+    level: dayLoad(state, date).level,
+  };
+}
+
+// ---------------------------------------------------------------- pausas del día (teletrabajo)
+
+/** Guarda las pausas de un día y coloca en ellas lo corto que encaje (meditar, estirar…). */
+export function setDayBreaks(state: AppState, date: string, breaks: WorkBreak[], ctx: Ctx): Result {
+  const p = state.profile;
+  if (!p) return { state };
+  let s: AppState = {
+    ...state,
+    profile: {
+      ...p,
+      breaksOn: Object.fromEntries(
+        Object.entries({ ...(p.breaksOn ?? {}), [date]: breaks }).filter(([d]) => d >= addDays(ctx.today, -7)),
+      ),
+    },
+  };
+  const r = fillBreaks(s, date, ctx);
+  s = r.state;
+  return { state: s, message: r.message ?? (breaks.length ? 'Pausas guardadas ☕' : 'Hoy sin pausas, entendido.') };
+}
+
+/** Mueve a las pausas libres de ese día las sesiones cortas que quepan (prioriza bienestar). */
+export function fillBreaks(state: AppState, date: string, ctx: Ctx): Result {
+  const p = state.profile;
+  if (!p) return { state };
+  let s = state;
+  const placed: string[] = [];
+  const weight = (c: Task['category']) => (c === 'bienestar' ? 0 : c === 'autocuidado' ? 1 : 2);
+  for (const b of breaksFor(p, date)) {
+    if (date === ctx.today && b.start < ctx.now) continue;
+    const taken = s.sessions.some((x) => x.date === date && x.start < b.start + b.duration && b.start < x.start + x.duration);
+    if (taken) continue;
+    const ws = weekStart(date);
+    const we = addDays(ws, 6);
+    const candidates = s.sessions
+      .filter((x) => x.status === 'planned' && !x.fixed && !x.pinned && x.duration <= b.duration && x.date >= ctx.today && x.date <= we)
+      .map((x) => ({ x, t: s.tasks.find((t) => t.id === x.taskId)! }))
+      .filter(({ x, t }) => t && (x.date === date || t.kind === 'habito') && (!t.timeOfDay || t.timeOfDay === 'cualquiera' || overlap(TIME_RANGES[t.timeOfDay], { start: b.start, end: b.start + b.duration }) > 0))
+      // un hábito solo una vez por día
+      .filter(({ x, t }) => x.date === date || !s.sessions.some((o) => o.taskId === t.id && o.date === date))
+      .sort((a, z) => weight(a.t.category) - weight(z.t.category) || (a.x.date === date ? -1 : 1));
+    const pick = candidates[0];
+    if (!pick) continue;
+    s = { ...s, sessions: s.sessions.map((x) => (x.id === pick.x.id ? { ...x, date, start: b.start } : x)) };
+    placed.push(`«${pick.t.title}» a las ${minToHm(b.start)}`);
+  }
+  return {
+    state: s,
+    message: placed.length ? `He puesto ${placed.join(' y ')} en tus pausas ☕` : undefined,
+  };
+}
+
+// ---------------------------------------------------------------- progreso de un proyecto
+
+export interface ProjectStatus {
+  done: number;
+  total: number;
+  pct: number;
+  /** % que "tocaría" llevar hoy si se avanza a ritmo constante */
+  expected: number | null;
+  sessionsDone: number;
+  sessionsLeft: number;
+  next?: Session;
+  phrase: string;
+  stage: string;
+  mood: 'done' | 'start' | 'ahead' | 'ontrack' | 'behind' | 'risk' | 'free';
+  /** minutos hechos por semana (últimas 6 semanas, de la más antigua a la actual) */
+  weekly: { week: string; minutes: number }[];
+}
+
+const STAGES = ['🌰', '🌱', '🌿', '🪴', '🌳'];
+
+export function projectStatus(state: AppState, taskId: string, today: string): ProjectStatus {
+  const task = state.tasks.find((t) => t.id === taskId)!;
+  const mine = state.sessions.filter((x) => x.taskId === taskId);
+  const done = doneMinutes(state, taskId);
+  const pct = Math.min(1, done / Math.max(1, task.totalMinutes));
+  let expected: number | null = null;
+  if (task.deadline) {
+    const span = Math.max(1, (Date.parse(task.deadline) - Date.parse(task.createdAt)) / 86400000 + 1);
+    const elapsed = Math.max(0, (Date.parse(today) - Date.parse(task.createdAt)) / 86400000);
+    expected = Math.min(1, elapsed / span);
+  }
+  const left = state.unplaced[taskId] ?? 0;
+  let mood: ProjectStatus['mood'];
+  let phrase: string;
+  if (pct >= 1) {
+    mood = 'done';
+    phrase = '¡Conseguido! Mira todo lo que has construido, sesión a sesión 🏆';
+  } else if (done === 0) {
+    mood = 'start';
+    phrase = 'Todo gran proyecto empieza con una primera sesión. La tuya ya tiene hueco.';
+  } else if (left > 0) {
+    mood = 'risk';
+    phrase = 'Así no llega a tiempo. ¿Ampliamos la fecha o reducimos horas? Sin presión, lo ajustamos.';
+  } else if (expected == null) {
+    mood = 'free';
+    phrase = pct < 0.25 ? 'Arrancando: ya has plantado la semilla 🌱' : pct < 0.5 ? 'Echando raíces. La constancia hace el resto.' : pct < 0.75 ? 'Creciendo fuerte. Ya has pasado la mitad 💪' : '¡Ya casi lo tienes! El último empujón.';
+  } else if (pct >= expected + 0.1) {
+    mood = 'ahead';
+    phrase = '¡Vas por delante del plan! Puedes ir con calma 🌿';
+  } else if (pct >= expected - 0.1) {
+    mood = 'ontrack';
+    phrase = 'Vas a buen ritmo. Paso a paso llegas de sobra.';
+  } else {
+    mood = 'behind';
+    phrase = 'Vas un poco por detrás, pero el plan cuadra. Una sesión cada vez.';
+  }
+  const ws = weekStart(today);
+  const weekly = Array.from({ length: 6 }, (_, i) => {
+    const w = addDays(ws, -7 * (5 - i));
+    const we = addDays(w, 6);
+    return { week: w, minutes: mine.filter((x) => x.status === 'done' && x.date >= w && x.date <= we).reduce((a, x) => a + x.duration, 0) };
+  });
+  return {
+    done,
+    total: task.totalMinutes,
+    pct,
+    expected,
+    sessionsDone: mine.filter((x) => x.status === 'done').length,
+    sessionsLeft: mine.filter((x) => x.status === 'planned').length,
+    next: firstPlanned(state, taskId, today),
+    phrase,
+    stage: STAGES[Math.min(4, Math.floor(pct * 4))],
+    mood,
+    weekly,
   };
 }

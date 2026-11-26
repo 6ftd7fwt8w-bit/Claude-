@@ -20,7 +20,10 @@ Leyenda: ✅ hecho · 🔜 siguiente fase · 💡 idea para más adelante
 | ✅ | Hora de comida y cena, y cuánto tiempo reservar |
 | ✅ | Hora de acostarte + **tiempo de desconexión** antes de dormir (protegido: nunca se ponen tareas ahí) |
 | ✅ | Fines de semana más suaves (opcional) |
-| ✅ | Hábitos de equilibrio sugeridos: meditar, ejercicio, quedar con amigos, llamar a alguien, leer… |
+| ✅ | **Teletrabajo**: días sin desplazamiento y **pausas** durante la jornada para cosas cortas |
+| ✅ | **Lo de cada día** (cotidianas): ducha, compra, cocinar, lavadora… elegidas con fichas visuales |
+| ✅ | **¿Qué quieres cuidar?**: sugerencias de bienestar y vida social (ninguna marcada por defecto) + las tuyas escritas a mano |
+| ✅ | **¿Qué quieres conseguir?**: tus proyectos reales escritos en lenguaje natural, con ejemplos para inspirarte |
 | ✅ | Resumen: «tienes X h libres reales a la semana» |
 | ✅ | Horarios distintos por día (p. ej. viernes intensivo) |
 | ✅ | Cronotipo: ¿eres de mañanas o de noches? → los proyectos van a tu mejor franja |
@@ -30,6 +33,7 @@ Leyenda: ✅ hecho · 🔜 siguiente fase · 💡 idea para más adelante
 | | Funcionalidad |
 |---|---|
 | ✅ | Al abrir la app cada día: «¿Cómo te sientes hoy?» (20 % · 40 % · 60 % · 80 % · 100 %) |
+| ✅ | En días de trabajo, también «¿Qué pausas tienes hoy?»: coloca ahí lo corto (meditar, estirar…) |
 | ✅ | La energía cambia la **capacidad** del día (cuánto del tiempo libre se usa) |
 | ✅ | Con energía baja, la app **aligera el día**: mueve a otros días lo que tiene margen (nunca lo que vence hoy) |
 | ✅ | Con energía alta: sugiere adelantar algo |
@@ -69,7 +73,8 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Lo que **no completaste** ayer se reasigna solo al abrir la app («sin culpa») |
 | ✅ | Botón **«Hoy no puedo»**: lo mueve a otro día y te dice a cuál |
 | ✅ | Botón **«Tengo un hueco, ¿qué adelanto?»**: trae a hoy lo siguiente más urgente |
-| ✅ | Un evento con hora fija **desplaza** lo flexible que pise |
+| ✅ | Un evento con hora fija **desplaza** lo flexible que pise, y te dice qué ha movido y adónde |
+| ✅ | Hábitos y cotidianas con **momento del día** (mañana, tarde, noche) |
 | ✅ | Los hábitos se colocan cada semana en días distintos |
 | ✅ | Al cambiar la rutina, reorganiza todo el calendario |
 | ✅ | **Mover** una sesión a mano a otro día/hora, con sugerencia de huecos libres; queda fijada 📌 y el planificador la respeta |
@@ -77,6 +82,14 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Leer el **Calendario del iPhone** (app nativa) y mantenerlo al día al abrir la app |
 | 🔜 | Sincronización directa con Google Calendar (necesita cuenta de Google Cloud) |
 | 💡 | Prioridad / importancia además del deadline |
+
+## 4b. Horas claras
+
+| | Funcionalidad |
+|---|---|
+| ✅ | Tarjeta del día: **libres hoy · ocupadas · te quedan**, con barra visual y la rayita de lo recomendado según tu energía |
+| ✅ | Toca el nivel del día (tranquilo, con ritmo…) para ver qué significa |
+| ✅ | **Tu día de un vistazo**: tira con trabajo, pausas, tus cosas y la marca de «ahora» |
 
 ## 5. Calendario con colores
 
@@ -99,6 +112,13 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Respiración guiada (4-4-6) desde el consejo o un botón |
 | ✅ | Diario de gratitud por la noche («¿Qué te ha hecho bien hoy?»), +2 gotas |
 | 💡 | Consejos generados con IA a partir de tu semana |
+
+## 6b. Progreso de cada proyecto
+
+| | Funcionalidad |
+|---|---|
+| ✅ | Tarjeta por proyecto con planta que crece (🌰 → 🌱 → 🌿 → 🪴 → 🌳), % real y rayita de «dónde tocaría ir» |
+| ✅ | Página del proyecto: anillo de progreso, frase de estado (vas por delante, a buen ritmo, un poco por detrás…), hitos, horas por semana y lo que viene |
 
 ## 7. Juego y satisfacción
 

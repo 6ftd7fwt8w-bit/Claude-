@@ -4,6 +4,9 @@ import type { AppState, Profile, Session, Task } from './types';
 import {
   addTask,
   archiveTask,
+  breaksFor,
+  isWorkDay,
+  setDayBreaks,
   completeSession,
   editTask,
   importEvents,
@@ -32,7 +35,8 @@ import {
   takeWidgetActions,
   tapFeedback,
 } from './native';
-import { Onboarding, type HabitSuggestion } from './components/Onboarding';
+import { Onboarding, recurringToTask } from './components/Onboarding';
+import { ProjectSheet } from './components/ProjectSheet';
 import { EnergyCheck } from './components/EnergyCheck';
 import { TodayView } from './components/TodayView';
 import { CalendarView } from './components/CalendarView';
@@ -61,6 +65,7 @@ export default function App() {
   const [preset, setPreset] = useState<AddPreset | undefined>();
   const [editing, setEditing] = useState<Task | undefined>();
   const [moving, setMoving] = useState<Session | undefined>();
+  const [openedId, setOpenedId] = useState<string | undefined>();
   const [toast, setToast] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<{ text: string; sub?: string } | null>(null);
   const [question, setQuestion] = useState<{ text: string; yes: string; onYes: () => void } | null>(null);
@@ -166,13 +171,13 @@ export default function App() {
   if (!state.profile) {
     return (
       <Onboarding
-        onDone={(p: Profile, habits: HabitSuggestion[]) => {
+        onDone={(p: Profile, tasks: NewTaskInput[]) => {
           const t = todayKey();
           act((s, ctx) => {
             let st: AppState = { ...s, profile: { ...p, createdAt: t }, lastOpen: t };
-            for (const h of habits) {
-              st = addTask(st, { title: h.title, category: h.category, kind: 'habito', totalMinutes: h.minutes, timesPerWeek: h.times }, ctx).state;
-            }
+            // primero lo recurrente (cotidianas y cuidarte), después los proyectos en los huecos que queden
+            for (const task of tasks.filter((x) => x.kind === 'habito')) st = addTask(st, task, ctx).state;
+            for (const task of tasks.filter((x) => x.kind !== 'habito')) st = addTask(st, task, ctx).state;
             return st;
           });
           setModal('energy');
@@ -281,6 +286,8 @@ export default function App() {
               setEditing(t);
               setModal('add');
             }}
+            onOpen={(t) => setOpenedId(t.id)}
+            onQuickAdd={(sug, routine) => say(act((st, ctx) => addTask(st, recurringToTask(sug, routine), ctx)))}
           />
         )}
         {tab === 'bonsai' && <BonsaiView state={state} today={today} onBuy={(id) => say(act((st) => buy(st, id)))} />}
@@ -323,6 +330,19 @@ export default function App() {
           }}
         />
       )}
+      {openedId && state.tasks.find((t) => t.id === openedId) && (
+        <ProjectSheet
+          state={state}
+          task={state.tasks.find((t) => t.id === openedId)!}
+          today={today}
+          onClose={() => setOpenedId(undefined)}
+          onEdit={(t) => {
+            setOpenedId(undefined);
+            setEditing(t);
+            setModal('add');
+          }}
+        />
+      )}
       {moving && (
         <MoveSheet
           state={state}
@@ -340,10 +360,13 @@ export default function App() {
         <EnergyCheck
           name={state.profile.name}
           initial={state.energy[today]}
+          breaks={isWorkDay(state.profile, today) ? breaksFor(state.profile, today) : undefined}
           onClose={() => setModal(null)}
-          onPick={(v) => {
+          onPick={(v, breaks) => {
             setModal(null);
-            say(act((st, ctx) => setEnergy(st, ctx.today, v, ctx)));
+            const m1 = act((st, ctx) => setEnergy(st, ctx.today, v, ctx));
+            const m2 = breaks ? act((st, ctx) => setDayBreaks(st, ctx.today, breaks, ctx)) : undefined;
+            say(m2?.startsWith('He puesto') ? `${m1 ?? ''} ${m2}` : m1);
           }}
         />
       )}

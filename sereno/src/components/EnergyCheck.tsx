@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import type { WorkBreak } from '../types';
+import { BreaksEditor } from './BreaksEditor';
 import { Sheet } from './ui';
 
 export const ENERGY_LEVELS = [
@@ -16,15 +18,19 @@ export function energyEmoji(v: number): string {
 export function EnergyCheck({
   name,
   initial,
+  breaks,
   onPick,
   onClose,
 }: {
   name: string;
   initial?: number;
-  onPick: (v: number) => void;
+  /** pausas de hoy (solo si hoy se trabaja) */
+  breaks?: WorkBreak[];
+  onPick: (v: number, breaks?: WorkBreak[]) => void;
   onClose: () => void;
 }) {
   const [v, setV] = useState(initial ?? 60);
+  const [b, setB] = useState<WorkBreak[] | undefined>(breaks);
   return (
     <Sheet title={`¿Cómo te sientes hoy${name ? `, ${name}` : ''}?`} onClose={onClose}>
       <p className="muted">Según tu energía, ajusto cuánto te propongo hacer. Escúchate: aquí no hay respuestas malas.</p>
@@ -37,7 +43,14 @@ export function EnergyCheck({
           </button>
         ))}
       </div>
-      <button className="btn primary wide" onClick={() => onPick(v)}>
+      {b && (
+        <div className="field">
+          <span>☕ ¿Qué pausas tienes hoy mientras trabajas?</span>
+          <BreaksEditor value={b} onChange={setB} />
+          <small className="muted">Pondré ahí cosas cortas: meditar, estirar, unos abdominales…</small>
+        </div>
+      )}
+      <button className="btn primary wide" onClick={() => onPick(v, b)}>
         Ajustar mi día
       </button>
     </Sheet>
