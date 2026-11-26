@@ -1,9 +1,9 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import type { AppState, Task } from '../types';
-import { catById } from '../types';
-import { projectStatus } from '../lib/scheduler';
+import { catById, taskColor, type DayType, type Step } from '../types';
+import { projectStatus, stepsPlan, uid, type TaskPatch } from '../lib/scheduler';
 import { fmtDuration, fmtRelative, fmtShort, minToHm } from '../lib/time';
-import { Sheet } from './ui';
+import { DurationPicker, Sheet } from './ui';
 
 const MILESTONES = [
   { at: 0.25, icon: '🌱', label: 'Brote' },
@@ -19,13 +19,32 @@ export function ProjectSheet({
   today,
   onClose,
   onEdit,
+  onPatch,
 }: {
   state: AppState;
   task: Task;
   today: string;
   onClose: () => void;
   onEdit: (t: Task) => void;
+  onPatch: (id: string, patch: TaskPatch) => void;
 }) {
+  const [notes, setNotes] = useState(task.notes ?? '');
+  const [stepTitle, setStepTitle] = useState('');
+  const [stepMin, setStepMin] = useState<number | null>(null);
+  const steps = task.steps ?? [];
+  const setSteps = (next: Step[]) => onPatch(task.id, { steps: next });
+  const addStep = () => {
+    if (!stepTitle.trim()) return;
+    setSteps([...steps, { id: uid(), title: stepTitle.trim(), ...(stepMin ? { minutes: stepMin } : {}) }]);
+    setStepTitle('');
+    setStepMin(null);
+  };
+  const plan = stepsPlan(state, task.id, today);
+  const whole = task.sessionMinutes >= task.totalMinutes;
+  const close = () => {
+    if (notes !== (task.notes ?? '')) onPatch(task.id, { notes });
+    onClose();
+  };
   const st = projectStatus(state, task.id, today);
   const cat = catById(task.category);
   const r = 52;
@@ -38,8 +57,8 @@ export function ProjectSheet({
   const unplaced = state.unplaced[task.id] ?? 0;
 
   return (
-    <Sheet title={task.title} onClose={onClose}>
-      <div className="project-detail" style={{ '--cat': cat.color } as CSSProperties}>
+    <Sheet title={task.title} onClose={close}>
+      <div className="project-detail" style={{ '--cat': taskColor(task) } as CSSProperties}>
         <div className="pd-hero">
           <svg viewBox="0 0 120 120" width="132" height="132" aria-label={`${Math.round(st.pct * 100)}% hecho`}>
             <circle cx="60" cy="60" r={r} fill="none" stroke="var(--track)" strokeWidth="9" />
@@ -102,6 +121,81 @@ export function ProjectSheet({
         {unplaced > 0 && (
           <p className="warn small center">⚠️ {fmtDuration(unplaced)} no caben antes de la fecha límite.</p>
         )}
+
+        <div className="pd-section">
+          <p className="h3">📋 Pasos</p>
+          <p className="muted small">Lo que hay que hacer, en orden. Te los iré sugiriendo en cada sesión.</p>
+          {steps.map((st) => {
+            const when = [...plan.entries()].find(([, l]) => l.some((x) => x.id === st.id));
+            const sess = when ? state.sessions.find((x) => x.id === when[0]) : undefined;
+            return (
+              <div key={st.id} className={`step-row ${st.done ? 'done' : ''}`}>
+                <input type="checkbox" checked={!!st.done} aria-label={`Hecho: ${st.title}`} onChange={() => setSteps(steps.map((x) => (x.id === st.id ? { ...x, done: !x.done } : x)))} />
+                <span className="grow">
+                  {st.title}
+                  <small className="muted">
+                    {st.minutes ? ` · ${fmtDuration(st.minutes)}` : ''}
+                    {sess && !st.done ? ` · ${fmtRelative(sess.date, today)} ${minToHm(sess.start)}` : ''}
+                  </small>
+                </span>
+                <button className="recurring-x step-x" aria-label={`Quitar ${st.title}`} onClick={() => setSteps(steps.filter((x) => x.id !== st.id))}>
+                  ✕
+                </button>
+              </div>
+            );
+          })}
+          <div className="add-own">
+            <input value={stepTitle} placeholder="Nuevo paso: p. ej. «Escanear las láminas»" onChange={(e) => setStepTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addStep()} />
+            <button className="btn soft" disabled={!stepTitle.trim()} onClick={addStep}>
+              Añadir
+            </button>
+          </div>
+          {stepTitle.trim() && (
+            <div className="field">
+              <span>¿Cuánto lleva? (opcional)</span>
+              <DurationPicker value={stepMin ?? 30} onChange={setStepMin} options={[15, 30, 45, 60, 90, 120]} />
+            </div>
+          )}
+        </div>
+
+        <div className="pd-section">
+          <p className="h3">📝 Notas</p>
+          <textarea className="note" rows={3} value={notes} placeholder="Ideas, enlaces, cosas a tener en cuenta…" onChange={(e) => setNotes(e.target.value)} onBlur={() => notes !== (task.notes ?? '') && onPatch(task.id, { notes })} />
+        </div>
+
+        <div className="pd-section">
+          <p className="h3">⚙️ Cómo lo haces</p>
+          <div className="segmented two">
+            <button className={!whole ? 'on' : ''} onClick={() => onPatch(task.id, { sessionMinutes: Math.min(60, task.totalMinutes) })}>
+              Por partes (sesiones)
+            </button>
+            <button className={whole ? 'on' : ''} onClick={() => onPatch(task.id, { sessionMinutes: task.totalMinutes })}>
+              Todo seguido en un día
+            </button>
+          </div>
+          {!whole && (
+            <div className="field">
+              <span>Sesiones de</span>
+              <DurationPicker value={task.sessionMinutes} onChange={(m) => onPatch(task.id, { sessionMinutes: m })} options={[30, 45, 60, 90, 120, 180]} />
+            </div>
+          )}
+          <div className="field">
+            <span>¿Qué días?</span>
+            <div className="chips">
+              {(
+                [
+                  ['any', 'Cualquier día'],
+                  ['weekdays', 'Entre semana'],
+                  ['weekends', 'Fines de semana'],
+                ] as [DayType, string][]
+              ).map(([v, l]) => (
+                <button key={v} className={`chip ${(task.dayType ?? 'any') === v ? 'on' : ''}`} onClick={() => onPatch(task.id, { dayType: v })}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         <div className="pd-section">
           <p className="h3">Hitos</p>

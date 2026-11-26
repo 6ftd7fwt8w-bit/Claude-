@@ -1,10 +1,10 @@
 import { useState, type CSSProperties } from 'react';
-import type { CategoryId } from '../types';
+import type { CategoryId, DayType } from '../types';
 import { catById } from '../types';
 import type { NewTaskInput } from '../lib/scheduler';
 import { detectCategory, estimateMinutes, parseQuick } from '../lib/parse';
-import { addDays, fmtDuration, fmtShort, hmToMin, minToHm, monthEnd, todayKey, weekday } from '../lib/time';
-import { CategoryPicker, NumberChips, Sheet } from './ui';
+import { addDays, fmtShort, hmToMin, minToHm, monthEnd, todayKey, weekday } from '../lib/time';
+import { CategoryPicker, DurationPicker, NumberChips, Sheet } from './ui';
 
 type Repeat = 'una' | 'semana' | 'mes' | 'hora';
 type When = 'hoy' | 'manana' | 'semana' | 'proxima' | 'mes' | 'sinprisa' | 'fecha';
@@ -20,6 +20,11 @@ interface Draft {
   minutes: number;
   big: boolean;
   times: number;
+  /** hora fija (si la quiere) */
+  fixedStart?: number;
+  dayType: DayType;
+  /** proyectos: por partes o todo seguido */
+  whole: boolean;
 }
 
 export interface CaptureResult {
@@ -83,20 +88,25 @@ function toDraft(line: string, today: string, learned?: Record<string, CategoryI
     minutes: q.totalMinutes ?? est.minutes,
     big: est.big && !q.totalMinutes,
     times: q.timesPerMonth ?? q.timesPerWeek ?? (repeat === 'mes' ? 1 : 2),
+    fixedStart: repeat !== 'hora' && q.start != null ? q.start : undefined,
+    dayType: 'any',
+    whole: false,
   };
 }
 
 function toTask(d: Draft, today: string): NewTaskInput {
+  const extra = { fixedStart: d.fixedStart, dayType: d.dayType };
   if (d.repeat === 'hora') return { title: d.title, category: d.category, kind: 'evento', totalMinutes: d.minutes, date: d.date, start: d.start };
-  if (d.repeat === 'semana') return { title: d.title, category: d.category, kind: 'habito', totalMinutes: d.minutes, timesPerWeek: d.times };
-  if (d.repeat === 'mes') return { title: d.title, category: d.category, kind: 'habito', totalMinutes: d.minutes, timesPerMonth: d.times };
+  if (d.repeat === 'semana') return { title: d.title, category: d.category, kind: 'habito', totalMinutes: d.minutes, timesPerWeek: d.times, ...extra };
+  if (d.repeat === 'mes') return { title: d.title, category: d.category, kind: 'habito', totalMinutes: d.minutes, timesPerMonth: d.times, ...extra };
   return {
     title: d.title,
     category: d.category,
     kind: 'flexible',
     totalMinutes: d.minutes,
-    sessionMinutes: Math.min(60, d.minutes),
+    sessionMinutes: d.whole ? d.minutes : Math.min(60, d.minutes),
     deadline: deadlineFor(d.when, d.date, today),
+    ...extra,
   };
 }
 
@@ -202,7 +212,7 @@ export function QuickCapture({
     <Sheet title={drafts.length > 1 ? `${i + 1} de ${drafts.length}` : 'Un par de preguntas'} onClose={onClose}>
       <div className="ask-progress">
         {drafts.map((_, k) => (
-          <span key={k} className={k < i ? 'done' : k === i ? 'now' : ''} />
+          <span key={k} className={k < i ? 'done' : k === i ? 'current' : ''} />
         ))}
       </div>
       <div className="ask-card" style={{ '--cat': cat.color } as CSSProperties}>
@@ -278,14 +288,61 @@ export function QuickCapture({
 
       <div className="field">
         <span>{d.big && d.repeat === 'una' ? '¿Cuánto tiempo crees que necesitas en total?' : '¿Cuánto tiempo te llevará?'}</span>
-        <NumberChips
+        <DurationPicker
           value={d.minutes}
-          options={d.big && d.repeat === 'una' ? [60, 120, 180, 300, 600, 1200] : [10, 15, 20, 30, 45, 60, 90, 120]}
           onChange={(minutes) => set({ minutes })}
-          fmt={fmtDuration}
+          options={d.big && d.repeat === 'una' ? [60, 120, 180, 300, 600, 1200] : [5, 10, 15, 20, 30, 45, 60, 90, 120]}
         />
-        {d.big && d.repeat === 'una' && <small className="muted">Lo dividiré en sesiones de 1 h y las repartiré antes de la fecha.</small>}
       </div>
+
+      {d.repeat === 'una' && d.minutes > 60 && (
+        <div className="field">
+          <span>¿Cómo prefieres hacerlo?</span>
+          <div className="chips">
+            <button className={`chip ${!d.whole ? 'on' : ''}`} onClick={() => set({ whole: false })}>
+              ✂️ Por partes (sesiones de 1 h)
+            </button>
+            <button className={`chip ${d.whole ? 'on' : ''}`} onClick={() => set({ whole: true })}>
+              🧱 Todo seguido en un día
+            </button>
+          </div>
+        </div>
+      )}
+
+      {d.repeat !== 'hora' && (
+        <>
+          <div className="field">
+            <span>¿A qué hora?</span>
+            <div className="chips">
+              <button className={`chip ${d.fixedStart == null ? 'on' : ''}`} onClick={() => set({ fixedStart: undefined })}>
+                ✨ Cuando haya hueco
+              </button>
+              <button className={`chip ${d.fixedStart != null ? 'on' : ''}`} onClick={() => set({ fixedStart: d.fixedStart ?? 20 * 60 })}>
+                🕐 A una hora fija
+              </button>
+            </div>
+            {d.fixedStart != null && (
+              <input type="time" value={minToHm(d.fixedStart)} onChange={(e) => e.target.value && set({ fixedStart: hmToMin(e.target.value) })} />
+            )}
+          </div>
+          <div className="field">
+            <span>¿Qué días?</span>
+            <div className="chips">
+              {(
+                [
+                  ['any', 'Cualquier día'],
+                  ['weekdays', 'Entre semana'],
+                  ['weekends', 'Fines de semana'],
+                ] as [DayType, string][]
+              ).map(([v, l]) => (
+                <button key={v} className={`chip ${d.dayType === v ? 'on' : ''}`} onClick={() => set({ dayType: v })}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="ask-actions">
         {i > 0 && (

@@ -35,6 +35,7 @@ const KEYWORDS: [CategoryId, RegExp][] = [
   ['social', /\b(amig|cena con|comida con|cafe con|quedar|quedada|familia|cumple|boda|fiesta|cita con|(llamar|escribir|visitar|ver) a (mi |mis |la |el )?(mama|papa|madre|padre|abuel|herman|hij|tia|tio|prim|novi|pareja|amig|suegr))/],
   ['gestiones', /\b(reclam|vuelo|prorroga|alquiler|contrato|seguro|papeles|papeleo|document|tramite|factura|hacienda|impuesto|renta|declaracion|gasto|finanz|presupuesto|pagar|pago|recibo|devoluc|reembolso|banco|transferencia|gestor|notari|dni|pasaporte|carnet|renovar|matricul|inscrib|apuntar|cancelar|darse de baja|dar de baja|suscripc|cita previa|multa|ayuntamiento|seguimiento|follow ?up|garantia|abogad|nomina|hipoteca|factura de)/],
   ['bienestar', /\b(medit|yoga|correr|running|gym|gimnasio|deporte|entren|paseo|pasear|caminar|respir|nadar|piscina|bici|pilates|estirar|abdominal)/],
+  ['aficiones', /\b(videojuego|jugar a|jugar al|consola|play|switch|guitarra|piano|ukelele|bateria|bajo electrico|instrumento|tocar el|tocar la|cantar|acuarela|pintar un|pintar cuadro|manualidad|ganchillo|punto|costura|bordar|puzzle|lego|fotografia|serie|peli|cine|jardineria|ajedrez|juego de mesa|bailar|danza|novela|poesia|afici|hobby)/],
   ['autocuidado', /\b(medic|dentista|peluquer|bano|skincare|siesta|masaje|terapia|psicolog|leer|lectura|dormir|manicura|revision medica|analitica|fisio)/],
   ['hogar', /\b(limpi|compra|lavadora|casa|cocinar|ordenar|plancha|recados|super|mudanza|regar|basura|fregar)/],
   ['trabajo', /\b(informe|reunion|trabajo|cliente|presentacion|oficina|jefe|equipo)/],
@@ -65,7 +66,7 @@ export function estimateMinutes(text: string, cat: CategoryId): { minutes: numbe
   if (/\b(gasto|finanz|presupuesto|declaracion|renta)/.test(t)) return { minutes: 45, big: false };
   if (/\b(revisar|leer|mirar|comparar|buscar)/.test(t)) return { minutes: 30, big: false };
   if (/\b(reclam|follow|seguimiento|email|correo|mail|enviar|mandar|pedir|cancelar|pagar|reservar|confirmar)/.test(t)) return { minutes: 20, big: false };
-  const byCat: Record<CategoryId, number> = { gestiones: 20, proyectos: 120, hogar: 45, trabajo: 60, bienestar: 30, autocuidado: 45, social: 90 };
+  const byCat: Record<CategoryId, number> = { gestiones: 20, proyectos: 120, aficiones: 60, hogar: 45, trabajo: 60, bienestar: 30, autocuidado: 45, social: 90 };
   return { minutes: byCat[cat], big: cat === 'proyectos' };
 }
 

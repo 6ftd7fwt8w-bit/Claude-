@@ -1,6 +1,6 @@
 import { useState, type CSSProperties } from 'react';
 import type { AppState, Task } from '../types';
-import { CATEGORIES, catById } from '../types';
+import { CATEGORIES, catById, taskColor } from '../types';
 import { projectStatus, type TaskPatch } from '../lib/scheduler';
 import { RecurringEditor } from './RecurringEditor';
 import { HABIT_SUGGESTIONS, ROUTINE_SUGGESTIONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
@@ -177,7 +177,7 @@ export function GoalsView({
           const st = projectStatus(state, t.id, today);
           const days = t.deadline ? diffDays(today, t.deadline) : null;
           return (
-            <button key={t.id} className={`card project-card mood-${st.mood}`} style={{ '--cat': catById(t.category).color } as CSSProperties} onClick={() => onOpen(t)}>
+            <button key={t.id} className={`card project-card mood-${st.mood}`} style={{ '--cat': taskColor(t) } as CSSProperties} onClick={() => onOpen(t)}>
               <span className="project-stage">{st.stage}</span>
               <span className="grow">
                 <span className="h3 project-title">{t.title}</span>
@@ -230,6 +230,8 @@ export function GoalsView({
             minutes: tuning.totalMinutes,
             times: tuning.timesPerWeek ?? 1,
             perMonth: tuning.timesPerMonth,
+            fixedStart: tuning.fixedStart,
+            dayType: tuning.dayType,
             timeOfDay: tuning.timeOfDay ?? 'cualquiera',
             days: tuning.days,
           }}
@@ -245,6 +247,8 @@ export function GoalsView({
               totalMinutes: v.minutes,
               timesPerWeek: v.times,
               timesPerMonth: v.perMonth ?? null,
+              fixedStart: v.fixedStart ?? null,
+              dayType: v.dayType ?? 'any',
               timeOfDay: v.timeOfDay,
               days: v.days?.length ? v.days : null,
             });

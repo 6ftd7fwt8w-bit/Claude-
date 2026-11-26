@@ -237,3 +237,32 @@ export function DayPicker({ value, options = DAY_VALUES, onChange }: { value: nu
   );
 }
 
+
+const DURATIONS = [5, 10, 15, 20, 30, 45, 60, 90, 120, 180];
+
+/** Duración con chips y, si no está, un número a mano (en minutos) */
+export function DurationPicker({ value, onChange, options = DURATIONS }: { value: number; onChange: (v: number) => void; options?: number[] }) {
+  const custom = !options.includes(value);
+  const [other, setOther] = useState(custom);
+  const fmt = (m: number) => (m < 60 ? `${m} min` : m % 60 ? `${Math.floor(m / 60)} h ${m % 60}` : `${m / 60} h`);
+  return (
+    <div className="duration-picker">
+      <div className="chips">
+        {options.map((o) => (
+          <button key={o} type="button" className={`chip ${!other && o === value ? 'on' : ''}`} onClick={() => { setOther(false); onChange(o); }}>
+            {fmt(o)}
+          </button>
+        ))}
+        <button type="button" className={`chip ${other ? 'on' : ''}`} onClick={() => setOther(true)}>
+          Otro
+        </button>
+      </div>
+      {other && (
+        <label className="other-min">
+          <input type="number" inputMode="numeric" min={5} max={720} step={5} value={value} onChange={(e) => onChange(Math.max(5, Number(e.target.value) || 5))} />
+          <span>minutos</span>
+        </label>
+      )}
+    </div>
+  );
+}

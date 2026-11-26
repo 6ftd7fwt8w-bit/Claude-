@@ -120,6 +120,25 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Toca el nivel del día (tranquilo, con ritmo…) para ver qué significa |
 | ✅ | **Tu día de un vistazo**: tira con trabajo, pausas, tus cosas y la marca de «ahora» |
 
+## 4d. Control total del día (v7)
+
+| | Funcionalidad |
+|---|---|
+| ✅ | **Toca cualquier hora** de la agenda (aunque sea de trabajo) para añadir algo ahí: una cita médica, caminar durante una reunión… |
+| ✅ | **Toca un hueco libre** para llenarlo: adelantar algo pendiente que quepa (lo más urgente primero) o una afición |
+| ✅ | Nueva categoría **🎨 Aficiones** (videojuegos, instrumentos, dibujar, manualidades, series…) |
+| ✅ | **Arrastra** cualquier bloque con el asa ⠿ para cambiarlo de hora; o «15 min antes/después» y «justo después de…» (la ducha después del ejercicio) |
+| ✅ | **Ajustar el tiempo de un día** («hoy le dediqué 30 min»): lo que falte se recoloca solo |
+| ✅ | **Nota para un día concreto** y **notas** de cada tarea o proyecto |
+| ✅ | **Pasos de un proyecto** (con duración opcional): se sugieren por orden en cada sesión |
+| ✅ | **Por partes o todo seguido** en un día |
+| ✅ | **Hora fija** para cualquier tarea (llamar a mamá cada día a las 20:00) |
+| ✅ | **Entre semana / fines de semana** para cualquier tarea, y elegir si trabajas en proyectos el fin de semana |
+| ✅ | **Cada proyecto y afición con su color** en la agenda |
+| ✅ | Cualquier duración (también menos de 1 h, o un número a mano) |
+| ✅ | Inicio más limpio: hechas, **libre que te queda (igual que en la agenda)** y tu mente, y debajo la agenda |
+| ✅ | Arreglado: la desconexión si te acuestas después de medianoche ya no se solapa con la cena |
+
 ## 4c. Agenda del día por horas
 
 | | Funcionalidad |

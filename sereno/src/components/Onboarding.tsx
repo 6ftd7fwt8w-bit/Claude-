@@ -142,10 +142,23 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
           <NumberChips value={p.relaxMinutes} options={[30, 45, 60, 90, 120]} onChange={(relaxMinutes) => set({ relaxMinutes })} fmt={fmtDuration} />
           <small className="muted">Ese tiempo queda protegido: nunca te pondré tareas ahí 🌙</small>
         </div>
-        <label className="toggle">
-          <input type="checkbox" checked={p.gentleWeekends} onChange={(e) => set({ gentleWeekends: e.target.checked })} />
-          <span>Fines de semana más suaves (menos tareas)</span>
-        </label>
+        <div className="field">
+          <span>🏖️ ¿Trabajas en tus proyectos los fines de semana?</span>
+          <div className="chips">
+            {(
+              [
+                ['si', 'Sí, como cualquier día'],
+                ['poco', 'Un poco'],
+                ['no', 'No, los fines de semana son para mí'],
+              ] as const
+            ).map(([v, l]) => (
+              <button key={v} type="button" className={`chip ${(p.weekendFocus ?? 'poco') === v ? 'on' : ''}`} onClick={() => set({ weekendFocus: v, gentleWeekends: v !== 'si' })}>
+                {l}
+              </button>
+            ))}
+          </div>
+          <small className="muted">Además, puedes marcar cualquier cosa (quedar con amigas, la compra…) como «solo fines de semana».</small>
+        </div>
       </>
     );
   return null;
@@ -231,6 +244,8 @@ export function recurringToTask(s: RecurringSuggestion, routine: boolean): NewTa
     totalMinutes: s.minutes,
     timesPerWeek: s.days?.length ? s.days.length : s.times,
     timesPerMonth: s.perMonth,
+    fixedStart: s.fixedStart,
+    dayType: s.dayType,
     routine,
     timeOfDay: s.timeOfDay,
     icon: s.icon,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { AppState, Session } from '../types';
 import { catById } from '../types';
-import { bedEff, dayLoad, energyFor, sessionsOn } from '../lib/scheduler';
+import { bedEff, dayLoad, energyFor, sessionsOn, type Interval } from '../lib/scheduler';
 import { LEVEL_TEXT, tipsFor } from '../lib/tips';
 import { addDays, fmtDuration, fmtLong, fmtMonth, fmtShort, fromKey, minToHm, monthKey, nowMinutes, pad, weekStart } from '../lib/time';
 import { DayAgenda } from './DayAgenda';
@@ -15,12 +15,18 @@ export function CalendarView({
   onComplete,
   onUndo,
   onTap,
+  onTapTime,
+  onTapGap,
+  onDrop,
 }: {
   state: AppState;
   today: string;
   onComplete: (s: Session) => void;
   onUndo: (s: Session) => void;
   onTap: (s: Session) => void;
+  onTapTime: (date: string, minute: number) => void;
+  onTapGap: (date: string, gap: Interval) => void;
+  onDrop: (s: Session, start: number) => void;
 }) {
   const [month, setMonth] = useState(monthKey(today));
   const [selected, setSelected] = useState(today);
@@ -119,6 +125,9 @@ export function CalendarView({
           now={selected === today ? nowMinutes() : undefined}
           onTap={onTap}
           onToggle={(s) => (s.status === 'done' ? onUndo(s) : selected <= today ? onComplete(s) : onTap(s))}
+          onTapTime={(m) => onTapTime(selected, m)}
+          onTapGap={selected >= today ? (g) => onTapGap(selected, g) : undefined}
+          onDrop={selected >= today ? onDrop : undefined}
         />
       </section>
     </div>

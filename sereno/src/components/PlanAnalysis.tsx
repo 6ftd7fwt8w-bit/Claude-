@@ -41,7 +41,7 @@ export function PlanAnalysisView({
 
       <ol className="analysis-steps">
         {a.steps.map((s, i) => (
-          <li key={s.doing} className={i < done ? 'done' : i === done ? 'now' : 'next'}>
+          <li key={s.doing} className={i < done ? 'done' : i === done ? 'current' : 'next'}>
             <span className="as-icon">{i < done ? '✓' : i === done ? <i className="spinner" /> : s.icon}</span>
             <span className="as-text">{i < done ? s.result : s.doing}</span>
           </li>

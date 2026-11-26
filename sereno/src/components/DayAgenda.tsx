@@ -1,7 +1,7 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent } from 'react';
 import type { AppState, Session } from '../types';
-import { catById } from '../types';
-import { bedEff, breaksFor, complement, isRemote, sessionsOn, workHours, type Interval } from '../lib/scheduler';
+import { catById, taskColor } from '../types';
+import { bedAbs, bedEff, breaksFor, complement, isRemote, relaxStart, sessionsOn, workHours, type Interval } from '../lib/scheduler';
 import { fmtDuration, minToHm } from '../lib/time';
 
 const HOUR = 64; // px por hora
@@ -30,9 +30,26 @@ function baseBlocks(state: AppState, date: string): Block[] {
   }
   out.push({ start: p.lunch, end: p.lunch + p.lunchDuration, label: '🥗 Comida', kind: 'meal' });
   out.push({ start: p.dinner, end: p.dinner + p.dinnerDuration, label: '🍽️ Cena', kind: 'meal' });
-  const bed = bedEff(p);
-  out.push({ start: bed - p.relaxMinutes, end: bed, label: '🌙 Desconexión', kind: 'relax' });
+  // si te acuestas después de medianoche, la desconexión empieza más tarde (y puede seguir pasadas las 00:00)
+  const rs = relaxStart(p);
+  if (rs < 1440) {
+    out.push({ start: rs, end: Math.min(1440, bedAbs(p)), label: `🌙 Desconexión hasta las ${minToHm(bedAbs(p))}`, kind: 'relax' });
+  }
   return out.filter((b) => b.end > b.start).sort((a, b) => a.start - b.start);
+}
+
+/** Lo mínimo para considerar un hueco "libre" (lo mismo en la agenda y en el resumen) */
+export const MIN_GAP = 30;
+
+/** Huecos libres de verdad (sin rutina ni tus cosas) de al menos MIN_GAP, desde `fromMin` */
+export function freeGaps(state: AppState, date: string, fromMin = 0): Interval[] {
+  const p = state.profile!;
+  const blocks = baseBlocks(state, date);
+  const sessions = sessionsOn(state.sessions, date);
+  const end = Math.min(1440, relaxStart(p));
+  return complement([...blocks, ...sessions.map((s) => ({ start: s.start, end: s.start + s.duration }))], Math.max(p.wake, fromMin), end).filter(
+    (f) => f.end - f.start >= MIN_GAP,
+  );
 }
 
 /** Columnas para sesiones que se solapan (como hace Google Calendar) */
@@ -68,6 +85,9 @@ export function DayAgenda({
   now,
   onTap,
   onToggle,
+  onTapTime,
+  onTapGap,
+  onDrop,
 }: {
   state: AppState;
   date: string;
@@ -75,8 +95,18 @@ export function DayAgenda({
   now?: number;
   onTap: (s: Session) => void;
   onToggle: (s: Session) => void;
+  /** tocar una hora cualquiera (aunque sea de trabajo) para añadir algo ahí */
+  onTapTime?: (minute: number) => void;
+  /** tocar un hueco libre para llenarlo */
+  onTapGap?: (gap: Interval) => void;
+  /** soltar un bloque arrastrado en otra hora */
+  onDrop?: (s: Session, start: number) => void;
 }) {
   const p = state.profile!;
+  const ref = useRef<HTMLDivElement>(null);
+  const [drag, setDrag] = useState<{ id: string; y0: number; dy: number } | null>(null);
+  const dragRef = useRef(drag);
+  dragRef.current = drag;
   const tasks = new Map(state.tasks.map((t) => [t.id, t]));
   const sessions = sessionsOn(state.sessions, date);
   const blocks = baseBlocks(state, date);
@@ -85,13 +115,46 @@ export function DayAgenda({
   const y = (m: number) => ((m - from) / 60) * HOUR;
   const hours = Array.from({ length: (to - from) / 60 + 1 }, (_, i) => from + i * 60);
   // huecos libres de verdad (sin rutina ni tus cosas)
-  const free = complement([...blocks, ...sessions.map((s) => ({ start: s.start, end: s.start + s.duration }))], from, to).filter(
-    (f) => f.end - f.start >= 30,
-  );
+  // en el día de hoy, solo los huecos que quedan (desde ahora)
+  const freeFrom = now != null ? Math.max(from, Math.ceil(now / 15) * 15) : from;
+  const free = freeGaps(state, date, freeFrom);
   const cols = layout(sessions);
+  const snap = (m: number, step = 15) => Math.round(m / step) * step;
+
+  const tapBackground = (e: ReactMouseEvent) => {
+    if (!onTapTime || !ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const minute = snap(from + ((e.clientY - rect.top) / HOUR) * 60);
+    onTapTime(Math.max(0, Math.min(1440 - 15, minute)));
+  };
+
+  // arrastrar con el asa ⠿ (funciona con dedo y ratón)
+  useEffect(() => {
+    if (!drag) return;
+    const move = (e: PointerEvent) => setDrag((d) => (d ? { ...d, dy: e.clientY - d.y0 } : d));
+    const up = () => {
+      const d = dragRef.current;
+      setDrag(null);
+      if (!d || !onDrop) return;
+      const s0 = sessions.find((x) => x.id === d.id);
+      if (s0 && Math.abs(d.dy) > 4) {
+        const start = Math.max(0, Math.min(1440 - s0.duration, snap(s0.start + (d.dy / HOUR) * 60, 5)));
+        if (start !== s0.start) onDrop(s0, start);
+      }
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up, { once: true });
+    window.addEventListener('pointercancel', up, { once: true });
+    return () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drag?.id]);
 
   return (
-    <div className="agenda" style={{ height: y(to) + 8 }}>
+    <div ref={ref} className={`agenda ${onTapTime ? 'tappable' : ''}`} style={{ height: y(to) + 8 }} onClick={tapBackground}>
       {hours.map((h) => (
         <div key={h} className="ag-hour" style={{ top: y(h) }}>
           <span>{minToHm(h)}</span>
@@ -107,11 +170,20 @@ export function DayAgenda({
         </div>
       ))}
       {free.map((f) => (
-        <div key={`f${f.start}`} className="ag-free" style={{ top: y(f.start) + 2, height: y(f.end) - y(f.start) - 4 }}>
+        <button
+          key={`f${f.start}`}
+          className="ag-free"
+          style={{ top: y(f.start) + 2, height: y(f.end) - y(f.start) - 4 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onTapGap?.(f);
+          }}
+        >
           <span>
             🌿 Libre · {minToHm(f.start)}–{minToHm(f.end)} <small>({fmtDuration(f.end - f.start)})</small>
           </span>
-        </div>
+          {onTapGap && <span className="ag-free-add">+ Añadir algo</span>}
+        </button>
       ))}
       {sessions.map((s) => {
         const t = tasks.get(s.taskId);
@@ -119,18 +191,45 @@ export function DayAgenda({
         const { col, cols: n } = cols.get(s.id)!;
         const h = Math.max(26, y(s.start + s.duration) - y(s.start) - 2);
         const done = s.status === 'done';
+        const dragging = drag?.id === s.id;
+        const shownStart = dragging ? snap(s.start + (drag!.dy / HOUR) * 60, 5) : s.start;
         return (
           <div
             key={s.id}
-            className={`ag-event ${done ? 'done' : ''} ${h < 44 ? 'tiny' : ''}`}
-            style={{ top: y(s.start) + 1, height: h, left: `calc(var(--gutter) + (100% - var(--gutter)) * ${col / n})`, width: `calc((100% - var(--gutter)) / ${n} - 4px)`, '--cat': c.color } as CSSProperties}
+            className={`ag-event ${done ? 'done' : ''} ${h < 44 ? 'tiny' : ''} ${dragging ? 'dragging' : ''}`}
+            onClick={(e) => e.stopPropagation()}
+            style={
+              {
+                top: y(s.start) + 1,
+                height: h,
+                transform: dragging ? `translateY(${drag!.dy}px)` : undefined,
+                left: `calc(var(--gutter) + (100% - var(--gutter)) * ${col / n})`,
+                width: `calc((100% - var(--gutter)) / ${n} - 4px)`,
+                '--cat': taskColor(t),
+              } as CSSProperties
+            }
           >
+            {onDrop && !done && (
+              <span
+                className="ag-handle"
+                role="button"
+                aria-label={`Arrastrar ${t?.title ?? ''} para cambiar la hora`}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setDrag({ id: s.id, y0: e.clientY, dy: 0 });
+                }}
+              >
+                ⠿
+              </span>
+            )}
             <button className="ag-main" onClick={() => onTap(s)}>
               <span className="ag-title">
                 {t?.icon ?? c.emoji} {t?.title}
+                {s.note && <span className="ag-note-dot" title={s.note}> 📝</span>}
               </span>
               <span className="ag-time">
-                {minToHm(s.start)}–{minToHm(s.start + s.duration)}
+                {minToHm(shownStart)}–{minToHm(shownStart + s.duration)}
               </span>
             </button>
             <button className={`ag-check ${done ? 'on' : ''}`} aria-label={done ? 'Marcar como pendiente' : 'Marcar como hecho'} onClick={() => onToggle(s)}>

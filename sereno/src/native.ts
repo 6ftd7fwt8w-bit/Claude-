@@ -5,7 +5,7 @@
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import type { AppState } from './types';
 import type { ExternalEvent } from './lib/scheduler';
-import { sessionsOn } from './lib/scheduler';
+import { relaxStart, sessionsOn } from './lib/scheduler';
 import { widgetSnapshot, type WidgetAction } from './lib/widget';
 import { addDays, fromKey, minToHm } from './lib/time';
 
@@ -117,12 +117,11 @@ export async function scheduleNotifications(state: AppState, today: string): Pro
           schedule: { at: at(d, s.start - 10) },
         });
       }
-      const bed = p.bed <= p.wake ? 1440 : p.bed;
       list.push({
         id: id++,
         title: 'Hora de desconectar 🌙',
         body: '¿Qué te ha hecho bien hoy? Escríbelo en tu diario y deja el resto para mañana.',
-        schedule: { at: at(d, bed - p.relaxMinutes) },
+        schedule: { at: at(d, relaxStart(p)) },
       });
     }
     await LocalNotifications.schedule({

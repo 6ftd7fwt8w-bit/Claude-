@@ -89,3 +89,12 @@ describe('días concretos', () => {
     expect(state.sessions.map((x) => x.date).sort()).toEqual(['2026-11-24', '2026-11-28', '2026-12-01', '2026-12-05']);
   });
 });
+
+describe('acostarse después de medianoche', () => {
+  it('la desconexión empieza 2 h antes de la 01:30 (23:30), no a las 22:00 encima de la cena', async () => {
+    const { baseBusy } = await import('./scheduler');
+    const p = base({ bed: 90, relaxMinutes: 120, dinner: 21 * 60 + 30 }).profile!;
+    const relax = baseBusy(p, '2026-11-28').find((b) => b.end === 1440 && b.start > 12 * 60)!;
+    expect(relax.start).toBe(23 * 60 + 30);
+  });
+});

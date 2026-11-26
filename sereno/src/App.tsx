@@ -4,6 +4,10 @@ import type { AppState, Profile, Session, Task } from './types';
 import {
   addRechargeBefore,
   addTask,
+  moveAfter,
+  setSessionDuration,
+  setSessionNote,
+  type Interval,
   archiveTask,
   breaksFor,
   isWorkDay,
@@ -41,6 +45,7 @@ import { ProjectSheet } from './components/ProjectSheet';
 import { MindSheet } from './components/MindCard';
 import { QuickCapture, type CaptureResult } from './components/QuickCapture';
 import { SessionSheet } from './components/SessionSheet';
+import { AddAtSheet, FillGapSheet } from './components/AgendaSheets';
 import { EnergyCheck } from './components/EnergyCheck';
 import { TodayView } from './components/TodayView';
 import { CalendarView } from './components/CalendarView';
@@ -71,6 +76,8 @@ export default function App() {
   const [moving, setMoving] = useState<Session | undefined>();
   const [openedId, setOpenedId] = useState<string | undefined>();
   const [acting, setActing] = useState<Session | undefined>();
+  const [addAt, setAddAt] = useState<{ date: string; start: number; max?: number } | null>(null);
+  const [gapAt, setGapAt] = useState<{ date: string; gap: Interval } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<{ text: string; sub?: string } | null>(null);
   const [question, setQuestion] = useState<{ text: string; yes: string; onYes: () => void } | null>(null);
@@ -280,10 +287,18 @@ export default function App() {
             onRecharge={(id) => say(act((st, ctx) => addRechargeBefore(st, id, ctx)))}
             onOpenMind={() => setModal('mind')}
             onTap={setActing}
+            onTapTime={(min) => setAddAt({ date: today, start: min })}
+            onTapGap={(gap) => setGapAt({ date: today, gap })}
+            onDrop={(x, start) => say(act((st, ctx) => moveSession(st, x.id, x.date, start, ctx)))}
           />
         )}
         {tab === 'calendario' && (
-          <CalendarView state={state} today={today} onComplete={complete} onUndo={undo} onTap={setActing} />
+          <CalendarView state={state} today={today} onComplete={complete} onUndo={undo}
+            onTap={setActing}
+            onTapTime={(date, min) => setAddAt({ date, start: min })}
+            onTapGap={(date, gap) => setGapAt({ date, gap })}
+            onDrop={(x, start) => say(act((st, ctx) => moveSession(st, x.id, x.date, start, ctx)))}
+          />
         )}
         {tab === 'objetivos' && (
           <GoalsView
@@ -380,6 +395,16 @@ export default function App() {
           onUndo={undo}
           onMove={setMoving}
           onPostpone={postpone}
+          onMoveTo={(x, start) => say(act((st, ctx) => moveSession(st, x.id, x.date, start, ctx)))}
+          onMoveAfter={(x, afterId) => say(act((st, ctx) => moveAfter(st, x.id, afterId, ctx)))}
+          onDuration={(x, min) => say(act((st, ctx) => setSessionDuration(st, x.id, min, ctx)))}
+          onNote={(x, note) => act((st) => setSessionNote(st, x.id, note))}
+          onToggleStep={(taskId, stepId) =>
+            act((st, ctx) => {
+              const t = st.tasks.find((x) => x.id === taskId);
+              return editTask(st, taskId, { steps: (t?.steps ?? []).map((x) => (x.id === stepId ? { ...x, done: !x.done } : x)) }, ctx).state;
+            })
+          }
           onPrepare={() => setModal('breathe')}
           onEdit={() => {
             const t = state.tasks.find((x) => x.id === acting.taskId);
@@ -392,12 +417,48 @@ export default function App() {
           }}
         />
       )}
+      {addAt && (
+        <AddAtSheet
+          date={addAt.date}
+          start={addAt.start}
+          maxMinutes={addAt.max}
+          learned={state.learned}
+          onClose={() => setAddAt(null)}
+          onAdd={(t) => {
+            setAddAt(null);
+            say(act((st, ctx) => addTask(st, t, ctx)));
+          }}
+        />
+      )}
+      {gapAt && (
+        <FillGapSheet
+          state={state}
+          date={gapAt.date}
+          gap={gapAt.gap}
+          onClose={() => setGapAt(null)}
+          onPull={(id) => {
+            const g = gapAt;
+            setGapAt(null);
+            say(act((st, ctx) => moveSession(st, id, g.date, g.gap.start, ctx)));
+          }}
+          onAdd={(t) => {
+            setGapAt(null);
+            say(act((st, ctx) => addTask(st, t, ctx)));
+          }}
+          onOther={() => {
+            const g = gapAt;
+            setGapAt(null);
+            setAddAt({ date: g.date, start: g.gap.start, max: g.gap.end - g.gap.start });
+          }}
+        />
+      )}
       {openedId && state.tasks.find((t) => t.id === openedId) && (
         <ProjectSheet
           state={state}
           task={state.tasks.find((t) => t.id === openedId)!}
           today={today}
           onClose={() => setOpenedId(undefined)}
+          onPatch={(id, patch) => say(act((st, ctx) => editTask(st, id, patch, ctx)))}
           onEdit={(t) => {
             setOpenedId(undefined);
             setEditing(t);
@@ -433,7 +494,9 @@ export default function App() {
         />
       )}
       {modal === 'breathe' && <Breathe onClose={() => setModal(null)} />}
-      {modal === 'mind' && <MindSheet state={state} today={today} onClose={() => setModal(null)} />}
+      {modal === 'mind' && (
+        <MindSheet state={state} today={today} onClose={() => setModal(null)} onRecharge={(id) => say(act((st, ctx) => addRechargeBefore(st, id, ctx)))} />
+      )}
       {modal === 'settings' && (
         <SettingsView
           profile={state.profile}

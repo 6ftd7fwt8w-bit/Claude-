@@ -14,7 +14,7 @@ import { baseFreeMinutes, breaksFor, dayLoad, energyFor, sessionsOn, type NewTas
 import { addDays, diffDays, fmtDuration, minToHm, todayKey, weekStart } from './time';
 
 const FOCUS: CategoryId[] = ['proyectos', 'trabajo'];
-const RECHARGE: CategoryId[] = ['bienestar', 'autocuidado', 'social'];
+const RECHARGE: CategoryId[] = ['bienestar', 'autocuidado', 'social', 'aficiones'];
 
 // ---------------------------------------------------------------- análisis del plan (al terminar la encuesta)
 
@@ -91,7 +91,7 @@ export function analyzePlan(p: Profile, tasks: NewTaskInput[], today = todayKey(
       icon: '☕',
       doing: 'Añadiendo descansos para mantener la concentración…',
       result: breaks
-        ? `Usaré tus ${breaks} pausas de trabajo para recargar: respirar, estirar, moverte.`
+        ? `Usaré ${breaks === 1 ? 'tu pausa' : `tus ${breaks} pausas`} de trabajo para recargar: respirar, estirar, moverte.`
         : 'Dejaré 10 minutos de margen entre una cosa y otra para que respires.',
     },
     {

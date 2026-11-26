@@ -1,5 +1,5 @@
 import type { AppState } from '../types';
-import { catById } from '../types';
+import { taskColor } from '../types';
 import { baseBusy, bedEff, breaksFor, sessionsOn } from '../lib/scheduler';
 import { minToHm } from '../lib/time';
 
@@ -57,7 +57,7 @@ export function DayStrip({
               style={{
                 left: `${pos(x.start)}%`,
                 width: `max(4px, ${pos(x.start + x.duration) - pos(x.start)}%)`,
-                background: catById(t?.category ?? 'bienestar').color,
+                background: taskColor(t),
               }}
             />
           );

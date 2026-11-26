@@ -9,8 +9,8 @@
  *
  * Todas las funciones son puras: reciben un AppState y devuelven uno nuevo.
  */
-import type { AppState, DayRecord, Profile, Session, Task, TimeOfDay, WorkBreak, WorkHours } from '../types';
-import { addDays, ceilTo, fmtRelative, fmtTo, minToHm, monthEnd, rangeDays, weekStart, weekday } from './time';
+import { TASK_COLORS, type AppState, type DayRecord, type Profile, type Session, type Task, type TimeOfDay, type WorkBreak, type WorkHours } from '../types';
+import { addDays, ceilTo, fmtDuration, fmtRelative, fmtTo, minToHm, monthEnd, rangeDays, weekStart, weekday } from './time';
 
 export interface Ctx {
   today: string;
@@ -45,6 +45,16 @@ export function bedEff(p: Profile): number {
   return p.bed <= p.wake ? 1440 : p.bed;
 }
 
+/** hora de acostarse contada desde las 00:00 del día (01:30 → 25:30) */
+export function bedAbs(p: Profile): number {
+  return p.bed <= p.wake ? p.bed + 1440 : p.bed;
+}
+
+/** cuándo empieza la desconexión (puede ser > 24:00 si te acuestas muy tarde) */
+export function relaxStart(p: Profile): number {
+  return bedAbs(p) - p.relaxMinutes;
+}
+
 export function isWorkDay(p: Profile, date: string): boolean {
   return p.works && p.workDays.includes(weekday(date));
 }
@@ -76,7 +86,7 @@ export function baseBusy(p: Profile, date: string): Interval[] {
   }
   busy.push({ start: p.lunch, end: p.lunch + p.lunchDuration });
   busy.push({ start: p.dinner, end: p.dinner + p.dinnerDuration });
-  busy.push({ start: Math.max(0, bedEff(p) - p.relaxMinutes), end: 1440 });
+  busy.push({ start: Math.min(1440, Math.max(0, relaxStart(p))), end: 1440 });
   return busy;
 }
 
@@ -198,6 +208,17 @@ export function splitChunks(total: number, size: number): number[] {
   return arr;
 }
 
+const WEEKEND = [0, 6];
+
+/** ¿puede ir esta tarea este día? (entre semana / fin de semana / proyectos en finde) */
+export function dayAllowed(p: Profile, task: Task, date: string): boolean {
+  const weekend = WEEKEND.includes(weekday(date));
+  if (task.dayType === 'weekdays') return !weekend;
+  if (task.dayType === 'weekends') return weekend;
+  if (weekend && p.weekendFocus === 'no' && task.kind === 'flexible' && (task.category === 'proyectos' || task.category === 'trabajo')) return false;
+  return true;
+}
+
 /** la vida social y el autocuidado, por la tarde; los proyectos, cuando mejor te concentras */
 export function prefersLate(p: Profile, task: Task): boolean {
   if (task.timeOfDay === 'tarde' || task.timeOfDay === 'noche') return true;
@@ -227,6 +248,9 @@ export function placeChunks(
   const placed: Session[] = [];
   let unplaced = 0;
   if (!p || days.length === 0) return { sessions, placed, unplaced: chunks.reduce((a, b) => a + b, 0) };
+  // entre semana / fin de semana (si no queda ningún día válido antes de la fecha, se usan todos)
+  const allowed = days.filter((d) => dayAllowed(p, task, d));
+  if (allowed.length) days = allowed;
   const preferLate = prefersLate(p, task);
   const range = TIME_RANGES[task.timeOfDay ?? 'cualquiera'];
 
@@ -249,9 +273,15 @@ export function placeChunks(
 
     const tryDays = (list: typeof scored): Session | null => {
       for (const x of list) {
-        const start = findSlot(p, x.d, sessions, chunk, notBeforeFor(x.d, ctx), preferLate, range);
+        // a hora fija: esa hora, aunque coincida con otra cosa (lo ha decidido la persona)
+        const start =
+          task.fixedStart != null
+            ? task.fixedStart >= notBeforeFor(x.d, ctx)
+              ? task.fixedStart
+              : null
+            : findSlot(p, x.d, sessions, chunk, notBeforeFor(x.d, ctx), preferLate, range);
         if (start != null) {
-          return { id: uid(), taskId: task.id, date: x.d, start, duration: chunk, status: 'planned' };
+          return { id: uid(), taskId: task.id, date: x.d, start, duration: chunk, status: 'planned', ...(task.fixedStart != null ? { pinned: true } : {}) };
         }
       }
       return null;
@@ -379,6 +409,17 @@ export interface NewTaskInput {
   icon?: string;
   days?: number[];
   timesPerMonth?: number;
+  fixedStart?: number;
+  dayType?: Task['dayType'];
+  notes?: string;
+  steps?: Task['steps'];
+}
+
+/** color libre para un proyecto o afición nuevos */
+function pickColor(state: AppState, category: Task['category']): string | undefined {
+  if (category !== 'proyectos' && category !== 'aficiones') return undefined;
+  const used = new Set(state.tasks.filter((t) => !t.archived && t.color).map((t) => t.color));
+  return TASK_COLORS.find((c) => !used.has(c)) ?? TASK_COLORS[state.tasks.length % TASK_COLORS.length];
 }
 
 export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result {
@@ -398,6 +439,11 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
     days: input.kind === 'habito' && input.days?.length ? [...input.days].sort() : undefined,
     timesPerMonth: input.kind === 'habito' && input.timesPerMonth && !input.days?.length ? input.timesPerMonth : undefined,
     icon: input.icon,
+    fixedStart: input.kind !== 'evento' ? input.fixedStart : undefined,
+    dayType: input.dayType && input.dayType !== 'any' ? input.dayType : undefined,
+    notes: input.notes?.trim() || undefined,
+    steps: input.steps?.length ? input.steps : undefined,
+    color: pickColor(state, input.category),
     createdAt: ctx.today,
   };
   let s: AppState = { ...state, tasks: [...state.tasks, task] };
@@ -623,7 +669,7 @@ export function archiveTask(state: AppState, taskId: string): AppState {
 
 /** Al abrir la app un día nuevo: lo no hecho de días pasados vuelve a planificarse. */
 const FOCUS: Task['category'][] = ['proyectos', 'trabajo'];
-const RECHARGE: Task['category'][] = ['bienestar', 'autocuidado', 'social'];
+const RECHARGE: Task['category'][] = ['bienestar', 'autocuidado', 'social', 'aficiones'];
 
 /** Resumen de un día a partir de sus sesiones (antes de recolocar lo no hecho) */
 export function recordDay(state: AppState, date: string): DayRecord {
@@ -725,6 +771,12 @@ export interface TaskPatch {
   days?: number[] | null;
   /** null = no es mensual */
   timesPerMonth?: number | null;
+  /** null = sin hora fija */
+  fixedStart?: number | null;
+  dayType?: Task['dayType'];
+  notes?: string;
+  steps?: Task['steps'];
+  color?: string;
   icon?: string;
 }
 
@@ -745,6 +797,11 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
     timeOfDay: patch.timeOfDay ? (patch.timeOfDay === 'cualquiera' ? undefined : patch.timeOfDay) : old.timeOfDay,
     days: patch.days === null ? undefined : patch.days?.length ? [...patch.days].sort() : old.days,
     timesPerMonth: patch.timesPerMonth === null ? undefined : (patch.timesPerMonth ?? old.timesPerMonth),
+    fixedStart: patch.fixedStart === null ? undefined : (patch.fixedStart ?? old.fixedStart),
+    dayType: patch.dayType ? (patch.dayType === 'any' ? undefined : patch.dayType) : old.dayType,
+    notes: patch.notes !== undefined ? patch.notes.trim() || undefined : old.notes,
+    steps: patch.steps !== undefined ? (patch.steps.length ? patch.steps : undefined) : old.steps,
+    color: patch.color ?? old.color ?? pickColor(state, patch.category ?? old.category),
     icon: patch.icon ?? old.icon,
   };
   let s: AppState = { ...state, tasks: state.tasks.map((t) => (t.id === taskId ? task : t)) };
@@ -762,7 +819,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
 
   if (
     task.kind === 'habito' &&
-    (changed('timesPerWeek') || changed('timesPerMonth') || changed('totalMinutes') || changed('timeOfDay') || JSON.stringify(task.days) !== JSON.stringify(old.days))
+    (changed('timesPerWeek') || changed('timesPerMonth') || changed('totalMinutes') || changed('timeOfDay') || changed('fixedStart') || changed('dayType') || JSON.stringify(task.days) !== JSON.stringify(old.days))
   ) {
     s = {
       ...s,
@@ -774,7 +831,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
 
   if (
     task.kind === 'flexible' &&
-    (changed('totalMinutes') || changed('sessionMinutes') || changed('deadline'))
+    (changed('totalMinutes') || changed('sessionMinutes') || changed('deadline') || changed('fixedStart') || changed('dayType'))
   ) {
     s = {
       ...s,
@@ -1085,4 +1142,88 @@ export function addRechargeBefore(state: AppState, sessionId: string, ctx: Ctx):
     state: s,
     message: placed ? `🫧 He reservado 10 min de recarga a las ${minToHm(placed.start)}.` : 'Hoy no queda hueco para la recarga. Prueba a respirar un minuto antes de empezar 🫧',
   };
+}
+
+// ---------------------------------------------------------------- ajustes de un día concreto
+
+/** "Hoy le he dedicado menos (o más)": cambia la duración de esa sesión y recoloca lo que falte. */
+export function setSessionDuration(state: AppState, id: string, minutes: number, ctx: Ctx): Result {
+  const s0 = state.sessions.find((x) => x.id === id);
+  if (!s0) return { state };
+  const duration = Math.max(5, Math.round(minutes));
+  let s: AppState = { ...state, sessions: state.sessions.map((x) => (x.id === id ? { ...x, duration } : x)) };
+  const task = s.tasks.find((t) => t.id === s0.taskId);
+  if (task?.kind !== 'flexible') return { state: s, message: `Ajustado a ${fmtDuration(duration)} solo para este día.` };
+  // proyectos: se recalcula lo que queda (quitamos lo futuro y lo volvemos a repartir)
+  s = { ...s, sessions: s.sessions.filter((x) => !(x.taskId === task.id && x.status === 'planned' && !x.pinned && x.id !== id && x.date >= ctx.today)) };
+  s = replanMissing(s, task.id, ctx.today, ctx);
+  const diff = s0.duration - duration;
+  const next = firstPlanned(s, task.id, ctx.today);
+  return {
+    state: s,
+    message:
+      diff > 0
+        ? `Ajustado a ${fmtDuration(duration)}. Los ${fmtDuration(diff)} que faltan los he recolocado${next ? ` (siguiente: ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)})` : ''}.`
+        : `Ajustado a ${fmtDuration(duration)}. He quitado tiempo de las próximas sesiones para compensar.`,
+  };
+}
+
+/** Poner una sesión justo después de otra (p. ej. la ducha después del ejercicio). */
+export function moveAfter(state: AppState, id: string, afterId: string, ctx: Ctx): Result {
+  const other = state.sessions.find((x) => x.id === afterId);
+  if (!other) return { state };
+  return moveSession(state, id, other.date, other.start + other.duration, ctx);
+}
+
+export function setSessionNote(state: AppState, id: string, note: string): AppState {
+  return { ...state, sessions: state.sessions.map((x) => (x.id === id ? { ...x, note: note.trim() || undefined } : x)) };
+}
+
+/** Qué pasos del proyecto tocan en cada sesión: por orden, llenando cada sesión con lo que quepa. */
+export function stepsPlan(state: AppState, taskId: string, today: string): Map<string, NonNullable<Task['steps']>> {
+  const task = state.tasks.find((t) => t.id === taskId);
+  const out = new Map<string, NonNullable<Task['steps']>>();
+  const pending = (task?.steps ?? []).filter((st) => !st.done);
+  if (!pending.length) return out;
+  const sessions = state.sessions
+    .filter((x) => x.taskId === taskId && x.status === 'planned' && x.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start);
+  let k = 0;
+  for (const sess of sessions) {
+    const list: NonNullable<Task['steps']> = [];
+    let room = sess.duration;
+    while (k < pending.length) {
+      const need = pending[k].minutes ?? 30;
+      if (list.length && need > room) break;
+      list.push(pending[k]);
+      room -= need;
+      k++;
+    }
+    if (list.length) out.set(sess.id, list);
+    if (k >= pending.length) break;
+  }
+  return out;
+}
+
+/** Lo que podría ir en un hueco libre: sesiones futuras que caben (lo más urgente primero). */
+export function gapCandidates(state: AppState, date: string, gapStart: number, minutes: number, ctx: Ctx): { session: Session; task: Task }[] {
+  return state.sessions
+    .filter((x) => x.status === 'planned' && !x.fixed && x.duration <= minutes && (x.date > date || (x.date === date && x.start > gapStart)))
+    .map((x) => ({ session: x, task: state.tasks.find((t) => t.id === x.taskId)! }))
+    .filter(({ session }) => !session.pinned)
+    .filter(
+      ({ task }) =>
+        task &&
+        !task.archived &&
+        task.kind !== 'evento' &&
+        task.fixedStart == null &&
+        dayAllowed(state.profile!, task, date) &&
+        // respeta el momento del día (la ducha de noche no va a las 8 de la mañana)
+        (!task.timeOfDay || overlap(TIME_RANGES[task.timeOfDay], { start: gapStart, end: gapStart + minutes }) > 0),
+    )
+    // una por tarea (la más próxima)
+    .sort((a, b) => (a.task.deadline ?? '9999').localeCompare(b.task.deadline ?? '9999') || a.session.date.localeCompare(b.session.date))
+    .filter((c, i, arr) => arr.findIndex((o) => o.task.id === c.task.id) === i)
+    .filter(({ session }) => session.date >= ctx.today)
+    .slice(0, 6);
 }

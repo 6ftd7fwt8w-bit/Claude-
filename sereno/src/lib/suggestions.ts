@@ -12,6 +12,10 @@ export interface RecurringSuggestion {
   days?: number[];
   /** veces al mes; si hay, manda sobre `times` */
   perMonth?: number;
+  /** hora fija (p. ej. llamar a mamá a las 20:00) */
+  fixedStart?: number;
+  /** entre semana / fines de semana */
+  dayType?: 'any' | 'weekdays' | 'weekends';
 }
 
 /** Lo de cada día: ocupa tiempo real aunque no sea un "objetivo" */
@@ -68,3 +72,17 @@ export function timesLabel(times: number, days?: number[], perMonth?: number): s
   }
   return times >= 7 ? 'cada día' : `${times}×/semana`;
 }
+
+/** Aficiones y cosas para ti, para llenar un hueco libre */
+export const HOBBY_SUGGESTIONS: { title: string; icon: string; category: CategoryId; minutes: number }[] = [
+  { title: 'Jugar a videojuegos', icon: '🎮', category: 'aficiones', minutes: 60 },
+  { title: 'Tocar un instrumento', icon: '🎸', category: 'aficiones', minutes: 30 },
+  { title: 'Leer', icon: '📚', category: 'autocuidado', minutes: 30 },
+  { title: 'Dibujar o pintar', icon: '🎨', category: 'aficiones', minutes: 45 },
+  { title: 'Manualidades', icon: '🧶', category: 'aficiones', minutes: 45 },
+  { title: 'Ver una serie', icon: '🎬', category: 'aficiones', minutes: 45 },
+  { title: 'Paseo', icon: '🌳', category: 'bienestar', minutes: 30 },
+  { title: 'Meditar', icon: '🧘', category: 'bienestar', minutes: 10 },
+  { title: 'Llamar a alguien', icon: '📞', category: 'social', minutes: 20 },
+  { title: 'Cocinar algo rico', icon: '🍲', category: 'aficiones', minutes: 60 },
+];

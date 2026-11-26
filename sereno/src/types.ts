@@ -1,4 +1,4 @@
-export type CategoryId = 'bienestar' | 'social' | 'proyectos' | 'autocuidado' | 'hogar' | 'gestiones' | 'trabajo';
+export type CategoryId = 'bienestar' | 'social' | 'proyectos' | 'aficiones' | 'autocuidado' | 'hogar' | 'gestiones' | 'trabajo';
 
 export interface Category {
   id: CategoryId;
@@ -11,15 +11,34 @@ export const CATEGORIES: Category[] = [
   { id: 'bienestar', label: 'Bienestar', emoji: '🧘', color: '#6FAF9A' },
   { id: 'social', label: 'Vida social', emoji: '💛', color: '#E59A8C' },
   { id: 'proyectos', label: 'Proyectos', emoji: '✨', color: '#7E98D1' },
+  { id: 'aficiones', label: 'Aficiones', emoji: '🎨', color: '#E8A33D' },
   { id: 'autocuidado', label: 'Cuidado personal', emoji: '🛁', color: '#B996D0' },
   { id: 'hogar', label: 'Hogar', emoji: '🏡', color: '#9DBB78' },
   { id: 'gestiones', label: 'Gestiones y papeles', emoji: '📋', color: '#7FAFC2' },
-  { id: 'trabajo', label: 'Trabajo', emoji: '💼', color: '#D3AC6A' },
+  { id: 'trabajo', label: 'Trabajo', emoji: '💼', color: '#A39A8C' },
 ];
 
 export function catById(id: CategoryId): Category {
   return CATEGORIES.find((c) => c.id === id) ?? CATEGORIES[0];
 }
+
+/** cada proyecto y afición tiene su propio color, para distinguirlos en la agenda */
+export const TASK_COLORS = ['#7E98D1', '#E07A8A', '#4FB3A9', '#9B8CE0', '#D49A4A', '#5FA8D3', '#C77DBA', '#6C9E5B', '#E8A33D', '#8A9FB0'];
+
+export function taskColor(t: Pick<Task, 'category' | 'color'> | undefined): string {
+  return t?.color ?? catById(t?.category ?? 'bienestar').color;
+}
+
+/** paso de un proyecto (lista de cosas por hacer, en orden) */
+export interface Step {
+  id: string;
+  title: string;
+  minutes?: number;
+  done?: boolean;
+}
+
+/** qué días puede ir una tarea */
+export type DayType = 'any' | 'weekdays' | 'weekends';
 
 /**
  * flexible: tiene una duración total y (opcional) un deadline; la app lo trocea y lo coloca.
@@ -53,6 +72,16 @@ export interface Task {
   timeOfDay?: TimeOfDay;
   /** icono propio (cotidianas) */
   icon?: string;
+  /** a una hora fija (p. ej. llamar a mamá a las 20:00) */
+  fixedStart?: number;
+  /** entre semana, fines de semana o cualquier día */
+  dayType?: DayType;
+  /** notas libres de la tarea o proyecto */
+  notes?: string;
+  /** lista de pasos de un proyecto (se sugieren por orden en cada sesión) */
+  steps?: Step[];
+  /** color propio (proyectos y aficiones) */
+  color?: string;
   /** de dónde viene: creada en Sereno, importada de un .ics o del calendario del iPhone */
   source?: 'ics' | 'ios';
   externalId?: string;
@@ -71,6 +100,8 @@ export interface Session {
   /** colocada a mano: el planificador no la mueve */
   pinned?: boolean;
   completedAt?: string;
+  /** nota para este día concreto (qué quiero hacer hoy de este proyecto) */
+  note?: string;
 }
 
 export type Chronotype = 'manana' | 'neutro' | 'noche';
@@ -116,6 +147,8 @@ export interface Profile {
   relaxMinutes: number;
   defaultEnergy: number;
   gentleWeekends: boolean;
+  /** ¿proyectos y trabajo el fin de semana? sí, un poco, no */
+  weekendFocus: 'si' | 'poco' | 'no';
   createdAt: string;
 }
 
@@ -189,6 +222,7 @@ export const DEFAULT_PROFILE: Profile = {
   relaxMinutes: 60,
   defaultEnergy: 60,
   gentleWeekends: true,
+  weekendFocus: 'poco',
   createdAt: '',
 };
 

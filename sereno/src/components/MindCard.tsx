@@ -102,7 +102,17 @@ export function MindCard({
 }
 
 /** Página completa: factores, lo que he aprendido de ti y por qué funciona. */
-export function MindSheet({ state, today, onClose }: { state: AppState; today: string; onClose: () => void }) {
+export function MindSheet({
+  state,
+  today,
+  onClose,
+  onRecharge,
+}: {
+  state: AppState;
+  today: string;
+  onClose: () => void;
+  onRecharge: (sessionId: string) => void;
+}) {
   const m = mindIndex(state, today);
   const insights = personalInsights(state, today);
   return (
@@ -114,6 +124,23 @@ export function MindSheet({ state, today, onClose }: { state: AppState; today: s
           <p className="muted">{m.message}</p>
         </div>
         <Factors m={m} />
+        {m.focusWithoutRecharge && (
+          <div className="mind-reco">
+            <p>
+              🫧 Antes de <strong>«{m.focusWithoutRecharge.title}»</strong> ({minToHm(m.focusWithoutRecharge.start)}), unos minutos de
+              respiración o un paseo corto te ayudarán a concentrarte y a tener mejores ideas.
+            </p>
+            <button
+              className="btn primary"
+              onClick={() => {
+                onRecharge(m.focusWithoutRecharge!.sessionId);
+                onClose();
+              }}
+            >
+              Añadir 10 min de recarga
+            </button>
+          </div>
+        )}
         <p className="muted small">
           El índice combina tu energía (25 %), una carga sostenible (25 %), la recarga frente al tiempo de foco (30 %) y tu tiempo
           de desconexión (20 %).

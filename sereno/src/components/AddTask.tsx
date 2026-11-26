@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import type { CategoryId, Task, TaskKind, TimeOfDay } from '../types';
+import type { CategoryId, DayType, Task, TaskKind, TimeOfDay } from '../types';
 import { catById } from '../types';
 import type { NewTaskInput, TaskPatch } from '../lib/scheduler';
 import { parseQuick } from '../lib/parse';
 import { ROUTINE_ICONS, TIME_OF_DAY_LABEL } from '../lib/suggestions';
 import { addDays, fmtDuration, fmtShort, hmToMin, minToHm, todayKey } from '../lib/time';
-import { CategoryPicker, DayPicker, NumberChips, Sheet } from './ui';
+import { CategoryPicker, DayPicker, DurationPicker, NumberChips, Sheet } from './ui';
 import { FreqTabs, type Freq } from './RecurringEditor';
 
 type Mode = TaskKind | 'cotidiana';
@@ -46,6 +46,9 @@ export function AddTask({
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(e?.timeOfDay ?? 'cualquiera');
   const [icon, setIcon] = useState(e?.icon ?? '🧺');
   const [days, setDays] = useState<number[]>(e?.days ?? []);
+  const [fixed, setFixed] = useState<number | undefined>(e?.fixedStart);
+  const [dayType, setDayType] = useState<DayType>(e?.dayType ?? 'any');
+  const [notes, setNotes] = useState(e?.notes ?? '');
   const [freq, setFreq] = useState<Freq>(e?.timesPerMonth ? 'mes' : e?.days?.length ? 'dias' : 'semana');
   const [perMonth, setPerMonth] = useState(e?.timesPerMonth ?? 2);
   const byDays = freq === 'dias';
@@ -115,6 +118,9 @@ export function AddTask({
         timeOfDay,
         days: kind === 'habito' ? (byDays && days.length ? days : null) : undefined,
         timesPerMonth: kind === 'habito' ? (freq === 'mes' ? perMonth : null) : undefined,
+        fixedStart: kind !== 'evento' ? (fixed ?? null) : undefined,
+        dayType,
+        notes,
       });
       return;
     }
@@ -130,6 +136,9 @@ export function AddTask({
       timesPerWeek: byDays && days.length ? days.length : times,
       days: byDays && days.length ? days : undefined,
       timesPerMonth: freq === 'mes' ? perMonth : undefined,
+      fixedStart: kind !== 'evento' ? fixed : undefined,
+      dayType,
+      notes,
       routine: mode === 'cotidiana',
       timeOfDay,
       icon: mode === 'cotidiana' ? icon : undefined,
@@ -237,7 +246,7 @@ export function AddTask({
       {kind === 'evento' && (
         <div className="field">
           <span>Duración</span>
-          <NumberChips value={total} options={[30, 60, 90, 120, 180]} onChange={setTotal} fmt={fmtDuration} />
+          <DurationPicker value={total} onChange={setTotal} />
         </div>
       )}
 
@@ -254,7 +263,7 @@ export function AddTask({
           </div>
           <div className="field">
             <span>Cada vez</span>
-            <NumberChips value={total} options={[5, 10, 15, 20, 30, 45, 60, 90]} onChange={setTotal} fmt={fmtDuration} />
+            <DurationPicker value={total} onChange={setTotal} />
             {total <= 20 && <small className="muted">Cabe en tus pausas del trabajo ☕</small>}
           </div>
           <div className="field">
@@ -269,6 +278,43 @@ export function AddTask({
           </div>
         </>
       )}
+
+      {kind !== 'evento' && (
+        <>
+          <div className="field">
+            <span>¿A una hora fija?</span>
+            <div className="chips">
+              <button type="button" className={`chip ${fixed == null ? 'on' : ''}`} onClick={() => setFixed(undefined)}>
+                ✨ Cuando haya hueco
+              </button>
+              <button type="button" className={`chip ${fixed != null ? 'on' : ''}`} onClick={() => setFixed(fixed ?? 20 * 60)}>
+                🕐 A las…
+              </button>
+            </div>
+            {fixed != null && <input type="time" value={minToHm(fixed)} onChange={(ev) => ev.target.value && setFixed(hmToMin(ev.target.value))} />}
+          </div>
+          <div className="field">
+            <span>¿Qué días?</span>
+            <div className="chips">
+              {(
+                [
+                  ['any', 'Cualquier día'],
+                  ['weekdays', 'Entre semana'],
+                  ['weekends', 'Fines de semana'],
+                ] as [DayType, string][]
+              ).map(([v, l]) => (
+                <button key={v} type="button" className={`chip ${dayType === v ? 'on' : ''}`} onClick={() => setDayType(v)}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+      <label className="field">
+        <span>📝 Notas (opcional)</span>
+        <textarea className="note" rows={2} value={notes} onChange={(ev) => setNotes(ev.target.value)} placeholder="Detalles, enlaces, qué quieres hacer…" />
+      </label>
 
       <button className="btn primary wide" disabled={!title} onClick={submit}>
         {e ? 'Guardar cambios' : kind === 'evento' ? 'Apuntar' : 'Buscar hueco ✨'}

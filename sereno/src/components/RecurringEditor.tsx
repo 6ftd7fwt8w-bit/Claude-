@@ -2,8 +2,8 @@ import { useState } from 'react';
 import type { TimeOfDay } from '../types';
 import { catById } from '../types';
 import { ROUTINE_ICONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
-import { fmtDuration } from '../lib/time';
-import { DayPicker, NumberChips, Sheet } from './ui';
+import { fmtDuration, hmToMin, minToHm } from '../lib/time';
+import { DayPicker, DurationPicker, NumberChips, Sheet } from './ui';
 
 export type Freq = 'semana' | 'mes' | 'dias';
 
@@ -59,12 +59,14 @@ export function RecurringEditor({
         <input className="re-title" value={v.title} aria-label="Nombre" onChange={(e) => set({ title: e.target.value })} />
       </div>
       <p className="re-summary">
-        {fmtDuration(v.minutes)} · {timesLabel(v.times, byDays ? v.days : undefined, freq === 'mes' ? (v.perMonth ?? 1) : undefined)} · {TIME_OF_DAY_LABEL[v.timeOfDay]}
+        {fmtDuration(v.minutes)} · {timesLabel(v.times, byDays ? v.days : undefined, freq === 'mes' ? (v.perMonth ?? 1) : undefined)} ·{' '}
+        {v.fixedStart != null ? `a las ${minToHm(v.fixedStart)}` : TIME_OF_DAY_LABEL[v.timeOfDay]}
+        {v.dayType === 'weekends' ? ' · fines de semana' : v.dayType === 'weekdays' ? ' · entre semana' : ''}
       </p>
 
       <div className="field">
         <span>⏱ ¿Cuánto tiempo cada vez?</span>
-        <NumberChips value={v.minutes} options={[5, 10, 15, 20, 30, 45, 60, 90]} onChange={(minutes) => set({ minutes })} fmt={fmtDuration} />
+        <DurationPicker value={v.minutes} onChange={(minutes) => set({ minutes })} />
       </div>
 
       <div className="field">
@@ -87,8 +89,43 @@ export function RecurringEditor({
         )}
       </div>
 
+      {freq !== 'dias' && (
+        <div className="field">
+          <span>📆 ¿Qué días?</span>
+          <div className="chips">
+            {(
+              [
+                ['any', 'Cualquier día'],
+                ['weekdays', 'Entre semana'],
+                ['weekends', 'Fines de semana'],
+              ] as const
+            ).map(([d, l]) => (
+              <button key={d} type="button" className={`chip ${(v.dayType ?? 'any') === d ? 'on' : ''}`} onClick={() => set({ dayType: d })}>
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="field">
-        <span>🕐 ¿Cuándo te va mejor?</span>
+        <span>🕐 ¿A una hora fija?</span>
+        <div className="chips">
+          <button type="button" className={`chip ${v.fixedStart == null ? 'on' : ''}`} onClick={() => set({ fixedStart: undefined })}>
+            ✨ No, cuando haya hueco
+          </button>
+          <button type="button" className={`chip ${v.fixedStart != null ? 'on' : ''}`} onClick={() => set({ fixedStart: v.fixedStart ?? 20 * 60 })}>
+            Sí, a las…
+          </button>
+        </div>
+        {v.fixedStart != null && (
+          <input type="time" value={minToHm(v.fixedStart)} onChange={(e) => e.target.value && set({ fixedStart: hmToMin(e.target.value) })} />
+        )}
+      </div>
+
+      {v.fixedStart == null && (
+      <div className="field">
+        <span>🌤️ ¿En qué momento del día?</span>
         <div className="chips">
           {(Object.keys(TIME_OF_DAY_LABEL) as TimeOfDay[]).map((t) => (
             <button key={t} type="button" className={`chip ${v.timeOfDay === t ? 'on' : ''}`} onClick={() => set({ timeOfDay: t })}>
@@ -97,6 +134,7 @@ export function RecurringEditor({
           ))}
         </div>
       </div>
+      )}
 
       <div className="field">
         <span>Icono</span>
