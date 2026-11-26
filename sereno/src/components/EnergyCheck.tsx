@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { WorkBreak } from '../types';
 import { BreaksEditor } from './BreaksEditor';
 import { Sheet } from './ui';
+import { EnergyIcon } from './Icons';
 
 export const ENERGY_LEVELS = [
   { value: 20, label: 'Sin batería', emoji: '○' },
@@ -37,7 +38,7 @@ export function EnergyCheck({
       <div className="energy-options">
         {ENERGY_LEVELS.map((l) => (
           <button key={l.value} className={`energy-option ${v === l.value ? 'on' : ''}`} onClick={() => setV(l.value)}>
-            <span className="energy-emoji">{l.emoji}</span>
+            <span className="energy-emoji"><EnergyIcon value={l.value} size={34} /></span>
             <span className="energy-pct">{l.value}%</span>
             <span className="energy-label">{l.label}</span>
           </button>
@@ -45,7 +46,7 @@ export function EnergyCheck({
       </div>
       {b && (
         <div className="field">
-          <span>◔ ¿Qué pausas tienes hoy mientras trabajas?</span>
+          <span>¿Qué pausas tienes hoy mientras trabajas?</span>
           <BreaksEditor value={b} onChange={setB} />
           <small className="muted">Pondré ahí cosas cortas: meditar, estirar, unos abdominales…</small>
         </div>

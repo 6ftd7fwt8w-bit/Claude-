@@ -8,16 +8,16 @@ export interface Category {
 }
 
 export const CATEGORIES: Category[] = [
-  { id: 'bienestar', label: 'Bienestar', emoji: '◎', color: '#5E9C88' },
-  { id: 'familia', label: 'Familia', emoji: '⌂', color: '#C47A57' },
-  { id: 'pareja', label: 'Amor y pareja', emoji: '♡', color: '#B24E6B' },
-  { id: 'social', label: 'Amigos y vida social', emoji: '⁂', color: '#C9973E' },
-  { id: 'proyectos', label: 'Proyectos', emoji: '✦', color: '#4E6FB0' },
-  { id: 'aficiones', label: 'Aficiones', emoji: '❖', color: '#8A63B8' },
-  { id: 'autocuidado', label: 'Cuidado personal', emoji: '☾', color: '#7C9DB6' },
-  { id: 'hogar', label: 'Hogar', emoji: '▢', color: '#8C9A5B' },
-  { id: 'gestiones', label: 'Gestiones y papeles', emoji: '≡', color: '#6B7480' },
-  { id: 'trabajo', label: 'Trabajo', emoji: '⬡', color: '#A0683F' },
+  { id: 'bienestar', label: 'Bienestar', emoji: '◎', color: '#4FB08A' },
+  { id: 'familia', label: 'Familia', emoji: '⌂', color: '#F0875A' },
+  { id: 'pareja', label: 'Amor y pareja', emoji: '♡', color: '#E8608A' },
+  { id: 'social', label: 'Amigos y vida social', emoji: '⁂', color: '#F2B33D' },
+  { id: 'proyectos', label: 'Proyectos', emoji: '✦', color: '#6B8BE6' },
+  { id: 'aficiones', label: 'Aficiones', emoji: '❖', color: '#9C7AE2' },
+  { id: 'autocuidado', label: 'Cuidado personal', emoji: '☾', color: '#4FBCD0' },
+  { id: 'hogar', label: 'Hogar', emoji: '▢', color: '#93B95E' },
+  { id: 'gestiones', label: 'Gestiones y papeles', emoji: '≡', color: '#8797AD' },
+  { id: 'trabajo', label: 'Trabajo', emoji: '⬡', color: '#C2834F' },
 ];
 
 export function catById(id: CategoryId): Category {
@@ -25,7 +25,7 @@ export function catById(id: CategoryId): Category {
 }
 
 /** cada proyecto y afición tiene su propio color, para distinguirlos en la agenda */
-export const TASK_COLORS = ['#4E6FB0', '#2F8F86', '#B24E6B', '#8A63B8', '#C9973E', '#3E7CA8', '#A35D8E', '#5E8C4F', '#C4683F', '#5B6C8F'];
+export const TASK_COLORS = ['#6B8BE6', '#E8608A', '#3FB3A3', '#9C7AE2', '#F0875A', '#4FA3DB', '#D16FB5', '#6FAE5B', '#F2B33D', '#8797AD'];
 
 export function taskColor(t: Pick<Task, 'category' | 'color'> | undefined): string {
   return t?.color ?? catById(t?.category ?? 'bienestar').color;

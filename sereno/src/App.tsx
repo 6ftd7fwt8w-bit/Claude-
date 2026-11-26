@@ -51,7 +51,7 @@ import { SessionSheet } from './components/SessionSheet';
 import { AddAtSheet, FillGapSheet } from './components/AgendaSheets';
 import { BlockSheet } from './components/BlockSheet';
 import { ValuesView } from './components/ValuesView';
-import { TabIcon } from './components/Icons';
+import { Icon, TabIcon } from './components/Icons';
 import type { Block } from './components/DayAgenda';
 import { EnergyCheck } from './components/EnergyCheck';
 import { TodayView } from './components/TodayView';
@@ -354,7 +354,7 @@ export default function App() {
       </main>
 
       <button className="fab" aria-label="Añadir" onClick={() => openAction('add')}>
-        +
+        <Icon name="plus" size={26} />
       </button>
 
       <nav className="tabbar">

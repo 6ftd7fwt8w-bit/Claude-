@@ -5,6 +5,7 @@ import { projectStatus, stepsPlan, uid, type ConflictFix, type TaskPatch } from 
 import { ConflictBox } from './ConflictBox';
 import { fmtDuration, fmtRelative, fmtShort, minToHm } from '../lib/time';
 import { DurationPicker, Sheet } from './ui';
+import { CatMark } from './Icons';
 
 const MILESTONES = [
   { at: 0.25, icon: '◔', label: 'Un cuarto' },
@@ -94,7 +95,7 @@ export function ProjectSheet({
           <span className="pd-stage">{st.stage}</span>
           <p className="pd-pct">{Math.round(st.pct * 100)}%</p>
           <p className="muted small">
-            {cat.emoji} {cat.label}
+            <CatMark cat={cat.id} /> {cat.label}
           </p>
         </div>
 

@@ -3,6 +3,9 @@ import type { ValueGoal } from '../types';
 import { catById } from '../types';
 import { AREAS, VISIONS, goalsFromVision, guidelineWarning, monthlyHours } from '../lib/values';
 import { DISCLAIMER } from '../lib/mind';
+import { CatIcon, Icon, type IconName } from './Icons';
+
+const VISION_ICON: Record<string, IconName> = { yo: 'person', proyectos: 'proyectos', familia: 'familia', equilibrio: 'balance' };
 
 /** Elige una visión de vida y ajusta cuántas horas quieres dedicar a cada área. */
 export function ValuesEditor({
@@ -24,7 +27,7 @@ export function ValuesEditor({
       <div className="visions">
         {VISIONS.map((v) => (
           <button key={v.id} type="button" className={`vision ${vision === v.id ? 'on' : ''}`} onClick={() => onChange(goalsFromVision(v), v.id)}>
-            <span className="vision-emoji">{v.emoji}</span>
+            <span className="vision-emoji"><Icon name={VISION_ICON[v.id] ?? 'balance'} size={26} /></span>
             <strong>{v.title}</strong>
             <span className="muted small">{v.description}</span>
           </button>
@@ -39,7 +42,7 @@ export function ValuesEditor({
           return (
             <div key={a.id} className={`value-row ${g.hours ? 'on' : ''}`} style={{ '--cat': catById(a.id).color } as CSSProperties}>
               <div className="vr-top">
-                <span className="vr-emoji">{a.emoji}</span>
+                <CatIcon cat={a.id} size={34} />
                 <strong className="grow">{a.label}</strong>
                 <div className="stepper small-stepper">
                   <button type="button" aria-label={`Menos horas de ${a.label}`} onClick={() => setGoal({ ...g, hours: Math.max(0, g.hours - 1) })}>

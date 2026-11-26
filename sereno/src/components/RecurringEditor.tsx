@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import type { TimeOfDay } from '../types';
-import { catById } from '../types';
 import { TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
 import { fmtDuration, minToHm } from '../lib/time';
 import { DayPicker, DurationPicker, NumberChips, Sheet, TimeMode } from './ui';
+import { CatIcon } from './Icons';
 
 export type Freq = 'semana' | 'mes' | 'dias';
 
@@ -50,9 +50,7 @@ export function RecurringEditor({
   return (
     <Sheet title="Ajustar" onClose={onClose}>
       <div className="re-head">
-        <span className="re-icon" style={{ background: `color-mix(in srgb, ${catById(v.category).color} 22%, var(--surface))` }}>
-          {catById(v.category).emoji}
-        </span>
+<CatIcon cat={v.category} title={v.title} size={48} />
         <input className="re-title" value={v.title} aria-label="Nombre" onChange={(e) => set({ title: e.target.value })} />
       </div>
       <p className="re-summary">
@@ -88,7 +86,7 @@ export function RecurringEditor({
 
       {freq !== 'dias' && (
         <div className="field">
-          <span>▦ ¿Qué días?</span>
+          <span>¿Qué días?</span>
           <div className="chips">
             {(
               [

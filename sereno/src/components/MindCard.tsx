@@ -147,7 +147,7 @@ export function MindSheet({
         </p>
 
         <div className="pd-section">
-          <p className="h3">◇ Lo que he aprendido de ti</p>
+          <p className="h3">Lo que he aprendido de ti</p>
           {insights.length ? (
             insights.map((i) => (
               <p key={i.text} className="insight">
@@ -163,7 +163,7 @@ export function MindSheet({
         </div>
 
         <div className="pd-section">
-          <p className="h3">◇ Por qué funciona</p>
+          <p className="h3">Por qué funciona</p>
           <div className="science">
             {SCIENCE.map((s) => (
               <div key={s.title} className="science-item">

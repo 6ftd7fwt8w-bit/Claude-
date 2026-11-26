@@ -58,10 +58,10 @@ export const PROJECT_EXAMPLES = [
 export const ROUTINE_ICONS = ['🚿', '🛒', '🍳', '🧺', '🧹', '🍽️', '🐕', '🪴', '🥡', '📮', '👶', '🚗', '💊', '🐈', '🧴', '🛏️'];
 
 export const TIME_OF_DAY_LABEL: Record<TimeOfDay, string> = {
-  manana: '🌅 Mañana',
-  tarde: '🌤️ Tarde',
-  noche: '🌙 Noche',
-  cualquiera: '🕊️ Cuando sea',
+  manana: 'Mañana',
+  tarde: 'Tarde',
+  noche: 'Noche',
+  cualquiera: 'Cuando sea',
 };
 
 const SHORT_DAYS = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];

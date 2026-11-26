@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { CategoryId } from '../types';
-import { catById } from '../types';
+import { taskColor, catById } from '../types';
 import { gapCandidates, type Interval, type NewTaskInput } from '../lib/scheduler';
 import type { AppState } from '../types';
 import { detectCategory } from '../lib/parse';
@@ -8,6 +8,7 @@ import { HOBBY_SUGGESTIONS } from '../lib/suggestions';
 import { fmtDuration, fmtLong, fmtRelative, hmToMin, minToHm } from '../lib/time';
 import { currentCtx } from '../store';
 import { CategoryPicker, DurationPicker, Sheet } from './ui';
+import { CatIcon, CatMark } from './Icons';
 
 /** Tocar una hora de la agenda: añadir algo justo ahí (una cita, un paseo durante una reunión…) */
 export function AddAtSheet({
@@ -41,7 +42,7 @@ export function AddAtSheet({
       </label>
       {title.trim() && (
         <p className="small">
-          Lo pongo en <strong>{catById(cat).emoji} {catById(cat).label}</strong>
+          Lo pongo en <strong><CatMark cat={cat} /> {catById(cat).label}</strong>
         </p>
       )}
       <div className="row2">
@@ -99,7 +100,7 @@ export function FillGapSheet({
           <div className="gap-list">
             {candidates.map(({ session, task }) => (
               <button key={session.id} className="gap-item" onClick={() => onPull(session.id)}>
-                <span className="cr-icon">{catById(task.category).emoji}</span>
+                <CatIcon cat={task.category} title={task.title} color={taskColor(task)} size={34} />
                 <span className="grow">
                   <strong>{task.title}</strong>
                   <span className="muted small">
@@ -127,7 +128,7 @@ export function FillGapSheet({
               className="hobby"
               onClick={() => onAdd({ title: h.title, category: h.category, kind: 'evento', totalMinutes: Math.min(minutes, length), date, start: gap.start, icon: h.icon } as NewTaskInput)}
             >
-              <span>{catById(h.category).emoji}</span>
+              <CatMark cat={h.category} title={h.title} />
               {h.title}
             </button>
           ))}

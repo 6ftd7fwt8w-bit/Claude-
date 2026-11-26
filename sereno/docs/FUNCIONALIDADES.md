@@ -254,7 +254,10 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Nueva categoría **Amor y pareja** (también como valor, con pauta de tiempo en pareja) |
 | ✅ | **Horas sin límite**: en proyectos y duraciones puedes escribir las horas y minutos que quieras |
 | ✅ | **Eliminar** cualquier tarea, proyecto o sesión |
-| ✅ | **Rediseño minimalista**: tipografía fina, papel y tinta, glifos propios en vez de emojis de colores, iconos de línea, modo claro y oscuro |
+| ✅ | **Diseño v10** (sustituye al minimalista): vuelven los colores verdes de siempre, con acabado tipo app de bienestar |
+| ✅ | Cabecera de Hoy en color con **anillo grande**: hechas, minutos libres y mente de un vistazo |
+| ✅ | **Iconos propios de dos tonos** en insignias de color para cada categoría y para tareas concretas (ducha, compra, perro, leer, correr…) |
+| ✅ | Agenda con bloques de rutina ilustrados (amanecer, trayecto, comida, desconexión), barra inferior flotante y confeti de colores |
 
 ---
 

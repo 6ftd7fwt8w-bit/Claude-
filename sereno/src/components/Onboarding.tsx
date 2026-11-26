@@ -18,6 +18,7 @@ import { RecurringEditor } from './RecurringEditor';
 import { PlanAnalysisView } from './PlanAnalysis';
 import { RECHARGE_TASK, analyzePlan } from '../lib/mind';
 import { DayPicker, DurationPicker, NumberChips, TimeInput } from './ui';
+import { CatIcon, Icon } from './Icons';
 
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0];
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -236,11 +237,11 @@ export function SuggestionTiles({
             <div key={s.title} className="tile-wrap" style={{ '--cat': catById(s.category).color } as CSSProperties}>
               <button type="button" className={`tile ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => onToggle(s.title)}>
                 <span className="tile-check">{on ? '✓' : ''}</span>
-                <span className="tile-icon">{catById(s.category).emoji}</span>
+                <CatIcon cat={s.category} title={s.title} size={38} />
                 <span className="tile-title">{s.title}</span>
                 <span className="tile-meta">
                   {fmtDuration(s.minutes)} · {timesLabel(s.times, s.days, s.perMonth)}
-                  {s.timeOfDay !== 'cualquiera' && ` · ${TIME_OF_DAY_LABEL[s.timeOfDay].split(' ')[1].toLowerCase()}`}
+                  {s.timeOfDay !== 'cualquiera' && ` · ${TIME_OF_DAY_LABEL[s.timeOfDay].toLowerCase()}`}
                 </span>
                 {on && <span className="tile-spacer" />}
               </button>
@@ -351,7 +352,7 @@ function ProjectsStep({ projects, setProjects }: { projects: NewTaskInput[]; set
         <div className="project-list">
           {projects.map((pr, i) => (
             <div key={i} className="project-item" style={{ '--cat': catById(pr.category).color } as CSSProperties}>
-              <span className="tile-icon">{catById(pr.category).emoji}</span>
+              <CatIcon cat={pr.category} size={38} />
               <div className="grow">
                 <strong>{pr.title}</strong>
                 <span className="muted small">
@@ -437,10 +438,15 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
 
       {step === 'hola' ? (
         <div className="hello">
-          <div className="hello-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
+          <div className="hello-art" aria-hidden="true">
+            <div className="hello-sun">
+              <Icon name="leaf" size={54} />
+            </div>
+            {(['bienestar', 'pareja', 'proyectos', 'social', 'aficiones', 'familia'] as const).map((c, k) => (
+              <span key={c} className={`hello-orbit o${k}`}>
+                <CatIcon cat={c} size={40} />
+              </span>
+            ))}
           </div>
           <h1>Sereno</h1>
           <p className="lead">Mente tranquila, máximo potencial.</p>

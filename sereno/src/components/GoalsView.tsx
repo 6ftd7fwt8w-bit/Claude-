@@ -6,6 +6,7 @@ import { ConflictBox } from './ConflictBox';
 import { RecurringEditor } from './RecurringEditor';
 import { HABIT_SUGGESTIONS, ROUTINE_SUGGESTIONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
 import { addDays, diffDays, fmtDuration, fmtRelative, minToHm, monthEnd, weekStart } from '../lib/time';
+import { CatIcon, CatMark, Icon } from './Icons';
 
 function RecurringSection({
   title,
@@ -47,11 +48,11 @@ function RecurringSection({
             return (
               <div key={t.id} className="recurring" style={{ '--cat': catById(t.category).color } as CSSProperties}>
                 <button className="recurring-main" onClick={() => onEdit(t)} aria-label={`Editar ${t.title}`}>
-                  <span className="tile-icon">{catById(t.category).emoji}</span>
+                  <CatIcon cat={t.category} title={t.title} color={taskColor(t)} size={38} />
                   <span className="tile-title">{t.title}</span>
                   <span className="tile-meta">
                     {fmtDuration(t.totalMinutes)} · {timesLabel(target, t.days, t.timesPerMonth)}
-                    {t.timeOfDay ? ` · ${TIME_OF_DAY_LABEL[t.timeOfDay].split(' ')[1].toLowerCase()}` : ''}
+                    {t.timeOfDay ? ` · ${TIME_OF_DAY_LABEL[t.timeOfDay].toLowerCase()}` : ''}
                   </span>
                   <span className="pips small-pips">
                     {Array.from({ length: Math.min(7, target) }, (_, i) => (
@@ -73,7 +74,7 @@ function RecurringSection({
           <div className="chips">
             {missing.map((s) => (
               <button key={s.title} className="chip add" onClick={() => onQuickAdd(s)}>
-                {catById(s.category).emoji} {s.title}
+                <CatMark cat={s.category} title={s.title} /> {s.title}
               </button>
             ))}
           </div>
@@ -130,11 +131,11 @@ export function GoalsView({
 
       {loose.length > 0 && (
         <>
-          <h2 className="section-title">✎ Tareas sueltas</h2>
+          <h2 className="section-title">Tareas sueltas</h2>
           {looseByCat.map(({ c, items }) => (
             <section key={c.id} className="card loose-group" style={{ '--cat': c.color } as CSSProperties}>
               <p className="loose-head">
-                {c.emoji} {c.label}
+                <CatIcon cat={c.id} size={28} /> {c.label}
               </p>
               {items.map((t) => {
                 const done = isDone(t);
@@ -187,7 +188,7 @@ export function GoalsView({
           const days = t.deadline ? diffDays(today, t.deadline) : null;
           return (
             <button key={t.id} className={`card project-card mood-${st.mood}`} style={{ '--cat': taskColor(t) } as CSSProperties} onClick={() => onOpen(t)}>
-              <span className="project-stage">{st.stage}</span>
+              <ProgressBadge value={st.pct} cat={t.category} color={taskColor(t)} />
               <span className="grow">
                 <span className="h3 project-title">{t.title}</span>
                 <span className="bar">
@@ -283,10 +284,10 @@ export function GoalsView({
         />
       )}
 
-      {events.length > 0 && <h2 className="section-title">• Próximas citas</h2>}
+      {events.length > 0 && <h2 className="section-title">Próximas citas</h2>}
       {events.map((t) => (
         <section key={t.id} className="card goal row" style={{ '--cat': catById(t.category).color } as CSSProperties}>
-          <span className="goal-emoji">{catById(t.category).emoji}</span>
+          <CatIcon cat={t.category} title={t.title} color={taskColor(t)} size={46} />
           <div className="grow">
             <p className="h3">
               {t.title}
@@ -297,13 +298,39 @@ export function GoalsView({
             </p>
           </div>
           <button className="icon-btn" aria-label={`Editar ${t.title}`} onClick={() => onEdit(t)}>
-            ✎
+            <Icon name="note" size={20} />
           </button>
           <button className="icon-btn" aria-label={`Quitar ${t.title}`} onClick={() => onArchive(t)}>
-           
+            <Icon name="trash" size={20} />
           </button>
         </section>
       ))}
     </div>
+  );
+}
+
+/** Anillo de progreso con el icono del proyecto dentro */
+function ProgressBadge({ value, cat, color }: { value: number; cat: Task['category']; color: string }) {
+  const r = 26;
+  const c = 2 * Math.PI * r;
+  return (
+    <span className="progress-badge" style={{ '--cat': color } as CSSProperties}>
+      <svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true">
+        <circle cx="31" cy="31" r={r} fill="none" stroke="color-mix(in srgb, var(--cat) 16%, var(--surface))" strokeWidth="5" />
+        <circle
+          cx="31"
+          cy="31"
+          r={r}
+          fill="none"
+          stroke="var(--cat)"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - Math.min(1, value))}
+          transform="rotate(-90 31 31)"
+        />
+      </svg>
+      <CatIcon cat={cat} color={color} size={36} />
+    </span>
   );
 }

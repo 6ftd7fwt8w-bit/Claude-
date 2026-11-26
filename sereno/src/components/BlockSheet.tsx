@@ -39,7 +39,7 @@ export function BlockSheet({
   const changed = !!profile.dayOverrides?.[date];
 
   return (
-    <Sheet title={block.label.replace(/^\S+\s/, '')} onClose={onClose}>
+    <Sheet title={block.label} onClose={onClose}>
       <p className="muted small cap">
         {fmtLong(date)} · {minToHm(block.start)}–{minToHm(block.end)}
       </p>

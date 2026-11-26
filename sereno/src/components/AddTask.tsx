@@ -103,7 +103,7 @@ export function AddTask({
   if (parsed.start != null) understood.push(`◷ ${minToHm(parsed.start)}`);
   if (parsed.timesPerWeek) understood.push(`↻ ${parsed.timesPerWeek}×/semana`);
   if (parsed.timesPerMonth) understood.push(`↻ ${parsed.timesPerMonth}×/mes`);
-  if (parsed.category) understood.push(`${catById(parsed.category).emoji} ${catById(parsed.category).label}`);
+  if (parsed.category) understood.push(catById(parsed.category).label);
 
   const title = e && !typed ? text.trim() : parsed.title || text.trim();
   const submit = () => {

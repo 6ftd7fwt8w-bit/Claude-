@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import type { AppState, Session } from '../types';
 import { catById, taskColor } from '../types';
 import { energyFor, sessionsOn, type Interval } from '../lib/scheduler';
@@ -6,8 +6,7 @@ import { phraseOfDay } from '../lib/phrases';
 import { timesLabel } from '../lib/suggestions';
 import type { Tip } from '../lib/tips';
 import { fmtDuration, fmtLong, minToHm, nowMinutes } from '../lib/time';
-import { energyEmoji } from './EnergyCheck';
-import { Ring } from './ui';
+import { CatMark, EnergyIcon, Icon } from './Icons';
 import { DayAgenda, freeGaps, type Block } from './DayAgenda';
 import { mindIndex } from '../lib/mind';
 
@@ -89,7 +88,7 @@ export function SessionCard({
           {task?.source && <span title="De tu calendario"> ▦</span>}
         </div>
         <div className="session-meta">
-          <span className="cat-dot" /> {cat.emoji} {cat.label}
+          <CatMark cat={cat.id} color={taskColor(task)} title={task?.title} /> {cat.label}
           {!compact && <span className="muted"> · {sessionLabel(state, s)}</span>}
         </div>
         {!done && (onPostpone || onMove) && (
@@ -125,7 +124,35 @@ export function SessionCard({
   );
 }
 
-/** Resumen compacto: lo hecho, lo libre que te queda (lo mismo que ves en la agenda) y tu mente. */
+/** Anillo grande de la cabecera: progreso de hoy alrededor y el tiempo libre en el centro */
+function HeroRing({ value, children }: { value: number; children: ReactNode }) {
+  const size = 156;
+  const r = 66;
+  const c = 2 * Math.PI * r;
+  return (
+    <div className="hero-ring">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,.26)" strokeWidth="11" />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="#fff"
+          strokeWidth="11"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - Math.min(1, Math.max(0.001, value)))}
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          style={{ transition: 'stroke-dashoffset .9s ease', opacity: value > 0 ? 1 : 0 }}
+        />
+      </svg>
+      <div className="hero-ring-in">{children}</div>
+    </div>
+  );
+}
+
+/** Cabecera de color: lo hecho, lo libre que te queda (lo mismo que ves en la agenda) y tu mente. */
 function TodaySummary({
   state,
   today,
@@ -142,23 +169,34 @@ function TodaySummary({
   const [help, setHelp] = useState(false);
   const left = freeGaps(state, today, Math.ceil(nowMinutes() / 15) * 15).reduce((a, g) => a + g.end - g.start, 0);
   const m = mindIndex(state, today);
+  const pct = total ? done / total : 0;
   return (
-    <section className="card summary-card">
-      <div className="summary-row">
-        <Ring value={total ? done / total : 0} label="Progreso de hoy" size={58} />
-        <div className="grow">
-          <p className="h3">{total === 0 ? 'Nada planificado hoy' : `${done} de ${total} hechas`}</p>
-          <button className="summary-free" onClick={() => setHelp((h) => !h)} aria-expanded={help}>
-            {left ? `Te quedan ${fmtDuration(left)} libres` : 'Hoy ya no quedan huecos libres'} <span className="info">ⓘ</span>
-          </button>
+    <section className="hero">
+      <div className="hero-row">
+        <div className="hero-stat">
+          <strong>
+            {done}
+            <small>/{total}</small>
+          </strong>
+          <span>hechas</span>
         </div>
-        <button className="mind-pill" onClick={onOpenMind} aria-label="Ver tu mente hoy">
+        <HeroRing value={pct}>
+          <strong>{left ? fmtDuration(left) : '0 min'}</strong>
+          <span>libres hoy</span>
+        </HeroRing>
+        <button className="hero-stat" onClick={onOpenMind} aria-label="Ver tu mente hoy">
           <strong>{m.score}</strong>
-          <span>mente</span>
+          <span>mente ›</span>
         </button>
       </div>
+      <div className="hero-bar" aria-label={`Progreso de hoy ${Math.round(pct * 100)}%`}>
+        <span style={{ width: `${Math.round(pct * 100)}%` }} />
+      </div>
+      <button className="hero-help" onClick={() => setHelp((h) => !h)} aria-expanded={help}>
+        {total === 0 ? 'Nada planificado hoy' : `${Math.round(pct * 100)}% de tu día completado`} · ¿Qué es «libre»?
+      </button>
       {help && (
-        <p className="budget-help">
+        <p className="hero-help-text">
           Es la suma de los huecos marcados como <strong>«Libre»</strong> en tu agenda (de 30 min o más), desde ahora hasta
           que empieza tu desconexión. Toca cualquier hueco libre para llenarlo con algo.
         </p>
@@ -191,24 +229,24 @@ export function TodayView(props: Props) {
         </div>
         <div className="head-actions">
           <button className={`energy-pill ${declared ? '' : 'pulse'}`} onClick={props.onEnergy} aria-label="Cambiar energía de hoy">
-            {energyEmoji(energy)} {energy}%
+            <EnergyIcon value={energy} /> {energy}%
           </button>
           <button className="gear-btn" onClick={props.onSettings} aria-label="Tu rutina y ajustes">
-            ⚙
+            <Icon name="gear" size={20} />
           </button>
         </div>
       </header>
+
+      <TodaySummary state={state} today={today} done={done} total={sessions.length} onOpenMind={props.onOpenMind} />
 
       <section className="phrase-card">
         <span className="quote">“</span>
         <p>{phraseOfDay(today)}</p>
       </section>
 
-      <TodaySummary state={state} today={today} done={done} total={sessions.length} onOpenMind={props.onOpenMind} />
-
       <div className="agenda-head">
         <h2 className="section-title">Tu agenda</h2>
-        <span className="muted small">Toca una hora para añadir · ⠿ para arrastrar</span>
+        <span className="muted small">Toca una hora para añadir · arrastra para mover</span>
       </div>
       {main.length === 0 && routines.length === 0 && (
         <p className="empty small-empty">
@@ -231,10 +269,10 @@ export function TodayView(props: Props) {
 
       <div className="quick-row">
         <button className="btn soft" onClick={props.onPull}>
-          ◷ Tengo un hueco, ¿qué adelanto?
+          <Icon name="clock" /> Tengo un hueco, ¿qué adelanto?
         </button>
         <button className="btn soft" onClick={props.onBreathe}>
-          ○ Respirar
+          <Icon name="wind" /> Respirar
         </button>
       </div>
 
@@ -250,7 +288,7 @@ function JournalCard({ initial, onSave }: { initial: string; onSave: (t: string)
   const [editing, setEditing] = useState(!initial);
   return (
     <section className="card journal">
-      <p className="h3">☾ Antes de dormir</p>
+      <p className="h3 journal-title"><Icon name="moon" /> Antes de dormir</p>
       {editing ? (
         <>
           <p className="muted small">¿Qué te ha hecho bien hoy? Una cosa pequeña basta.</p>

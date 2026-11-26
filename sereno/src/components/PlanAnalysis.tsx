@@ -34,7 +34,7 @@ export function PlanAnalysisView({
         icon: '◈',
         doing: 'Repartiendo tu tiempo según tus valores…',
         result: values.length
-          ? `Tus prioridades: ${top.map((g) => `${areaInfo(g.area).emoji} ${areaInfo(g.area).label.toLowerCase()} ${g.hours} h/${g.per === 'semana' ? 'sem' : 'mes'}`).join(', ')}. Reservaré tiempo para cada una.`
+          ? `Tus prioridades: ${top.map((g) => `${areaInfo(g.area).label.toLowerCase()} ${g.hours} h/${g.per === 'semana' ? 'sem' : 'mes'}`).join(', ')}. Reservaré tiempo para cada una.`
           : 'Sin valores definidos: podrás añadirlos cuando quieras en la pestaña Valores.',
       },
       ...base.steps.slice(2),

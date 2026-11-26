@@ -3,6 +3,7 @@ import type { Profile } from '../types';
 import { isNative } from '../native';
 import { ProfileFields } from './Onboarding';
 import { NumberChips, Sheet } from './ui';
+import { Icon } from './Icons';
 
 export function SettingsView({
   profile,
@@ -58,7 +59,7 @@ export function SettingsView({
       </button>
 
       <div className="settings-section">
-        <p className="h3">▦ Tu otro calendario</p>
+        <p className="h3 with-ico"><Icon name="calendar" /> Tu otro calendario</p>
         <p className="muted small">
           Trae tus citas (médico, reuniones, cumpleaños…) para que Sereno no te ponga nada encima.
         </p>
@@ -92,7 +93,7 @@ export function SettingsView({
 
       <div className="settings-section">
         <button className="btn soft wide" onClick={onReplan}>
-           Reorganizar mi calendario desde cero
+          Reorganizar mi calendario desde cero
         </button>
         <button
           className="btn ghost wide danger"

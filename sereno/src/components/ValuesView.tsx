@@ -4,6 +4,7 @@ import { valueProgress, valuesMessage } from '../lib/values';
 import { fmtDuration, fmtShort } from '../lib/time';
 import { ValuesEditor } from './ValuesEditor';
 import { Sheet } from './ui';
+import { CatIcon } from './Icons';
 
 /** Cómo vas con lo que es importante para ti */
 export function ValuesView({
@@ -44,7 +45,7 @@ export function ValuesView({
         {list.map((p) => (
           <section key={p.goal.area} className={`card value-bar status-${p.status}`} style={{ '--cat': p.color } as CSSProperties}>
             <div className="vb-head">
-              <span className="vr-emoji">{p.info.emoji}</span>
+              <CatIcon cat={p.goal.area} size={34} />
               <strong className="grow">{p.info.label}</strong>
               <span className="vb-num">
                 {fmtDuration(p.done)} <span className="muted">/ {fmtDuration(p.target)}</span>
@@ -79,7 +80,7 @@ export function ValuesView({
               setEditing(true);
             }}
           >
-            ◈ Ajustar mis valores
+            Ajustar mis valores
           </button>
         </div>
       )}

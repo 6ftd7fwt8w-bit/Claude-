@@ -7,6 +7,7 @@ import type { NewTaskInput } from '../lib/scheduler';
 import { detectCategory, estimateMinutes, parseQuick } from '../lib/parse';
 import { addDays, fmtLong, fmtShort, hmToMin, minToHm, monthEnd, todayKey, weekday } from '../lib/time';
 import { DurationPicker, NumberChips, Sheet, TimeMode } from './ui';
+import { CatIcon, CatMark, Icon } from './Icons';
 
 /** fijo: un día y hora concretos (se apunta tal cual) · hueco: Sereno le busca sitio */
 type Mode = 'fijo' | 'hueco';
@@ -194,11 +195,11 @@ export function QuickCapture({
         />
         {favorites.length > 0 && (
           <div className="favs">
-            <span className="muted small">☆ Tus favoritos</span>
+            <span className="muted small fav-label"><Icon name="star" size={15} /> Tus favoritos</span>
             <div className="chips">
               {favorites.map((f) => (
                 <button key={f.title} type="button" className="chip" onClick={() => setText((t) => (t.trim() ? `${t.trim()}\n${f.title}` : f.title))}>
-                  {catById(f.category).emoji} {f.title}
+                  <CatMark cat={f.category} title={f.title} /> {f.title}
                 </button>
               ))}
             </div>
@@ -210,7 +211,7 @@ export function QuickCapture({
               const c = catById(detectCategory(l, learned) ?? 'gestiones');
               return (
                 <span key={k} className="tag" style={{ background: `color-mix(in srgb, ${c.color} 22%, var(--surface))` }}>
-                  {c.emoji} {l.length > 28 ? `${l.slice(0, 28)}…` : l}
+                  <CatMark cat={c.id} /> {l.length > 28 ? `${l.slice(0, 28)}…` : l}
                 </span>
               );
             })}
@@ -231,7 +232,7 @@ export function QuickCapture({
         <div className="capture-results">
           {results.map((r, k) => (
             <div key={k} className="capture-result" style={{ '--cat': catById(r.category).color } as CSSProperties}>
-              <span className="cr-icon">{catById(r.category).emoji}</span>
+              <CatIcon cat={r.category} title={r.title} size={40} />
               <div className="grow">
                 <strong>{r.title}</strong>
                 <span className="muted small">{r.message?.replace(/ Ojo: faltan .*$/, '')}</span>
@@ -255,7 +256,7 @@ export function QuickCapture({
         ))}
       </div>
       <div className="ask-card" style={{ '--cat': cat.color } as CSSProperties}>
-        <span className="ask-icon">{cat.emoji}</span>
+        <CatIcon cat={cat.id} size={48} />
         <div className="grow">
           <input className="ask-title" value={d.title} aria-label="Nombre" onChange={(e) => set({ title: e.target.value })} />
           <span className="ask-cat">
@@ -276,8 +277,8 @@ export function QuickCapture({
                 set({ category: c.id, ...(d.big !== est.big ? { minutes: est.minutes, big: est.big } : {}) });
               }}
             >
-              <span>{c.emoji}</span>
-              {c.label}
+              <CatIcon cat={c.id} size={30} />
+              <span>{c.label}</span>
             </button>
           ))}
         </div>

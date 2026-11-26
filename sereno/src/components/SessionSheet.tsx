@@ -5,6 +5,7 @@ import { sessionsOn, stepsPlan } from '../lib/scheduler';
 import { fmtDuration, fmtLong, minToHm } from '../lib/time';
 import { sessionLabel } from './TodayView';
 import { Sheet } from './ui';
+import { CatIcon, CatMark } from './Icons';
 
 /** Al tocar un bloque de la agenda: todo lo que se puede hacer con él. */
 export function SessionSheet({
@@ -63,7 +64,7 @@ export function SessionSheet({
   return (
     <Sheet title={c.label} onClose={close}>
       <div className="ss-head" style={{ '--cat': taskColor(task) } as CSSProperties}>
-        <span className="ss-icon">{c.emoji}</span>
+        <CatIcon cat={task?.category ?? 'bienestar'} title={task?.title} color={taskColor(task)} size={46} />
         <div>
           <p className="h3">{task?.title}</p>
           <p className="muted small">
@@ -154,7 +155,7 @@ export function SessionSheet({
                     const t = state.tasks.find((x) => x.id === o.taskId);
                     return (
                       <button key={o.id} className="chip" onClick={act(() => onMoveAfter(session, o.id))}>
-                        {catById(t?.category ?? 'bienestar').emoji} {t?.title} ({minToHm(o.start + o.duration)})
+                        <CatMark cat={t?.category ?? 'bienestar'} /> {t?.title} ({minToHm(o.start + o.duration)})
                       </button>
                     );
                   })}

@@ -3,39 +3,41 @@ import type { AppState, Session } from '../types';
 import { catById, taskColor } from '../types';
 import { bedAbs, bedEff, breaksFor, complement, isRemote, mealsFor, relaxStart, sessionsOn, workHours, type Interval } from '../lib/scheduler';
 import { fmtDuration, minToHm } from '../lib/time';
+import { CatIcon, Icon, type IconName } from './Icons';
 
 const HOUR = 64; // px por hora
 
 export interface Block extends Interval {
   label: string;
   kind: 'routine' | 'work' | 'commute' | 'pause' | 'meal' | 'relax';
+  icon?: IconName;
   key?: 'lunch' | 'dinner';
 }
 
 /** Bloques fijos del día según la rutina (lo que en Google Calendar serían tus eventos de siempre) */
 function baseBlocks(state: AppState, date: string): Block[] {
   const p = state.profile!;
-  const out: Block[] = [{ start: p.wake, end: p.wake + p.morningRoutine, label: '◐ Despertar y arrancar', kind: 'routine' }];
+  const out: Block[] = [{ start: p.wake, end: p.wake + p.morningRoutine, label: 'Despertar y arrancar', kind: 'routine', icon: 'sunrise' }];
   const w = workHours(p, date);
   if (w) {
     const remote = isRemote(p, date);
     if (!remote && p.commute) {
-      out.push({ start: w.start - p.commute, end: w.start, label: '→ Trayecto', kind: 'commute' });
-      out.push({ start: w.end, end: w.end + p.commute, label: '→ Trayecto', kind: 'commute' });
+      out.push({ start: w.start - p.commute, end: w.start, label: 'Trayecto', kind: 'commute', icon: 'commute' });
+      out.push({ start: w.end, end: w.end + p.commute, label: 'Trayecto', kind: 'commute', icon: 'commute' });
     }
     const breaks = breaksFor(p, date).map((b) => ({ start: b.start, end: b.start + b.duration }));
     for (const piece of complement(breaks, w.start, w.end)) {
-      out.push({ ...piece, label: remote ? '⌂ Teletrabajo' : '⬡ Trabajo', kind: 'work' });
+      out.push({ ...piece, label: remote ? 'Teletrabajo' : 'Trabajo', kind: 'work', icon: remote ? 'laptop' : 'trabajo' });
     }
-    for (const b of breaks) out.push({ ...b, label: '◔ Pausa', kind: 'pause' });
+    for (const b of breaks) out.push({ ...b, label: 'Pausa', kind: 'pause', icon: 'coffee' });
   }
   const meals = mealsFor(p, date);
-  out.push({ ...meals.lunch, label: '◦ Comida', kind: 'meal', key: 'lunch' });
-  out.push({ ...meals.dinner, label: '◦ Cena', kind: 'meal', key: 'dinner' });
+  out.push({ ...meals.lunch, label: 'Comida', kind: 'meal', key: 'lunch', icon: 'meal' });
+  out.push({ ...meals.dinner, label: 'Cena', kind: 'meal', key: 'dinner', icon: 'meal' });
   // si te acuestas después de medianoche, la desconexión empieza más tarde (y puede seguir pasadas las 00:00)
   const rs = relaxStart(p);
   if (rs < 1440) {
-    out.push({ start: rs, end: Math.min(1440, bedAbs(p)), label: `☾ Desconexión hasta las ${minToHm(bedAbs(p))}`, kind: 'relax' });
+    out.push({ start: rs, end: Math.min(1440, bedAbs(p)), label: `Desconexión hasta las ${minToHm(bedAbs(p))}`, kind: 'relax', icon: 'moon' });
   }
   return out.filter((b) => b.end > b.start).sort((a, b) => a.start - b.start);
 }
@@ -179,7 +181,7 @@ export function DayAgenda({
         >
           {y(b.end) - y(b.start) >= 18 && (
             <span>
-              {b.label} <small>{minToHm(b.start)}–{minToHm(b.end)}</small>
+              {b.icon && <Icon name={b.icon} size={15} />} {b.label} <small>{minToHm(b.start)}–{minToHm(b.end)}</small>
             </span>
           )}
         </div>
@@ -195,7 +197,7 @@ export function DayAgenda({
           }}
         >
           <span>
-            Libre · {minToHm(f.start)}–{minToHm(f.end)} <small>({fmtDuration(f.end - f.start)})</small>
+            <Icon name="leaf" size={14} /> Libre · {minToHm(f.start)}–{minToHm(f.end)} <small>({fmtDuration(f.end - f.start)})</small>
           </span>
           {onTapGap && <span className="ag-free-add">+ Añadir algo</span>}
         </button>
@@ -235,12 +237,12 @@ export function DayAgenda({
                   setDrag({ id: s.id, y0: e.clientY, dy: 0 });
                 }}
               >
-                ⠿
+                <Icon name="drag" size={16} />
               </span>
             )}
             <button className="ag-main" onClick={() => onTap(s)}>
               <span className="ag-title">
-                <span className="ag-glyph">{c.emoji}</span> {t?.title}
+                <CatIcon cat={c.id} title={t?.title} color={taskColor(t)} size={22} /> {t?.title}
                 {s.note && <span className="ag-note-dot" title={s.note}> ✎</span>}
               </span>
               <span className="ag-time">

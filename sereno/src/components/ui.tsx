@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { CATEGORIES, type CategoryId } from '../types';
 import { hmToMin, minToHm } from '../lib/time';
+import { CatMark, Icon } from './Icons';
 
 export function Sheet({ title, onClose, children }: { title?: string; onClose: () => void; children: ReactNode }) {
   useEffect(() => {
@@ -80,7 +81,7 @@ export function CategoryPicker({ value, onChange }: { value: CategoryId; onChang
           style={{ '--chip': c.color } as CSSProperties}
           onClick={() => onChange(c.id)}
         >
-          {c.emoji} {c.label}
+          <CatMark cat={c.id} /> {c.label}
         </button>
       ))}
     </div>
@@ -161,18 +162,18 @@ export function Celebration({ text, sub, onDone }: { text: string; sub?: string;
       left: Math.random() * 100,
       delay: Math.random() * 400,
       dur: 1400 + Math.random() * 900,
-      emoji: ['✦', '·', '◦', '✧', '○'][i % 5],
+      color: ['#4FB08A', '#F2B33D', '#E8608A', '#6B8BE6', '#F0875A', '#9C7AE2'][i % 6],
+      shape: i % 3,
     })),
   );
   return (
     <div className="celebrate" onClick={onDone} aria-live="polite">
       {bits.map((b, i) => (
-        <span key={i} className="fall" style={{ left: `${b.left}%`, animationDelay: `${b.delay}ms`, animationDuration: `${b.dur}ms` }}>
-          {b.emoji}
+        <span key={i} className={`fall shape-${b.shape}`} style={{ left: `${b.left}%`, animationDelay: `${b.delay}ms`, animationDuration: `${b.dur}ms`, background: b.color }}>
         </span>
       ))}
       <div className="celebrate-card">
-        <div className="celebrate-icon"></div>
+        <div className="celebrate-icon"><Icon name="spark" size={34} /></div>
         <p className="celebrate-text">{text}</p>
         {sub && <p className="celebrate-sub">{sub}</p>}
       </div>

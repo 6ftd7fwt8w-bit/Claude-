@@ -6,6 +6,7 @@ import { fmtDuration, fmtMonth, fmtShort, fromKey, monthKey, pad } from '../lib/
 import { ACHIEVEMENTS, SHOP, owns, recentJournal, seasonFor, type Slot } from '../lib/rewards';
 import { Bonsai } from './Bonsai';
 import { Sheet } from './ui';
+import { CatMark } from './Icons';
 
 function bonsaiMessage(leaves: number, buds: number): string {
   if (leaves === 0 && buds === 0) return 'Tu bonsái espera su primera hoja. Añade algo que quieras cultivar 🌱';
@@ -97,7 +98,7 @@ export function BonsaiView({ state, today, onBuy }: { state: AppState; today: st
           {CATEGORIES.map((c) => (
             <div key={c.id} className="balance-row">
               <span className="balance-label">
-                {c.emoji} {c.label}
+                <CatMark cat={c.id} /> {c.label}
               </span>
               <span className="balance-bar">
                 <span style={{ width: `${(st.minutesByCat[c.id] / maxMin) * 100}%`, background: c.color }} />
