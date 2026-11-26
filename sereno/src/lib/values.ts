@@ -158,12 +158,17 @@ export function valueProgress(state: AppState, today: string): ValueProgress[] {
     const inPeriod = state.sessions.filter((s) => s.date >= from && s.date <= to && cat.get(s.taskId) === goal.area);
     const done = inPeriod.filter((s) => s.status === 'done').reduce((a, s) => a + s.duration, 0);
     const planned = inPeriod.reduce((a, s) => a + s.duration, 0);
-    const target = Math.round(goal.hours * 60);
+    // si empezaste a usar Sereno a mitad de periodo, el objetivo se reparte desde ese día
+    const started = state.profile?.createdAt && state.profile.createdAt > from ? state.profile.createdAt : from;
     const span = diffDays(from, to) + 1;
-    const elapsed = Math.min(span, diffDays(from, today) + 1);
-    const expected = Math.round((target * elapsed) / span);
+    const live = Math.max(1, diffDays(started, to) + 1);
+    const target = Math.round((goal.hours * 60 * live) / span);
+    // solo días ya terminados: hoy todavía puedes hacerlo
+    const elapsed = Math.min(live, Math.max(0, diffDays(started, today)));
+    const expected = Math.round((target * elapsed) / live);
     const ratio = expected ? done / expected : 1;
-    const status = done >= target || ratio >= 0.9 ? 'genial' : ratio >= 0.5 ? 'bien' : 'poco';
+    // al principio (menos de media hora esperada) no tiene sentido decir que vas mal
+    const status = done >= target || ratio >= 0.9 ? 'genial' : ratio >= 0.5 || expected < 30 ? 'bien' : 'poco';
     return { goal, info: areaInfo(goal.area), color: catById(goal.area).color, from, to, done, planned, target, expected, status };
   });
 }
@@ -234,4 +239,16 @@ export function applyValues(state: AppState, values: ValueGoal[], ctx: Ctx): { s
   }
   s = ensureHabits(s, ctx);
   return { state: s, created };
+}
+
+/** Si ya tienes proyectos reales, el bloque genérico «Avanzar en mis proyectos» sobra */
+export function pruneValueBlocks(state: AppState): AppState {
+  const hasProjects = state.tasks.some((t) => !t.archived && !t.valueBlock && t.category === 'proyectos');
+  const block = state.tasks.find((t) => !t.archived && t.valueBlock === 'proyectos');
+  if (!hasProjects || !block) return state;
+  return {
+    ...state,
+    tasks: state.tasks.map((t) => (t.id === block.id ? { ...t, archived: true } : t)),
+    sessions: state.sessions.filter((x) => !(x.taskId === block.id && x.status === 'planned')),
+  };
 }

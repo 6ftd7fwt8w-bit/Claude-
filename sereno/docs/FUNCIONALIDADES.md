@@ -120,6 +120,28 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | Toca el nivel del día (tranquilo, con ritmo…) para ver qué significa |
 | ✅ | **Tu día de un vistazo**: tira con trabajo, pausas, tus cosas y la marca de «ahora» |
 
+## 1c. Valores (v8)
+
+| | Funcionalidad |
+|---|---|
+| ✅ | Paso **«¿Qué es importante para ti?»** en la encuesta: 4 visiones de vida (darme prioridad a mí, mis proyectos, familia y personas, equilibrio) que proponen horas por área |
+| ✅ | Áreas: familia, amigos, salud y movimiento, tiempo para mí, proyectos y aficiones; horas por semana o por mes, ajustables |
+| ✅ | **Pautas contrastadas** explicadas: OMS (150–300 min/semana de actividad), naturaleza (White et al., 2019), amistad (Hall, 2018), Estudio de Harvard sobre el Desarrollo Adulto; aviso si el movimiento queda por debajo |
+| ✅ | **Organiza según tus valores**: crea bloques («Tiempo en familia»…) solo para lo que tus tareas no cubren |
+| ✅ | **Pestaña Valores**: barra por área (hecho, planificado y ritmo esperado) y mensaje: «¡Lo estás haciendo genial!», «Vas bien» o «Intenta dedicar un poco más a…» |
+| ✅ | Nueva categoría **🏠 Familia**, separada de amigos |
+
+## 4e. Más control (v8)
+
+| | Funcionalidad |
+|---|---|
+| ✅ | **Comida y trabajo editables solo un día** (comí en 30 min, hoy trabajé hasta las 20:00, hoy no trabajo); lo que choque se recoloca |
+| ✅ | **Conflictos en rojo** si algo no cabe antes de su fecha, con opciones: usar el fin de semana, ampliar una semana, sesiones más cortas o dejarlo en lo que cabe |
+| ✅ | **«A partir de las…»** además de hora fija |
+| ✅ | Proyectos el fin de semana **solo en una franja** (p. ej. domingo por la tarde) |
+| ✅ | **Modo autónomo/artista**: planificar también tareas de trabajo dentro del horario laboral, con color propio |
+| ✅ | Desconexión de más de 2 h; tipo de tarea siempre visible en el asistente; vuelta arriba al cambiar de pestaña o de tarea |
+
 ## 4d. Control total del día (v7)
 
 | | Funcionalidad |

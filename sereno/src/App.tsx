@@ -28,7 +28,7 @@ import {
 } from './lib/scheduler';
 import { randomDonePhrase } from './lib/phrases';
 import { buy, claimAchievements, writeJournal } from './lib/rewards';
-import { applyValues } from './lib/values';
+import { applyValues, pruneValueBlocks } from './lib/values';
 import { icsToEvents } from './lib/ics';
 import { guessCategory, learnCategory } from './lib/parse';
 import type { Tip } from './lib/tips';
@@ -394,7 +394,7 @@ export default function App() {
                 s2 = r.state;
                 results.push({ title: t.title, category: t.category, message: r.message, taskId: s2.tasks[s2.tasks.length - 1]?.id });
               }
-              return s2;
+              return pruneValueBlocks(s2);
             });
             return results;
           }}
@@ -411,7 +411,10 @@ export default function App() {
           }}
           onAdd={(input: NewTaskInput) => {
             setModal(null);
-            say(act((st, ctx) => addTask(st, input, ctx)));
+            say(act((st, ctx) => {
+              const r = addTask(st, input, ctx);
+              return { ...r, state: pruneValueBlocks(r.state) };
+            }));
           }}
           onEdit={(id, patch) => {
             setModal(null);

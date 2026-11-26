@@ -51,10 +51,18 @@ export function ValuesEditor({
                   </button>
                 </div>
                 <div className="per-toggle">
-                  <button type="button" className={g.per === 'semana' ? 'on' : ''} onClick={() => setGoal({ ...g, per: 'semana' })}>
+                  <button
+                    type="button"
+                    className={g.per === 'semana' ? 'on' : ''}
+                    onClick={() => g.per !== 'semana' && setGoal({ ...g, per: 'semana', hours: g.hours ? Math.max(1, Math.round(g.hours / 4.3)) : 0 })}
+                  >
                     /sem
                   </button>
-                  <button type="button" className={g.per === 'mes' ? 'on' : ''} onClick={() => setGoal({ ...g, per: 'mes' })}>
+                  <button
+                    type="button"
+                    className={g.per === 'mes' ? 'on' : ''}
+                    onClick={() => g.per !== 'mes' && setGoal({ ...g, per: 'mes', hours: Math.round(g.hours * 4.3) })}
+                  >
                     /mes
                   </button>
                 </div>

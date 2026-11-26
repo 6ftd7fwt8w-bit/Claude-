@@ -108,3 +108,14 @@ describe('fines de semana con franja y modo autónomo', async () => {
     }
   });
 });
+
+describe('bloques de valores', async () => {
+  const { applyValues, pruneValueBlocks } = await import('./values');
+  it('al añadir un proyecto real, el bloque genérico de proyectos se retira', () => {
+    let { state } = applyValues(base(), [{ area: 'proyectos', hours: 8, per: 'mes' }], ctx);
+    expect(state.tasks.some((t) => t.valueBlock === 'proyectos' && !t.archived)).toBe(true);
+    state = addTask(state, { title: 'Escribir Maika', category: 'proyectos', kind: 'flexible', totalMinutes: 300 }, ctx).state;
+    state = pruneValueBlocks(state);
+    expect(state.tasks.some((t) => t.valueBlock === 'proyectos' && !t.archived)).toBe(false);
+  });
+});
