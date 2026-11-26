@@ -72,3 +72,39 @@ describe('valores', async () => {
     expect(guidelineWarning({ area: 'bienestar', hours: 3, per: 'semana' })).toBeUndefined();
   });
 });
+
+describe('conflictos', async () => {
+  const { conflictOf, fixConflict } = await import('./scheduler');
+  it('si no cabe antes de la fecha, ofrece opciones y se resuelve', () => {
+    const { state } = addTask(base({ weekendFocus: 'no' }), { title: 'Maika', category: 'proyectos', kind: 'flexible', totalMinutes: 900, sessionMinutes: 60, deadline: addDays(TODAY, 9) }, ctx);
+    const c = conflictOf(state, state.tasks[0].id)!;
+    expect(c.missing).toBeGreaterThan(0);
+    expect(c.options.map((o) => o.id)).toEqual(expect.arrayContaining(['finde', 'ampliar', 'cortas', 'reducir']));
+    const r = fixConflict(state, state.tasks[0].id, 'reducir', ctx);
+    expect(conflictOf(r.state, state.tasks[0].id)).toBeNull();
+    expect(r.message).toMatch(/Resuelto/);
+    const w = fixConflict(state, state.tasks[0].id, 'finde', ctx);
+    expect((w.state.unplaced[state.tasks[0].id] ?? 0)).toBeLessThan(c.missing);
+  });
+});
+
+describe('fines de semana con franja y modo autónomo', async () => {
+  const { weekday } = await import('./time');
+  it('proyectos solo los domingos por la tarde (en finde)', () => {
+    const p = { weekendFocus: 'franja' as const, weekendSlots: [{ day: 0 as const, part: 'tarde' as const }], works: true };
+    const { state } = addTask(base(p), { title: 'Láminas', category: 'proyectos', kind: 'flexible', totalMinutes: 600, sessionMinutes: 60, deadline: addDays(TODAY, 20) }, ctx);
+    const weekend = state.sessions.filter((x) => [0, 6].includes(weekday(x.date)));
+    expect(weekend.length).toBeGreaterThan(0);
+    expect(weekend.every((x) => weekday(x.date) === 0 && x.start >= 14 * 60)).toBe(true);
+  });
+
+  it('autónomos: el trabajo va dentro del horario laboral y no gasta tiempo libre', () => {
+    const { state } = addTask(base({ planWork: true }), { title: 'Preparar pedidos', category: 'trabajo', kind: 'flexible', totalMinutes: 180, sessionMinutes: 90, deadline: addDays(TODAY, 3) }, ctx);
+    expect(state.sessions.length).toBe(2);
+    for (const x of state.sessions) {
+      expect(x.inWork).toBe(true);
+      expect(x.start).toBeGreaterThanOrEqual(9 * 60);
+      expect(x.start + x.duration).toBeLessThanOrEqual(18 * 60);
+    }
+  });
+});

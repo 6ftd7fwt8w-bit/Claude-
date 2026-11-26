@@ -1,7 +1,8 @@
 import { useState, type CSSProperties } from 'react';
 import type { AppState, Task } from '../types';
 import { catById, taskColor, type DayType, type Step } from '../types';
-import { projectStatus, stepsPlan, uid, type TaskPatch } from '../lib/scheduler';
+import { projectStatus, stepsPlan, uid, type ConflictFix, type TaskPatch } from '../lib/scheduler';
+import { ConflictBox } from './ConflictBox';
 import { fmtDuration, fmtRelative, fmtShort, minToHm } from '../lib/time';
 import { DurationPicker, Sheet } from './ui';
 
@@ -20,6 +21,7 @@ export function ProjectSheet({
   onClose,
   onEdit,
   onPatch,
+  onFix,
 }: {
   state: AppState;
   task: Task;
@@ -27,6 +29,7 @@ export function ProjectSheet({
   onClose: () => void;
   onEdit: (t: Task) => void;
   onPatch: (id: string, patch: TaskPatch) => void;
+  onFix: (taskId: string, fix: ConflictFix) => void;
 }) {
   const [notes, setNotes] = useState(task.notes ?? '');
   const [stepTitle, setStepTitle] = useState('');
@@ -118,9 +121,7 @@ export function ProjectSheet({
             El puntito del círculo marca dónde tocaría ir hoy para llegar con calma ({Math.round(st.expected * 100)}%).
           </p>
         )}
-        {unplaced > 0 && (
-          <p className="warn small center">⚠️ {fmtDuration(unplaced)} no caben antes de la fecha límite.</p>
-        )}
+        {unplaced > 0 && <ConflictBox state={state} taskId={task.id} onFix={onFix} />}
 
         <div className="pd-section">
           <p className="h3">📋 Pasos</p>

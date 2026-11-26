@@ -30,6 +30,7 @@ interface Props {
   onTapGap: (gap: Interval) => void;
   onDrop: (s: Session, start: number) => void;
   onTapBlock: (b: Block, minute: number) => void;
+  onSettings: () => void;
 }
 
 function greeting(): string {
@@ -188,9 +189,14 @@ export function TodayView(props: Props) {
             {p.name ? `, ${p.name}` : ''}
           </h1>
         </div>
-        <button className={`energy-pill ${declared ? '' : 'pulse'}`} onClick={props.onEnergy} aria-label="Cambiar energía de hoy">
-          {energyEmoji(energy)} {energy}%
-        </button>
+        <div className="head-actions">
+          <button className={`energy-pill ${declared ? '' : 'pulse'}`} onClick={props.onEnergy} aria-label="Cambiar energía de hoy">
+            {energyEmoji(energy)} {energy}%
+          </button>
+          <button className="gear-btn" onClick={props.onSettings} aria-label="Tu rutina y ajustes">
+            ⚙️
+          </button>
+        </div>
       </header>
 
       <section className="phrase-card">

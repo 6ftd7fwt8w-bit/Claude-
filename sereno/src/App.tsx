@@ -8,6 +8,7 @@ import {
   setSessionDuration,
   setSessionNote,
   setDayOverride,
+  fixConflict,
   type Interval,
   archiveTask,
   breaksFor,
@@ -49,6 +50,7 @@ import { QuickCapture, type CaptureResult } from './components/QuickCapture';
 import { SessionSheet } from './components/SessionSheet';
 import { AddAtSheet, FillGapSheet } from './components/AgendaSheets';
 import { BlockSheet } from './components/BlockSheet';
+import { ValuesView } from './components/ValuesView';
 import type { Block } from './components/DayAgenda';
 import { EnergyCheck } from './components/EnergyCheck';
 import { TodayView } from './components/TodayView';
@@ -60,13 +62,14 @@ import { AddTask, type AddPreset } from './components/AddTask';
 import { MoveSheet } from './components/MoveSheet';
 import { Breathe, Celebration, Confirm, Toast } from './components/ui';
 
-type Tab = 'hoy' | 'calendario' | 'objetivos' | 'bonsai';
+type Tab = 'hoy' | 'calendario' | 'objetivos' | 'valores' | 'bonsai';
 type Modal = null | 'add' | 'capture' | 'energy' | 'breathe' | 'settings' | 'mind';
 
 const TABS: { id: Tab; icon: string; label: string }[] = [
   { id: 'hoy', icon: '☀️', label: 'Hoy' },
   { id: 'calendario', icon: '🗓️', label: 'Calendario' },
   { id: 'objetivos', icon: '🎯', label: 'Objetivos' },
+  { id: 'valores', icon: '🧭', label: 'Valores' },
   { id: 'bonsai', icon: '🌳', label: 'Bonsái' },
 ];
 
@@ -297,6 +300,7 @@ export default function App() {
             onTapTime={(min) => setAddAt({ date: today, start: min })}
             onTapGap={(gap) => setGapAt({ date: today, gap })}
             onTapBlock={(block, minute) => setBlockAt({ date: today, block, minute })}
+            onSettings={() => setModal('settings')}
             onDrop={(x, start) => say(act((st, ctx) => moveSession(st, x.id, x.date, start, ctx)))}
           />
         )}
@@ -321,11 +325,27 @@ export default function App() {
             onOpen={(t) => setOpenedId(t.id)}
             onQuickAdd={(sug, routine) => say(act((st, ctx) => addTask(st, recurringToTask(sug, routine), ctx)))}
             onPatch={(id, patch) => say(act((st, ctx) => editTask(st, id, patch, ctx)))}
+            onFix={(id, fix) => say(act((st, ctx) => fixConflict(st, id, fix, ctx)))}
             onCompleteTask={(t) => {
               const next = state.sessions
                 .filter((x) => x.taskId === t.id && x.status === 'planned')
                 .sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start)[0];
               if (next) complete(next);
+            }}
+          />
+        )}
+        {tab === 'valores' && (
+          <ValuesView
+            state={state}
+            today={today}
+            onSave={(values, vision) => {
+              let created: string[] = [];
+              act((st, ctx) => {
+                const r = applyValues({ ...st, vision }, values, ctx);
+                created = r.created;
+                return r.state;
+              });
+              say(created.length ? `He reservado tiempo para tus valores: ${created.join(' · ')}` : 'Valores guardados. Tus tareas ya los cubren 🌿');
             }}
           />
         )}
@@ -350,15 +370,14 @@ export default function App() {
             <span>{t.label}</span>
           </button>
         ))}
-        <button onClick={() => setModal('settings')}>
-          <span className="tab-icon">⚙️</span>
-          <span>Rutina</span>
-        </button>
+
       </nav>
 
       {modal === 'capture' && (
         <QuickCapture
           learned={state.learned}
+          state={state}
+          onFix={(id, fix) => say(act((st, ctx) => fixConflict(st, id, fix, ctx)))}
           onClose={() => setModal(null)}
           onFullForm={() => setModal('add')}
           onFinish={(tasks, corrections) => {
@@ -373,7 +392,7 @@ export default function App() {
               for (const t of tasks) {
                 const r = addTask(s2, t, ctx);
                 s2 = r.state;
-                results.push({ title: t.title, category: t.category, message: r.message });
+                results.push({ title: t.title, category: t.category, message: r.message, taskId: s2.tasks[s2.tasks.length - 1]?.id });
               }
               return s2;
             });
@@ -508,6 +527,7 @@ export default function App() {
           today={today}
           onClose={() => setOpenedId(undefined)}
           onPatch={(id, patch) => say(act((st, ctx) => editTask(st, id, patch, ctx)))}
+          onFix={(id, fix) => say(act((st, ctx) => fixConflict(st, id, fix, ctx)))}
           onEdit={(t) => {
             setOpenedId(undefined);
             setEditing(t);

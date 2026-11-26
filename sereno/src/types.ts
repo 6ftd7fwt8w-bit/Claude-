@@ -16,7 +16,7 @@ export const CATEGORIES: Category[] = [
   { id: 'autocuidado', label: 'Cuidado personal', emoji: '🛁', color: '#B996D0' },
   { id: 'hogar', label: 'Hogar', emoji: '🏡', color: '#9DBB78' },
   { id: 'gestiones', label: 'Gestiones y papeles', emoji: '📋', color: '#7FAFC2' },
-  { id: 'trabajo', label: 'Trabajo', emoji: '💼', color: '#A39A8C' },
+  { id: 'trabajo', label: 'Trabajo', emoji: '💼', color: '#B5713F' },
 ];
 
 export function catById(id: CategoryId): Category {
@@ -94,6 +94,8 @@ export interface Task {
   steps?: Step[];
   /** color propio (proyectos y aficiones) */
   color?: string;
+  /** permitir fines de semana aunque en general no trabajes en proyectos el finde */
+  allowWeekend?: boolean;
   /** bloque creado automáticamente para cumplir un valor (p. ej. tiempo en familia) */
   valueBlock?: AreaId;
   /** de dónde viene: creada en Sereno, importada de un .ics o del calendario del iPhone */
@@ -116,6 +118,8 @@ export interface Session {
   completedAt?: string;
   /** nota para este día concreto (qué quiero hacer hoy de este proyecto) */
   note?: string;
+  /** tarea de trabajo colocada dentro del horario laboral (no cuenta como tiempo libre ocupado) */
+  inWork?: boolean;
 }
 
 export type Chronotype = 'manana' | 'neutro' | 'noche';
@@ -176,7 +180,11 @@ export interface Profile {
   defaultEnergy: number;
   gentleWeekends: boolean;
   /** ¿proyectos y trabajo el fin de semana? sí, un poco, no */
-  weekendFocus: 'si' | 'poco' | 'no';
+  weekendFocus: 'si' | 'poco' | 'no' | 'franja';
+  /** si weekendFocus = 'franja': cuándo sí (p. ej. domingo por la tarde) */
+  weekendSlots?: { day: 0 | 6; part: 'manana' | 'tarde' | 'noche' }[];
+  /** planificar también las tareas del trabajo (autónomos, artistas…) dentro del horario laboral */
+  planWork?: boolean;
   createdAt: string;
 }
 

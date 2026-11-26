@@ -98,6 +98,13 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
               <DayPicker value={p.remoteDays ?? []} options={p.workDays} onChange={(remoteDays) => set({ remoteDays })} />
               <small className="muted">Esos días no cuento desplazamiento.</small>
             </div>
+            <label className="toggle work-plan">
+              <input type="checkbox" checked={!!p.planWork} onChange={(e) => set({ planWork: e.target.checked })} />
+              <span>
+                <strong>Quiero planificar también las tareas de mi trabajo</strong>
+                <small className="muted">Ideal si eres autónomo, artista o llevas tu propio proyecto: las coloco dentro de tu horario laboral, en color propio.</small>
+              </span>
+            </label>
             {(p.remoteDays ?? []).length < p.workDays.length && (
               <div className="field">
                 <span>🚆 Desplazamiento los días de oficina (cada trayecto)</span>
@@ -151,6 +158,7 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
               [
                 ['si', 'Sí, como cualquier día'],
                 ['poco', 'Un poco'],
+                ['franja', '🕐 Solo en un horario concreto'],
                 ['no', 'No, los fines de semana son para mí'],
               ] as const
             ).map(([v, l]) => (
@@ -159,6 +167,37 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
               </button>
             ))}
           </div>
+          {p.weekendFocus === 'franja' && (
+            <div className="slot-grid">
+              {(
+                [
+                  [6, 'manana', 'Sábado mañana'],
+                  [6, 'tarde', 'Sábado tarde'],
+                  [0, 'manana', 'Domingo mañana'],
+                  [0, 'tarde', 'Domingo tarde'],
+                ] as const
+              ).map(([day, part, label]) => {
+                const on = (p.weekendSlots ?? []).some((s) => s.day === day && s.part === part);
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    className={`chip ${on ? 'on' : ''}`}
+                    aria-pressed={on}
+                    onClick={() =>
+                      set({
+                        weekendSlots: on
+                          ? (p.weekendSlots ?? []).filter((s) => !(s.day === day && s.part === part))
+                          : [...(p.weekendSlots ?? []), { day, part }],
+                      })
+                    }
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
           <small className="muted">Además, puedes marcar cualquier cosa (quedar con amigas, la compra…) como «solo fines de semana».</small>
         </div>
       </>

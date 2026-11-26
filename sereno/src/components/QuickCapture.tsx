@@ -1,5 +1,7 @@
 import { useState, type CSSProperties } from 'react';
-import type { CategoryId, DayType } from '../types';
+import type { AppState, CategoryId, DayType } from '../types';
+import type { ConflictFix } from '../lib/scheduler';
+import { ConflictBox } from './ConflictBox';
 import { CATEGORIES, catById } from '../types';
 import type { NewTaskInput } from '../lib/scheduler';
 import { detectCategory, estimateMinutes, parseQuick } from '../lib/parse';
@@ -32,6 +34,7 @@ export interface CaptureResult {
   title: string;
   category: CategoryId;
   message?: string;
+  taskId?: string;
 }
 
 const WHEN: { id: When; label: string }[] = [
@@ -116,11 +119,15 @@ function toTask(d: Draft, today: string): NewTaskInput {
  */
 export function QuickCapture({
   learned,
+  state,
+  onFix,
   onFinish,
   onFullForm,
   onClose,
 }: {
   learned?: Record<string, CategoryId>;
+  state: AppState;
+  onFix: (taskId: string, fix: ConflictFix) => void;
   /** añade las tareas; devuelve dónde ha quedado cada una */
   onFinish: (tasks: NewTaskInput[], corrections: { title: string; category: CategoryId }[]) => CaptureResult[];
   onFullForm: () => void;
@@ -196,7 +203,8 @@ export function QuickCapture({
               <span className="cr-icon">{catById(r.category).emoji}</span>
               <div className="grow">
                 <strong>{r.title}</strong>
-                <span className="muted small">{r.message}</span>
+                <span className="muted small">{r.message?.replace(/ Ojo: faltan .*$/, '')}</span>
+                {r.taskId && <ConflictBox state={state} taskId={r.taskId} onFix={onFix} />}
               </div>
             </div>
           ))}

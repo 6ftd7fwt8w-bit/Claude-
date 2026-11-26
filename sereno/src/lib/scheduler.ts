@@ -146,7 +146,35 @@ export function sessionsOn(sessions: Session[], date: string): Session[] {
 }
 
 export function plannedMinutes(sessions: Session[], date: string): number {
-  return sessions.reduce((acc, s) => (s.date === date ? acc + s.duration : acc), 0);
+  // lo de trabajo dentro del horario laboral no ocupa tu tiempo libre
+  return sessions.reduce((acc, s) => (s.date === date && !s.inWork ? acc + s.duration : acc), 0);
+}
+
+const FOCUS_CATS: Task['category'][] = ['proyectos', 'trabajo'];
+
+/** ¿se planifica dentro del horario laboral? (modo autónomo) */
+export function inWorkMode(p: Profile, task: Task): boolean {
+  return !!p.planWork && task.category === 'trabajo' && task.kind !== 'evento';
+}
+
+/** franja permitida ese día para lo que pide foco el fin de semana (si se eligió una franja) */
+function weekendRange(p: Profile, task: Task, date: string): Interval | null {
+  if (p.weekendFocus !== 'franja' || task.allowWeekend || !FOCUS_CATS.includes(task.category) || task.kind !== 'flexible') return null;
+  const slots = (p.weekendSlots ?? []).filter((s) => s.day === weekday(date));
+  if (!slots.length) return null;
+  return { start: Math.min(...slots.map((s) => TIME_RANGES[s.part].start)), end: Math.max(...slots.map((s) => TIME_RANGES[s.part].end)) };
+}
+
+/** huecos dentro del horario laboral de ese día (para el modo autónomo) */
+function workWindows(p: Profile, date: string, sessions: Session[], notBefore: number): Interval[] {
+  const w = workHours(p, date);
+  if (!w) return [];
+  const busy = [
+    ...breaksFor(p, date).map((b) => ({ start: b.start, end: b.start + b.duration })),
+    ...sessionsOn(sessions, date).map((s) => ({ start: s.start - 5, end: s.start + s.duration + 5 })),
+    { start: 0, end: notBefore },
+  ];
+  return complement(busy, w.start, w.end);
 }
 
 export type Level = 'libre' | 'verde' | 'naranja' | 'rojo';
@@ -230,7 +258,11 @@ export function dayAllowed(p: Profile, task: Task, date: string): boolean {
   const weekend = WEEKEND.includes(weekday(date));
   if (task.dayType === 'weekdays') return !weekend;
   if (task.dayType === 'weekends') return weekend;
-  if (weekend && p.weekendFocus === 'no' && task.kind === 'flexible' && (task.category === 'proyectos' || task.category === 'trabajo')) return false;
+  const focus = task.kind === 'flexible' && (task.category === 'proyectos' || task.category === 'trabajo');
+  if (weekend && p.weekendFocus === 'no' && !task.allowWeekend && focus) return false;
+  if (weekend && p.weekendFocus === 'franja' && !task.allowWeekend && focus) {
+    return (p.weekendSlots ?? []).some((s) => s.day === weekday(date));
+  }
   return true;
 }
 
@@ -266,6 +298,26 @@ export function placeChunks(
   // entre semana / fin de semana (si no queda ningún día válido antes de la fecha, se usan todos)
   const allowed = days.filter((d) => dayAllowed(p, task, d));
   if (allowed.length) days = allowed;
+
+  // modo autónomo: el trabajo va dentro del horario laboral, por orden, sin gastar tiempo libre
+  if (inWorkMode(p, task)) {
+    for (const chunk of chunks) {
+      let s: Session | null = null;
+      for (const d of days) {
+        const nb = notBeforeFor(d, ctx);
+        const win = workWindows(p, d, sessions, nb).find((w) => ceilTo(w.start, STEP) + chunk <= w.end);
+        if (win) {
+          s = { id: uid(), taskId: task.id, date: d, start: ceilTo(win.start, STEP), duration: chunk, status: 'planned', inWork: true };
+          break;
+        }
+      }
+      if (s) {
+        sessions = [...sessions, s];
+        placed.push(s);
+      } else unplaced += chunk;
+    }
+    return { sessions, placed, unplaced };
+  }
   const preferLate = prefersLate(p, task);
   const baseRange = TIME_RANGES[task.timeOfDay ?? 'cualquiera'];
   const range = task.after != null ? { start: Math.max(baseRange.start, task.after), end: baseRange.end } : baseRange;
@@ -295,7 +347,7 @@ export function placeChunks(
             ? task.fixedStart >= notBeforeFor(x.d, ctx)
               ? task.fixedStart
               : null
-            : findSlot(p, x.d, sessions, chunk, notBeforeFor(x.d, ctx), preferLate, range);
+            : findSlot(p, x.d, sessions, chunk, notBeforeFor(x.d, ctx), preferLate, weekendRange(p, task, x.d) ?? range);
         if (start != null) {
           return { id: uid(), taskId: task.id, date: x.d, start, duration: chunk, status: 'planned', ...(task.fixedStart != null ? { pinned: true } : {}) };
         }
@@ -793,6 +845,7 @@ export interface TaskPatch {
   fixedStart?: number | null;
   /** null = sin "a partir de" */
   after?: number | null;
+  allowWeekend?: boolean;
   dayType?: Task['dayType'];
   notes?: string;
   steps?: Task['steps'];
@@ -819,6 +872,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
     timesPerMonth: patch.timesPerMonth === null ? undefined : (patch.timesPerMonth ?? old.timesPerMonth),
     fixedStart: patch.fixedStart === null ? undefined : (patch.fixedStart ?? old.fixedStart),
     after: patch.after === null ? undefined : (patch.after ?? old.after),
+    allowWeekend: patch.allowWeekend ?? old.allowWeekend,
     dayType: patch.dayType ? (patch.dayType === 'any' ? undefined : patch.dayType) : old.dayType,
     notes: patch.notes !== undefined ? patch.notes.trim() || undefined : old.notes,
     steps: patch.steps !== undefined ? (patch.steps.length ? patch.steps : undefined) : old.steps,
@@ -852,7 +906,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
 
   if (
     task.kind === 'flexible' &&
-    (changed('totalMinutes') || changed('sessionMinutes') || changed('deadline') || changed('fixedStart') || changed('after') || changed('dayType'))
+    (changed('totalMinutes') || changed('sessionMinutes') || changed('deadline') || changed('fixedStart') || changed('after') || changed('dayType') || changed('allowWeekend'))
   ) {
     s = {
       ...s,
@@ -1263,7 +1317,7 @@ export function setDayOverride(state: AppState, date: string, patch: DayOverride
   let s: AppState = { ...state, profile: { ...p, dayOverrides: all } };
   const busy = baseBusy(s.profile!, date).filter((b) => b.start > 0 && b.end < 1440);
   const clash = s.sessions.filter(
-    (x) => x.date === date && x.status === 'planned' && !x.fixed && !x.pinned && busy.some((b) => b.start < x.start + x.duration && x.start < b.end),
+    (x) => x.date === date && x.status === 'planned' && !x.fixed && !x.pinned && !x.inWork && busy.some((b) => b.start < x.start + x.duration && x.start < b.end),
   );
   if (clash.length) {
     const ids = new Set(clash.map((c) => c.id));
@@ -1273,4 +1327,48 @@ export function setDayOverride(state: AppState, date: string, patch: DayOverride
     return { state: s, message: `Cambiado solo para este día.${movedNote(before, s, clash, date, ctx)}` };
   }
   return { state: s, message: patch === null ? 'Vuelve a tu rutina de siempre para este día.' : 'Cambiado solo para este día ✨' };
+}
+
+// ---------------------------------------------------------------- conflictos: no cabe antes de la fecha
+
+export type ConflictFix = 'finde' | 'ampliar' | 'cortas' | 'reducir';
+
+export interface Conflict {
+  missing: number;
+  options: { id: ConflictFix; label: string }[];
+}
+
+/** ¿Esta tarea no cabe antes de su fecha? Y qué se puede hacer. */
+export function conflictOf(state: AppState, taskId: string): Conflict | null {
+  const t = state.tasks.find((x) => x.id === taskId);
+  const missing = state.unplaced[taskId] ?? 0;
+  if (!t || t.archived || missing <= 0) return null;
+  const p = state.profile!;
+  const options: Conflict['options'] = [];
+  const weekendBlocked =
+    t.dayType === 'weekdays' || ((p.weekendFocus === 'no' || p.weekendFocus === 'franja') && !t.allowWeekend && (t.category === 'proyectos' || t.category === 'trabajo'));
+  if (weekendBlocked) options.push({ id: 'finde', label: '📅 Usar también el fin de semana' });
+  if (t.deadline) options.push({ id: 'ampliar', label: '⏳ Ampliar la fecha una semana' });
+  if (t.sessionMinutes > 30) options.push({ id: 'cortas', label: '✂️ Sesiones más cortas (30 min) para aprovechar huecos' });
+  options.push({ id: 'reducir', label: `➖ Dejarlo en lo que cabe (${fmtDuration(Math.max(15, t.totalMinutes - missing))})` });
+  return { missing, options };
+}
+
+export function fixConflict(state: AppState, taskId: string, fix: ConflictFix, ctx: Ctx): Result {
+  const t = state.tasks.find((x) => x.id === taskId);
+  if (!t) return { state };
+  const patch: TaskPatch =
+    fix === 'finde'
+      ? { dayType: 'any', allowWeekend: true }
+      : fix === 'ampliar'
+        ? { deadline: addDays(t.deadline ?? ctx.today, 7) }
+        : fix === 'cortas'
+          ? { sessionMinutes: 30 }
+          : { totalMinutes: Math.max(15, t.totalMinutes - (state.unplaced[taskId] ?? 0)) };
+  const r = editTask(state, taskId, patch, ctx);
+  const still = r.state.unplaced[taskId] ?? 0;
+  return {
+    state: r.state,
+    message: still ? `Mejor, pero aún faltan ${fmtDuration(still)}. Prueba otra opción.` : `¡Resuelto! «${t.title}» ya cabe 🌿`,
+  };
 }

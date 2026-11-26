@@ -211,7 +211,7 @@ export function DayAgenda({
         return (
           <div
             key={s.id}
-            className={`ag-event ${done ? 'done' : ''} ${h < 44 ? 'tiny' : ''} ${dragging ? 'dragging' : ''}`}
+            className={`ag-event ${done ? 'done' : ''} ${h < 44 ? 'tiny' : ''} ${dragging ? 'dragging' : ''} ${s.inWork ? 'in-work' : ''}`}
             onClick={(e) => e.stopPropagation()}
             style={
               {

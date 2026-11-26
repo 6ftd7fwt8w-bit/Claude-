@@ -1,7 +1,8 @@
 import { useState, type CSSProperties } from 'react';
 import type { AppState, Task } from '../types';
 import { CATEGORIES, catById, taskColor } from '../types';
-import { projectStatus, type TaskPatch } from '../lib/scheduler';
+import { projectStatus, type ConflictFix, type TaskPatch } from '../lib/scheduler';
+import { ConflictBox } from './ConflictBox';
 import { RecurringEditor } from './RecurringEditor';
 import { HABIT_SUGGESTIONS, ROUTINE_SUGGESTIONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
 import { addDays, diffDays, fmtDuration, fmtRelative, minToHm, monthEnd, weekStart } from '../lib/time';
@@ -91,6 +92,7 @@ export function GoalsView({
   onQuickAdd,
   onPatch,
   onCompleteTask,
+  onFix,
 }: {
   state: AppState;
   today: string;
@@ -100,6 +102,7 @@ export function GoalsView({
   onQuickAdd: (s: RecurringSuggestion, routine: boolean) => void;
   onPatch: (id: string, patch: TaskPatch) => void;
   onCompleteTask: (t: Task) => void;
+  onFix: (taskId: string, fix: ConflictFix) => void;
 }) {
   const [tuning, setTuning] = useState<Task | null>(null);
   const active = state.tasks.filter((t) => !t.archived);
@@ -158,6 +161,11 @@ export function GoalsView({
                     <button className="recurring-x" aria-label={`Quitar ${t.title}`} onClick={() => onArchive(t)}>
                       ✕
                     </button>
+                    {state.unplaced[t.id] > 0 && (
+                      <div className="loose-conflict">
+                        <ConflictBox state={state} taskId={t.id} onFix={onFix} />
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -190,6 +198,7 @@ export function GoalsView({
                   {days != null && st.pct < 1 && ` · ${days < 0 ? 'fecha pasada' : days === 0 ? 'vence hoy' : `quedan ${days} días`}`}
                 </span>
                 <span className="project-phrase">{st.phrase}</span>
+                <ConflictBox state={state} taskId={t.id} onFix={onFix} />
               </span>
               <span className="chev">›</span>
             </button>
