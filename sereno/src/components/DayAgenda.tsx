@@ -15,27 +15,27 @@ export interface Block extends Interval {
 /** Bloques fijos del día según la rutina (lo que en Google Calendar serían tus eventos de siempre) */
 function baseBlocks(state: AppState, date: string): Block[] {
   const p = state.profile!;
-  const out: Block[] = [{ start: p.wake, end: p.wake + p.morningRoutine, label: '🌅 Despertar y arrancar', kind: 'routine' }];
+  const out: Block[] = [{ start: p.wake, end: p.wake + p.morningRoutine, label: '◐ Despertar y arrancar', kind: 'routine' }];
   const w = workHours(p, date);
   if (w) {
     const remote = isRemote(p, date);
     if (!remote && p.commute) {
-      out.push({ start: w.start - p.commute, end: w.start, label: '🚆 Trayecto', kind: 'commute' });
-      out.push({ start: w.end, end: w.end + p.commute, label: '🚆 Trayecto', kind: 'commute' });
+      out.push({ start: w.start - p.commute, end: w.start, label: '→ Trayecto', kind: 'commute' });
+      out.push({ start: w.end, end: w.end + p.commute, label: '→ Trayecto', kind: 'commute' });
     }
     const breaks = breaksFor(p, date).map((b) => ({ start: b.start, end: b.start + b.duration }));
     for (const piece of complement(breaks, w.start, w.end)) {
-      out.push({ ...piece, label: remote ? '🏠 Teletrabajo' : '💼 Trabajo', kind: 'work' });
+      out.push({ ...piece, label: remote ? '⌂ Teletrabajo' : '⬡ Trabajo', kind: 'work' });
     }
-    for (const b of breaks) out.push({ ...b, label: '☕ Pausa', kind: 'pause' });
+    for (const b of breaks) out.push({ ...b, label: '◔ Pausa', kind: 'pause' });
   }
   const meals = mealsFor(p, date);
-  out.push({ ...meals.lunch, label: '🥗 Comida', kind: 'meal', key: 'lunch' });
-  out.push({ ...meals.dinner, label: '🍽️ Cena', kind: 'meal', key: 'dinner' });
+  out.push({ ...meals.lunch, label: '◦ Comida', kind: 'meal', key: 'lunch' });
+  out.push({ ...meals.dinner, label: '◦ Cena', kind: 'meal', key: 'dinner' });
   // si te acuestas después de medianoche, la desconexión empieza más tarde (y puede seguir pasadas las 00:00)
   const rs = relaxStart(p);
   if (rs < 1440) {
-    out.push({ start: rs, end: Math.min(1440, bedAbs(p)), label: `🌙 Desconexión hasta las ${minToHm(bedAbs(p))}`, kind: 'relax' });
+    out.push({ start: rs, end: Math.min(1440, bedAbs(p)), label: `☾ Desconexión hasta las ${minToHm(bedAbs(p))}`, kind: 'relax' });
   }
   return out.filter((b) => b.end > b.start).sort((a, b) => a.start - b.start);
 }
@@ -195,7 +195,7 @@ export function DayAgenda({
           }}
         >
           <span>
-            🌿 Libre · {minToHm(f.start)}–{minToHm(f.end)} <small>({fmtDuration(f.end - f.start)})</small>
+            Libre · {minToHm(f.start)}–{minToHm(f.end)} <small>({fmtDuration(f.end - f.start)})</small>
           </span>
           {onTapGap && <span className="ag-free-add">+ Añadir algo</span>}
         </button>
@@ -240,8 +240,8 @@ export function DayAgenda({
             )}
             <button className="ag-main" onClick={() => onTap(s)}>
               <span className="ag-title">
-                {t?.icon ?? c.emoji} {t?.title}
-                {s.note && <span className="ag-note-dot" title={s.note}> 📝</span>}
+                <span className="ag-glyph">{c.emoji}</span> {t?.title}
+                {s.note && <span className="ag-note-dot" title={s.note}> ✎</span>}
               </span>
               <span className="ag-time">
                 {minToHm(shownStart)}–{minToHm(shownStart + s.duration)}

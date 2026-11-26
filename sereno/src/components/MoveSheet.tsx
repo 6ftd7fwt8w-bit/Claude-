@@ -58,7 +58,7 @@ export function MoveSheet({
         </div>
       </div>
       <button className="btn primary wide" onClick={() => onMove(date, start)}>
-        Mover aquí 📌
+        Mover aquí •
       </button>
       <p className="muted small center">Lo que muevas a mano queda fijado: no lo recolocaré yo.</p>
     </Sheet>

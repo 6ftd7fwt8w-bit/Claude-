@@ -16,7 +16,7 @@ export function BreaksEditor({ value, onChange }: { value: WorkBreak[]; onChange
     <div className="breaks">
       {sorted.map((b, i) => (
         <div key={i} className="break-row">
-          <span className="break-icon">☕</span>
+          <span className="break-icon">◔</span>
           <input
             type="time"
             aria-label="Hora de la pausa"

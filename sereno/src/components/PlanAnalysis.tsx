@@ -31,7 +31,7 @@ export function PlanAnalysisView({
     steps: [
       ...base.steps.slice(0, 2),
       {
-        icon: '🧭',
+        icon: '◈',
         doing: 'Repartiendo tu tiempo según tus valores…',
         result: values.length
           ? `Tus prioridades: ${top.map((g) => `${areaInfo(g.area).emoji} ${areaInfo(g.area).label.toLowerCase()} ${g.hours} h/${g.per === 'semana' ? 'sem' : 'mes'}`).join(', ')}. Reservaré tiempo para cada una.`

@@ -36,9 +36,9 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
           <div className="chips">
             {(
               [
-                ['manana', '🌅 Por la mañana'],
-                ['neutro', '🌤️ Me da igual'],
-                ['noche', '🌙 Por la tarde-noche'],
+                ['manana', '◐ Por la mañana'],
+                ['neutro', '◑ Me da igual'],
+                ['noche', '☾ Por la tarde-noche'],
               ] as [Chronotype, string][]
             ).map(([v, label]) => (
               <button key={v} type="button" className={`chip ${p.chronotype === v ? 'on' : ''}`} onClick={() => set({ chronotype: v })}>
@@ -94,7 +94,7 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
               </div>
             )}
             <div className="field">
-              <span>🏠 ¿Qué días teletrabajas?</span>
+              <span>⌂ ¿Qué días teletrabajas?</span>
               <DayPicker value={p.remoteDays ?? []} options={p.workDays} onChange={(remoteDays) => set({ remoteDays })} />
               <small className="muted">Esos días no cuento desplazamiento.</small>
             </div>
@@ -107,7 +107,7 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
             </label>
             {(p.remoteDays ?? []).length < p.workDays.length && (
               <div className="field">
-                <span>🚆 Desplazamiento los días de oficina (cada trayecto)</span>
+                <span>→ Desplazamiento los días de oficina (cada trayecto)</span>
                 <NumberChips value={p.commute} options={[0, 15, 30, 45, 60]} onChange={(commute) => set({ commute })} fmt={(v) => (v ? fmtDuration(v) : 'Nada')} />
               </div>
             )}
@@ -149,16 +149,16 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
         <div className="field">
           <span>¿Cuánto tiempo necesitas para desconectar antes de dormir?</span>
           <DurationPicker value={p.relaxMinutes} onChange={(relaxMinutes) => set({ relaxMinutes })} options={[30, 45, 60, 90, 120, 150, 180, 240]} />
-          <small className="muted">Ese tiempo queda protegido: nunca te pondré tareas ahí 🌙</small>
+          <small className="muted">Ese tiempo queda protegido: nunca te pondré tareas ahí ☾</small>
         </div>
         <div className="field">
-          <span>🏖️ ¿Trabajas en tus proyectos los fines de semana?</span>
+          <span>○ ¿Trabajas en tus proyectos los fines de semana?</span>
           <div className="chips">
             {(
               [
                 ['si', 'Sí, como cualquier día'],
                 ['poco', 'Un poco'],
-                ['franja', '🕐 Solo en un horario concreto'],
+                ['franja', '◷ Solo en un horario concreto'],
                 ['no', 'No, los fines de semana son para mí'],
               ] as const
             ).map(([v, l]) => (
@@ -236,7 +236,7 @@ export function SuggestionTiles({
             <div key={s.title} className="tile-wrap" style={{ '--cat': catById(s.category).color } as CSSProperties}>
               <button type="button" className={`tile ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => onToggle(s.title)}>
                 <span className="tile-check">{on ? '✓' : ''}</span>
-                <span className="tile-icon">{s.icon}</span>
+                <span className="tile-icon">{catById(s.category).emoji}</span>
                 <span className="tile-title">{s.title}</span>
                 <span className="tile-meta">
                   {fmtDuration(s.minutes)} · {timesLabel(s.times, s.days, s.perMonth)}
@@ -321,9 +321,9 @@ function ProjectsStep({ projects, setProjects }: { projects: NewTaskInput[]; set
       </div>
       {text.trim() && (
         <div className="parsed">
-          <span className="tag">✨ {q.title || '…'}</span>
-          {q.totalMinutes ? <span className="tag">⏱ {fmtDuration(q.totalMinutes)}</span> : null}
-          {q.deadline ? <span className="tag">🎯 antes del {fmtShort(q.deadline)}</span> : <span className="tag soft">sin fecha límite</span>}
+          <span className="tag">{q.title || '…'}</span>
+          {q.totalMinutes ? <span className="tag">◷ {fmtDuration(q.totalMinutes)}</span> : null}
+          {q.deadline ? <span className="tag">◇ antes del {fmtShort(q.deadline)}</span> : <span className="tag soft">sin fecha límite</span>}
         </div>
       )}
       {text.trim() && !q.totalMinutes && (
@@ -437,7 +437,11 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
 
       {step === 'hola' ? (
         <div className="hello">
-          <div className="hello-mark">🌿</div>
+          <div className="hello-mark" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
           <h1>Sereno</h1>
           <p className="lead">Mente tranquila, máximo potencial.</p>
           <p className="muted">
@@ -478,7 +482,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
                 onEdit={(title) => setEditing({ title, list: 'routine' })}
                 placeholder="Otra: p. ej. «Recoger a los niños 30 min cada día»"
                 onAddCustom={(t) => {
-                  const c = customRecurring(t, { category: 'hogar', icon: '🏡', times: 7, minutes: 30 });
+                  const c = customRecurring(t, { category: 'hogar', icon: '', times: 7, minutes: 30 });
                   setCustomRoutines((x) => [...x, c]);
                   setRoutines((x) => [...x, c.title]);
                 }}
@@ -538,7 +542,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
         )}
         {step === 'listo' ? (
           <button className="btn primary" onClick={finish}>
-            Empezar mi plan 🌱
+            Empezar mi plan
           </button>
         ) : (
           <button className="btn primary" onClick={next}>

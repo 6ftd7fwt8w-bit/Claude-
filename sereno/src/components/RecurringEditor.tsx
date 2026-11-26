@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { TimeOfDay } from '../types';
 import { catById } from '../types';
-import { ROUTINE_ICONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
+import { TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
 import { fmtDuration, minToHm } from '../lib/time';
 import { DayPicker, DurationPicker, NumberChips, Sheet, TimeMode } from './ui';
 
@@ -23,8 +23,6 @@ export function FreqTabs({ value, onChange }: { value: Freq; onChange: (f: Freq)
   );
 }
 
-const EXTRA_ICONS = ['🧘', '🏃', '🤸', '🌳', '🥂', '📞', '📖', '🛁', '🎨', '🎸', '🏊', '🚴', '🙏', '✍️'];
-
 /** Ajustar una cotidiana o un hábito: cuánto dura, cuántas veces o qué días, y cuándo. */
 export function RecurringEditor({
   value,
@@ -41,7 +39,6 @@ export function RecurringEditor({
   const [freq, setFreq] = useState<'semana' | 'mes' | 'dias'>(value.perMonth ? 'mes' : value.days?.length ? 'dias' : 'semana');
   const byDays = freq === 'dias';
   const set = (patch: Partial<RecurringSuggestion>) => setV((x) => ({ ...x, ...patch }));
-  const icons = [...new Set([v.icon, ...ROUTINE_ICONS, ...EXTRA_ICONS])];
   const save = () =>
     onSave({
       ...v,
@@ -54,7 +51,7 @@ export function RecurringEditor({
     <Sheet title="Ajustar" onClose={onClose}>
       <div className="re-head">
         <span className="re-icon" style={{ background: `color-mix(in srgb, ${catById(v.category).color} 22%, var(--surface))` }}>
-          {v.icon}
+          {catById(v.category).emoji}
         </span>
         <input className="re-title" value={v.title} aria-label="Nombre" onChange={(e) => set({ title: e.target.value })} />
       </div>
@@ -65,12 +62,12 @@ export function RecurringEditor({
       </p>
 
       <div className="field">
-        <span>⏱ ¿Cuánto tiempo cada vez?</span>
+        <span>◷ ¿Cuánto tiempo cada vez?</span>
         <DurationPicker value={v.minutes} onChange={(minutes) => set({ minutes })} />
       </div>
 
       <div className="field">
-        <span>🔁 ¿Con qué frecuencia?</span>
+        <span>↻ ¿Con qué frecuencia?</span>
         <FreqTabs value={freq} onChange={setFreq} />
         {freq === 'dias' && (
           <>
@@ -91,7 +88,7 @@ export function RecurringEditor({
 
       {freq !== 'dias' && (
         <div className="field">
-          <span>📆 ¿Qué días?</span>
+          <span>▦ ¿Qué días?</span>
           <div className="chips">
             {(
               [
@@ -109,13 +106,13 @@ export function RecurringEditor({
       )}
 
       <div className="field">
-        <span>🕐 ¿A qué hora?</span>
+        <span>◷ ¿A qué hora?</span>
         <TimeMode fixed={v.fixedStart} after={v.after} onChange={(t) => set({ fixedStart: t.fixed, after: t.after })} />
       </div>
 
       {v.fixedStart == null && (
       <div className="field">
-        <span>🌤️ ¿En qué momento del día?</span>
+        <span>◑ ¿En qué momento del día?</span>
         <div className="chips">
           {(Object.keys(TIME_OF_DAY_LABEL) as TimeOfDay[]).map((t) => (
             <button key={t} type="button" className={`chip ${v.timeOfDay === t ? 'on' : ''}`} onClick={() => set({ timeOfDay: t })}>
@@ -126,16 +123,6 @@ export function RecurringEditor({
       </div>
       )}
 
-      <div className="field">
-        <span>Icono</span>
-        <div className="chips icons">
-          {icons.map((i) => (
-            <button key={i} type="button" className={`chip round ${v.icon === i ? 'on' : ''}`} onClick={() => set({ icon: i })} aria-label={`Icono ${i}`}>
-              {i}
-            </button>
-          ))}
-        </div>
-      </div>
 
       <button className="btn primary wide" disabled={byDays && !v.days?.length} onClick={save}>
         Guardar

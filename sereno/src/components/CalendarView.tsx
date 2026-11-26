@@ -120,7 +120,7 @@ export function CalendarView({
             {t.icon} {t.text}
           </p>
         ))}
-        {selSessions.length === 0 && <p className="muted">Nada planeado. Espacio para respirar 🌿</p>}
+        {selSessions.length === 0 && <p className="muted">Nada planeado. Espacio para respirar</p>}
         <DayAgenda
           state={state}
           date={selected}

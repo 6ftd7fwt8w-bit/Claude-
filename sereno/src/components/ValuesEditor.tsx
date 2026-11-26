@@ -68,7 +68,7 @@ export function ValuesEditor({
                 </div>
               </div>
               {g.hours > 0 && g.per === 'semana' && <p className="vr-note muted small">≈ {Math.round(monthlyHours(g))} h al mes</p>}
-              {warn && <p className="vr-note warn small">⚠️ {warn}</p>}
+              {warn && <p className="vr-note warn small">! {warn}</p>}
               <details className="vr-why">
                 <summary>¿Por qué importa?</summary>
                 <p>{a.guideline}</p>

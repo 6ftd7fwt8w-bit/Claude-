@@ -58,7 +58,7 @@ export function SettingsView({
       </button>
 
       <div className="settings-section">
-        <p className="h3">📅 Tu otro calendario</p>
+        <p className="h3">▦ Tu otro calendario</p>
         <p className="muted small">
           Trae tus citas (médico, reuniones, cumpleaños…) para que Sereno no te ponga nada encima.
         </p>
@@ -79,7 +79,7 @@ export function SettingsView({
       </div>
 
       <div className="settings-section">
-        <p className="h3">💾 Copia de seguridad</p>
+        <p className="h3">Copia de seguridad</p>
         <p className="muted small">Tus datos se guardan solo en este dispositivo. Haz una copia de vez en cuando.</p>
         <button className="btn soft wide" onClick={onExport}>
           Exportar copia
@@ -92,7 +92,7 @@ export function SettingsView({
 
       <div className="settings-section">
         <button className="btn soft wide" onClick={onReplan}>
-          🔄 Reorganizar mi calendario desde cero
+           Reorganizar mi calendario desde cero
         </button>
         <button
           className="btn ghost wide danger"

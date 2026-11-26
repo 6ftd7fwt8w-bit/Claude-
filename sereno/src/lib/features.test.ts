@@ -151,7 +151,7 @@ describe('widget', () => {
     expect(snap.done).toBe(1);
     expect(snap.total).toBe(state.sessions.filter((s) => s.date === TODAY).length);
     expect(snap.sessions.every((s) => s.date === TODAY || s.date === addDays(TODAY, 1))).toBe(true);
-    expect(snap.sessions[0]).toMatchObject({ title: 'Curso', emoji: '✨', done: true });
+    expect(snap.sessions[0]).toMatchObject({ title: 'Curso', emoji: '✦', done: true });
     expect(snap.leaves).toBe(1);
   });
 });

@@ -68,13 +68,13 @@ describe('progreso del proyecto', () => {
   it('frase y etapa según el avance', () => {
     let { state } = addTask(base(), { title: 'Web', category: 'proyectos', kind: 'flexible', totalMinutes: 240, sessionMinutes: 60, deadline: addDays(TODAY, 20) }, ctx);
     const id = state.tasks[0].id;
-    expect(projectStatus(state, id, TODAY)).toMatchObject({ mood: 'start', stage: '🌰', pct: 0 });
+    expect(projectStatus(state, id, TODAY)).toMatchObject({ mood: 'start', stage: '◌', pct: 0 });
     state = completeSession(state, state.sessions[0].id).state;
     state = completeSession(state, state.sessions[1].id).state;
     const st = projectStatus(state, id, TODAY);
     expect(st.pct).toBe(0.5);
     expect(st.mood).toBe('ahead');
-    expect(st.stage).toBe('🌿');
+    expect(st.stage).toBe('◑');
     expect(st.weekly[st.weekly.length - 1].minutes).toBe(120);
   });
 });

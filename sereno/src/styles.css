@@ -3421,3 +3421,502 @@ textarea.note {
 .other-min input {
   width: 84px !important;
 }
+
+/* ==========================================================================
+   v9 · Rediseño minimalista y elegante
+   Concepto: papel y tinta. Superficies lisas con líneas finas, círculos como
+   motivo, el color solo donde informa (cada área de tu vida), mucho aire.
+   ========================================================================== */
+:root {
+  --bg: #f2f1ed;
+  --bg-2: #eceae5;
+  --surface: #faf9f6;
+  --surface-2: #efede8;
+  --ink: #121212;
+  --ink-2: #5a5853;
+  --ink-3: #9c998f;
+  --line: #e1ded6;
+  --accent: #1f5c55;
+  --accent-ink: #ffffff;
+  --accent-soft: #e1eae6;
+  --track: #e7e4dd;
+  --warn: #a6542f;
+  --lv-libre: #eceae5;
+  --lv-verde: #d6e5dd;
+  --lv-naranja: #ecdcbf;
+  --lv-rojo: #e9cbc1;
+  --shadow: rgba(18, 18, 18, 0.08);
+  --shadow-card: none;
+  --font: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif: 'Sora', 'Manrope', system-ui, sans-serif;
+  --radius: 24px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0d0d0e;
+    --bg-2: #121214;
+    --surface: #161618;
+    --surface-2: #1e1e21;
+    --ink: #edebe6;
+    --ink-2: #a7a49d;
+    --ink-3: #6e6c66;
+    --line: #29292d;
+    --accent: #8ccbb9;
+    --accent-ink: #0d0d0e;
+    --accent-soft: #1e2c28;
+    --track: #232327;
+    --warn: #e0a07d;
+    --lv-libre: #18181b;
+    --lv-verde: #1c2a25;
+    --lv-naranja: #2d271c;
+    --lv-rojo: #2f1f1c;
+    --shadow: rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #0d0d0e;
+  --bg-2: #121214;
+  --surface: #161618;
+  --surface-2: #1e1e21;
+  --ink: #edebe6;
+  --ink-2: #a7a49d;
+  --ink-3: #6e6c66;
+  --line: #29292d;
+  --accent: #8ccbb9;
+  --accent-ink: #0d0d0e;
+  --accent-soft: #1e2c28;
+  --track: #232327;
+  --warn: #e0a07d;
+  --lv-libre: #18181b;
+  --lv-verde: #1c2a25;
+  --lv-naranja: #2d271c;
+  --lv-rojo: #2f1f1c;
+  --shadow: rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  font-feature-settings: 'ss01', 'cv11';
+}
+h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.95rem;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+h2,
+.section-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.h3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.eyebrow {
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  color: var(--ink-3);
+}
+
+/* superficies */
+.card,
+.session,
+.recurring-main,
+.stat,
+.loose-group,
+.project-card,
+.value-row,
+.vision,
+.tile,
+.cat-tile,
+.hobby,
+.gap-item,
+.capture-result,
+.project-item,
+.shop-item,
+.toggle-card {
+  box-shadow: none !important;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.card {
+  border-radius: var(--radius);
+}
+.tip {
+  border: 1px solid var(--line);
+  border-style: solid;
+}
+
+/* botones */
+.btn {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.btn.primary {
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: none;
+}
+.btn.soft {
+  background: transparent;
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+.btn.ghost {
+  color: var(--ink-2);
+}
+.link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+
+/* chips y selecciones: la tinta marca lo elegido */
+.chip {
+  border: 1px solid var(--line);
+  font-weight: 600;
+  background: transparent;
+}
+.chip.on {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.chip.add {
+  color: var(--ink-2);
+}
+.cat-tile.on,
+.tile.on,
+.vision.on,
+.habit-option.on,
+.shop-item.on,
+.energy-option.on,
+.toggle-card.on,
+.recommend.on {
+  border-color: var(--ink) !important;
+  background: var(--surface-2) !important;
+  transform: none;
+}
+.cat-tile span,
+.tile-icon,
+.ask-icon,
+.ss-icon,
+.goal-emoji,
+.cr-icon,
+.vr-emoji,
+.hobby span,
+.ag-glyph {
+  color: var(--cat, var(--ink));
+  font-family: 'Sora', system-ui, sans-serif;
+}
+.tile .tile-check {
+  border-width: 1px;
+}
+.segmented {
+  background: transparent;
+  border: 1px solid var(--line);
+}
+.segmented button.on {
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: none;
+}
+
+/* inicio */
+.phrase-card {
+  background: transparent;
+  border-left: 1px solid var(--ink);
+  border-radius: 0;
+  padding: 2px 0 2px 16px;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 1.02rem;
+  color: var(--ink-2);
+}
+.phrase-card .quote {
+  display: none;
+}
+.energy-pill,
+.gear-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  box-shadow: none;
+  font-family: var(--serif);
+  font-weight: 400;
+}
+.energy-pill.pulse {
+  animation: none;
+  border-color: var(--ink);
+}
+.mind-pill {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  background: transparent;
+  padding: 0;
+  justify-content: center;
+}
+.mind-pill strong {
+  font-weight: 300;
+  font-size: 1.35rem;
+}
+.mind-pill span {
+  font-size: 0.55rem;
+  letter-spacing: 0.16em;
+}
+.ring circle {
+  stroke-width: 3px;
+}
+.ring circle + circle {
+  stroke: var(--ink);
+}
+.ring-text {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 12px;
+}
+.summary-free {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+/* agenda */
+.ag-hour span {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--ink-3);
+  background: var(--surface);
+}
+.ag-block {
+  background: var(--surface-2);
+  color: var(--ink-3);
+  font-weight: 600;
+  border-radius: 12px;
+}
+.ag-block.work {
+  background: repeating-linear-gradient(135deg, var(--surface-2), var(--surface-2) 5px, var(--bg-2) 5px, var(--bg-2) 10px);
+}
+.ag-block.meal,
+.ag-block.routine,
+.ag-block.relax,
+.ag-block.commute {
+  background: var(--surface-2);
+}
+.ag-block.pause {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--ink-2);
+}
+.ag-event {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cat);
+  box-shadow: none;
+  border-radius: 12px;
+}
+.ag-event.done {
+  background: var(--surface-2);
+}
+.ag-check {
+  border-width: 1.5px;
+  background: transparent;
+}
+.ag-free {
+  border: 1px dashed var(--line);
+  color: var(--ink-3);
+  background: transparent;
+}
+.ag-free-add {
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line);
+}
+.ag-now {
+  border-top-color: var(--ink);
+}
+.ag-now span {
+  background: var(--ink);
+}
+
+/* hojas, avisos y navegación */
+.sheet {
+  border-radius: 30px 30px 0 0;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+}
+.overlay {
+  background: color-mix(in srgb, var(--ink) 25%, transparent);
+  backdrop-filter: blur(6px);
+}
+.toast {
+  border-radius: 16px;
+  font-weight: 600;
+  background: var(--ink);
+  color: var(--bg);
+}
+.fab {
+  width: 58px;
+  height: 58px;
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 200;
+  font-size: 2.1rem;
+  box-shadow: 0 12px 32px var(--shadow);
+}
+.tabbar {
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  border-top: 1px solid var(--line);
+}
+.tabbar button {
+  color: var(--ink-3);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  gap: 4px;
+  position: relative;
+}
+.tabbar button.on {
+  color: var(--ink);
+  background: transparent;
+}
+.tabbar button.on::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.tab-icon {
+  filter: none;
+  display: grid;
+  place-items: center;
+  height: 24px;
+}
+
+/* bienvenida: anillos concéntricos que respiran */
+.hello-mark {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  background: none;
+  animation: none;
+  font-size: 0;
+}
+.hello-mark span {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  animation: ring-breathe 6s ease-in-out infinite;
+}
+.hello-mark span:nth-child(2) {
+  inset: 22px;
+  animation-delay: -2s;
+  opacity: 0.6;
+}
+.hello-mark span:nth-child(3) {
+  inset: 50px;
+  background: var(--ink);
+  animation-delay: -4s;
+}
+@keyframes ring-breathe {
+  50% {
+    transform: scale(1.06);
+  }
+}
+.hello h1 {
+  font-weight: 200;
+  font-size: 3rem;
+  letter-spacing: 0.04em;
+}
+.lead {
+  font-family: var(--serif);
+  font-weight: 300;
+  color: var(--ink-2);
+}
+.progress-dots span.on {
+  background: var(--ink);
+}
+.big-number,
+.pd-pct,
+.stat strong,
+.budget-nums strong,
+.ar-nums strong,
+.gauge-num {
+  font-family: var(--serif);
+  font-weight: 300;
+}
+.analysis-bar span,
+.mf-bar span,
+.bar span {
+  background: var(--ink);
+}
+.analysis-steps li.done .as-icon {
+  background: var(--ink);
+  color: var(--bg);
+}
+.analysis-result {
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.celebrate-card {
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 60px var(--shadow);
+}
+.celebrate-icon {
+  font-family: var(--serif);
+  font-weight: 200;
+}
+.fall {
+  color: var(--ink-2);
+  font-family: var(--serif);
+}
+.bonsai-stage {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+.project-stage,
+.ms-icon,
+.pd-stage {
+  font-family: var(--serif);
+  color: var(--cat, var(--ink));
+}
+.project-stage {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  font-size: 1.6rem;
+}
+.cal-day {
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+.cal-day .num {
+  font-family: var(--serif);
+  font-weight: 400;
+}
+.cal-day.today {
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+.cal-day.sel {
+  outline: 1.5px solid var(--ink);
+}
+.level-chip {
+  font-weight: 600;
+}

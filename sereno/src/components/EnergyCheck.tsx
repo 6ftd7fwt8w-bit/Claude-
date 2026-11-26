@@ -4,11 +4,11 @@ import { BreaksEditor } from './BreaksEditor';
 import { Sheet } from './ui';
 
 export const ENERGY_LEVELS = [
-  { value: 20, label: 'Sin batería', emoji: '🪫' },
-  { value: 40, label: 'Baja', emoji: '🌘' },
-  { value: 60, label: 'Normal', emoji: '🌗' },
-  { value: 80, label: 'Bien', emoji: '🌖' },
-  { value: 100, label: 'A tope', emoji: '🌕' },
+  { value: 20, label: 'Sin batería', emoji: '○' },
+  { value: 40, label: 'Baja', emoji: '◔' },
+  { value: 60, label: 'Normal', emoji: '◑' },
+  { value: 80, label: 'Bien', emoji: '◕' },
+  { value: 100, label: 'A tope', emoji: '●' },
 ];
 
 export function energyEmoji(v: number): string {
@@ -45,7 +45,7 @@ export function EnergyCheck({
       </div>
       {b && (
         <div className="field">
-          <span>☕ ¿Qué pausas tienes hoy mientras trabajas?</span>
+          <span>◔ ¿Qué pausas tienes hoy mientras trabajas?</span>
           <BreaksEditor value={b} onChange={setB} />
           <small className="muted">Pondré ahí cosas cortas: meditar, estirar, unos abdominales…</small>
         </div>

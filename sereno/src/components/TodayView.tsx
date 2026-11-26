@@ -85,8 +85,8 @@ export function SessionCard({
       <div className="session-body">
         <div className="session-title">
           {task?.title ?? '—'}
-          {s.pinned && <span title="Colocada a mano"> 📌</span>}
-          {task?.source && <span title="De tu calendario"> 📅</span>}
+          {s.pinned && <span title="Colocada a mano"> •</span>}
+          {task?.source && <span title="De tu calendario"> ▦</span>}
         </div>
         <div className="session-meta">
           <span className="cat-dot" /> {cat.emoji} {cat.label}
@@ -106,7 +106,7 @@ export function SessionCard({
             )}
             {onPrepare && (task?.category === 'proyectos' || task?.category === 'trabajo') && (
               <button className="link prepare-link" onClick={onPrepare}>
-                🫧 Prepárate
+                ○ Prepárate
               </button>
             )}
           </div>
@@ -149,7 +149,7 @@ function TodaySummary({
         <div className="grow">
           <p className="h3">{total === 0 ? 'Nada planificado hoy' : `${done} de ${total} hechas`}</p>
           <button className="summary-free" onClick={() => setHelp((h) => !h)} aria-expanded={help}>
-            🌿 {left ? `Te quedan ${fmtDuration(left)} libres` : 'Hoy ya no quedan huecos libres'} <span className="info">ⓘ</span>
+            {left ? `Te quedan ${fmtDuration(left)} libres` : 'Hoy ya no quedan huecos libres'} <span className="info">ⓘ</span>
           </button>
         </div>
         <button className="mind-pill" onClick={onOpenMind} aria-label="Ver tu mente hoy">
@@ -194,7 +194,7 @@ export function TodayView(props: Props) {
             {energyEmoji(energy)} {energy}%
           </button>
           <button className="gear-btn" onClick={props.onSettings} aria-label="Tu rutina y ajustes">
-            ⚙️
+            ⚙
           </button>
         </div>
       </header>
@@ -212,7 +212,7 @@ export function TodayView(props: Props) {
       </div>
       {main.length === 0 && routines.length === 0 && (
         <p className="empty small-empty">
-          Hoy no tienes nada planificado: disfruta 🌿 Pulsa <strong>+</strong> para contarme qué tienes en la cabeza.
+          Hoy no tienes nada planificado: disfruta Pulsa <strong>+</strong> para contarme qué tienes en la cabeza.
         </p>
       )}
       <div className="card agenda-card">
@@ -231,10 +231,10 @@ export function TodayView(props: Props) {
 
       <div className="quick-row">
         <button className="btn soft" onClick={props.onPull}>
-          ⏳ Tengo un hueco, ¿qué adelanto?
+          ◷ Tengo un hueco, ¿qué adelanto?
         </button>
         <button className="btn soft" onClick={props.onBreathe}>
-          🫧 Respirar
+          ○ Respirar
         </button>
       </div>
 
@@ -250,7 +250,7 @@ function JournalCard({ initial, onSave }: { initial: string; onSave: (t: string)
   const [editing, setEditing] = useState(!initial);
   return (
     <section className="card journal">
-      <p className="h3">🌙 Antes de dormir</p>
+      <p className="h3">☾ Antes de dormir</p>
       {editing ? (
         <>
           <p className="muted small">¿Qué te ha hecho bien hoy? Una cosa pequeña basta.</p>

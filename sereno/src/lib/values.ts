@@ -24,7 +24,7 @@ export const AREAS: AreaInfo[] = [
   {
     id: 'familia',
     label: 'Familia',
-    emoji: '🏠',
+    emoji: '⌂',
     guideline:
       'El Estudio de Harvard sobre el Desarrollo Adulto, que sigue a personas desde 1938, encontró que la calidad de las relaciones cercanas es de lo que más se asocia a la salud y la felicidad a largo plazo.',
     blockTitle: 'Tiempo en familia',
@@ -33,7 +33,7 @@ export const AREAS: AreaInfo[] = [
   {
     id: 'pareja',
     label: 'Amor y pareja',
-    emoji: '❤️',
+    emoji: '♡',
     guideline:
       'Reservar tiempo de calidad en pareja se asocia a más satisfacción en la relación: el informe «The Date Night Opportunity» (National Marriage Project, 2012) encontró que las parejas que salen juntas a solas con regularidad dicen sentirse más felices en su relación.',
     blockTitle: 'Tiempo en pareja',
@@ -42,7 +42,7 @@ export const AREAS: AreaInfo[] = [
   {
     id: 'social',
     label: 'Amigos y vida social',
-    emoji: '💛',
+    emoji: '⁂',
     guideline:
       'Las amistades se construyen con tiempo compartido: un estudio de la Universidad de Kansas (Hall, 2018) estimó que hacen falta unas 50 horas juntos para pasar de conocido a amigo ocasional, unas 90 para ser amigos y más de 200 para una amistad íntima.',
     blockTitle: 'Tiempo con amigos',
@@ -51,7 +51,7 @@ export const AREAS: AreaInfo[] = [
   {
     id: 'bienestar',
     label: 'Salud y movimiento',
-    emoji: '🧘',
+    emoji: '◎',
     guideline:
       'La OMS recomienda a los adultos entre 150 y 300 minutos a la semana de actividad física moderada (unas 10–20 h al mes). Otro estudio (White et al., 2019) asoció pasar al menos 120 minutos a la semana en la naturaleza con más salud y bienestar.',
     minPerMonth: 10,
@@ -61,7 +61,7 @@ export const AREAS: AreaInfo[] = [
   {
     id: 'autocuidado',
     label: 'Tiempo para mí',
-    emoji: '🛁',
+    emoji: '☾',
     guideline:
       'Reservar tiempo para descansar y desconectar ayuda a reducir el estrés y a recuperar energía. No hay una cifra oficial: lo importante es que sea regular.',
     blockTitle: 'Tiempo para mí',
@@ -70,7 +70,7 @@ export const AREAS: AreaInfo[] = [
   {
     id: 'proyectos',
     label: 'Proyectos personales',
-    emoji: '✨',
+    emoji: '✦',
     guideline:
       'Avanzar en algo que te importa da sentido y satisfacción. Mejor poco y constante que mucho de golpe: sesiones regulares con descansos rinden más.',
     blockTitle: 'Avanzar en mis proyectos',
@@ -79,7 +79,7 @@ export const AREAS: AreaInfo[] = [
   {
     id: 'aficiones',
     label: 'Aficiones y ocio',
-    emoji: '🎨',
+    emoji: '❖',
     guideline: 'El ocio que disfrutas (tocar, crear, jugar) recarga la mente y la creatividad. Cuenta como descanso de verdad.',
     blockTitle: 'Mis aficiones',
     blockMinutes: 60,
@@ -100,28 +100,28 @@ export interface Vision {
 export const VISIONS: Vision[] = [
   {
     id: 'yo',
-    emoji: '🌿',
+    emoji: '◐',
     title: 'Darme prioridad a mí',
     description: 'Cuidarte primero: salud, descanso y cosas que te gustan. Lo demás llega mejor desde ahí.',
     hours: { bienestar: 14, autocuidado: 12, aficiones: 10, social: 8, familia: 12, pareja: 8, proyectos: 6 },
   },
   {
     id: 'proyectos',
-    emoji: '✨',
+    emoji: '✦',
     title: 'Avanzar en mis proyectos',
     description: 'Darle un empujón a lo que quieres crear, sin dejar de moverte ni de ver a la gente.',
     hours: { proyectos: 30, bienestar: 12, autocuidado: 6, aficiones: 4, social: 6, familia: 10, pareja: 8 },
   },
   {
     id: 'familia',
-    emoji: '🏠',
+    emoji: '◍',
     title: 'Familia y personas',
     description: 'Más tiempo de calidad con los tuyos y con tus amigos.',
     hours: { familia: 40, pareja: 16, social: 12, bienestar: 10, autocuidado: 6, aficiones: 4, proyectos: 6 },
   },
   {
     id: 'equilibrio',
-    emoji: '⚖️',
+    emoji: '◑',
     title: 'Equilibrio en todo',
     description: 'Un poco de cada cosa, cada semana. Ideal si no sabes por dónde empezar.',
     hours: { familia: 16, pareja: 10, social: 10, bienestar: 12, autocuidado: 8, aficiones: 8, proyectos: 12 },
@@ -187,8 +187,8 @@ export function valuesMessage(list: ValueProgress[]): { title: string; text: str
   const behind = list.filter((p) => p.status === 'poco').sort((a, b) => a.done / Math.max(1, a.expected) - b.done / Math.max(1, b.expected));
   if (!behind.length) {
     return list.every((p) => p.status === 'genial')
-      ? { title: '¡Lo estás haciendo genial! 🌳', text: 'Estás dedicando tiempo a todo lo que te importa. Así se vive con equilibrio.', tone: 'genial' }
-      : { title: 'Vas bien 🌿', text: 'Tu tiempo está bastante repartido entre lo que te importa. Sigue así, sin prisa.', tone: 'bien' };
+      ? { title: '¡Lo estás haciendo genial!', text: 'Estás dedicando tiempo a todo lo que te importa. Así se vive con equilibrio.', tone: 'genial' }
+      : { title: 'Vas bien', text: 'Tu tiempo está bastante repartido entre lo que te importa. Sigue así, sin prisa.', tone: 'bien' };
   }
   const b = behind[0];
   const period = b.goal.per === 'semana' ? 'esta semana' : 'este mes';

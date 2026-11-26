@@ -542,7 +542,7 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
       state: s,
       message: next
         ? `${task.routine ? 'Cotidiana añadida' : 'Hábito creado'}: ${task.timesPerMonth ? `${task.timesPerMonth}× al mes` : task.timesPerWeek === 7 ? 'cada día' : `${task.timesPerWeek}× por semana`}. La primera vez, ${fmtRelative(next.date, ctx.today)} a las ${minToHm(next.start)}.`
-        : 'Hábito creado. Esta semana ya no queda hueco, empezamos la que viene 🌱',
+        : 'Hábito creado. Esta semana ya no queda hueco, empezamos la que viene',
     };
   }
 
@@ -625,9 +625,9 @@ export function completeSession(state: AppState, id: string): Result {
     const unplaced = { ...s.unplaced };
     delete unplaced[task.id];
     s = { ...s, sessions, unplaced };
-    return { state: s, message: `🎉 ¡Has terminado «${task.title}»! +${gained} gotas` };
+    return { state: s, message: `✦ ¡Has terminado «${task.title}»! +${gained} gotas` };
   }
-  return { state: s, message: `+${gained} gotas 💧` };
+  return { state: s, message: `+${gained} gotas` };
 }
 
 export function uncompleteSession(state: AppState, id: string): Result {
@@ -658,11 +658,11 @@ export function postponeSession(state: AppState, id: string, ctx: Ctx): Result {
       state: s,
       message:
         task.kind === 'habito'
-          ? 'Esta semana ya no hay hueco. No pasa nada: la semana que viene volvemos 🌿'
+          ? 'Esta semana ya no hay hueco. No pasa nada: la semana que viene volvemos'
           : 'No encuentro hueco antes del deadline. ¿Ampliamos la fecha?',
     };
   }
-  return { state: s, message: `Sin culpa 🌿 Lo he movido ${fmtTo(next.date, ctx.today)} a las ${minToHm(next.start)}.` };
+  return { state: s, message: `Sin culpa Lo he movido ${fmtTo(next.date, ctx.today)} a las ${minToHm(next.start)}.` };
 }
 
 /** Si la energía del día baja, quitamos peso moviendo lo que tenga margen. */
@@ -692,12 +692,12 @@ export function setEnergy(state: AppState, date: string, value: number, ctx: Ctx
   let message: string;
   if (value <= 40) {
     message = moved
-      ? `Gracias por escucharte 💛 He aligerado tu día: ${moved} ${moved === 1 ? 'cosa pasa' : 'cosas pasan'} a otros días.`
-      : 'Gracias por escucharte 💛 Hoy, lo justo y con calma.';
+      ? `Gracias por escucharte He aligerado tu día: ${moved} ${moved === 1 ? 'cosa pasa' : 'cosas pasan'} a otros días.`
+      : 'Gracias por escucharte Hoy, lo justo y con calma.';
   } else if (value >= 80) {
-    message = '¡Qué buena energía! Si te sobra un rato, puedes adelantar algo ✨';
+    message = '¡Qué buena energía! Si te sobra un rato, puedes adelantar algo';
   } else {
-    message = moved ? `He reajustado tu día (${moved} movidas).` : 'Perfecto, tu día está equilibrado 🌿';
+    message = moved ? `He reajustado tu día (${moved} movidas).` : 'Perfecto, tu día está equilibrado';
   }
   return { state: s, message };
 }
@@ -721,11 +721,11 @@ export function pullForward(state: AppState, ctx: Ctx): Result {
     if (start != null) {
       return {
         state: { ...state, sessions: [...others, { ...x, date: ctx.today, start }] },
-        message: `Adelantado: «${task?.title}» hoy a las ${minToHm(start)} ✨`,
+        message: `Adelantado: «${task?.title}» hoy a las ${minToHm(start)}`,
       };
     }
   }
-  return { state, message: 'Ahora mismo no hay nada que adelantar que quepa hoy. ¡Disfruta del rato libre! 🌿' };
+  return { state, message: 'Ahora mismo no hay nada que adelantar que quepa hoy. ¡Disfruta del rato libre!' };
 }
 
 export function archiveTask(state: AppState, taskId: string): AppState {
@@ -820,7 +820,7 @@ export function moveSession(state: AppState, id: string, date: string, start: nu
   const p = s.profile;
   const inBusy =
     p && baseBusy(p, date).some((b) => b.start < start + moved.duration && start < b.end && b.start > 0 && b.end < 1440);
-  let message = `Movido ${fmtTo(date, ctx.today)} a las ${minToHm(start)} 📌`;
+  let message = `Movido ${fmtTo(date, ctx.today)} a las ${minToHm(start)} •`;
   if (clash) {
     const other = s.tasks.find((t) => t.id === clash.taskId);
     message += ` Ojo: coincide con «${other?.title ?? 'otra cosa'}».`;
@@ -891,7 +891,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
       s = { ...s, sessions: s.sessions.map((x) => (x.id === ev.id ? nev : x)) };
       s = resolveConflicts(s, nev, ctx).state;
     }
-    return { state: s, message: 'Guardado ✨' };
+    return { state: s, message: 'Guardado' };
   }
 
   if (
@@ -903,7 +903,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
       sessions: s.sessions.filter((x) => !(x.taskId === taskId && x.status === 'planned' && x.date >= ctx.today)),
     };
     s = ensureHabits(s, ctx);
-    return { state: s, message: task.routine ? 'Cotidiana actualizada y recolocada 🔁' : 'Hábito actualizado y recolocado 🔁' };
+    return { state: s, message: task.routine ? 'Cotidiana actualizada y recolocada ↻' : 'Hábito actualizado y recolocado ↻' };
   }
 
   if (
@@ -918,7 +918,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
     const next = firstPlanned(s, taskId, ctx.today);
     if (doneMinutes(s, taskId) >= task.totalMinutes) {
       s = { ...s, sessions: s.sessions.filter((x) => !(x.taskId === taskId && x.status === 'planned')) };
-      return { state: s, message: '¡Con este cambio ya está conseguido! 🏆' };
+      return { state: s, message: '¡Con este cambio ya está conseguido! ✦' };
     }
     return {
       state: s,
@@ -927,7 +927,7 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
         : 'Guardado, pero no encuentro hueco antes de la fecha límite.',
     };
   }
-  return { state: s, message: 'Guardado ✨' };
+  return { state: s, message: 'Guardado' };
 }
 
 // ---------------------------------------------------------------- calendario externo
@@ -996,7 +996,7 @@ export function importEvents(
   const extra = moved ? ` He recolocado ${moved} ${moved === 1 ? 'sesión' : 'sesiones'} que coincidían.` : '';
   return {
     state: s,
-    message: added ? `He traído ${added} ${added === 1 ? 'cita' : 'citas'} de tu calendario 📅.${extra}` : 'Tu calendario ya estaba al día 📅',
+    message: added ? `He traído ${added} ${added === 1 ? 'cita' : 'citas'} de tu calendario ▦.${extra}` : 'Tu calendario ya estaba al día ▦',
   };
 }
 
@@ -1058,7 +1058,7 @@ export function setDayBreaks(state: AppState, date: string, breaks: WorkBreak[],
   };
   const r = fillBreaks(s, date, ctx);
   s = r.state;
-  return { state: s, message: r.message ?? (breaks.length ? 'Pausas guardadas ☕' : 'Hoy sin pausas, entendido.') };
+  return { state: s, message: r.message ?? (breaks.length ? 'Pausas guardadas ◔' : 'Hoy sin pausas, entendido.') };
 }
 
 /** Mueve a las pausas libres de ese día las sesiones cortas que quepan (prioriza bienestar). */
@@ -1088,7 +1088,7 @@ export function fillBreaks(state: AppState, date: string, ctx: Ctx): Result {
   }
   return {
     state: s,
-    message: placed.length ? `He puesto ${placed.join(' y ')} en tus pausas ☕` : undefined,
+    message: placed.length ? `He puesto ${placed.join(' y ')} en tus pausas ◔` : undefined,
   };
 }
 
@@ -1110,7 +1110,7 @@ export interface ProjectStatus {
   weekly: { week: string; minutes: number }[];
 }
 
-const STAGES = ['🌰', '🌱', '🌿', '🪴', '🌳'];
+const STAGES = ['◌', '◔', '◑', '◕', '●'];
 
 export function projectStatus(state: AppState, taskId: string, today: string): ProjectStatus {
   const task = state.tasks.find((t) => t.id === taskId)!;
@@ -1128,7 +1128,7 @@ export function projectStatus(state: AppState, taskId: string, today: string): P
   let phrase: string;
   if (pct >= 1) {
     mood = 'done';
-    phrase = '¡Conseguido! Mira todo lo que has construido, sesión a sesión 🏆';
+    phrase = '¡Conseguido! Mira todo lo que has construido, sesión a sesión ✦';
   } else if (done === 0) {
     mood = 'start';
     phrase = 'Todo gran proyecto empieza con una primera sesión. La tuya ya tiene hueco.';
@@ -1137,10 +1137,10 @@ export function projectStatus(state: AppState, taskId: string, today: string): P
     phrase = 'Así no llega a tiempo. ¿Ampliamos la fecha o reducimos horas? Sin presión, lo ajustamos.';
   } else if (expected == null) {
     mood = 'free';
-    phrase = pct < 0.25 ? 'Arrancando: ya has plantado la semilla 🌱' : pct < 0.5 ? 'Echando raíces. La constancia hace el resto.' : pct < 0.75 ? 'Creciendo fuerte. Ya has pasado la mitad 💪' : '¡Ya casi lo tienes! El último empujón.';
+    phrase = pct < 0.25 ? 'Arrancando: ya has plantado la semilla' : pct < 0.5 ? 'Echando raíces. La constancia hace el resto.' : pct < 0.75 ? 'Creciendo fuerte. Ya has pasado la mitad ' : '¡Ya casi lo tienes! El último empujón.';
   } else if (pct >= expected + 0.1) {
     mood = 'ahead';
-    phrase = '¡Vas por delante del plan! Puedes ir con calma 🌿';
+    phrase = '¡Vas por delante del plan! Puedes ir con calma';
   } else if (pct >= expected - 0.1) {
     mood = 'ontrack';
     phrase = 'Vas a buen ritmo. Paso a paso llegas de sobra.';
@@ -1188,7 +1188,7 @@ export function addRechargeBefore(state: AppState, sessionId: string, ctx: Ctx):
     totalMinutes: 10,
     sessionMinutes: 10,
     deadline: target.date,
-    icon: '🫧',
+    icon: '○',
     createdAt: ctx.today,
   };
   const start = target.start - 10;
@@ -1200,7 +1200,7 @@ export function addRechargeBefore(state: AppState, sessionId: string, ctx: Ctx):
   if (!clash && !busy && !past) {
     const session: Session = { id: uid(), taskId: task.id, date: target.date, start, duration: 10, status: 'planned', pinned: true };
     s = { ...s, sessions: [...s.sessions, session] };
-    return { state: s, message: `🫧 10 min de recarga a las ${minToHm(start)}, justo antes de «${focusTask?.title}». Llegarás con la cabeza más clara.` };
+    return { state: s, message: `○ 10 min de recarga a las ${minToHm(start)}, justo antes de «${focusTask?.title}». Llegarás con la cabeza más clara.` };
   }
   // plan B: el hueco libre más cercano ANTES de la sesión; si no hay, cualquiera de ese día
   const windows = freeWindows(p, target.date, state.sessions, target.date === ctx.today ? ceilTo(ctx.now + 5, STEP) : 0);
@@ -1211,13 +1211,13 @@ export function addRechargeBefore(state: AppState, sessionId: string, ctx: Ctx):
   if (before) {
     const session: Session = { id: uid(), taskId: task.id, date: target.date, start: before.start, duration: 10, status: 'planned', pinned: true };
     s = { ...s, sessions: [...s.sessions, session] };
-    return { state: s, message: `🫧 Justo antes no cabía: he reservado 10 min de recarga a las ${minToHm(before.start)}, antes de «${focusTask?.title}».` };
+    return { state: s, message: `○ Justo antes no cabía: he reservado 10 min de recarga a las ${minToHm(before.start)}, antes de «${focusTask?.title}».` };
   }
   s = replanMissing(s, task.id, target.date, ctx);
   const placed = firstPlanned(s, task.id);
   return {
     state: s,
-    message: placed ? `🫧 He reservado 10 min de recarga a las ${minToHm(placed.start)}.` : 'Hoy no queda hueco para la recarga. Prueba a respirar un minuto antes de empezar 🫧',
+    message: placed ? `○ He reservado 10 min de recarga a las ${minToHm(placed.start)}.` : 'Hoy no queda hueco para la recarga. Prueba a respirar un minuto antes de empezar ○',
   };
 }
 
@@ -1328,7 +1328,7 @@ export function setDayOverride(state: AppState, date: string, patch: DayOverride
     for (const c of clash) s = rehome(s, c, date < ctx.today ? ctx.today : date, ctx);
     return { state: s, message: `Cambiado solo para este día.${movedNote(before, s, clash, date, ctx)}` };
   }
-  return { state: s, message: patch === null ? 'Vuelve a tu rutina de siempre para este día.' : 'Cambiado solo para este día ✨' };
+  return { state: s, message: patch === null ? 'Vuelve a tu rutina de siempre para este día.' : 'Cambiado solo para este día' };
 }
 
 // ---------------------------------------------------------------- conflictos: no cabe antes de la fecha
@@ -1349,10 +1349,10 @@ export function conflictOf(state: AppState, taskId: string): Conflict | null {
   const options: Conflict['options'] = [];
   const weekendBlocked =
     t.dayType === 'weekdays' || ((p.weekendFocus === 'no' || p.weekendFocus === 'franja') && !t.allowWeekend && (t.category === 'proyectos' || t.category === 'trabajo'));
-  if (weekendBlocked) options.push({ id: 'finde', label: '📅 Usar también el fin de semana' });
-  if (t.deadline) options.push({ id: 'ampliar', label: '⏳ Ampliar la fecha una semana' });
-  if (t.sessionMinutes > 30) options.push({ id: 'cortas', label: '✂️ Sesiones más cortas (30 min) para aprovechar huecos' });
-  options.push({ id: 'reducir', label: `➖ Dejarlo en lo que cabe (${fmtDuration(Math.max(15, t.totalMinutes - missing))})` });
+  if (weekendBlocked) options.push({ id: 'finde', label: '▦ Usar también el fin de semana' });
+  if (t.deadline) options.push({ id: 'ampliar', label: '◷ Ampliar la fecha una semana' });
+  if (t.sessionMinutes > 30) options.push({ id: 'cortas', label: 'Sesiones más cortas (30 min) para aprovechar huecos' });
+  options.push({ id: 'reducir', label: ` Dejarlo en lo que cabe (${fmtDuration(Math.max(15, t.totalMinutes - missing))})` });
   return { missing, options };
 }
 
@@ -1371,6 +1371,6 @@ export function fixConflict(state: AppState, taskId: string, fix: ConflictFix, c
   const still = r.state.unplaced[taskId] ?? 0;
   return {
     state: r.state,
-    message: still ? `Mejor, pero aún faltan ${fmtDuration(still)}. Prueba otra opción.` : `¡Resuelto! «${t.title}» ya cabe 🌿`,
+    message: still ? `Mejor, pero aún faltan ${fmtDuration(still)}. Prueba otra opción.` : `¡Resuelto! «${t.title}» ya cabe`,
   };
 }

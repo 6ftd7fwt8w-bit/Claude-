@@ -63,7 +63,7 @@ export function SessionSheet({
   return (
     <Sheet title={c.label} onClose={close}>
       <div className="ss-head" style={{ '--cat': taskColor(task) } as CSSProperties}>
-        <span className="ss-icon">{task?.icon ?? c.emoji}</span>
+        <span className="ss-icon">{c.emoji}</span>
         <div>
           <p className="h3">{task?.title}</p>
           <p className="muted small">
@@ -75,7 +75,7 @@ export function SessionSheet({
 
       {canChange && (
         <div className="ss-row">
-          <span className="ss-label">⏱ {done ? 'Le dediqué' : 'Hoy le dedico'}</span>
+          <span className="ss-label">◷ {done ? 'Le dediqué' : 'Hoy le dedico'}</span>
           <div className="stepper">
             <button aria-label="15 minutos menos" onClick={() => setMinutes((m) => Math.max(5, m - 15))}>
               −
@@ -95,7 +95,7 @@ export function SessionSheet({
 
       {todaysSteps.length > 0 && (
         <div className="ss-steps">
-          <p className="ss-label">📋 Para esta sesión</p>
+          <p className="ss-label">≡ Para esta sesión</p>
           {todaysSteps.map((st) => (
             <label key={st.id} className="step-row">
               <input type="checkbox" checked={!!st.done} onChange={() => task && onToggleStep(task.id, st.id)} />
@@ -107,7 +107,7 @@ export function SessionSheet({
       )}
 
       <label className="field">
-        <span>📝 Nota para este día</span>
+        <span>✎ Nota para este día</span>
         <textarea className="note" rows={2} value={note} placeholder={focus ? 'Qué quiero hacer hoy de este proyecto…' : 'Algo que recordar…'} onChange={(e) => setNote(e.target.value)} />
       </label>
 
@@ -133,7 +133,7 @@ export function SessionSheet({
         )}
         {!done && focus && (
           <button className="btn soft" onClick={act(onPrepare)}>
-            🫧 Prepárate (respirar 1 min)
+            ○ Prepárate (respirar 1 min)
           </button>
         )}
         {!done && session.date >= today && (
@@ -154,7 +154,7 @@ export function SessionSheet({
                     const t = state.tasks.find((x) => x.id === o.taskId);
                     return (
                       <button key={o.id} className="chip" onClick={act(() => onMoveAfter(session, o.id))}>
-                        {t?.icon ?? catById(t?.category ?? 'bienestar').emoji} {t?.title} ({minToHm(o.start + o.duration)})
+                        {catById(t?.category ?? 'bienestar').emoji} {t?.title} ({minToHm(o.start + o.duration)})
                       </button>
                     );
                   })}
@@ -162,21 +162,21 @@ export function SessionSheet({
               </details>
             )}
             <button className="btn soft" onClick={act(() => onMove(session))}>
-              🕐 Mover a otro día u hora
+              ◷ Mover a otro día u hora
             </button>
             <button className="btn soft" onClick={act(() => onPostpone(session))}>
-              {task?.kind === 'evento' ? '🗑 Quitar del calendario' : '🌿 Hoy no puedo (recolócalo)'}
+              {task?.kind === 'evento' ? 'Quitar del calendario' : 'Hoy no puedo (recolócalo)'}
             </button>
           </>
         )}
         {task && (
           <button className="btn ghost" onClick={act(onEdit)}>
-            ✏️ Editar la tarea{task.kind === 'flexible' ? ', sus notas y pasos' : ''}
+            ✎ Editar la tarea{task.kind === 'flexible' ? ', sus notas y pasos' : ''}
           </button>
         )}
         {task && (
           <button className="btn ghost danger" onClick={act(onDelete)}>
-            🗑 Eliminar {task.kind === 'evento' ? 'este evento' : task.kind === 'habito' ? 'esta tarea (todas las veces)' : 'esta tarea'}
+            Eliminar {task.kind === 'evento' ? 'este evento' : task.kind === 'habito' ? 'esta tarea (todas las veces)' : 'esta tarea'}
           </button>
         )}
       </div>

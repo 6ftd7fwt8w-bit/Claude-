@@ -47,7 +47,7 @@ function RecurringSection({
             return (
               <div key={t.id} className="recurring" style={{ '--cat': catById(t.category).color } as CSSProperties}>
                 <button className="recurring-main" onClick={() => onEdit(t)} aria-label={`Editar ${t.title}`}>
-                  <span className="tile-icon">{t.icon ?? catById(t.category).emoji}</span>
+                  <span className="tile-icon">{catById(t.category).emoji}</span>
                   <span className="tile-title">{t.title}</span>
                   <span className="tile-meta">
                     {fmtDuration(t.totalMinutes)} · {timesLabel(target, t.days, t.timesPerMonth)}
@@ -73,7 +73,7 @@ function RecurringSection({
           <div className="chips">
             {missing.map((s) => (
               <button key={s.title} className="chip add" onClick={() => onQuickAdd(s)}>
-                {s.icon} {s.title}
+                {catById(s.category).emoji} {s.title}
               </button>
             ))}
           </div>
@@ -130,7 +130,7 @@ export function GoalsView({
 
       {loose.length > 0 && (
         <>
-          <h2 className="section-title">📝 Tareas sueltas</h2>
+          <h2 className="section-title">✎ Tareas sueltas</h2>
           {looseByCat.map(({ c, items }) => (
             <section key={c.id} className="card loose-group" style={{ '--cat': c.color } as CSSProperties}>
               <p className="loose-head">
@@ -149,7 +149,7 @@ export function GoalsView({
                       <span className="loose-title">{t.title}</span>
                       <span className={`loose-meta ${late ? 'warn' : ''}`}>
                         {done
-                          ? 'Hecha ✨'
+                          ? 'Hecha'
                           : [
                               fmtDuration(t.totalMinutes),
                               t.deadline ? `para ${fmtRelative(t.deadline, today).replace(/^el /, 'el ')}` : 'sin prisa',
@@ -175,7 +175,7 @@ export function GoalsView({
         </>
       )}
 
-      <h2 className="section-title">✨ Proyectos</h2>
+      <h2 className="section-title">Proyectos</h2>
       {flex.length === 0 && (
         <p className="empty small-empty">
           Aún no hay proyectos. Pulsa <strong>+</strong> y escribe algo como «Trabajar en las láminas 10h antes del 31/12».
@@ -208,7 +208,7 @@ export function GoalsView({
       </div>
 
       <RecurringSection
-        title="🧺 Lo de cada día"
+        title="Lo de cada día"
         hint="Tareas cotidianas: ocupan tiempo real y las tengo en cuenta al planificar."
         state={state}
         today={today}
@@ -220,7 +220,7 @@ export function GoalsView({
       />
 
       <RecurringSection
-        title="💛 Para cuidarte"
+        title="Para cuidarte"
         hint="Bienestar y vida social: lo coloco cada semana para que no se te olvide vivir."
         state={state}
         today={today}
@@ -271,7 +271,7 @@ export function GoalsView({
 
       {periodic.length > 0 && (
         <RecurringSection
-          title="🔁 Se repite"
+          title="↻ Se repite"
           hint="Gestiones y tareas periódicas: cada semana o cada mes."
           state={state}
           today={today}
@@ -283,24 +283,24 @@ export function GoalsView({
         />
       )}
 
-      {events.length > 0 && <h2 className="section-title">📌 Próximas citas</h2>}
+      {events.length > 0 && <h2 className="section-title">• Próximas citas</h2>}
       {events.map((t) => (
         <section key={t.id} className="card goal row" style={{ '--cat': catById(t.category).color } as CSSProperties}>
           <span className="goal-emoji">{catById(t.category).emoji}</span>
           <div className="grow">
             <p className="h3">
               {t.title}
-              {t.source && <span title="De tu calendario"> 📅</span>}
+              {t.source && <span title="De tu calendario"> ▦</span>}
             </p>
             <p className="muted small">
               {fmtRelative(t.date!, today)} a las {minToHm(t.start ?? 0)} · {fmtDuration(t.totalMinutes)}
             </p>
           </div>
           <button className="icon-btn" aria-label={`Editar ${t.title}`} onClick={() => onEdit(t)}>
-            ✏️
+            ✎
           </button>
           <button className="icon-btn" aria-label={`Quitar ${t.title}`} onClick={() => onArchive(t)}>
-            🗑
+           
           </button>
         </section>
       ))}

@@ -90,7 +90,7 @@ export function FillGapSheet({
   return (
     <Sheet title="¿Qué hacemos en este hueco?" onClose={onClose}>
       <p className="gap-range">
-        🌿 {minToHm(gap.start)}–{minToHm(gap.end)} · {fmtDuration(length)} libres
+        {minToHm(gap.start)}–{minToHm(gap.end)} · {fmtDuration(length)} libres
       </p>
 
       {candidates.length > 0 && (
@@ -99,7 +99,7 @@ export function FillGapSheet({
           <div className="gap-list">
             {candidates.map(({ session, task }) => (
               <button key={session.id} className="gap-item" onClick={() => onPull(session.id)}>
-                <span className="cr-icon">{task.icon ?? catById(task.category).emoji}</span>
+                <span className="cr-icon">{catById(task.category).emoji}</span>
                 <span className="grow">
                   <strong>{task.title}</strong>
                   <span className="muted small">
@@ -127,7 +127,7 @@ export function FillGapSheet({
               className="hobby"
               onClick={() => onAdd({ title: h.title, category: h.category, kind: 'evento', totalMinutes: Math.min(minutes, length), date, start: gap.start, icon: h.icon } as NewTaskInput)}
             >
-              <span>{h.icon}</span>
+              <span>{catById(h.category).emoji}</span>
               {h.title}
             </button>
           ))}
@@ -135,7 +135,7 @@ export function FillGapSheet({
       </div>
 
       <button className="btn soft wide" onClick={onOther}>
-        ✏️ Otra cosa…
+        ✎ Otra cosa…
       </button>
     </Sheet>
   );

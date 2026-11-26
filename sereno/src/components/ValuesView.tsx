@@ -57,7 +57,7 @@ export function ValuesView({
             </div>
             <p className="vb-foot muted small">
               {p.goal.per === 'semana' ? 'Esta semana' : `Este mes (hasta el ${fmtShort(p.to)})`} ·{' '}
-              {p.status === 'genial' ? '¡Vas genial! 🌳' : p.status === 'bien' ? 'Vas bien 🌿' : 'Dale un poco más de cariño 💛'}
+              {p.status === 'genial' ? '¡Vas genial!' : p.status === 'bien' ? 'Vas bien' : 'Dale un poco más de cariño'}
               {p.planned > p.done && ` · ${fmtDuration(p.planned - p.done)} planificadas`}
             </p>
           </section>
@@ -79,7 +79,7 @@ export function ValuesView({
               setEditing(true);
             }}
           >
-            🧭 Ajustar mis valores
+            ◈ Ajustar mis valores
           </button>
         </div>
       )}

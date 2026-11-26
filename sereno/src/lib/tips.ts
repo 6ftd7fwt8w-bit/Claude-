@@ -33,12 +33,12 @@ export function tipsFor(state: AppState, date: string, today: string): Tip[] {
   const allDone = daySessions.length > 0 && daySessions.every((s) => s.status === 'done');
 
   if (date === today && allDone) {
-    tips.push({ icon: '✨', text: '¡Has completado todo lo de hoy! Disfruta del resto del día sin culpa.' });
+    tips.push({ icon: '', text: '¡Has completado todo lo de hoy! Disfruta del resto del día sin culpa.' });
   }
 
   if (energy <= 40) {
     tips.push({
-      icon: '🪫',
+      icon: '○',
       text: 'Tu energía está baja. Prioriza lo esencial, come algo rico y acuéstate pronto. El resto puede esperar.',
       action: 'breathe',
     });
@@ -46,15 +46,15 @@ export function tipsFor(state: AppState, date: string, today: string): Tip[] {
 
   if (load.level === 'rojo') {
     tips.push({
-      icon: '🧘',
+      icon: '◎',
       text: 'Hoy es un día ajetreado. Intenta regalarte al menos 10 minutos de meditación o respiración entre bloques.',
       action: 'breathe',
     });
   } else if (load.level === 'naranja') {
-    tips.push({ icon: '💧', text: 'Día con ritmo. Haz pausas de 5 minutos cada hora, estira y bebe agua.' });
+    tips.push({ icon: '', text: 'Día con ritmo. Haz pausas de 5 minutos cada hora, estira y bebe agua.' });
   } else if (!allDone && energy > 40) {
     tips.push({
-      icon: '🌿',
+      icon: '',
       text:
         load.level === 'libre'
           ? 'Día libre: buen momento para algo que te llene. Un paseo, leer, llamar a alguien.'
@@ -66,7 +66,7 @@ export function tipsFor(state: AppState, date: string, today: string): Tip[] {
     const social = daysSinceCategory(state, 'social', today);
     if (social >= 7 && !hasUpcoming(state, 'social', today, 3)) {
       tips.push({
-        icon: '💛',
+        icon: '',
         text: `Hace ${social} días que no dedicas tiempo a tu vida social. ¿Un mensaje o una llamada a alguien que quieras?`,
         action: 'add-social',
       });
@@ -74,7 +74,7 @@ export function tipsFor(state: AppState, date: string, today: string): Tip[] {
     const wellbeing = daysSinceCategory(state, 'bienestar', today);
     if (wellbeing >= 4 && !hasUpcoming(state, 'bienestar', today, 1)) {
       tips.push({
-        icon: '🧘',
+        icon: '◎',
         text: `Llevas ${wellbeing} días sin un rato de bienestar. Aunque sean 10 minutos, tu cuerpo lo nota.`,
         action: 'add-bienestar',
       });

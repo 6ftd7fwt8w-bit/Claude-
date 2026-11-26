@@ -7,10 +7,10 @@ import { fmtDuration, fmtRelative, fmtShort, minToHm } from '../lib/time';
 import { DurationPicker, Sheet } from './ui';
 
 const MILESTONES = [
-  { at: 0.25, icon: '🌱', label: 'Brote' },
-  { at: 0.5, icon: '🌿', label: 'Mitad' },
-  { at: 0.75, icon: '🪴', label: 'Casi' },
-  { at: 1, icon: '🌳', label: '¡Logrado!' },
+  { at: 0.25, icon: '◔', label: 'Un cuarto' },
+  { at: 0.5, icon: '◑', label: 'Mitad' },
+  { at: 0.75, icon: '◕', label: 'Casi' },
+  { at: 1, icon: '●', label: 'Logrado' },
 ];
 
 /** Progreso real de un proyecto: cuánto llevas, a qué ritmo y qué viene ahora. */
@@ -126,7 +126,7 @@ export function ProjectSheet({
         {unplaced > 0 && <ConflictBox state={state} taskId={task.id} onFix={onFix} />}
 
         <div className="pd-section">
-          <p className="h3">📋 Pasos</p>
+          <p className="h3">≡ Pasos</p>
           <p className="muted small">Lo que hay que hacer, en orden. Te los iré sugiriendo en cada sesión.</p>
           {steps.map((st) => {
             const when = [...plan.entries()].find(([, l]) => l.some((x) => x.id === st.id));
@@ -162,12 +162,12 @@ export function ProjectSheet({
         </div>
 
         <div className="pd-section">
-          <p className="h3">📝 Notas</p>
+          <p className="h3">✎ Notas</p>
           <textarea className="note" rows={3} value={notes} placeholder="Ideas, enlaces, cosas a tener en cuenta…" onChange={(e) => setNotes(e.target.value)} onBlur={() => notes !== (task.notes ?? '') && onPatch(task.id, { notes })} />
         </div>
 
         <div className="pd-section">
-          <p className="h3">⚙️ Cómo lo haces</p>
+          <p className="h3">⚙ Cómo lo haces</p>
           <div className="segmented two">
             <button className={!whole ? 'on' : ''} onClick={() => onPatch(task.id, { sessionMinutes: Math.min(60, task.totalMinutes) })}>
               Por partes (sesiones)
@@ -245,10 +245,10 @@ export function ProjectSheet({
         )}
 
         <button className="btn soft wide" onClick={() => onEdit(task)}>
-          ✏️ Cambiar horas o fecha
+          ✎ Cambiar horas o fecha
         </button>
         <button className="btn ghost wide danger" onClick={() => onDelete(task)}>
-          🗑 Eliminar el proyecto
+          Eliminar el proyecto
         </button>
       </div>
     </Sheet>

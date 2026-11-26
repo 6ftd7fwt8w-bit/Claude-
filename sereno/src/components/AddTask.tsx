@@ -3,7 +3,7 @@ import type { CategoryId, DayType, Task, TaskKind, TimeOfDay } from '../types';
 import { catById } from '../types';
 import type { NewTaskInput, TaskPatch } from '../lib/scheduler';
 import { parseQuick } from '../lib/parse';
-import { ROUTINE_ICONS, TIME_OF_DAY_LABEL } from '../lib/suggestions';
+import { TIME_OF_DAY_LABEL } from '../lib/suggestions';
 import { addDays, fmtDuration, fmtShort, hmToMin, minToHm, todayKey } from '../lib/time';
 import { CategoryPicker, DayPicker, DurationPicker, NumberChips, Sheet, TimeMode } from './ui';
 import { FreqTabs, type Freq } from './RecurringEditor';
@@ -11,10 +11,10 @@ import { FreqTabs, type Freq } from './RecurringEditor';
 type Mode = TaskKind | 'cotidiana';
 
 const KINDS: { id: Mode; label: string; hint: string }[] = [
-  { id: 'flexible', label: '🪴 Proyecto', hint: 'Tú dices cuánto tiempo y para cuándo; yo busco los huecos.' },
-  { id: 'evento', label: '📌 Con hora', hint: 'Algo con día y hora fijos (una cena, el médico…).' },
-  { id: 'habito', label: '💛 Cuidarte', hint: 'Bienestar o vida social que se repite cada semana.' },
-  { id: 'cotidiana', label: '🧺 Cotidiana', hint: 'Lo de siempre: ducha, compra, cocinar… Ocupa tiempo y lo tengo en cuenta.' },
+  { id: 'flexible', label: 'Proyecto', hint: 'Tú dices cuánto tiempo y para cuándo; yo busco los huecos.' },
+  { id: 'evento', label: '• Con hora', hint: 'Algo con día y hora fijos (una cena, el médico…).' },
+  { id: 'habito', label: 'Cuidarte', hint: 'Bienestar o vida social que se repite cada semana.' },
+  { id: 'cotidiana', label: 'Cotidiana', hint: 'Lo de siempre: ducha, compra, cocinar… Ocupa tiempo y lo tengo en cuenta.' },
 ];
 
 export interface AddPreset {
@@ -46,7 +46,7 @@ export function AddTask({
   const kind: TaskKind = mode === 'cotidiana' ? 'habito' : mode;
   const setKind = (k: TaskKind) => setMode((m) => (m === 'cotidiana' && k === 'habito' ? m : k));
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(e?.timeOfDay ?? 'cualquiera');
-  const [icon, setIcon] = useState(e?.icon ?? '🧺');
+  const icon = e?.icon;
   const [days, setDays] = useState<number[]>(e?.days ?? []);
   const [fixed, setFixed] = useState<number | undefined>(e?.fixedStart);
   const [after, setAfter] = useState<number | undefined>(e?.after);
@@ -97,12 +97,12 @@ export function AddTask({
   }, [mode]);
 
   const understood: string[] = [];
-  if (parsed.totalMinutes) understood.push(`⏱ ${fmtDuration(parsed.totalMinutes)}`);
-  if (parsed.deadline) understood.push(`🎯 antes del ${fmtShort(parsed.deadline)}`);
-  if (parsed.date) understood.push(`📅 ${fmtShort(parsed.date)}`);
-  if (parsed.start != null) understood.push(`🕐 ${minToHm(parsed.start)}`);
-  if (parsed.timesPerWeek) understood.push(`🔁 ${parsed.timesPerWeek}×/semana`);
-  if (parsed.timesPerMonth) understood.push(`🔁 ${parsed.timesPerMonth}×/mes`);
+  if (parsed.totalMinutes) understood.push(`◷ ${fmtDuration(parsed.totalMinutes)}`);
+  if (parsed.deadline) understood.push(`◇ antes del ${fmtShort(parsed.deadline)}`);
+  if (parsed.date) understood.push(`▦ ${fmtShort(parsed.date)}`);
+  if (parsed.start != null) understood.push(`◷ ${minToHm(parsed.start)}`);
+  if (parsed.timesPerWeek) understood.push(`↻ ${parsed.timesPerWeek}×/semana`);
+  if (parsed.timesPerMonth) understood.push(`↻ ${parsed.timesPerMonth}×/mes`);
   if (parsed.category) understood.push(`${catById(parsed.category).emoji} ${catById(parsed.category).label}`);
 
   const title = e && !typed ? text.trim() : parsed.title || text.trim();
@@ -182,18 +182,6 @@ export function AddTask({
         </div>
       )}
       <p className="muted small">{KINDS.find((k) => k.id === mode)?.hint}</p>
-      {mode === 'cotidiana' && (
-        <div className="field">
-          <span>Icono</span>
-          <div className="chips icons">
-            {ROUTINE_ICONS.map((i) => (
-              <button key={i} type="button" className={`chip round ${icon === i ? 'on' : ''}`} onClick={() => setIcon(i)} aria-label={`Icono ${i}`}>
-                {i}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="field">
         <span>Tipo</span>
@@ -269,7 +257,7 @@ export function AddTask({
           <div className="field">
             <span>Cada vez</span>
             <DurationPicker value={total} onChange={setTotal} />
-            {total <= 20 && <small className="muted">Cabe en tus pausas del trabajo ☕</small>}
+            {total <= 20 && <small className="muted">Cabe en tus pausas del trabajo ◔</small>}
           </div>
           <div className="field">
             <span>¿Cuándo te va mejor?</span>
@@ -316,7 +304,7 @@ export function AddTask({
         </>
       )}
       <label className="field">
-        <span>📝 Notas (opcional)</span>
+        <span>✎ Notas (opcional)</span>
         <textarea className="note" rows={2} value={notes} onChange={(ev) => setNotes(ev.target.value)} placeholder="Detalles, enlaces, qué quieres hacer…" />
       </label>
 
@@ -325,7 +313,7 @@ export function AddTask({
       </button>
       {e && onDelete && (
         <button className="btn ghost wide danger" onClick={() => onDelete(e)}>
-          🗑 Eliminar
+          Eliminar
         </button>
       )}
     </Sheet>

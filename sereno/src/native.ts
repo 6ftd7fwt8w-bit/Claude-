@@ -102,7 +102,7 @@ export async function scheduleNotifications(state: AppState, today: string): Pro
       if (day.length) {
         list.push({
           id: id++,
-          title: `Buenos días${p.name ? `, ${p.name}` : ''} 🌿`,
+          title: `Buenos días${p.name ? `, ${p.name}` : ''}`,
           body: `Hoy tienes ${day.length} ${day.length === 1 ? 'cosa' : 'cosas'}. Toca para decirme cómo está tu energía.`,
           schedule: { at: morning },
           extra: { action: 'energy' },
@@ -119,7 +119,7 @@ export async function scheduleNotifications(state: AppState, today: string): Pro
       }
       list.push({
         id: id++,
-        title: 'Hora de desconectar 🌙',
+        title: 'Hora de desconectar ☾',
         body: '¿Qué te ha hecho bien hoy? Escríbelo en tu diario y deja el resto para mañana.',
         schedule: { at: at(d, relaxStart(p)) },
       });

@@ -53,7 +53,7 @@ export const RECHARGE_TASK: NewTaskInput = {
   kind: 'habito',
   totalMinutes: 10,
   timesPerWeek: 5,
-  icon: '🫧',
+  icon: '○',
 };
 
 export function analyzePlan(p: Profile, tasks: NewTaskInput[], today = todayKey()): PlanAnalysis {
@@ -71,36 +71,36 @@ export function analyzePlan(p: Profile, tasks: NewTaskInput[], today = todayKey(
 
   const steps: AnalysisStep[] = [
     {
-      icon: '🕰️',
+      icon: '◷',
       doing: 'Analizando tu ritmo y tus horas reales…',
       result: `Tienes ${fmtDuration(weekFree)} libres a la semana después de trabajo, comidas y descanso.`,
     },
     {
-      icon: '🌙',
+      icon: '☾',
       doing: 'Protegiendo tu sueño y tu desconexión…',
       result: `${fmtDuration(p.relaxMinutes)} cada noche sin tareas, y te acuestas a las ${minToHm(p.bed)}. Dormir bien es la base de todo lo demás.`,
     },
     {
-      icon: '⚖️',
+      icon: '◑',
       doing: 'Equilibrando foco y recarga…',
       result: focusPerWeek
-        ? `Te pides ${fmtDuration(focusPerWeek)} de foco a la semana. Para sostenerlo sin quemarte te recomiendo al menos ${fmtDuration(rechargeTarget)} de recarga${suggestRecharge ? ` (ahora tienes ${fmtDuration(rechargePerWeek)})` : ': lo tienes cubierto 👏'}.`
+        ? `Te pides ${fmtDuration(focusPerWeek)} de foco a la semana. Para sostenerlo sin quemarte te recomiendo al menos ${fmtDuration(rechargeTarget)} de recarga${suggestRecharge ? ` (ahora tienes ${fmtDuration(rechargePerWeek)})` : ': lo tienes cubierto'}.`
         : `Tienes ${fmtDuration(rechargePerWeek)} de recarga a la semana. Cuando añadas proyectos, cuidaré que no falte.`,
     },
     {
-      icon: '☕',
+      icon: '◔',
       doing: 'Añadiendo descansos para mantener la concentración…',
       result: breaks
         ? `Usaré ${breaks === 1 ? 'tu pausa' : `tus ${breaks} pausas`} de trabajo para recargar: respirar, estirar, moverte.`
         : 'Dejaré 10 minutos de margen entre una cosa y otra para que respires.',
     },
     {
-      icon: '🎯',
+      icon: '◇',
       doing: 'Colocando lo que pide foco en tus mejores horas…',
       result: `Tus proyectos irán ${best}, y antes de cada sesión tendrás 10 minutos para prepararte con calma.`,
     },
     {
-      icon: '🌿',
+      icon: '',
       doing: 'Calculando una carga sostenible…',
       result:
         demand > 70
@@ -210,7 +210,7 @@ export function personalInsights(state: AppState, today: string): Insight[] {
     const pa = Math.round(a * 100);
     const pb = Math.round(b * 100);
     out.push({
-      icon: '🧘',
+      icon: '◎',
       text:
         pa > pb + 5
           ? `Los días en que te cuidaste (bienestar, gente, tiempo para ti) completaste el ${pa}% de tus sesiones de foco; los demás días, el ${pb}%. Tu mente descansada rinde más.`
@@ -225,7 +225,7 @@ export function personalInsights(state: AppState, today: string): Insight[] {
     const rp = pm[0] / pm[1];
     if (Math.abs(ra - rp) >= 0.15) {
       out.push({
-        icon: ra > rp ? '🌅' : '🌙',
+        icon: ra > rp ? '◐' : '☾',
         text: `Te concentras mejor ${ra > rp ? 'por la mañana' : 'por la tarde'}: completas el ${Math.round(Math.max(ra, rp) * 100)}% de esas sesiones frente al ${Math.round(Math.min(ra, rp) * 100)}%. Puedes cambiar tu cronotipo en Rutina.`,
       });
     }
@@ -237,7 +237,7 @@ export function personalInsights(state: AppState, today: string): Insight[] {
   const rl = rate(low);
   if (high.length >= 3 && low.length >= 2 && rh != null && rl != null) {
     out.push({
-      icon: '🔋',
+      icon: '▮',
       text: `Con energía alta completas el ${Math.round(rh * 100)}% de lo que pide foco; con energía baja, el ${Math.round(rl * 100)}%. Por eso los días flojos te propongo menos.`,
     });
   }
@@ -245,7 +245,7 @@ export function personalInsights(state: AppState, today: string): Insight[] {
   const recharged = days.filter((r) => r.rechargeMinutes > 0).length;
   if (days.length >= 5) {
     out.push({
-      icon: '🌿',
+      icon: '',
       text: `En las últimas semanas te has dado recarga ${recharged} de ${days.length} días (${fmtDuration(days.reduce((x, r) => x + r.rechargeMinutes, 0))} en total).`,
     });
   }
@@ -256,32 +256,32 @@ export function personalInsights(state: AppState, today: string): Insight[] {
 
 export const SCIENCE: { icon: string; title: string; text: string }[] = [
   {
-    icon: '🧘',
+    icon: '◎',
     title: 'Unos minutos de calma',
     text: 'Distintos estudios relacionan la práctica breve de atención plena (mindfulness) con menos estrés percibido y mejor capacidad de atención. No hace falta mucho: unos minutos con constancia.',
   },
   {
-    icon: '☕',
+    icon: '◔',
     title: 'Pausas que recargan',
     text: 'La concentración se agota con el tiempo. Las pausas cortas ayudan a recuperar energía mental y a mantener el rendimiento a lo largo del día.',
   },
   {
-    icon: '🚶',
+    icon: '◌',
     title: 'Moverse da ideas',
     text: 'En un estudio de la Universidad de Stanford (2014), caminar aumentó la generación de ideas creativas frente a estar sentado. Un paseo antes de crear puede ayudar.',
   },
   {
-    icon: '😴',
+    icon: '☾',
     title: 'Dormir para pensar mejor',
     text: 'El sueño es clave para la memoria, el aprendizaje y la resolución de problemas. Por eso Sereno protege tu desconexión y tu hora de dormir.',
   },
   {
-    icon: '🫶',
+    icon: '⁂',
     title: 'Las personas importan',
     text: 'Las relaciones cercanas son uno de los factores más asociados al bienestar a largo plazo. Por eso tu vida social también tiene hueco en el plan.',
   },
   {
-    icon: '🌅',
+    icon: '◐',
     title: 'Tus mejores horas',
     text: 'Cada persona tiene momentos del día en que se concentra mejor (su cronotipo). Colocar lo difícil ahí cuesta menos esfuerzo.',
   },

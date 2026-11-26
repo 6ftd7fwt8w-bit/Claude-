@@ -30,13 +30,13 @@ export const DAILY_PHRASES = [
 ];
 
 export const DONE_PHRASES = [
-  '¡Una hoja nueva en tu bonsái! 🍃',
+  '¡Una hoja nueva en tu bonsái!',
   'Pequeños progresos, grandes cambios.',
   '¡Bien hecho! Tómate un respiro.',
   'Paso a paso, sin prisa y sin pausa.',
   'Eso que acabas de hacer cuenta. Mucho.',
   '¡Tu yo de mañana te lo agradece!',
-  'Constancia amable 🌱',
+  'Constancia amable',
   '¡Hecho! Siente cómo pesa un poco menos el día.',
   'Tu bonsái acaba de crecer un poquito.',
   '¡Así se cultiva una vida en equilibrio!',

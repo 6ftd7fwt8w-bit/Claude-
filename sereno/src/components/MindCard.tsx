@@ -77,7 +77,7 @@ export function MindCard({
       {m.focusWithoutRecharge ? (
         <div className="mind-reco">
           <p>
-            🫧 Antes de <strong>«{m.focusWithoutRecharge.title}»</strong> ({minToHm(m.focusWithoutRecharge.start)}), unos minutos de
+            ○ Antes de <strong>«{m.focusWithoutRecharge.title}»</strong> ({minToHm(m.focusWithoutRecharge.start)}), unos minutos de
             respiración o un paseo corto te ayudarán a concentrarte y a tener mejores ideas.
           </p>
           <button className="btn primary" onClick={() => onRecharge(m.focusWithoutRecharge!.sessionId)}>
@@ -88,12 +88,12 @@ export function MindCard({
         weakest.value < 0.5 && (
           <p className="mind-reco-text">
             {weakest.key === 'energia'
-              ? '🪫 Tu energía está baja: he aligerado el día. Prioriza dormir bien esta noche.'
+              ? '○ Tu energía está baja: he aligerado el día. Prioriza dormir bien esta noche.'
               : weakest.key === 'carga'
-                ? '⚖️ Hoy hay mucha carga: si algo puede esperar, pulsa «Hoy no puedo» y lo recoloco.'
+                ? '◑ Hoy hay mucha carga: si algo puede esperar, pulsa «Hoy no puedo» y lo recoloco.'
                 : weakest.key === 'recarga'
-                  ? '🌿 Hoy no tienes recarga: un paseo o 10 minutos para ti marcan la diferencia.'
-                  : '🌙 Date más tiempo para desconectar por la noche: tu mente lo agradecerá mañana.'}
+                  ? 'Hoy no tienes recarga: un paseo o 10 minutos para ti marcan la diferencia.'
+                  : '☾ Date más tiempo para desconectar por la noche: tu mente lo agradecerá mañana.'}
           </p>
         )
       )}
@@ -127,7 +127,7 @@ export function MindSheet({
         {m.focusWithoutRecharge && (
           <div className="mind-reco">
             <p>
-              🫧 Antes de <strong>«{m.focusWithoutRecharge.title}»</strong> ({minToHm(m.focusWithoutRecharge.start)}), unos minutos de
+              ○ Antes de <strong>«{m.focusWithoutRecharge.title}»</strong> ({minToHm(m.focusWithoutRecharge.start)}), unos minutos de
               respiración o un paseo corto te ayudarán a concentrarte y a tener mejores ideas.
             </p>
             <button
@@ -147,7 +147,7 @@ export function MindSheet({
         </p>
 
         <div className="pd-section">
-          <p className="h3">🔍 Lo que he aprendido de ti</p>
+          <p className="h3">◇ Lo que he aprendido de ti</p>
           {insights.length ? (
             insights.map((i) => (
               <p key={i.text} className="insight">
@@ -163,7 +163,7 @@ export function MindSheet({
         </div>
 
         <div className="pd-section">
-          <p className="h3">🧠 Por qué funciona</p>
+          <p className="h3">◇ Por qué funciona</p>
           <div className="science">
             {SCIENCE.map((s) => (
               <div key={s.title} className="science-item">

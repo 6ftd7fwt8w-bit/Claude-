@@ -46,7 +46,7 @@ export function BlockSheet({
 
       {block.kind === 'meal' && (
         <div className="pd-section">
-          <p className="h3">✏️ Solo este día</p>
+          <p className="h3">✎ Solo este día</p>
           <div className="row2">
             <label className="field">
               <span>Empieza</span>
@@ -70,7 +70,7 @@ export function BlockSheet({
 
       {(block.kind === 'work' || block.kind === 'commute') && (
         <div className="pd-section">
-          <p className="h3">✏️ Solo este día</p>
+          <p className="h3">✎ Solo este día</p>
           <p className="muted small">Si hoy has trabajado más (o menos), cámbialo y recoloco lo que choque.</p>
           <div className="row2">
             <label className="field">
@@ -86,7 +86,7 @@ export function BlockSheet({
             Guardar para este día ({fmtDuration(Math.max(0, wEnd - wStart))})
           </button>
           <button className="btn soft wide" onClick={() => onOverride({ noWork: true })}>
-            🌴 Hoy no trabajo
+            ○ Hoy no trabajo
           </button>
         </div>
       )}
@@ -108,7 +108,7 @@ export function BlockSheet({
       )}
 
       <button className="btn soft wide" onClick={() => onAddAt(minute)}>
-        ➕ Añadir algo a las {minToHm(minute)}
+        + Añadir algo a las {minToHm(minute)}
       </button>
       {changed && (
         <button className="btn ghost wide" onClick={onReset}>

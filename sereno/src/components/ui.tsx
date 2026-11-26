@@ -161,7 +161,7 @@ export function Celebration({ text, sub, onDone }: { text: string; sub?: string;
       left: Math.random() * 100,
       delay: Math.random() * 400,
       dur: 1400 + Math.random() * 900,
-      emoji: ['🍃', '🌿', '✨', '🍃', '🌸'][i % 5],
+      emoji: ['✦', '·', '◦', '✧', '○'][i % 5],
     })),
   );
   return (
@@ -172,7 +172,7 @@ export function Celebration({ text, sub, onDone }: { text: string; sub?: string;
         </span>
       ))}
       <div className="celebrate-card">
-        <div className="celebrate-icon">🌱</div>
+        <div className="celebrate-icon"></div>
         <p className="celebrate-text">{text}</p>
         {sub && <p className="celebrate-sub">{sub}</p>}
       </div>
@@ -208,7 +208,7 @@ export function Breathe({ onClose }: { onClose: () => void }) {
           {cycles === 0 ? 'Sigue el círculo. Sin prisa.' : `${cycles} ${cycles === 1 ? 'respiración' : 'respiraciones'} · lo estás haciendo genial`}
         </p>
         <button className="btn soft" onClick={onClose}>
-          {cycles >= 4 ? 'Me siento mejor 💛' : 'Terminar'}
+          {cycles >= 4 ? 'Me siento mejor' : 'Terminar'}
         </button>
       </div>
     </Sheet>
@@ -306,13 +306,13 @@ export function TimeMode({
     <div className="time-mode">
       <div className="chips">
         <button type="button" className={`chip ${mode === 'hueco' ? 'on' : ''}`} onClick={() => onChange({})}>
-          ✨ Cuando haya hueco
+          Cuando haya hueco
         </button>
         <button type="button" className={`chip ${mode === 'fija' ? 'on' : ''}`} onClick={() => onChange({ fixed: value ?? 20 * 60 })}>
-          🕐 A una hora fija
+          ◷ A una hora fija
         </button>
         <button type="button" className={`chip ${mode === 'desde' ? 'on' : ''}`} onClick={() => onChange({ after: value ?? 17 * 60 })}>
-          ⏩ A partir de las…
+          → A partir de las…
         </button>
       </div>
       {mode !== 'hueco' && (

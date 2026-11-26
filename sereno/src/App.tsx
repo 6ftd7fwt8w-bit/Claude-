@@ -51,6 +51,7 @@ import { SessionSheet } from './components/SessionSheet';
 import { AddAtSheet, FillGapSheet } from './components/AgendaSheets';
 import { BlockSheet } from './components/BlockSheet';
 import { ValuesView } from './components/ValuesView';
+import { TabIcon } from './components/Icons';
 import type { Block } from './components/DayAgenda';
 import { EnergyCheck } from './components/EnergyCheck';
 import { TodayView } from './components/TodayView';
@@ -65,12 +66,12 @@ import { Breathe, Celebration, Confirm, Toast } from './components/ui';
 type Tab = 'hoy' | 'calendario' | 'objetivos' | 'valores' | 'bonsai';
 type Modal = null | 'add' | 'capture' | 'energy' | 'breathe' | 'settings' | 'mind';
 
-const TABS: { id: Tab; icon: string; label: string }[] = [
-  { id: 'hoy', icon: '☀️', label: 'Hoy' },
-  { id: 'calendario', icon: '🗓️', label: 'Calendario' },
-  { id: 'objetivos', icon: '🎯', label: 'Objetivos' },
-  { id: 'valores', icon: '🧭', label: 'Valores' },
-  { id: 'bonsai', icon: '🌳', label: 'Bonsái' },
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'hoy', label: 'Hoy' },
+  { id: 'calendario', label: 'Calendario' },
+  { id: 'objetivos', label: 'Objetivos' },
+  { id: 'valores', label: 'Valores' },
+  { id: 'bonsai', label: 'Bonsái' },
 ];
 
 export default function App() {
@@ -136,7 +137,7 @@ export default function App() {
       moved = r.moved;
       return r.state;
     });
-    if (moved > 0) setToast(`Lo que quedó pendiente lo he recolocado (${moved}) 🌿 Sin culpa.`);
+    if (moved > 0) setToast(`Lo que quedó pendiente lo he recolocado (${moved}) Sin culpa.`);
     if (needEnergy) setModal((m) => m ?? 'energy');
 
     const actions = await takeWidgetActions();
@@ -148,7 +149,7 @@ export default function App() {
           s,
         ),
       );
-      setToast(`Desde el widget: ${ids.length} ${ids.length === 1 ? 'cosa hecha' : 'cosas hechas'} 🍃`);
+      setToast(`Desde el widget: ${ids.length} ${ids.length === 1 ? 'cosa hecha' : 'cosas hechas'}`);
     }
     // si ya sincronizaste el calendario del iPhone alguna vez, se mantiene al día solo
     if (isNative && stateRef.current.tasks.some((t) => t.source === 'ios')) {
@@ -211,7 +212,7 @@ export default function App() {
   const complete = (s: Session) => {
     tapFeedback();
     const msg = act((st) => completeSession(st, s.id));
-    const big = msg?.startsWith('🎉');
+    const big = msg?.startsWith('✦');
     setCelebration({ text: big ? msg! : randomDonePhrase(), sub: big ? undefined : msg });
   };
   const undo = (s: Session) => act((st) => uncompleteSession(st, s.id));
@@ -241,7 +242,7 @@ export default function App() {
     if (window.top !== window.self) {
       navigator.clipboard
         .writeText(json)
-        .then(() => say('Copia copiada al portapapeles 📋 Pégala en una nota para guardarla.'))
+        .then(() => say('Copia copiada al portapapeles ≡ Pégala en una nota para guardarla.'))
         .catch(() => say('Aquí no puedo exportar la copia. En la app de iPhone sí funciona.'));
       return;
     }
@@ -261,7 +262,7 @@ export default function App() {
     a.download = name;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    say('Copia exportada 💾');
+    say('Copia exportada');
   };
 
   const importBackup = (json: string) => {
@@ -271,7 +272,7 @@ export default function App() {
       setModal(null);
       ask('¿Sustituir tus datos actuales por los de la copia?', 'Sí, restaurar', () => {
         replace(next);
-        say('Copia restaurada 🌳');
+        say('Copia restaurada');
       });
     } catch {
       say('Ese archivo no parece una copia de Sereno.');
@@ -345,7 +346,7 @@ export default function App() {
                 created = r.created;
                 return r.state;
               });
-              say(created.length ? `He reservado tiempo para tus valores: ${created.join(' · ')}` : 'Valores guardados. Tus tareas ya los cubren 🌿');
+              say(created.length ? `He reservado tiempo para tus valores: ${created.join(' · ')}` : 'Valores guardados. Tus tareas ya los cubren');
             }}
           />
         )}
@@ -366,7 +367,9 @@ export default function App() {
               window.scrollTo({ top: 0 });
             }}
           >
-            <span className="tab-icon">{t.icon}</span>
+            <span className="tab-icon">
+              <TabIcon name={t.id} />
+            </span>
             <span>{t.label}</span>
           </button>
         ))}
@@ -593,12 +596,12 @@ export default function App() {
           onSave={(p) => {
             setModal(null);
             act((st, ctx) => replanAll({ ...st, profile: p }, ctx));
-            say('Rutina guardada. He reorganizado tu calendario 🌿');
+            say('Rutina guardada. He reorganizado tu calendario');
           }}
           onReplan={() => {
             setModal(null);
             act((st, ctx) => replanAll(st, ctx));
-            say('Calendario reorganizado desde cero ✨');
+            say('Calendario reorganizado desde cero');
           }}
           onReset={() => {
             setModal(null);
