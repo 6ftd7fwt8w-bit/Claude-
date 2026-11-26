@@ -1,6 +1,10 @@
 # 📱 Sereno en tu iPhone
 
-Hay dos maneras de tener Sereno en el iPhone:
+> **¿Solo quieres probarla ya?** Abre en el iPhone la versión de prueba que está publicada como página
+> privada en tu cuenta de Claude (te pasé el enlace en el chat). No necesitas instalar nada. Es para
+> probar: los datos se guardan en ese navegador y podrían perderse.
+
+Hay dos maneras de tener Sereno en el iPhone como app:
 
 | | **A. App de verdad (con widget)** | **B. Web instalada (sin widget)** |
 |---|---|---|
@@ -32,10 +36,27 @@ cd Claude-
 git checkout claude/keen-cannon-om5e5c   # o main, cuando lo fusionemos
 cd sereno
 npm install
-npm run ios        # compila la web, la copia al proyecto y abre Xcode
 ```
 
-### Paso 2 · Firmar la app en Xcode
+Y después **uno** de estos dos:
+
+```bash
+npm run ios:gratis   # cuenta de Apple gratuita: app completa, pero SIN widget
+npm run ios:widget   # cuenta de Apple Developer de pago: app + widget
+```
+
+Los dos compilan la web, la copian al proyecto y abren Xcode. Puedes cambiar de uno a otro cuando quieras.
+
+### Paso 2 (cuenta gratuita) · Firmar la app en Xcode
+1. En la barra lateral de Xcode, pulsa el proyecto **App** (icono azul) y elige el target **App**.
+2. Pestaña **Signing & Capabilities**:
+   - **Team**: elige tu Apple ID (si no aparece: Xcode → Settings → Accounts → **+** → Apple ID).
+   - **Bundle Identifier**: cámbialo por uno único, p. ej. `com.tunombre.sereno`.
+3. Arriba, junto al botón ▶︎, asegúrate de que el esquema elegido es **App** (no SerenoWidget).
+4. Sigue en el Paso 3. Con cuenta gratuita, la app **caduca a los 7 días**: vuelve a darle a ▶︎ en Xcode
+   con el iPhone conectado y sigue funcionando con tus datos.
+
+### Paso 2 (cuenta de pago) · Firmar la app y el widget en Xcode
 1. En la barra lateral de Xcode, pulsa el proyecto **App** (icono azul).
 2. Target **App** → pestaña **Signing & Capabilities**:
    - **Team**: elige tu cuenta (Xcode → Settings → Accounts para añadirla).

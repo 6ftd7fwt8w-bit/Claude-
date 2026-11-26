@@ -3,7 +3,11 @@
 #   - el código compartido con el widget (Shared/)
 #   - el target del widget (SerenoWidget) embebido en la app
 #   - App Groups (entitlements) en ambos
-# Es idempotente: se puede ejecutar varias veces.  Uso: ruby scripts/setup-ios.rb
+# Es idempotente: se puede ejecutar varias veces.
+#
+# Uso:
+#   ruby scripts/setup-ios.rb               → con widget (necesita cuenta de Apple Developer de pago)
+#   ruby scripts/setup-ios.rb --sin-widget  → para cuenta gratuita: sin widget ni App Groups
 require 'xcodeproj'
 
 ROOT = File.expand_path('../ios/App', __dir__)
@@ -78,6 +82,16 @@ end
 unless embed.files_references.include?(widget.product_reference)
   bf = embed.add_file_reference(widget.product_reference)
   bf.settings = { 'ATTRIBUTES' => ['RemoveHeadersOnCopy'] }
+end
+
+# --- Modo cuenta gratuita: el widget se queda en el proyecto pero no se compila ni se firma
+if ARGV.include?('--sin-widget')
+  embed.files.select { |f| f.file_ref == widget.product_reference }.each(&:remove_from_project)
+  app.dependencies.select { |d| d.target == widget }.each(&:remove_from_project)
+  app.build_configurations.each { |c| c.build_settings.delete('CODE_SIGN_ENTITLEMENTS') }
+  puts 'Modo cuenta gratuita: la app se instala sin widget.'
+else
+  puts 'Modo completo: app + widget (requiere cuenta de Apple Developer de pago).'
 end
 
 project.save

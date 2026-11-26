@@ -87,6 +87,37 @@ export function CategoryPicker({ value, onChange }: { value: CategoryId; onChang
   );
 }
 
+/** Confirmación amable (en lugar de window.confirm, que algunos entornos bloquean) */
+export function Confirm({
+  text,
+  yes,
+  onYes,
+  onClose,
+}: {
+  text: string;
+  yes: string;
+  onYes: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <Sheet onClose={onClose}>
+      <p className="confirm-text">{text}</p>
+      <button
+        className="btn primary wide"
+        onClick={() => {
+          onClose();
+          onYes();
+        }}
+      >
+        {yes}
+      </button>
+      <button className="btn ghost wide" onClick={onClose}>
+        Mejor no
+      </button>
+    </Sheet>
+  );
+}
+
 /** Anillo de progreso */
 export function Ring({ value, size = 64, label }: { value: number; size?: number; label?: string }) {
   const r = (size - 8) / 2;

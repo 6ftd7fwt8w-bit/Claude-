@@ -11,7 +11,9 @@
     "test": "vitest run",
     "ios": "npm run build && npx cap sync ios && npx cap open ios",
     "ios:sync": "npm run build && npx cap sync ios",
-    "ios:setup": "ruby scripts/setup-ios.rb"
+    "ios:setup": "ruby scripts/setup-ios.rb",
+    "ios:gratis": "ruby scripts/setup-ios.rb --sin-widget && npm run ios",
+    "ios:widget": "ruby scripts/setup-ios.rb && npm run ios"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",

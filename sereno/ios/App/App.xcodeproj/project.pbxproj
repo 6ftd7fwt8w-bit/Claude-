@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		3502750B11C83C384D1508BC /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04E7AE28898B537AD6A5A8C0 /* WidgetKit.framework */; };
+		40B038715E25454D17A63878 /* SerenoWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D8F7CA4F7952389F3C9C164D /* SerenoWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		481E850EDC6EB26B65C66152 /* SerenoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12FC02E77CDB4BC7469289 /* SerenoViewController.swift */; };
 		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
@@ -18,7 +19,6 @@
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		591B359794CF4596890BA1F5 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAABC399A153751E4B216E05 /* SharedStore.swift */; };
-		5F1917F1E63AA63896726F08 /* SerenoWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D8F7CA4F7952389F3C9C164D /* SerenoWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		89617BA3666A98BBD4F43E3E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47E30FCE2A29462D28D1045E /* Foundation.framework */; };
 		8AAF52CA411D05787E8518FC /* SerenoBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D3A167AD240BC83D52A12F /* SerenoBridge.swift */; };
 		921B75E432645BE354D75DB9 /* SerenoWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C77ED7826CF042593CC716C /* SerenoWidget.swift */; };
@@ -28,7 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0CE273EEE5128DCFF37974B7 /* PBXContainerItemProxy */ = {
+		21CB0F1EB2D413957306D606 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
 			proxyType = 1;
@@ -44,7 +44,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				5F1917F1E63AA63896726F08 /* SerenoWidget.appex in Embed Foundation Extensions */,
+				40B038715E25454D17A63878 /* SerenoWidget.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -208,7 +208,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				800824604B8CA6595C5EB947 /* PBXTargetDependency */,
+				FCE517E9F72B0AE0ECF2126C /* PBXTargetDependency */,
 			);
 			name = App;
 			packageProductDependencies = (
@@ -304,11 +304,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		800824604B8CA6595C5EB947 /* PBXTargetDependency */ = {
+		FCE517E9F72B0AE0ECF2126C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SerenoWidget;
 			target = 2C8776EECAE4ABD0E527C9E8 /* SerenoWidget */;
-			targetProxy = 0CE273EEE5128DCFF37974B7 /* PBXContainerItemProxy */;
+			targetProxy = 21CB0F1EB2D413957306D606 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

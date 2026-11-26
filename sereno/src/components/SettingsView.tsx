@@ -14,6 +14,7 @@ export function SettingsView({
   onSyncIphone,
   onExport,
   onImport,
+  ask,
 }: {
   profile: Profile;
   onSave: (p: Profile) => void;
@@ -24,6 +25,7 @@ export function SettingsView({
   onSyncIphone: () => void;
   onExport: () => void;
   onImport: (json: string) => void;
+  ask: (text: string, yes: string, onYes: () => void) => void;
 }) {
   const [p, setP] = useState(profile);
   const set = (patch: Partial<Profile>) => setP((x) => ({ ...x, ...patch }));
@@ -94,9 +96,7 @@ export function SettingsView({
         </button>
         <button
           className="btn ghost wide danger"
-          onClick={() => {
-            if (confirm('¿Borrar todos tus datos de Sereno? No se puede deshacer.')) onReset();
-          }}
+          onClick={() => ask('¿Borrar todos tus datos de Sereno? No se puede deshacer.', 'Sí, borrar todo', onReset)}
         >
           Borrar todos mis datos
         </button>

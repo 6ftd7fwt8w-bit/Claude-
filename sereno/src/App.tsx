@@ -41,7 +41,7 @@ import { BonsaiView } from './components/BonsaiView';
 import { SettingsView } from './components/SettingsView';
 import { AddTask, type AddPreset } from './components/AddTask';
 import { MoveSheet } from './components/MoveSheet';
-import { Breathe, Celebration, Toast } from './components/ui';
+import { Breathe, Celebration, Confirm, Toast } from './components/ui';
 
 type Tab = 'hoy' | 'calendario' | 'objetivos' | 'bonsai';
 type Modal = null | 'add' | 'energy' | 'breathe' | 'settings';
@@ -63,6 +63,8 @@ export default function App() {
   const [moving, setMoving] = useState<Session | undefined>();
   const [toast, setToast] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<{ text: string; sub?: string } | null>(null);
+  const [question, setQuestion] = useState<{ text: string; yes: string; onYes: () => void } | null>(null);
+  const ask = (text: string, yes: string, onYes: () => void) => setQuestion({ text, yes, onYes });
   const stateRef = useRef(state);
   stateRef.current = state;
 
@@ -188,10 +190,10 @@ export default function App() {
   const undo = (s: Session) => act((st) => uncompleteSession(st, s.id));
   const postpone = (s: Session) => say(act((st, ctx) => postponeSession(st, s.id, ctx)));
   const archive = (t: Task) => {
-    if (confirm(`¿Quitar «${t.title}»? Las hojas que ya ganaste se quedan en tu bonsái.`)) {
+    ask(`¿Quitar «${t.title}»? Las hojas que ya ganaste se quedan en tu bonsái.`, 'Sí, quitar', () => {
       act((st) => archiveTask(st, t.id));
       say('Quitado. Soltar también es avanzar 🍃');
-    }
+    });
   };
   const onTip = (t: Tip) => {
     if (t.action === 'breathe') setModal('breathe');
@@ -208,6 +210,14 @@ export default function App() {
 
   const exportBackup = async () => {
     const json = JSON.stringify(state, null, 2);
+    // dentro de un marco (p. ej. la versión de prueba en Claude) no se pueden descargar archivos
+    if (window.top !== window.self) {
+      navigator.clipboard
+        .writeText(json)
+        .then(() => say('Copia copiada al portapapeles 📋 Pégala en una nota para guardarla.'))
+        .catch(() => say('Aquí no puedo exportar la copia. En la app de iPhone sí funciona.'));
+      return;
+    }
     const name = `sereno-copia-${today}.json`;
     const file = new File([json], name, { type: 'application/json' });
     try {
@@ -231,10 +241,11 @@ export default function App() {
     try {
       const next = hydrate(JSON.parse(json));
       if (!next.profile) throw new Error('sin perfil');
-      if (!confirm('¿Sustituir tus datos actuales por los de la copia?')) return;
-      replace(next);
       setModal(null);
-      say('Copia restaurada 🌳');
+      ask('¿Sustituir tus datos actuales por los de la copia?', 'Sí, restaurar', () => {
+        replace(next);
+        say('Copia restaurada 🌳');
+      });
     } catch {
       say('Ese archivo no parece una copia de Sereno.');
     }
@@ -371,9 +382,11 @@ export default function App() {
           }}
           onExport={exportBackup}
           onImport={importBackup}
+          ask={ask}
         />
       )}
 
+      {question && <Confirm text={question.text} yes={question.yes} onYes={question.onYes} onClose={() => setQuestion(null)} />}
       {celebration && <Celebration text={celebration.text} sub={celebration.sub} onDone={() => setCelebration(null)} />}
       {toast && <Toast text={toast} onDone={() => setToast(null)} />}
     </div>
