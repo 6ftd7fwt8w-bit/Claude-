@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { hydrate, useStore, type Action } from './store';
 import type { AppState, Profile, Session, Task } from './types';
 import {
+  addRechargeBefore,
   addTask,
   archiveTask,
   breaksFor,
@@ -37,6 +38,7 @@ import {
 } from './native';
 import { Onboarding, recurringToTask } from './components/Onboarding';
 import { ProjectSheet } from './components/ProjectSheet';
+import { MindSheet } from './components/MindCard';
 import { EnergyCheck } from './components/EnergyCheck';
 import { TodayView } from './components/TodayView';
 import { CalendarView } from './components/CalendarView';
@@ -48,7 +50,7 @@ import { MoveSheet } from './components/MoveSheet';
 import { Breathe, Celebration, Confirm, Toast } from './components/ui';
 
 type Tab = 'hoy' | 'calendario' | 'objetivos' | 'bonsai';
-type Modal = null | 'add' | 'energy' | 'breathe' | 'settings';
+type Modal = null | 'add' | 'energy' | 'breathe' | 'settings' | 'mind';
 
 const TABS: { id: Tab; icon: string; label: string }[] = [
   { id: 'hoy', icon: '☀️', label: 'Hoy' },
@@ -272,6 +274,8 @@ export default function App() {
             onPull={() => say(act((st, ctx) => pullForward(st, ctx)))}
             onTipAction={onTip}
             onBreathe={() => setModal('breathe')}
+            onRecharge={(id) => say(act((st, ctx) => addRechargeBefore(st, id, ctx)))}
+            onOpenMind={() => setModal('mind')}
           />
         )}
         {tab === 'calendario' && (
@@ -288,6 +292,7 @@ export default function App() {
             }}
             onOpen={(t) => setOpenedId(t.id)}
             onQuickAdd={(sug, routine) => say(act((st, ctx) => addTask(st, recurringToTask(sug, routine), ctx)))}
+            onPatch={(id, patch) => say(act((st, ctx) => editTask(st, id, patch, ctx)))}
           />
         )}
         {tab === 'bonsai' && <BonsaiView state={state} today={today} onBuy={(id) => say(act((st) => buy(st, id)))} />}
@@ -371,6 +376,7 @@ export default function App() {
         />
       )}
       {modal === 'breathe' && <Breathe onClose={() => setModal(null)} />}
+      {modal === 'mind' && <MindSheet state={state} today={today} onClose={() => setModal(null)} />}
       {modal === 'settings' && (
         <SettingsView
           profile={state.profile}

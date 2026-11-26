@@ -44,6 +44,8 @@ export interface Task {
   archived?: boolean;
   /** tarea cotidiana (ducha, compra, cocinar…): se muestra como checklist rápido */
   routine?: boolean;
+  /** días concretos de la semana (Date.getDay); si los hay, se hace esos días */
+  days?: number[];
   /** momento del día preferido (hábitos y cotidianas) */
   timeOfDay?: TimeOfDay;
   /** icono propio (cotidianas) */
@@ -133,6 +135,25 @@ export interface AppState {
   journal: Record<string, string>;
   /** logros ya celebrados */
   seenAchievements: string[];
+  /** resumen de cada día pasado (para el informe personal) */
+  history: Record<string, DayRecord>;
+}
+
+/** Cómo fue un día: se guarda al pasar al siguiente, porque lo no hecho se recoloca */
+export interface DayRecord {
+  energy: number;
+  planned: number;
+  done: number;
+  /** sesiones de foco (proyectos y trabajo) */
+  focusPlanned: number;
+  focusDone: number;
+  /** sesiones de foco hechas por la mañana (antes de las 14:00) y por la tarde */
+  focusDoneAm: number;
+  focusDonePm: number;
+  focusPlannedAm: number;
+  focusPlannedPm: number;
+  /** minutos de recarga hechos (bienestar, cuidado personal, vida social) */
+  rechargeMinutes: number;
 }
 
 export interface Equipped {
@@ -179,5 +200,6 @@ export function emptyState(): AppState {
     equipped: { season: 'auto', pot: 'terracota', scene: 'ninguno', extras: [] },
     journal: {},
     seenAchievements: [],
+    history: {},
   };
 }

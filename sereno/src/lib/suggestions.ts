@@ -8,6 +8,8 @@ export interface RecurringSuggestion {
   minutes: number;
   times: number; // veces por semana (7 = cada día)
   timeOfDay: TimeOfDay;
+  /** días concretos (Date.getDay); si hay, mandan sobre `times` */
+  days?: number[];
 }
 
 /** Lo de cada día: ocupa tiempo real aunque no sea un "objetivo" */
@@ -54,6 +56,12 @@ export const TIME_OF_DAY_LABEL: Record<TimeOfDay, string> = {
   cualquiera: '🕊️ Cuando sea',
 };
 
-export function timesLabel(times: number): string {
+const SHORT_DAYS = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
+
+export function timesLabel(times: number, days?: number[]): string {
+  if (days?.length) {
+    if (days.length === 7) return 'cada día';
+    return [1, 2, 3, 4, 5, 6, 0].filter((d) => days.includes(d)).map((d) => SHORT_DAYS[d]).join(' ');
+  }
   return times >= 7 ? 'cada día' : `${times}×/semana`;
 }

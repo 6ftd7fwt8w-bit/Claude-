@@ -8,6 +8,7 @@ import { fmtDuration, fmtLong, minToHm, nowMinutes } from '../lib/time';
 import { energyEmoji } from './EnergyCheck';
 import { Ring } from './ui';
 import { DayStrip, StripLegend } from './DayStrip';
+import { MindCard } from './MindCard';
 
 interface Props {
   state: AppState;
@@ -21,6 +22,8 @@ interface Props {
   onPull: () => void;
   onTipAction: (t: Tip) => void;
   onBreathe: () => void;
+  onRecharge: (sessionId: string) => void;
+  onOpenMind: () => void;
 }
 
 function greeting(): string {
@@ -51,6 +54,7 @@ export function SessionCard({
   onUndo,
   onPostpone,
   onMove,
+  onPrepare,
   compact,
 }: {
   state: AppState;
@@ -59,6 +63,7 @@ export function SessionCard({
   onUndo?: (s: Session) => void;
   onPostpone?: (s: Session) => void;
   onMove?: (s: Session) => void;
+  onPrepare?: () => void;
   compact?: boolean;
 }) {
   const task = state.tasks.find((t) => t.id === s.taskId);
@@ -90,6 +95,11 @@ export function SessionCard({
             {onMove && (
               <button className="link muted-link" onClick={() => onMove(s)}>
                 Mover
+              </button>
+            )}
+            {onPrepare && (task?.category === 'proyectos' || task?.category === 'trabajo') && (
+              <button className="link prepare-link" onClick={onPrepare}>
+                🫧 Prepárate
               </button>
             )}
           </div>
@@ -199,7 +209,15 @@ export function TodayView(props: Props) {
       t: s.start,
       key: s.id,
       node: (
-        <SessionCard state={state} s={s} onComplete={props.onComplete} onUndo={props.onUndo} onPostpone={props.onPostpone} onMove={props.onMove} />
+        <SessionCard
+          state={state}
+          s={s}
+          onComplete={props.onComplete}
+          onUndo={props.onUndo}
+          onPostpone={props.onPostpone}
+          onMove={props.onMove}
+          onPrepare={props.onBreathe}
+        />
       ),
     });
   }
@@ -224,6 +242,8 @@ export function TodayView(props: Props) {
         <span className="quote">“</span>
         <p>{phraseOfDay(today)}</p>
       </section>
+
+      <MindCard state={state} today={today} onRecharge={props.onRecharge} onOpen={props.onOpenMind} />
 
       <BudgetCard b={budget} done={done} total={sessions.length} />
 

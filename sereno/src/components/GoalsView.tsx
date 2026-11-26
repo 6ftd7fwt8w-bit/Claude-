@@ -1,7 +1,8 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import type { AppState, Task } from '../types';
 import { catById } from '../types';
-import { projectStatus } from '../lib/scheduler';
+import { projectStatus, type TaskPatch } from '../lib/scheduler';
+import { RecurringEditor } from './RecurringEditor';
 import { HABIT_SUGGESTIONS, ROUTINE_SUGGESTIONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
 import { addDays, diffDays, fmtDuration, fmtRelative, minToHm, weekStart } from '../lib/time';
 
@@ -45,7 +46,7 @@ function RecurringSection({
                   <span className="tile-icon">{t.icon ?? catById(t.category).emoji}</span>
                   <span className="tile-title">{t.title}</span>
                   <span className="tile-meta">
-                    {fmtDuration(t.totalMinutes)} · {timesLabel(target)}
+                    {fmtDuration(t.totalMinutes)} · {timesLabel(target, t.days)}
                     {t.timeOfDay ? ` · ${TIME_OF_DAY_LABEL[t.timeOfDay].split(' ')[1].toLowerCase()}` : ''}
                   </span>
                   <span className="pips small-pips">
@@ -85,6 +86,7 @@ export function GoalsView({
   onEdit,
   onOpen,
   onQuickAdd,
+  onPatch,
 }: {
   state: AppState;
   today: string;
@@ -92,7 +94,9 @@ export function GoalsView({
   onEdit: (t: Task) => void;
   onOpen: (t: Task) => void;
   onQuickAdd: (s: RecurringSuggestion, routine: boolean) => void;
+  onPatch: (id: string, patch: TaskPatch) => void;
 }) {
+  const [tuning, setTuning] = useState<Task | null>(null);
   const active = state.tasks.filter((t) => !t.archived);
   const flex = active.filter((t) => t.kind === 'flexible').sort((a, b) => (a.deadline ?? '9999').localeCompare(b.deadline ?? '9999'));
   const routines = active.filter((t) => t.kind === 'habito' && t.routine);
@@ -146,7 +150,7 @@ export function GoalsView({
         today={today}
         items={routines}
         suggestions={ROUTINE_SUGGESTIONS}
-        onEdit={onEdit}
+        onEdit={setTuning}
         onArchive={onArchive}
         onQuickAdd={(s) => onQuickAdd(s, true)}
       />
@@ -158,10 +162,40 @@ export function GoalsView({
         today={today}
         items={habits}
         suggestions={HABIT_SUGGESTIONS}
-        onEdit={onEdit}
+        onEdit={setTuning}
         onArchive={onArchive}
         onQuickAdd={(s) => onQuickAdd(s, false)}
       />
+
+      {tuning && (
+        <RecurringEditor
+          value={{
+            title: tuning.title,
+            icon: tuning.icon ?? catById(tuning.category).emoji,
+            category: tuning.category,
+            minutes: tuning.totalMinutes,
+            times: tuning.timesPerWeek ?? 1,
+            timeOfDay: tuning.timeOfDay ?? 'cualquiera',
+            days: tuning.days,
+          }}
+          onClose={() => setTuning(null)}
+          onRemove={() => {
+            onArchive(tuning);
+            setTuning(null);
+          }}
+          onSave={(v) => {
+            onPatch(tuning.id, {
+              title: v.title,
+              icon: v.icon,
+              totalMinutes: v.minutes,
+              timesPerWeek: v.times,
+              timeOfDay: v.timeOfDay,
+              days: v.days?.length ? v.days : null,
+            });
+            setTuning(null);
+          }}
+        />
+      )}
 
       {events.length > 0 && <h2 className="section-title">📌 Próximas citas</h2>}
       {events.map((t) => (

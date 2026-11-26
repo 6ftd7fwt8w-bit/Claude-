@@ -1,6 +1,9 @@
 # Sereno — Funcionalidades
 
-> **Consigue tus objetivos sin estrés.**
+> **Mente tranquila, máximo potencial.**
+>
+> Solo se puede rendir al máximo con la mente tranquila. Sereno equilibra foco, descanso, bienestar y
+> vida social para que consigas tus objetivos sin estrés y des lo mejor de ti.
 > Un organizador de vida que reparte lo que quieres conseguir en los huecos reales de tu
 > rutina, se adapta a tu energía de cada día y se asegura de que no se te olvide vivir
 > (amigos, descanso, cuidarte).
@@ -22,11 +25,25 @@ Leyenda: ✅ hecho · 🔜 siguiente fase · 💡 idea para más adelante
 | ✅ | Fines de semana más suaves (opcional) |
 | ✅ | **Teletrabajo**: días sin desplazamiento y **pausas** durante la jornada para cosas cortas |
 | ✅ | **Lo de cada día** (cotidianas): ducha, compra, cocinar, lavadora… elegidas con fichas visuales |
+| ✅ | Cada sugerencia se **ajusta** con un toque: duración, veces por semana o **días concretos**, momento del día e icono |
 | ✅ | **¿Qué quieres cuidar?**: sugerencias de bienestar y vida social (ninguna marcada por defecto) + las tuyas escritas a mano |
 | ✅ | **¿Qué quieres conseguir?**: tus proyectos reales escritos en lenguaje natural, con ejemplos para inspirarte |
 | ✅ | Resumen: «tienes X h libres reales a la semana» |
 | ✅ | Horarios distintos por día (p. ej. viernes intensivo) |
 | ✅ | Cronotipo: ¿eres de mañanas o de noches? → los proyectos van a tu mejor franja |
+
+## 1b. Mente tranquila → máximo potencial
+
+| | Funcionalidad |
+|---|---|
+| ✅ | **Análisis inicial** con barra de progreso: calcula tus horas reales, protege tu descanso, equilibra foco y recarga, usa tus pausas, coloca el foco en tus mejores horas y comprueba que la carga sea sostenible. Cada paso explica qué ha hecho |
+| ✅ | **Plan de máximo potencial**: horas libres, de foco y de recarga a la semana, con recomendación activable (10 min de recarga, 5 días) si falta recarga |
+| ✅ | **Tu mente hoy**: índice 0–100 con energía, carga sostenible, recarga frente a foco y descanso protegido, explicado |
+| ✅ | **Recarga antes del foco**: un toque reserva 10 min de respiración o paseo justo antes de tu sesión de proyecto (o en el hueco libre anterior más cercano) |
+| ✅ | **🫧 Prepárate** en cada sesión de foco: respiración guiada antes de empezar |
+| ✅ | **Lo que he aprendido de ti**: con tus datos, compara días con y sin recarga, mañanas frente a tardes, energía alta frente a baja (solo cuando hay datos suficientes) |
+| ✅ | **Por qué funciona**: la evidencia explicada con prudencia (mindfulness, pausas, caminar y creatividad, sueño, relaciones, cronotipo) |
+| ✅ | Aviso claro: no es un diagnóstico ni sustituye a un profesional de la salud |
 
 ## 2. Energía del día
 

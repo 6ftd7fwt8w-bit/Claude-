@@ -214,3 +214,26 @@ export function Breathe({ onClose }: { onClose: () => void }) {
     </Sheet>
   );
 }
+
+const DAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0];
+
+/** Selector de días de la semana (valores de Date.getDay) */
+export function DayPicker({ value, options = DAY_VALUES, onChange }: { value: number[]; options?: number[]; onChange: (v: number[]) => void }) {
+  return (
+    <div className="chips days">
+      {DAY_VALUES.filter((d) => options.includes(d)).map((d) => (
+        <button
+          key={d}
+          type="button"
+          className={`chip round ${value.includes(d) ? 'on' : ''}`}
+          aria-pressed={value.includes(d)}
+          onClick={() => onChange(value.includes(d) ? value.filter((x) => x !== d) : [...value, d])}
+        >
+          {DAY_LABELS[DAY_VALUES.indexOf(d)]}
+        </button>
+      ))}
+    </div>
+  );
+}
+

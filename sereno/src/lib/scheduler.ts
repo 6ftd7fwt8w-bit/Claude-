@@ -9,7 +9,7 @@
  *
  * Todas las funciones son puras: reciben un AppState y devuelven uno nuevo.
  */
-import type { AppState, Profile, Session, Task, TimeOfDay, WorkBreak, WorkHours } from '../types';
+import type { AppState, DayRecord, Profile, Session, Task, TimeOfDay, WorkBreak, WorkHours } from '../types';
 import { addDays, ceilTo, fmtRelative, fmtTo, minToHm, rangeDays, weekStart, weekday } from './time';
 
 export interface Ctx {
@@ -315,13 +315,18 @@ export function ensureHabits(state: AppState, ctx: Ctx): AppState {
   for (const habit of s.tasks.filter((t) => t.kind === 'habito' && !t.archived)) {
     for (const ws of [ws0, addDays(ws0, 7)]) {
       const we = addDays(ws, 6);
-      const count = s.sessions.filter((x) => x.taskId === habit.id && x.date >= ws && x.date <= we).length;
-      const need = (habit.timesPerWeek ?? 1) - count;
+      const mine = s.sessions.filter((x) => x.taskId === habit.id && x.date >= ws && x.date <= we);
+      const fixedDays = habit.days?.length ? habit.days : null;
+      const target = fixedDays ? fixedDays.length : (habit.timesPerWeek ?? 1);
+      const need = target - mine.length;
       if (need <= 0) continue;
       const from = ws < ctx.today ? ctx.today : ws;
+      // días concretos: solo esos (y que aún no tengan su sesión); si no, cualquier día que quede
+      const daysLeft = rangeDays(from, we).filter(
+        (d) => !fixedDays || (fixedDays.includes(weekday(d)) && !mine.some((x) => x.date === d)),
+      );
       // no repartimos lo que ya no da tiempo de la semana: proporcional a los días que quedan
-      const daysLeft = rangeDays(from, we);
-      const fair = ws === ws0 ? Math.min(need, Math.ceil(((habit.timesPerWeek ?? 1) * daysLeft.length) / 7)) : need;
+      const fair = fixedDays ? Math.min(need, daysLeft.length) : ws === ws0 ? Math.min(need, Math.ceil((target * daysLeft.length) / 7)) : need;
       if (fair <= 0) continue;
       const res = placeChunks(s, habit, Array(fair).fill(habit.totalMinutes), daysLeft, ctx, 1);
       s = { ...s, sessions: res.sessions };
@@ -343,6 +348,7 @@ export interface NewTaskInput {
   routine?: boolean;
   timeOfDay?: TimeOfDay;
   icon?: string;
+  days?: number[];
 }
 
 export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result {
@@ -359,6 +365,7 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
     timesPerWeek: input.kind === 'habito' ? Math.max(1, Math.min(7, input.timesPerWeek ?? 1)) : undefined,
     routine: input.kind === 'habito' && input.routine ? true : undefined,
     timeOfDay: input.kind === 'habito' && input.timeOfDay && input.timeOfDay !== 'cualquiera' ? input.timeOfDay : undefined,
+    days: input.kind === 'habito' && input.days?.length ? [...input.days].sort() : undefined,
     icon: input.icon,
     createdAt: ctx.today,
   };
@@ -582,7 +589,37 @@ export function archiveTask(state: AppState, taskId: string): AppState {
 }
 
 /** Al abrir la app un día nuevo: lo no hecho de días pasados vuelve a planificarse. */
+const FOCUS: Task['category'][] = ['proyectos', 'trabajo'];
+const RECHARGE: Task['category'][] = ['bienestar', 'autocuidado', 'social'];
+
+/** Resumen de un día a partir de sus sesiones (antes de recolocar lo no hecho) */
+export function recordDay(state: AppState, date: string): DayRecord {
+  const cat = new Map(state.tasks.map((t) => [t.id, t.category]));
+  const day = sessionsOn(state.sessions, date);
+  const focus = day.filter((x) => FOCUS.includes(cat.get(x.taskId)!));
+  const am = (x: Session) => x.start < 14 * 60;
+  return {
+    energy: energyFor(state, date),
+    planned: day.length,
+    done: day.filter((x) => x.status === 'done').length,
+    focusPlanned: focus.length,
+    focusDone: focus.filter((x) => x.status === 'done').length,
+    focusPlannedAm: focus.filter(am).length,
+    focusPlannedPm: focus.filter((x) => !am(x)).length,
+    focusDoneAm: focus.filter((x) => x.status === 'done' && am(x)).length,
+    focusDonePm: focus.filter((x) => x.status === 'done' && !am(x)).length,
+    rechargeMinutes: day.filter((x) => x.status === 'done' && RECHARGE.includes(cat.get(x.taskId)!)).reduce((a, x) => a + x.duration, 0),
+  };
+}
+
 export function rollover(state: AppState, ctx: Ctx): { state: AppState; moved: number } {
+  // antes de recolocar nada, guardamos cómo fueron los días que han pasado
+  const history = { ...(state.history ?? {}) };
+  const firstDay = addDays(ctx.today, -30);
+  for (const d of new Set(state.sessions.filter((x) => x.date < ctx.today && x.date >= firstDay).map((x) => x.date))) {
+    if (!history[d]) history[d] = recordDay(state, d);
+  }
+  state = { ...state, history };
   const overdue = state.sessions.filter((x) => x.status === 'planned' && !x.fixed && x.date < ctx.today);
   const ids = new Set(overdue.map((x) => x.id));
   let s: AppState = { ...state, sessions: state.sessions.filter((x) => !ids.has(x.id)), lastOpen: ctx.today };
@@ -651,6 +688,9 @@ export interface TaskPatch {
   start?: number;
   timesPerWeek?: number;
   timeOfDay?: TimeOfDay;
+  /** null = sin días concretos */
+  days?: number[] | null;
+  icon?: string;
 }
 
 /** Editar una tarea. Si cambia algo de planificación, se recoloca lo pendiente. */
@@ -668,6 +708,8 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
     start: patch.start ?? old.start,
     timesPerWeek: patch.timesPerWeek ?? old.timesPerWeek,
     timeOfDay: patch.timeOfDay ? (patch.timeOfDay === 'cualquiera' ? undefined : patch.timeOfDay) : old.timeOfDay,
+    days: patch.days === null ? undefined : patch.days?.length ? [...patch.days].sort() : old.days,
+    icon: patch.icon ?? old.icon,
   };
   let s: AppState = { ...state, tasks: state.tasks.map((t) => (t.id === taskId ? task : t)) };
   const changed = (k: keyof Task) => task[k] !== old[k];
@@ -682,13 +724,16 @@ export function editTask(state: AppState, taskId: string, patch: TaskPatch, ctx:
     return { state: s, message: 'Guardado ✨' };
   }
 
-  if (task.kind === 'habito' && (changed('timesPerWeek') || changed('totalMinutes') || changed('timeOfDay'))) {
+  if (
+    task.kind === 'habito' &&
+    (changed('timesPerWeek') || changed('totalMinutes') || changed('timeOfDay') || JSON.stringify(task.days) !== JSON.stringify(old.days))
+  ) {
     s = {
       ...s,
       sessions: s.sessions.filter((x) => !(x.taskId === taskId && x.status === 'planned' && x.date >= ctx.today)),
     };
     s = ensureHabits(s, ctx);
-    return { state: s, message: 'Hábito actualizado y recolocado 🔁' };
+    return { state: s, message: task.routine ? 'Cotidiana actualizada y recolocada 🔁' : 'Hábito actualizado y recolocado 🔁' };
   }
 
   if (
@@ -951,5 +996,57 @@ export function projectStatus(state: AppState, taskId: string, today: string): P
     stage: STAGES[Math.min(4, Math.floor(pct * 4))],
     mood,
     weekly,
+  };
+}
+
+// ---------------------------------------------------------------- recarga antes del foco
+
+/**
+ * Reserva 10 minutos de recarga (respirar, pasear) justo antes de una sesión de foco.
+ * Usa el margen que ya hay antes de cada sesión; si no cabe, busca otro hueco ese día.
+ */
+export function addRechargeBefore(state: AppState, sessionId: string, ctx: Ctx): Result {
+  const target = state.sessions.find((x) => x.id === sessionId);
+  const p = state.profile;
+  if (!target || !p) return { state };
+  const focusTask = state.tasks.find((t) => t.id === target.taskId);
+  const task: Task = {
+    id: uid(),
+    title: `Recarga antes de «${focusTask?.title ?? 'tu sesión'}»`,
+    category: 'bienestar',
+    kind: 'flexible',
+    totalMinutes: 10,
+    sessionMinutes: 10,
+    deadline: target.date,
+    icon: '🫧',
+    createdAt: ctx.today,
+  };
+  const start = target.start - 10;
+  const others = state.sessions.filter((x) => x.date === target.date && x.id !== target.id);
+  const clash = others.some((x) => x.start < target.start && start < x.start + x.duration);
+  const busy = baseBusy(p, target.date).some((b) => b.start < target.start && start < b.end);
+  const past = target.date === ctx.today && start < ctx.now;
+  let s: AppState = { ...state, tasks: [...state.tasks, task] };
+  if (!clash && !busy && !past) {
+    const session: Session = { id: uid(), taskId: task.id, date: target.date, start, duration: 10, status: 'planned', pinned: true };
+    s = { ...s, sessions: [...s.sessions, session] };
+    return { state: s, message: `🫧 10 min de recarga a las ${minToHm(start)}, justo antes de «${focusTask?.title}». Llegarás con la cabeza más clara.` };
+  }
+  // plan B: el hueco libre más cercano ANTES de la sesión; si no hay, cualquiera de ese día
+  const windows = freeWindows(p, target.date, state.sessions, target.date === ctx.today ? ceilTo(ctx.now + 5, STEP) : 0);
+  const before = windows
+    .map((w) => ({ start: Math.min(w.end, target.start) - 10, w }))
+    .filter(({ start: st, w }) => st >= w.start)
+    .sort((x, y) => y.start - x.start)[0];
+  if (before) {
+    const session: Session = { id: uid(), taskId: task.id, date: target.date, start: before.start, duration: 10, status: 'planned', pinned: true };
+    s = { ...s, sessions: [...s.sessions, session] };
+    return { state: s, message: `🫧 Justo antes no cabía: he reservado 10 min de recarga a las ${minToHm(before.start)}, antes de «${focusTask?.title}».` };
+  }
+  s = replanMissing(s, task.id, target.date, ctx);
+  const placed = firstPlanned(s, task.id);
+  return {
+    state: s,
+    message: placed ? `🫧 He reservado 10 min de recarga a las ${minToHm(placed.start)}.` : 'Hoy no queda hueco para la recarga. Prueba a respirar un minuto antes de empezar 🫧',
   };
 }

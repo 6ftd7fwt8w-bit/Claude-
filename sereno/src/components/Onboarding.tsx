@@ -1,39 +1,24 @@
 import { useState, type CSSProperties } from 'react';
 import { DEFAULT_PROFILE, catById, type Chronotype, type Profile, type WorkHours } from '../types';
-import { baseFreeMinutes, type NewTaskInput } from '../lib/scheduler';
+import type { NewTaskInput } from '../lib/scheduler';
 import { parseQuick } from '../lib/parse';
 import {
   HABIT_SUGGESTIONS,
   PROJECT_EXAMPLES,
   ROUTINE_SUGGESTIONS,
+  TIME_OF_DAY_LABEL,
   timesLabel,
   type RecurringSuggestion,
 } from '../lib/suggestions';
-import { addDays, fmtDuration, fmtShort, todayKey, weekStart } from '../lib/time';
+import { fmtDuration, fmtShort, todayKey } from '../lib/time';
 import { BreaksEditor } from './BreaksEditor';
-import { NumberChips, TimeInput } from './ui';
+import { RecurringEditor } from './RecurringEditor';
+import { PlanAnalysisView } from './PlanAnalysis';
+import { RECHARGE_TASK, analyzePlan } from '../lib/mind';
+import { DayPicker, NumberChips, TimeInput } from './ui';
 
-const DAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0];
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-
-function DayPicker({ value, options = DAY_VALUES, onChange }: { value: number[]; options?: number[]; onChange: (v: number[]) => void }) {
-  return (
-    <div className="chips days">
-      {DAY_VALUES.filter((d) => options.includes(d)).map((d) => (
-        <button
-          key={d}
-          type="button"
-          className={`chip round ${value.includes(d) ? 'on' : ''}`}
-          aria-pressed={value.includes(d)}
-          onClick={() => onChange(value.includes(d) ? value.filter((x) => x !== d) : [...value, d])}
-        >
-          {DAY_LABELS[DAY_VALUES.indexOf(d)]}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Partial<Profile>) => void; step: string }) {
   if (step === 'despertar')
@@ -171,12 +156,14 @@ export function SuggestionTiles({
   items,
   selected,
   onToggle,
+  onEdit,
   onAddCustom,
   placeholder,
 }: {
   items: RecurringSuggestion[];
   selected: string[];
   onToggle: (title: string) => void;
+  onEdit: (title: string) => void;
   onAddCustom: (text: string) => void;
   placeholder: string;
 }) {
@@ -192,21 +179,23 @@ export function SuggestionTiles({
         {items.map((s) => {
           const on = selected.includes(s.title);
           return (
-            <button
-              key={s.title}
-              type="button"
-              className={`tile ${on ? 'on' : ''}`}
-              aria-pressed={on}
-              style={{ '--cat': catById(s.category).color } as CSSProperties}
-              onClick={() => onToggle(s.title)}
-            >
-              <span className="tile-check">{on ? '✓' : ''}</span>
-              <span className="tile-icon">{s.icon}</span>
-              <span className="tile-title">{s.title}</span>
-              <span className="tile-meta">
-                {fmtDuration(s.minutes)} · {timesLabel(s.times)}
-              </span>
-            </button>
+            <div key={s.title} className="tile-wrap" style={{ '--cat': catById(s.category).color } as CSSProperties}>
+              <button type="button" className={`tile ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => onToggle(s.title)}>
+                <span className="tile-check">{on ? '✓' : ''}</span>
+                <span className="tile-icon">{s.icon}</span>
+                <span className="tile-title">{s.title}</span>
+                <span className="tile-meta">
+                  {fmtDuration(s.minutes)} · {timesLabel(s.times, s.days)}
+                  {s.timeOfDay !== 'cualquiera' && ` · ${TIME_OF_DAY_LABEL[s.timeOfDay].split(' ')[1].toLowerCase()}`}
+                </span>
+                {on && <span className="tile-spacer" />}
+              </button>
+              {on && (
+                <button type="button" className="tile-edit" onClick={() => onEdit(s.title)}>
+                  ✎ Ajustar
+                </button>
+              )}
+            </div>
           );
         })}
       </div>
@@ -239,10 +228,11 @@ export function recurringToTask(s: RecurringSuggestion, routine: boolean): NewTa
     category: s.category,
     kind: 'habito',
     totalMinutes: s.minutes,
-    timesPerWeek: s.times,
+    timesPerWeek: s.days?.length ? s.days.length : s.times,
     routine,
     timeOfDay: s.timeOfDay,
     icon: s.icon,
+    days: s.days,
   };
 }
 
@@ -334,7 +324,7 @@ const TITLES: Record<Step, string> = {
   cotidianas: 'Lo de cada día',
   cuidar: '¿Qué quieres cuidar?',
   proyectos: '¿Qué quieres conseguir?',
-  listo: 'Todo listo',
+  listo: 'Preparando tu plan',
 };
 
 export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInput[]) => void }) {
@@ -345,6 +335,10 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
   const [customRoutines, setCustomRoutines] = useState<RecurringSuggestion[]>([]);
   const [customHabits, setCustomHabits] = useState<RecurringSuggestion[]>([]);
   const [projects, setProjects] = useState<NewTaskInput[]>([]);
+  // ajustes de la persona sobre las sugerencias (duración, días, momento…), por título
+  const [tweaks, setTweaks] = useState<Record<string, RecurringSuggestion>>({});
+  const [editing, setEditing] = useState<{ title: string; list: 'routine' | 'habit' } | null>(null);
+  const [addRecharge, setAddRecharge] = useState(true);
 
   const steps: Step[] = ['hola', 'nombre', 'despertar', 'trabajo', ...(p.works ? (['pausas'] as Step[]) : []), 'comidas', 'noche', 'cotidianas', 'cuidar', 'proyectos', 'listo'];
   const step = steps[Math.min(i, steps.length - 1)];
@@ -354,17 +348,22 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
   const toggle = (list: string[], setList: (l: string[]) => void) => (t: string) =>
     setList(list.includes(t) ? list.filter((x) => x !== t) : [...list, t]);
 
-  const allRoutines = [...ROUTINE_SUGGESTIONS, ...customRoutines];
-  const allHabits = [...HABIT_SUGGESTIONS, ...customHabits];
-  const ws = weekStart(todayKey());
-  const weekFree = Array.from({ length: 7 }, (_, d) => baseFreeMinutes(p, addDays(ws, d))).reduce((a, b) => a + b, 0);
-
-  const finish = () =>
-    onDone(p, [
-      ...allRoutines.filter((r) => routines.includes(r.title)).map((r) => recurringToTask(r, true)),
-      ...allHabits.filter((h) => habits.includes(h.title)).map((h) => recurringToTask(h, false)),
-      ...projects,
-    ]);
+  const withTweaks = (l: RecurringSuggestion[]) => l.map((x) => tweaks[x.title] ?? x);
+  const allRoutines = withTweaks([...ROUTINE_SUGGESTIONS, ...customRoutines]);
+  const allHabits = withTweaks([...HABIT_SUGGESTIONS, ...customHabits]);
+  const editingItem = editing ? (editing.list === 'routine' ? allRoutines : allHabits).find((x) => x.title === editing.title) : undefined;
+  /** título original (clave de los ajustes) de una sugerencia que quizá se ha renombrado */
+  const originalTitle = (shown: string, list: 'routine' | 'habit') =>
+    (list === 'routine' ? [...ROUTINE_SUGGESTIONS, ...customRoutines] : [...HABIT_SUGGESTIONS, ...customHabits]).find(
+      (b) => (tweaks[b.title]?.title ?? b.title) === shown,
+    )?.title ?? shown;
+  const chosen: NewTaskInput[] = [
+    ...allRoutines.filter((r) => routines.includes(r.title)).map((r) => recurringToTask(r, true)),
+    ...allHabits.filter((h) => habits.includes(h.title)).map((h) => recurringToTask(h, false)),
+    ...projects,
+  ];
+  const needsRecharge = analyzePlan(p, chosen).suggestRecharge;
+  const finish = () => onDone(p, needsRecharge && addRecharge ? [...chosen, RECHARGE_TASK] : chosen);
 
   return (
     <div className="onboarding">
@@ -378,10 +377,10 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
         <div className="hello">
           <div className="hello-mark">🌿</div>
           <h1>Sereno</h1>
-          <p className="lead">Consigue tus objetivos sin estrés.</p>
+          <p className="lead">Mente tranquila, máximo potencial.</p>
           <p className="muted">
-            Cuéntame tu rutina y lo que quieres conseguir. Yo busco los huecos, reparto el trabajo según tu energía y
-            me aseguro de que no se te olvide vivir.
+            Rindes más cuando estás bien. Cuéntame tu rutina y lo que quieres conseguir: equilibraré foco, descanso,
+            bienestar y vida social para que avances sin estrés y des lo mejor de ti.
           </p>
         </div>
       ) : (
@@ -404,6 +403,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
                 items={allRoutines}
                 selected={routines}
                 onToggle={toggle(routines, setRoutines)}
+                onEdit={(title) => setEditing({ title, list: 'routine' })}
                 placeholder="Otra: p. ej. «Recoger a los niños 30 min cada día»"
                 onAddCustom={(t) => {
                   const c = customRecurring(t, { category: 'hogar', icon: '🏡', times: 7, minutes: 30 });
@@ -422,6 +422,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
                 items={allHabits}
                 selected={habits}
                 onToggle={toggle(habits, setHabits)}
+                onEdit={(title) => setEditing({ title, list: 'habit' })}
                 placeholder="La tuya: p. ej. «Yoga 45 min 2 veces por semana»"
                 onAddCustom={(t) => {
                   const c = customRecurring(t, { category: 'bienestar', times: 2, minutes: 30 });
@@ -432,23 +433,29 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
             </>
           )}
           {step === 'proyectos' && <ProjectsStep projects={projects} setProjects={setProjects} />}
-          {step === 'listo' && (
-            <div className="summary">
-              <p className="big-number">{fmtDuration(weekFree)}</p>
-              <p className="muted">
-                es tu tiempo libre real a la semana, después de trabajo, comidas y descanso. Usaré solo una parte según
-                tu energía, para que siempre te quede aire 🌬️
-              </p>
-              <div className="summary-chips">
-                <span className="tag">🧺 {routines.length} cotidianas</span>
-                <span className="tag">💛 {habits.length} para cuidarte</span>
-                <span className="tag">✨ {projects.length} {projects.length === 1 ? 'proyecto' : 'proyectos'}</span>
-                {p.works && (p.breaks ?? []).length > 0 && <span className="tag">☕ {(p.breaks ?? []).length} pausas</span>}
-              </div>
-              <p className="muted small">Todo se puede cambiar después.</p>
-            </div>
-          )}
+          {step === 'listo' && <PlanAnalysisView profile={p} tasks={chosen} addRecharge={addRecharge} setAddRecharge={setAddRecharge} />}
         </div>
+      )}
+
+      {editing && editingItem && (
+        <RecurringEditor
+          value={editingItem}
+          onClose={() => setEditing(null)}
+          onRemove={() => {
+            (editing.list === 'routine' ? setRoutines : setHabits)((l) => l.filter((t) => t !== editing.title));
+            setEditing(null);
+          }}
+          onSave={(v) => {
+            // los ajustes se guardan bajo el título original de la sugerencia
+            const key = originalTitle(editing.title, editing.list);
+            setTweaks((t) => ({ ...t, [key]: v }));
+            if (v.title !== editing.title) {
+              const rename = (l: string[]) => l.map((t) => (t === editing.title ? v.title : t));
+              (editing.list === 'routine' ? setRoutines : setHabits)(rename);
+            }
+            setEditing(null);
+          }}
+        />
       )}
 
       <div className="onboarding-actions">
@@ -459,7 +466,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
         )}
         {step === 'listo' ? (
           <button className="btn primary" onClick={finish}>
-            Plantar mi bonsái 🌱
+            Empezar mi plan 🌱
           </button>
         ) : (
           <button className="btn primary" onClick={next}>

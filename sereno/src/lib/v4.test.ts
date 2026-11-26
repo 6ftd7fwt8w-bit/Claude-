@@ -78,3 +78,14 @@ describe('progreso del proyecto', () => {
     expect(st.weekly[st.weekly.length - 1].minutes).toBe(120);
   });
 });
+
+describe('días concretos', () => {
+  it('la compra solo los sábados; al editar a martes y sábado, se recoloca', async () => {
+    const { editTask } = await import('./scheduler');
+    const mon: Ctx = { today: '2026-11-23', now: 7 * 60 };
+    let { state } = addTask(base(), { title: 'Compra', category: 'hogar', kind: 'habito', totalMinutes: 60, days: [6], routine: true }, mon);
+    expect(state.sessions.map((x) => x.date)).toEqual(['2026-11-28', '2026-12-05']);
+    state = editTask(state, state.tasks[0].id, { days: [2, 6] }, mon).state;
+    expect(state.sessions.map((x) => x.date).sort()).toEqual(['2026-11-24', '2026-11-28', '2026-12-01', '2026-12-05']);
+  });
+});

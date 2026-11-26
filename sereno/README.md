@@ -1,6 +1,6 @@
 # 🌿 Sereno
 
-**Consigue tus objetivos sin estrés.**
+**Mente tranquila, máximo potencial.** Consigue tus objetivos sin estrés.
 
 Organizador de vida tipo calendario: le cuentas lo que quieres conseguir («proyecto personal, 10 h,
 antes del 15/12») y Sereno lo reparte en los huecos reales de tu rutina, según tu energía de cada día.
@@ -35,6 +35,7 @@ src/
     tips.ts        ← consejos del día
     phrases.ts     ← frases motivadoras
     stats.ts       ← hojas, flores, racha y equilibrio del mes
+    mind.ts        ← análisis del plan, índice de mente tranquila e informe personal
     rewards.ts     ← tienda del bonsái, logros y diario
     ics.ts         ← importar calendarios .ics
     widget.ts      ← datos que se pasan al widget de iPhone

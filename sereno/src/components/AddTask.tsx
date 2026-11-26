@@ -5,7 +5,7 @@ import type { NewTaskInput, TaskPatch } from '../lib/scheduler';
 import { parseQuick } from '../lib/parse';
 import { ROUTINE_ICONS, TIME_OF_DAY_LABEL } from '../lib/suggestions';
 import { addDays, fmtDuration, fmtShort, hmToMin, minToHm, todayKey } from '../lib/time';
-import { CategoryPicker, NumberChips, Sheet } from './ui';
+import { CategoryPicker, DayPicker, NumberChips, Sheet } from './ui';
 
 type Mode = TaskKind | 'cotidiana';
 
@@ -44,6 +44,8 @@ export function AddTask({
   const setKind = (k: TaskKind) => setMode((m) => (m === 'cotidiana' && k === 'habito' ? m : k));
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(e?.timeOfDay ?? 'cualquiera');
   const [icon, setIcon] = useState(e?.icon ?? '🧺');
+  const [days, setDays] = useState<number[]>(e?.days ?? []);
+  const [byDays, setByDays] = useState(!!e?.days?.length);
   const [category, setCategory] = useState<CategoryId>(e?.category ?? preset?.category ?? 'proyectos');
   const [total, setTotal] = useState(e?.totalMinutes ?? preset?.minutes ?? 120);
   const [session, setSession] = useState(e?.sessionMinutes ?? 60);
@@ -98,8 +100,9 @@ export function AddTask({
         deadline: kind === 'flexible' ? (hasDeadline ? deadline : null) : undefined,
         date,
         start,
-        timesPerWeek: times,
+        timesPerWeek: byDays && days.length ? days.length : times,
         timeOfDay,
+        days: kind === 'habito' ? (byDays && days.length ? days : null) : undefined,
       });
       return;
     }
@@ -112,7 +115,8 @@ export function AddTask({
       deadline: kind === 'flexible' && hasDeadline ? deadline : undefined,
       date,
       start,
-      timesPerWeek: times,
+      timesPerWeek: byDays && days.length ? days.length : times,
+      days: byDays && days.length ? days : undefined,
       routine: mode === 'cotidiana',
       timeOfDay,
       icon: mode === 'cotidiana' ? icon : undefined,
@@ -228,7 +232,19 @@ export function AddTask({
         <>
           <div className="field">
             <span>¿Cuántas veces?</span>
-            <NumberChips value={times} options={[1, 2, 3, 4, 5, 7]} onChange={setTimes} fmt={(v) => (v === 7 ? 'Cada día' : `${v}×/sem`)} />
+            <div className="segmented two">
+              <button className={!byDays ? 'on' : ''} onClick={() => setByDays(false)}>
+                Veces por semana
+              </button>
+              <button className={byDays ? 'on' : ''} onClick={() => setByDays(true)}>
+                Días concretos
+              </button>
+            </div>
+            {byDays ? (
+              <DayPicker value={days} onChange={setDays} />
+            ) : (
+              <NumberChips value={times} options={[1, 2, 3, 4, 5, 7]} onChange={setTimes} fmt={(v) => (v === 7 ? 'Cada día' : `${v}×/sem`)} />
+            )}
           </div>
           <div className="field">
             <span>Cada vez</span>
