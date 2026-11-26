@@ -109,11 +109,12 @@ export function GoalsView({
   const allFlex = active.filter((t) => t.kind === 'flexible').sort((a, b) => (a.deadline ?? '9999').localeCompare(b.deadline ?? '9999'));
   // lo corto (≤ 1 h) son tareas sueltas; lo largo, proyectos con su progreso
   const isDone = (t: Task) => projectStatus(state, t.id, today).pct >= 1;
-  const flex = allFlex.filter((t) => t.totalMinutes > 60);
-  const loose = allFlex.filter((t) => t.totalMinutes <= 60);
+  const isProj = (t: Task) => t.isProject ?? t.totalMinutes > 60;
+  const flex = allFlex.filter(isProj);
+  const loose = allFlex.filter((t) => !isProj(t));
   const looseByCat = CATEGORIES.map((c) => ({ c, items: loose.filter((t) => t.category === c.id) })).filter((g) => g.items.length);
   const routines = active.filter((t) => t.kind === 'habito' && t.routine);
-  const CARE = ['bienestar', 'social', 'autocuidado'];
+  const CARE = ['bienestar', 'social', 'autocuidado', 'familia', 'pareja', 'aficiones'];
   const habits = active.filter((t) => t.kind === 'habito' && !t.routine && CARE.includes(t.category));
   const periodic = active.filter((t) => t.kind === 'habito' && !t.routine && !CARE.includes(t.category));
   const events = active

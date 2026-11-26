@@ -482,6 +482,7 @@ export interface NewTaskInput {
   dayType?: Task['dayType'];
   notes?: string;
   steps?: Task['steps'];
+  isProject?: boolean;
 }
 
 /** color libre para un proyecto o afición nuevos */
@@ -514,6 +515,7 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
     notes: input.notes?.trim() || undefined,
     steps: input.steps?.length ? input.steps : undefined,
     color: pickColor(state, input.category),
+    isProject: input.kind === 'flexible' ? input.isProject : undefined,
     createdAt: ctx.today,
   };
   let s: AppState = { ...state, tasks: [...state.tasks, task] };
@@ -530,7 +532,7 @@ export function addTask(state: AppState, input: NewTaskInput, ctx: Ctx): Result 
     };
     s = { ...s, sessions: [...s.sessions, ev] };
     const { state: s2, note: extra } = resolveConflicts(s, ev, ctx);
-    return { state: s2, message: `Apuntado ${fmtRelative(ev.date, ctx.today)} a las ${minToHm(ev.start)}.${extra}` };
+    return { state: s2, message: `Apuntado ${fmtRelative(ev.date, ctx.today)} de ${minToHm(ev.start)} a ${minToHm(ev.start + ev.duration)}.${extra}` };
   }
 
   if (task.kind === 'habito') {
@@ -739,7 +741,7 @@ export function archiveTask(state: AppState, taskId: string): AppState {
 
 /** Al abrir la app un día nuevo: lo no hecho de días pasados vuelve a planificarse. */
 const FOCUS: Task['category'][] = ['proyectos', 'trabajo'];
-const RECHARGE: Task['category'][] = ['bienestar', 'autocuidado', 'social', 'aficiones'];
+const RECHARGE: Task['category'][] = ['bienestar', 'autocuidado', 'social', 'aficiones', 'familia', 'pareja'];
 
 /** Resumen de un día a partir de sus sesiones (antes de recolocar lo no hecho) */
 export function recordDay(state: AppState, date: string): DayRecord {

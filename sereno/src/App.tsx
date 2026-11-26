@@ -217,9 +217,9 @@ export default function App() {
   const undo = (s: Session) => act((st) => uncompleteSession(st, s.id));
   const postpone = (s: Session) => say(act((st, ctx) => postponeSession(st, s.id, ctx)));
   const archive = (t: Task) => {
-    ask(`¿Quitar «${t.title}»? Las hojas que ya ganaste se quedan en tu bonsái.`, 'Sí, quitar', () => {
+    ask(`¿Eliminar «${t.title}»? Lo que ya hiciste se queda en tu bonsái.`, 'Sí, eliminar', () => {
       act((st) => archiveTask(st, t.id));
-      say('Quitado. Soltar también es avanzar 🍃');
+      say('Eliminado. Soltar también es avanzar.');
     });
   };
   const onTip = (t: Tip) => {
@@ -380,10 +380,14 @@ export default function App() {
           onFix={(id, fix) => say(act((st, ctx) => fixConflict(st, id, fix, ctx)))}
           onClose={() => setModal(null)}
           onFullForm={() => setModal('add')}
-          onFinish={(tasks, corrections) => {
+          onFinish={(tasks, corrections, favorites) => {
             const results: CaptureResult[] = [];
             act((st, ctx) => {
               let s2 = st;
+              if (favorites.length) {
+                const keep = (s2.favorites ?? []).filter((f) => !favorites.some((n) => n.title.toLowerCase() === f.title.toLowerCase()));
+                s2 = { ...s2, favorites: [...keep, ...favorites].slice(-20) };
+              }
               if (corrections.length) {
                 let learned = s2.learned;
                 for (const c of corrections) learned = learnCategory(learned, c.title, c.category);
@@ -403,6 +407,11 @@ export default function App() {
       {modal === 'add' && (
         <AddTask
           key={editing?.id ?? 'new'}
+          onDelete={(t) => {
+            setModal(null);
+            setEditing(undefined);
+            archive(t);
+          }}
           preset={preset}
           editing={editing}
           onClose={() => {
@@ -444,6 +453,10 @@ export default function App() {
             })
           }
           onPrepare={() => setModal('breathe')}
+          onDelete={() => {
+            const t = state.tasks.find((x) => x.id === acting.taskId);
+            if (t) archive(t);
+          }}
           onEdit={() => {
             const t = state.tasks.find((x) => x.id === acting.taskId);
             if (!t) return;
@@ -531,6 +544,10 @@ export default function App() {
           onClose={() => setOpenedId(undefined)}
           onPatch={(id, patch) => say(act((st, ctx) => editTask(st, id, patch, ctx)))}
           onFix={(id, fix) => say(act((st, ctx) => fixConflict(st, id, fix, ctx)))}
+          onDelete={(t) => {
+            setOpenedId(undefined);
+            archive(t);
+          }}
           onEdit={(t) => {
             setOpenedId(undefined);
             setEditing(t);

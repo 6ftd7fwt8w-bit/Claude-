@@ -14,7 +14,7 @@ import { baseFreeMinutes, breaksFor, dayLoad, energyFor, sessionsOn, type NewTas
 import { addDays, diffDays, fmtDuration, minToHm, todayKey, weekStart } from './time';
 
 const FOCUS: CategoryId[] = ['proyectos', 'trabajo'];
-const RECHARGE: CategoryId[] = ['bienestar', 'autocuidado', 'social', 'aficiones'];
+const RECHARGE: CategoryId[] = ['bienestar', 'autocuidado', 'social', 'aficiones', 'familia', 'pareja'];
 
 // ---------------------------------------------------------------- análisis del plan (al terminar la encuesta)
 

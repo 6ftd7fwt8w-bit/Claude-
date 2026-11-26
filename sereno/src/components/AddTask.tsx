@@ -30,12 +30,14 @@ export function AddTask({
   onClose,
   preset,
   editing,
+  onDelete,
 }: {
   onAdd: (t: NewTaskInput) => void;
   onEdit?: (id: string, patch: TaskPatch) => void;
   onClose: () => void;
   preset?: AddPreset;
   editing?: Task;
+  onDelete?: (t: Task) => void;
 }) {
   const today = todayKey();
   const e = editing;
@@ -212,7 +214,7 @@ export function AddTask({
             <input
               type="range"
               min={15}
-              max={3000}
+              max={12000}
               step={15}
               value={total}
               onChange={(ev) => setTotal(Number(ev.target.value))}
@@ -319,8 +321,13 @@ export function AddTask({
       </label>
 
       <button className="btn primary wide" disabled={!title} onClick={submit}>
-        {e ? 'Guardar cambios' : kind === 'evento' ? 'Apuntar' : 'Buscar hueco ✨'}
+        {e ? 'Guardar cambios' : kind === 'evento' ? 'Apuntar' : 'Buscar hueco'}
       </button>
+      {e && onDelete && (
+        <button className="btn ghost wide danger" onClick={() => onDelete(e)}>
+          🗑 Eliminar
+        </button>
+      )}
     </Sheet>
   );
 }

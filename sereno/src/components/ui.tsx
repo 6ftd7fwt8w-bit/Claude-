@@ -258,10 +258,33 @@ export function DurationPicker({ value, onChange, options = DURATIONS }: { value
         </button>
       </div>
       {other && (
-        <label className="other-min">
-          <input type="number" inputMode="numeric" min={5} max={720} step={5} value={value} onChange={(e) => onChange(Math.max(5, Number(e.target.value) || 5))} />
-          <span>minutos</span>
-        </label>
+        <div className="other-min">
+          <label>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={9999}
+              aria-label="Horas"
+              value={Math.floor(value / 60)}
+              onChange={(e) => onChange(Math.max(5, (Number(e.target.value) || 0) * 60 + (value % 60)))}
+            />
+            <span>h</span>
+          </label>
+          <label>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={59}
+              step={5}
+              aria-label="Minutos"
+              value={value % 60}
+              onChange={(e) => onChange(Math.max(5, Math.floor(value / 60) * 60 + Math.min(59, Number(e.target.value) || 0)))}
+            />
+            <span>min</span>
+          </label>
+        </div>
       )}
     </div>
   );

@@ -33,7 +33,8 @@ const MONTHS: Record<string, number> = {
 // el orden importa: gana la primera que encaje
 const KEYWORDS: [CategoryId, RegExp][] = [
   ['familia', /\b(mama|papa|madre|padre|abuel|herman|hijo|hija|hijos|famili|ninos|peques|sobrin|suegr|tia |tio |prim[oa]s?\b|bebe)/],
-  ['social', /\b(amig|cena con|comida con|cafe con|quedar|quedada|cumple|boda|fiesta|cita con|novi|pareja)/],
+  ['pareja', /\b(pareja|novi[oa]|marido|esposa|esposo|mi mujer|mi chic[oa]|cita romantica|aniversario|san valentin|escapada romantica|noche de cita)/],
+  ['social', /\b(amig|cena con|comida con|cafe con|quedar|quedada|cumple|boda|fiesta|cita con)/],
   ['gestiones', /\b(reclam|vuelo|prorroga|alquiler|contrato|seguro|papeles|papeleo|document|tramite|factura|hacienda|impuesto|renta|declaracion|gasto|finanz|presupuesto|pagar|pago|recibo|devoluc|reembolso|banco|transferencia|gestor|notari|dni|pasaporte|carnet|renovar|matricul|inscrib|apuntar|cancelar|darse de baja|dar de baja|suscripc|cita previa|multa|ayuntamiento|seguimiento|follow ?up|garantia|abogad|nomina|hipoteca|factura de)/],
   ['bienestar', /\b(medit|yoga|correr|running|gym|gimnasio|deporte|entren|paseo|pasear|caminar|respir|nadar|piscina|bici|pilates|estirar|abdominal)/],
   ['aficiones', /\b(videojuego|jugar a|jugar al|consola|play|switch|guitarra|piano|ukelele|bateria|bajo electrico|instrumento|tocar el|tocar la|cantar|acuarela|pintar un|pintar cuadro|manualidad|ganchillo|punto|costura|bordar|puzzle|lego|fotografia|serie|peli|cine|jardineria|ajedrez|juego de mesa|bailar|danza|novela|poesia|afici|hobby)/],
@@ -67,7 +68,7 @@ export function estimateMinutes(text: string, cat: CategoryId): { minutes: numbe
   if (/\b(gasto|finanz|presupuesto|declaracion|renta)/.test(t)) return { minutes: 45, big: false };
   if (/\b(revisar|leer|mirar|comparar|buscar)/.test(t)) return { minutes: 30, big: false };
   if (/\b(reclam|follow|seguimiento|email|correo|mail|enviar|mandar|pedir|cancelar|pagar|reservar|confirmar)/.test(t)) return { minutes: 20, big: false };
-  const byCat: Record<CategoryId, number> = { gestiones: 20, proyectos: 120, aficiones: 60, familia: 90, hogar: 45, trabajo: 60, bienestar: 30, autocuidado: 45, social: 90 };
+  const byCat: Record<CategoryId, number> = { gestiones: 20, proyectos: 120, aficiones: 60, familia: 90, pareja: 120, hogar: 45, trabajo: 60, bienestar: 30, autocuidado: 45, social: 90 };
   return { minutes: byCat[cat], big: cat === 'proyectos' };
 }
 
@@ -136,18 +137,39 @@ export function parseQuick(input: string, today: string, learned?: Record<string
     out.timesPerWeek = 1;
   }
 
+  // franja: «de 10 a 2», «de 10:00 a 14:00», «desde las 18 hasta las 20»
+  m = cut(/\s(?:de|desde)(?: las?)?\s(\d{1,2})(?:[:.](\d{2}))?\s*h?\s(?:a|hasta)(?: las?)?\s(\d{1,2})(?:[:.](\d{2}))?\s*h?(?=\s)/);
+  if (m) {
+    const evening = /\s(?:de la tarde|de la noche|pm)\b/.test(n());
+    cut(/\s(?:de la manana|de la tarde|de la noche|am|pm)\b/);
+    let h1 = Number(m[1]);
+    let h2 = Number(m[3]);
+    if (evening && h1 < 12) h1 += 12;
+    else if (h1 < 7) h1 += 12; // «de 5 a 7» suele ser por la tarde
+    const start = h1 * 60 + Number(m[2] ?? 0);
+    let end = h2 * 60 + Number(m[4] ?? 0);
+    while (end <= start && h2 < 24) {
+      h2 += 12;
+      end = h2 * 60 + Number(m[4] ?? 0);
+    }
+    if (end > start) {
+      out.start = start;
+      out.totalMinutes = end - start;
+    }
+  }
+
   // duración: 10h, 1h30, 1,5 horas, 45 min
-  m = cut(/\s(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|horas?)\s*(?:y\s*)?(?:(\d+)\s*(?:m|min|minutos?)?)?(?=\s)/);
+  m = out.totalMinutes ? null : cut(/\s(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|horas?)\s*(?:y\s*)?(?:(\d+)\s*(?:m|min|minutos?)?)?(?=\s)/);
   if (m) {
     out.totalMinutes = Math.round(Number(m[1].replace(',', '.')) * 60) + (m[2] ? Number(m[2]) : 0);
-  } else if ((m = cut(/\s(\d+)\s*(?:m|min|mins|minutos?)(?=\s)/))) {
+  } else if (!out.totalMinutes && (m = cut(/\s(\d+)\s*(?:m|min|mins|minutos?)(?=\s)/))) {
     out.totalMinutes = Number(m[1]);
   } else if ((m = cut(/\s(?:media hora)(?=\s)/))) {
     out.totalMinutes = 30;
   }
 
   // hora: "a las 21:30", "a las 9", "21h" no (choca con duración)
-  m = cut(/\s(?:a las|a la)\s(\d{1,2})(?::|\.)?(\d{2})?\s*(?:h\b)?/);
+  m = out.start != null ? null : cut(/\s(?:a las|a la)\s(\d{1,2})(?::|\.)?(\d{2})?\s*(?:h\b)?/);
   if (m) {
     let h = Number(m[1]);
     const after = n();

@@ -23,6 +23,7 @@ export function SessionSheet({
   onDuration,
   onNote,
   onToggleStep,
+  onDelete,
 }: {
   state: AppState;
   session: Session;
@@ -39,6 +40,7 @@ export function SessionSheet({
   onDuration: (s: Session, minutes: number) => void;
   onNote: (s: Session, note: string) => void;
   onToggleStep: (taskId: string, stepId: string) => void;
+  onDelete: () => void;
 }) {
   const task = state.tasks.find((t) => t.id === session.taskId);
   const c = catById(task?.category ?? 'bienestar');
@@ -170,6 +172,11 @@ export function SessionSheet({
         {task && (
           <button className="btn ghost" onClick={act(onEdit)}>
             ✏️ Editar la tarea{task.kind === 'flexible' ? ', sus notas y pasos' : ''}
+          </button>
+        )}
+        {task && (
+          <button className="btn ghost danger" onClick={act(onDelete)}>
+            🗑 Eliminar {task.kind === 'evento' ? 'este evento' : task.kind === 'habito' ? 'esta tarea (todas las veces)' : 'esta tarea'}
           </button>
         )}
       </div>

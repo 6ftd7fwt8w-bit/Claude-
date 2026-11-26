@@ -1,4 +1,4 @@
-export type CategoryId = 'bienestar' | 'familia' | 'social' | 'proyectos' | 'aficiones' | 'autocuidado' | 'hogar' | 'gestiones' | 'trabajo';
+export type CategoryId = 'bienestar' | 'familia' | 'pareja' | 'social' | 'proyectos' | 'aficiones' | 'autocuidado' | 'hogar' | 'gestiones' | 'trabajo';
 
 export interface Category {
   id: CategoryId;
@@ -10,6 +10,7 @@ export interface Category {
 export const CATEGORIES: Category[] = [
   { id: 'bienestar', label: 'Bienestar', emoji: '🧘', color: '#6FAF9A' },
   { id: 'familia', label: 'Familia', emoji: '🏠', color: '#D9708F' },
+  { id: 'pareja', label: 'Amor y pareja', emoji: '❤️', color: '#C0577A' },
   { id: 'social', label: 'Amigos y vida social', emoji: '💛', color: '#E59A8C' },
   { id: 'proyectos', label: 'Proyectos', emoji: '✨', color: '#7E98D1' },
   { id: 'aficiones', label: 'Aficiones', emoji: '🎨', color: '#E8A33D' },
@@ -30,8 +31,19 @@ export function taskColor(t: Pick<Task, 'category' | 'color'> | undefined): stri
   return t?.color ?? catById(t?.category ?? 'bienestar').color;
 }
 
+/** Tarea guardada en favoritos */
+export interface Favorite {
+  title: string;
+  category: CategoryId;
+  minutes: number;
+  mode: 'fijo' | 'hueco';
+  repeat: 'no' | 'semana' | 'mes';
+  times: number;
+  start?: number;
+}
+
 /** Áreas de la vida que se pueden marcar como valores */
-export type AreaId = 'familia' | 'social' | 'bienestar' | 'autocuidado' | 'proyectos' | 'aficiones';
+export type AreaId = 'familia' | 'pareja' | 'social' | 'bienestar' | 'autocuidado' | 'proyectos' | 'aficiones';
 
 export interface ValueGoal {
   area: AreaId;
@@ -96,6 +108,8 @@ export interface Task {
   color?: string;
   /** permitir fines de semana aunque en general no trabajes en proyectos el finde */
   allowWeekend?: boolean;
+  /** se muestra como proyecto (con su página) aunque sea corto; false = tarea suelta */
+  isProject?: boolean;
   /** bloque creado automáticamente para cumplir un valor (p. ej. tiempo en familia) */
   valueBlock?: AreaId;
   /** de dónde viene: creada en Sereno, importada de un .ics o del calendario del iPhone */
@@ -205,6 +219,8 @@ export interface AppState {
   equipped: Equipped;
   /** diario de gratitud: una línea por día */
   journal: Record<string, string>;
+  /** plantillas guardadas para añadir de un toque */
+  favorites?: Favorite[];
   /** valores: cuánto tiempo quiere dedicar a cada área de su vida */
   values?: ValueGoal[];
   /** visión de vida elegida en la encuesta */

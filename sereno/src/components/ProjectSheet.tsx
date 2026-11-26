@@ -22,6 +22,7 @@ export function ProjectSheet({
   onEdit,
   onPatch,
   onFix,
+  onDelete,
 }: {
   state: AppState;
   task: Task;
@@ -30,6 +31,7 @@ export function ProjectSheet({
   onEdit: (t: Task) => void;
   onPatch: (id: string, patch: TaskPatch) => void;
   onFix: (taskId: string, fix: ConflictFix) => void;
+  onDelete: (t: Task) => void;
 }) {
   const [notes, setNotes] = useState(task.notes ?? '');
   const [stepTitle, setStepTitle] = useState('');
@@ -244,6 +246,9 @@ export function ProjectSheet({
 
         <button className="btn soft wide" onClick={() => onEdit(task)}>
           ✏️ Cambiar horas o fecha
+        </button>
+        <button className="btn ghost wide danger" onClick={() => onDelete(task)}>
+          🗑 Eliminar el proyecto
         </button>
       </div>
     </Sheet>

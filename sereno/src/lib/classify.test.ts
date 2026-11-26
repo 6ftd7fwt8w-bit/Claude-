@@ -55,3 +55,22 @@ describe('periodicidad mensual', async () => {
     expect(state.sessions.filter((x) => x.date.startsWith('2027-01'))).toHaveLength(2);
   });
 });
+
+describe('eventos con franja y pareja', async () => {
+  const { parseQuick, detectCategory } = await import('./parse');
+  it('«el sábado voy a almorzar con mis padres de 10 a 2»', () => {
+    const p = parseQuick('El sábado voy a almorzar con mis padres de 10 a 2', '2026-11-26');
+    expect(p).toMatchObject({ kind: 'evento', date: '2026-11-28', start: 600, totalMinutes: 240, category: 'familia' });
+    expect(p.title).toBe('Voy a almorzar con mis padres');
+  });
+  it('«Cine con Marta de 18:30 a 20:45 mañana»', () => {
+    expect(parseQuick('Cine con Marta de 18:30 a 20:45 mañana', '2026-11-26')).toMatchObject({ kind: 'evento', date: '2026-11-27', start: 18 * 60 + 30, totalMinutes: 135 });
+  });
+  it('«de 10h a 14h» no se confunde con una duración de 10 h', () => {
+    expect(parseQuick('Taller de cerámica el domingo de 10h a 14h', '2026-11-26')).toMatchObject({ start: 600, totalMinutes: 240 });
+  });
+  it('pareja', () => {
+    expect(detectCategory('Cena romántica con mi pareja')).toBe('pareja');
+    expect(detectCategory('Aniversario con mi novio')).toBe('pareja');
+  });
+});

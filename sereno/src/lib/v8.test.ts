@@ -67,7 +67,7 @@ describe('valores', async () => {
 
   it('las visiones dan una propuesta completa y avisan si el movimiento es poco', () => {
     const g = goalsFromVision(VISIONS[0]);
-    expect(g.length).toBe(6);
+    expect(g.length).toBe(7);
     expect(guidelineWarning({ area: 'bienestar', hours: 4, per: 'mes' })).toMatch(/OMS/);
     expect(guidelineWarning({ area: 'bienestar', hours: 3, per: 'semana' })).toBeUndefined();
   });

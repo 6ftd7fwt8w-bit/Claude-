@@ -301,7 +301,7 @@ function ProjectsStep({ projects, setProjects }: { projects: NewTaskInput[]; set
   const [hours, setHours] = useState<number | null>(null);
   const today = todayKey();
   const q = parseQuick(text, today);
-  const minutes = q.totalMinutes ?? (hours ? hours * 60 : null);
+  const minutes = q.totalMinutes ?? (hours ?? 5) * 60;
   const add = () => {
     if (!q.title || !minutes) return;
     setProjects([
@@ -329,7 +329,7 @@ function ProjectsStep({ projects, setProjects }: { projects: NewTaskInput[]; set
       {text.trim() && !q.totalMinutes && (
         <div className="field">
           <span>¿Cuántas horas crees que necesitas en total?</span>
-          <NumberChips value={hours ?? 0} options={[2, 5, 10, 20, 40]} onChange={setHours} fmt={(v) => `${v} h`} />
+          <DurationPicker value={(hours ?? 0) * 60 || 300} onChange={(m) => setHours(m / 60)} options={[120, 300, 600, 1200, 2400, 4800, 6000]} />
         </div>
       )}
       <button className="btn primary wide" disabled={!q.title || !minutes} onClick={add}>

@@ -31,6 +31,15 @@ export const AREAS: AreaInfo[] = [
     blockMinutes: 120,
   },
   {
+    id: 'pareja',
+    label: 'Amor y pareja',
+    emoji: '❤️',
+    guideline:
+      'Reservar tiempo de calidad en pareja se asocia a más satisfacción en la relación: el informe «The Date Night Opportunity» (National Marriage Project, 2012) encontró que las parejas que salen juntas a solas con regularidad dicen sentirse más felices en su relación.',
+    blockTitle: 'Tiempo en pareja',
+    blockMinutes: 120,
+  },
+  {
     id: 'social',
     label: 'Amigos y vida social',
     emoji: '💛',
@@ -94,28 +103,28 @@ export const VISIONS: Vision[] = [
     emoji: '🌿',
     title: 'Darme prioridad a mí',
     description: 'Cuidarte primero: salud, descanso y cosas que te gustan. Lo demás llega mejor desde ahí.',
-    hours: { bienestar: 14, autocuidado: 12, aficiones: 10, social: 8, familia: 12, proyectos: 6 },
+    hours: { bienestar: 14, autocuidado: 12, aficiones: 10, social: 8, familia: 12, pareja: 8, proyectos: 6 },
   },
   {
     id: 'proyectos',
     emoji: '✨',
     title: 'Avanzar en mis proyectos',
     description: 'Darle un empujón a lo que quieres crear, sin dejar de moverte ni de ver a la gente.',
-    hours: { proyectos: 30, bienestar: 12, autocuidado: 6, aficiones: 4, social: 6, familia: 10 },
+    hours: { proyectos: 30, bienestar: 12, autocuidado: 6, aficiones: 4, social: 6, familia: 10, pareja: 8 },
   },
   {
     id: 'familia',
     emoji: '🏠',
     title: 'Familia y personas',
     description: 'Más tiempo de calidad con los tuyos y con tus amigos.',
-    hours: { familia: 40, social: 12, bienestar: 10, autocuidado: 6, aficiones: 4, proyectos: 6 },
+    hours: { familia: 40, pareja: 16, social: 12, bienestar: 10, autocuidado: 6, aficiones: 4, proyectos: 6 },
   },
   {
     id: 'equilibrio',
     emoji: '⚖️',
     title: 'Equilibrio en todo',
     description: 'Un poco de cada cosa, cada semana. Ideal si no sabes por dónde empezar.',
-    hours: { familia: 16, social: 10, bienestar: 12, autocuidado: 8, aficiones: 8, proyectos: 12 },
+    hours: { familia: 16, pareja: 10, social: 10, bienestar: 12, autocuidado: 8, aficiones: 8, proyectos: 12 },
   },
 ];
 
