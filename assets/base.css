@@ -1546,3 +1546,5 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .vrv-lb__prev { left: 10px; } .vrv-lb__next { right: 10px; }
 .vrv-lb__nav[hidden] { display: none; }
 .vrv-lb__count { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 13px; }
+.vrv__thumb { position: relative; }
+.vrv__thumb-more { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(35,31,28,.55); color: #fff; font-size: 18px; font-weight: 600; }

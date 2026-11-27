@@ -102,7 +102,12 @@
       var body = el('figcaption', 'vrv__body');
       if (r.p.length && mode !== 'mini') {
         var g = el('div', 'vrv__gallery');
-        r.p.forEach(function (p, i) { g.appendChild(thumb(p, i, 'vrv__thumb')); });
+        var maxT = mode === 'list' ? 6 : 3;
+        r.p.slice(0, maxT).forEach(function (p, i) {
+          var t = thumb(p, i, 'vrv__thumb');
+          if (i === maxT - 1 && r.p.length > maxT) { t.appendChild(el('span', 'vrv__thumb-more', '+' + (r.p.length - maxT))); t.setAttribute('aria-label', 'Ver las ' + r.p.length + ' fotos de ' + r.n); }
+          g.appendChild(t);
+        });
         body.appendChild(g);
       }
       var stars = el('span', 'vrv__stars'); stars.setAttribute('aria-label', r.st + ' de 5 estrellas');
