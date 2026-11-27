@@ -259,6 +259,18 @@ Cómo decide (ver `src/lib/scheduler.ts`):
 | ✅ | **Iconos propios de dos tonos** en insignias de color para cada categoría y para tareas concretas (ducha, compra, perro, leer, correr…) |
 | ✅ | Agenda con bloques de rutina ilustrados (amanecer, trayecto, comida, desconexión), barra inferior flotante y confeti de colores |
 
+## 11. Novedades v11: estilos, aficiones, encuesta corta y añadir fácil
+
+| | Funcionalidad |
+|---|---|
+| ✅ | **6 estilos de color** (Bosque, Arena y rosa, Pistacho, Lima y grafito, Lavanda, Océano), con modo claro y oscuro. Se cambian con los puntos de color de arriba en Hoy, en la bienvenida o en ⚙ |
+| ✅ | **Aficiones concretas**: eliges lo que te gusta (videojuegos, instrumento, fotografía, senderismo…) y cuándo te apetece (entre semana o en el finde); las horas de tu valor «aficiones» se reparten entre ellas |
+| ✅ | Sección **Tus aficiones** en Objetivos y, al tocar un hueco libre, primero tus aficiones |
+| ✅ | **Encuesta más corta** (6 pasos en vez de 11): tarjetas compactas, pestañas Cada día / Cuidarte / Aficiones, barra de progreso y animaciones |
+| ✅ | Barra **«¿Qué tienes en mente?»** en Hoy, con ejemplos que se escriben solos; escribe y pulsa Intro para que te pregunte lo justo |
+| ✅ | Explicación la primera vez («Así funciona Sereno» en 3 pasos) con ejemplos para probar |
+| ✅ | Botón **＋ Añadir** con texto y **«Añadir algo el …»** en el calendario para apuntar en un día concreto |
+
 ---
 
 ## Hoja de ruta técnica

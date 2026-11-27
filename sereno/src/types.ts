@@ -1,3 +1,4 @@
+import type { PaletteId } from './lib/palettes';
 export type CategoryId = 'bienestar' | 'familia' | 'pareja' | 'social' | 'proyectos' | 'aficiones' | 'autocuidado' | 'hogar' | 'gestiones' | 'trabajo';
 
 export interface Category {
@@ -231,6 +232,10 @@ export interface AppState {
   seenAchievements: string[];
   /** resumen de cada día pasado (para el informe personal) */
   history: Record<string, DayRecord>;
+  /** estilo de color elegido */
+  palette?: PaletteId;
+  /** ya ha visto la explicación de cómo añadir cosas */
+  seenAddHint?: boolean;
 }
 
 /** Cómo fue un día: se guarda al pasar al siguiente, porque lo no hecho se recoloca */

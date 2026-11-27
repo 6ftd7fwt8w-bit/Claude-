@@ -46,6 +46,39 @@ export const HABIT_SUGGESTIONS: RecurringSuggestion[] = [
   { title: 'Tiempo para mí', icon: '🛁', category: 'autocuidado', minutes: 30, times: 1, timeOfDay: 'noche' },
 ];
 
+/** Aficiones: lo que te gusta de verdad (se colocan en tus ratos libres) */
+export const AFICION_SUGGESTIONS: RecurringSuggestion[] = [
+  { title: 'Videojuegos', icon: '', category: 'aficiones', minutes: 60, times: 2, timeOfDay: 'noche' },
+  { title: 'Tocar un instrumento', icon: '', category: 'aficiones', minutes: 30, times: 3, timeOfDay: 'tarde' },
+  { title: 'Dibujar o pintar', icon: '', category: 'aficiones', minutes: 60, times: 2, timeOfDay: 'tarde' },
+  { title: 'Leer novelas', icon: '', category: 'aficiones', minutes: 30, times: 3, timeOfDay: 'noche' },
+  { title: 'Fotografía', icon: '', category: 'aficiones', minutes: 60, times: 1, timeOfDay: 'cualquiera', dayType: 'weekends' },
+  { title: 'Cocinar algo especial', icon: '', category: 'aficiones', minutes: 90, times: 1, timeOfDay: 'tarde', dayType: 'weekends' },
+  { title: 'Series y cine', icon: '', category: 'aficiones', minutes: 60, times: 2, timeOfDay: 'noche' },
+  { title: 'Bailar', icon: '', category: 'aficiones', minutes: 60, times: 1, timeOfDay: 'tarde' },
+  { title: 'Escribir', icon: '', category: 'aficiones', minutes: 45, times: 2, timeOfDay: 'cualquiera' },
+  { title: 'Jardinería y plantas', icon: '', category: 'aficiones', minutes: 45, times: 1, timeOfDay: 'manana', dayType: 'weekends' },
+  { title: 'Manualidades', icon: '', category: 'aficiones', minutes: 60, times: 1, timeOfDay: 'tarde' },
+  { title: 'Senderismo', icon: '', category: 'aficiones', minutes: 180, times: 1, timeOfDay: 'manana', dayType: 'weekends' },
+  { title: 'Aprender un idioma', icon: '', category: 'aficiones', minutes: 30, times: 3, timeOfDay: 'cualquiera' },
+  { title: 'Deporte en equipo', icon: '', category: 'aficiones', minutes: 90, times: 1, timeOfDay: 'tarde' },
+  { title: 'Juegos de mesa', icon: '', category: 'aficiones', minutes: 90, times: 1, timeOfDay: 'noche', dayType: 'weekends' },
+];
+
+/** Reparte las horas que quieres dedicar a tus aficiones entre las que has elegido */
+export function spreadHobbies(list: RecurringSuggestion[], weeklyMinutes: number): RecurringSuggestion[] {
+  if (!list.length || weeklyMinutes <= 0) return list;
+  const base = list.reduce((a, h) => a + h.minutes * (h.perMonth ? h.perMonth / 4.3 : h.days?.length || h.times), 0);
+  if (base <= 0) return list;
+  const k = weeklyMinutes / base;
+  if (k <= 1.15 && k >= 0.6) return list;
+  return list.map((h) => {
+    if (h.perMonth || h.days?.length) return h;
+    const times = Math.max(1, Math.min(5, Math.round(h.times * k)));
+    return { ...h, times };
+  });
+}
+
 /** Ejemplos para que se entienda cómo escribir un proyecto (se rellenan en el campo, no se añaden solos) */
 export const PROJECT_EXAMPLES = [
   'Proyecto personal 10h antes del 31/12',

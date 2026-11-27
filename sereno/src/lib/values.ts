@@ -233,6 +233,7 @@ export function applyValues(state: AppState, values: ValueGoal[], ctx: Ctx): { s
     const info = areaInfo(g.area);
     // los proyectos concretos ya cuentan: solo creamos un bloque genérico si no hay ninguno
     if (g.area === 'proyectos' && s.tasks.some((t) => !t.archived && t.category === 'proyectos')) continue;
+    if (g.area === 'aficiones' && s.tasks.some((t) => !t.archived && !t.valueBlock && t.category === 'aficiones' && t.kind === 'habito')) continue;
     const gap = weeklyMinutes(g) - coveredWeekly(s, g.area, ctx.today);
     if (gap < 30) continue;
     const chunk = Math.min(info.blockMinutes, Math.max(30, Math.round(gap / 15) * 15));
@@ -250,14 +251,18 @@ export function applyValues(state: AppState, values: ValueGoal[], ctx: Ctx): { s
   return { state: s, created };
 }
 
-/** Si ya tienes proyectos reales, el bloque genérico «Avanzar en mis proyectos» sobra */
+/** Si ya tienes proyectos o aficiones concretas, el bloque genérico («Avanzar en mis proyectos», «Mis aficiones») sobra */
 export function pruneValueBlocks(state: AppState): AppState {
-  const hasProjects = state.tasks.some((t) => !t.archived && !t.valueBlock && t.category === 'proyectos');
-  const block = state.tasks.find((t) => !t.archived && t.valueBlock === 'proyectos');
-  if (!hasProjects || !block) return state;
-  return {
-    ...state,
-    tasks: state.tasks.map((t) => (t.id === block.id ? { ...t, archived: true } : t)),
-    sessions: state.sessions.filter((x) => !(x.taskId === block.id && x.status === 'planned')),
-  };
+  let s = state;
+  for (const area of ['proyectos', 'aficiones'] as const) {
+    const hasReal = s.tasks.some((t) => !t.archived && !t.valueBlock && t.category === area && (area === 'proyectos' || t.kind === 'habito'));
+    const block = s.tasks.find((t) => !t.archived && t.valueBlock === area);
+    if (!hasReal || !block) continue;
+    s = {
+      ...s,
+      tasks: s.tasks.map((t) => (t.id === block.id ? { ...t, archived: true } : t)),
+      sessions: s.sessions.filter((x) => !(x.taskId === block.id && x.status === 'planned')),
+    };
+  }
+  return s;
 }

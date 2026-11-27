@@ -6,6 +6,7 @@ import { LEVEL_TEXT, tipsFor } from '../lib/tips';
 import { addDays, fmtDuration, fmtLong, fmtMonth, fmtShort, fromKey, minToHm, monthKey, nowMinutes, pad, weekStart } from '../lib/time';
 import { DayAgenda, type Block } from './DayAgenda';
 import { DayStrip, StripLegend } from './DayStrip';
+import { Icon } from './Icons';
 
 const WEEK = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
@@ -19,6 +20,7 @@ export function CalendarView({
   onTapGap,
   onDrop,
   onTapBlock,
+  onAddDay,
 }: {
   state: AppState;
   today: string;
@@ -29,6 +31,7 @@ export function CalendarView({
   onTapGap: (date: string, gap: Interval) => void;
   onDrop: (s: Session, start: number) => void;
   onTapBlock: (date: string, b: Block, minute: number) => void;
+  onAddDay: (date: string) => void;
 }) {
   const [month, setMonth] = useState(monthKey(today));
   const [selected, setSelected] = useState(today);
@@ -121,6 +124,11 @@ export function CalendarView({
           </p>
         ))}
         {selSessions.length === 0 && <p className="muted">Nada planeado. Espacio para respirar</p>}
+        {selected >= today && (
+          <button className="add-day" onClick={() => onAddDay(selected)}>
+            <Icon name="plus" size={18} /> Añadir algo {selected === today ? 'hoy' : `el ${fmtShort(selected).toLowerCase()}`}
+          </button>
+        )}
         <DayAgenda
           state={state}
           date={selected}

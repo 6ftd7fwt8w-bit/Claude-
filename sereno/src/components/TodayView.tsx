@@ -9,6 +9,8 @@ import { fmtDuration, fmtLong, minToHm, nowMinutes } from '../lib/time';
 import { CatMark, EnergyIcon, Icon } from './Icons';
 import { DayAgenda, freeGaps, type Block } from './DayAgenda';
 import { mindIndex } from '../lib/mind';
+import { PALETTES, type PaletteId } from '../lib/palettes';
+import { AddHint, AskBar } from './AskBar';
 
 interface Props {
   state: AppState;
@@ -30,6 +32,9 @@ interface Props {
   onDrop: (s: Session, start: number) => void;
   onTapBlock: (b: Block, minute: number) => void;
   onSettings: () => void;
+  onPalette: (id: PaletteId) => void;
+  onCapture: (text?: string) => void;
+  onHintSeen: () => void;
 }
 
 function greeting(): string {
@@ -132,13 +137,13 @@ function HeroRing({ value, children }: { value: number; children: ReactNode }) {
   return (
     <div className="hero-ring">
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,.26)" strokeWidth="11" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--hero-track)" strokeWidth="11" />
         <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="#fff"
+          stroke="var(--hero-ring)"
           strokeWidth="11"
           strokeLinecap="round"
           strokeDasharray={c}
@@ -220,22 +225,49 @@ export function TodayView(props: Props) {
   return (
     <div className="view">
       <header className="today-head">
-        <div>
-          <p className="eyebrow">{fmtLong(today)}</p>
+        <div className="today-top">
+          <p className="eyebrow cap">{fmtLong(today)}</p>
+          <div className="swatch-dots" role="radiogroup" aria-label="Estilo de color">
+            {PALETTES.map((pl) => (
+              <button
+                key={pl.id}
+                role="radio"
+                aria-checked={(state.palette ?? 'bosque') === pl.id}
+                aria-label={`Estilo ${pl.name}`}
+                title={pl.name}
+                className={`swatch-dot ${(state.palette ?? 'bosque') === pl.id ? 'on' : ''}`}
+                style={{ background: `linear-gradient(135deg, ${pl.swatch[1]} 0 50%, ${pl.id === 'lima' ? pl.swatch[3] : pl.swatch[2]} 50% 100%)` }}
+                onClick={() => props.onPalette(pl.id)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="today-row">
           <h1>
             {greeting()}
             {p.name ? `, ${p.name}` : ''}
           </h1>
-        </div>
-        <div className="head-actions">
-          <button className={`energy-pill ${declared ? '' : 'pulse'}`} onClick={props.onEnergy} aria-label="Cambiar energía de hoy">
-            <EnergyIcon value={energy} /> {energy}%
-          </button>
-          <button className="gear-btn" onClick={props.onSettings} aria-label="Tu rutina y ajustes">
-            <Icon name="gear" size={20} />
-          </button>
+          <div className="head-actions">
+            <button className={`energy-pill ${declared ? '' : 'pulse'}`} onClick={props.onEnergy} aria-label="Cambiar energía de hoy">
+              <EnergyIcon value={energy} /> {energy}%
+            </button>
+            <button className="gear-btn" onClick={props.onSettings} aria-label="Tu rutina y ajustes">
+              <Icon name="gear" size={20} />
+            </button>
+          </div>
         </div>
       </header>
+
+      <AskBar onSubmit={(t) => props.onCapture(t)} onOpen={() => props.onCapture()} />
+      {!state.seenAddHint && (
+        <AddHint
+          onTry={(t) => {
+            props.onHintSeen();
+            props.onCapture(t);
+          }}
+          onClose={props.onHintSeen}
+        />
+      )}
 
       <TodaySummary state={state} today={today} done={done} total={sessions.length} onOpenMind={props.onOpenMind} />
 

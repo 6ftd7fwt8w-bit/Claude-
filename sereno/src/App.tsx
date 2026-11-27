@@ -44,6 +44,7 @@ import {
   tapFeedback,
 } from './native';
 import { Onboarding, recurringToTask } from './components/Onboarding';
+import { applyPalette, type PaletteId } from './lib/palettes';
 import { ProjectSheet } from './components/ProjectSheet';
 import { MindSheet } from './components/MindCard';
 import { QuickCapture, type CaptureResult } from './components/QuickCapture';
@@ -88,6 +89,7 @@ export default function App() {
   const [gapAt, setGapAt] = useState<{ date: string; gap: Interval } | null>(null);
   const [blockAt, setBlockAt] = useState<{ date: string; block: Block; minute: number } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [capture, setCapture] = useState<{ text?: string; date?: string }>({});
   const [celebration, setCelebration] = useState<{ text: string; sub?: string } | null>(null);
   const [question, setQuestion] = useState<{ text: string; yes: string; onYes: () => void } | null>(null);
   const ask = (text: string, yes: string, onYes: () => void) => setQuestion({ text, yes, onYes });
@@ -95,6 +97,9 @@ export default function App() {
   stateRef.current = state;
 
   const say = (m?: string) => m && setToast(m);
+
+  useEffect(() => applyPalette(state.palette), [state.palette]);
+  const setPalette = (palette: PaletteId) => rawAct((s) => ({ ...s, palette }));
 
   /** Cada acción comprueba además si se ha desbloqueado algún logro. */
   const act = useCallback(
@@ -116,6 +121,7 @@ export default function App() {
     if (a === 'add') {
       setPreset(undefined);
       setEditing(undefined);
+      setCapture({});
       setModal('capture');
     }
     if (a === 'breathe') setModal('breathe');
@@ -192,6 +198,8 @@ export default function App() {
   if (!state.profile) {
     return (
       <Onboarding
+        palette={state.palette}
+        onPalette={setPalette}
         onDone={(p: Profile, tasks: NewTaskInput[], values, vision) => {
           const t = todayKey();
           act((s, ctx) => {
@@ -302,6 +310,12 @@ export default function App() {
             onTapGap={(gap) => setGapAt({ date: today, gap })}
             onTapBlock={(block, minute) => setBlockAt({ date: today, block, minute })}
             onSettings={() => setModal('settings')}
+            onPalette={setPalette}
+            onCapture={(text) => {
+              setCapture({ text });
+              setModal('capture');
+            }}
+            onHintSeen={() => rawAct((s) => ({ ...s, seenAddHint: true }))}
             onDrop={(x, start) => say(act((st, ctx) => moveSession(st, x.id, x.date, start, ctx)))}
           />
         )}
@@ -312,6 +326,10 @@ export default function App() {
             onTapGap={(date, gap) => setGapAt({ date, gap })}
             onTapBlock={(date, block, minute) => setBlockAt({ date, block, minute })}
             onDrop={(x, start) => say(act((st, ctx) => moveSession(st, x.id, x.date, start, ctx)))}
+            onAddDay={(date) => {
+              setCapture({ date });
+              setModal('capture');
+            }}
           />
         )}
         {tab === 'objetivos' && (
@@ -324,7 +342,14 @@ export default function App() {
               setModal('add');
             }}
             onOpen={(t) => setOpenedId(t.id)}
-            onQuickAdd={(sug, routine) => say(act((st, ctx) => addTask(st, recurringToTask(sug, routine), ctx)))}
+            onQuickAdd={(sug, routine) =>
+              say(
+                act((st, ctx) => {
+                  const r = addTask(st, recurringToTask(sug, routine), ctx);
+                  return { ...r, state: pruneValueBlocks(r.state) };
+                }),
+              )
+            }
             onPatch={(id, patch) => say(act((st, ctx) => editTask(st, id, patch, ctx)))}
             onFix={(id, fix) => say(act((st, ctx) => fixConflict(st, id, fix, ctx)))}
             onCompleteTask={(t) => {
@@ -353,8 +378,9 @@ export default function App() {
         {tab === 'bonsai' && <BonsaiView state={state} today={today} onBuy={(id) => say(act((st) => buy(st, id)))} />}
       </main>
 
-      <button className="fab" aria-label="Añadir" onClick={() => openAction('add')}>
-        <Icon name="plus" size={26} />
+      <button className="fab extended" aria-label="Añadir" onClick={() => openAction('add')}>
+        <Icon name="plus" size={24} />
+        <span>Añadir</span>
       </button>
 
       <nav className="tabbar">
@@ -378,6 +404,8 @@ export default function App() {
 
       {modal === 'capture' && (
         <QuickCapture
+          initialText={capture.text}
+          defaultDate={capture.date}
           learned={state.learned}
           state={state}
           onFix={(id, fix) => say(act((st, ctx) => fixConflict(st, id, fix, ctx)))}
@@ -591,6 +619,8 @@ export default function App() {
       )}
       {modal === 'settings' && (
         <SettingsView
+          palette={state.palette}
+          onPalette={setPalette}
           profile={state.profile}
           onClose={() => setModal(null)}
           onSave={(p) => {

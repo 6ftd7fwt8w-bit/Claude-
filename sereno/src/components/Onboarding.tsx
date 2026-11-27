@@ -1,15 +1,19 @@
 import { useState, type CSSProperties } from 'react';
-import { DEFAULT_PROFILE, catById, type Chronotype, type Profile, type ValueGoal, type WorkHours } from '../types';
-import { VISIONS, goalsFromVision } from '../lib/values';
+import { DEFAULT_PROFILE, catById, type Chronotype, type DayType, type Profile, type ValueGoal, type WorkHours } from '../types';
+import { VISIONS, goalsFromVision, weeklyMinutes } from '../lib/values';
+import type { PaletteId } from '../lib/palettes';
+import { PalettePicker } from './PalettePicker';
 import { ValuesEditor } from './ValuesEditor';
 import type { NewTaskInput } from '../lib/scheduler';
 import { parseQuick } from '../lib/parse';
 import {
+  AFICION_SUGGESTIONS,
   HABIT_SUGGESTIONS,
   PROJECT_EXAMPLES,
   ROUTINE_SUGGESTIONS,
   TIME_OF_DAY_LABEL,
   timesLabel,
+  spreadHobbies,
   type RecurringSuggestion,
 } from '../lib/suggestions';
 import { fmtDuration, fmtShort, todayKey } from '../lib/time';
@@ -18,7 +22,7 @@ import { RecurringEditor } from './RecurringEditor';
 import { PlanAnalysisView } from './PlanAnalysis';
 import { RECHARGE_TASK, analyzePlan } from '../lib/mind';
 import { DayPicker, DurationPicker, NumberChips, TimeInput } from './ui';
-import { CatIcon, Icon } from './Icons';
+import { CatIcon, Icon, type IconName } from './Icons';
 
 const DAY_VALUES = [1, 2, 3, 4, 5, 6, 0];
 const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -152,8 +156,18 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
           <DurationPicker value={p.relaxMinutes} onChange={(relaxMinutes) => set({ relaxMinutes })} options={[30, 45, 60, 90, 120, 150, 180, 240]} />
           <small className="muted">Ese tiempo queda protegido: nunca te pondré tareas ahí ☾</small>
         </div>
+        <WeekendFocusField p={p} set={set} />
+      </>
+    );
+  return null;
+}
+
+
+/** ¿Proyectos en fin de semana? (encuesta y ajustes) */
+export function WeekendFocusField({ p, set }: { p: Profile; set: (patch: Partial<Profile>) => void }) {
+  return (
         <div className="field">
-          <span>○ ¿Trabajas en tus proyectos los fines de semana?</span>
+          <span>¿Trabajas en tus proyectos los fines de semana?</span>
           <div className="chips">
             {(
               [
@@ -201,9 +215,7 @@ export function ProfileFields({ p, set, step }: { p: Profile; set: (patch: Parti
           )}
           <small className="muted">Además, puedes marcar cualquier cosa (quedar con amigas, la compra…) como «solo fines de semana».</small>
         </div>
-      </>
-    );
-  return null;
+  );
 }
 
 /** Cuadrícula de sugerencias seleccionables + "añadir la mía" */
@@ -371,73 +383,181 @@ function ProjectsStep({ projects, setProjects }: { projects: NewTaskInput[]; set
   );
 }
 
-type Step = 'hola' | 'nombre' | 'despertar' | 'trabajo' | 'pausas' | 'comidas' | 'noche' | 'valores' | 'cotidianas' | 'cuidar' | 'proyectos' | 'listo';
+/** Selección compacta: píldoras con icono, en dos columnas (se ve todo de un vistazo) */
+export function PickPills({
+  items,
+  selected,
+  onToggle,
+  onEdit,
+  onAddCustom,
+  placeholder,
+}: {
+  items: RecurringSuggestion[];
+  selected: string[];
+  onToggle: (title: string) => void;
+  onEdit: (title: string) => void;
+  onAddCustom: (text: string) => void;
+  placeholder: string;
+}) {
+  const [text, setText] = useState('');
+  const add = () => {
+    if (!text.trim()) return;
+    onAddCustom(text);
+    setText('');
+  };
+  return (
+    <>
+      <div className="pills">
+        {items.map((it, k) => {
+          const on = selected.includes(it.title);
+          return (
+            <div key={it.title} className={`pill ${on ? 'on' : ''}`} style={{ '--cat': catById(it.category).color, '--i': k } as CSSProperties}>
+              <button type="button" className="pill-main" aria-pressed={on} onClick={() => onToggle(it.title)}>
+                <CatIcon cat={it.category} title={it.title} size={32} />
+                <span className="pill-text">
+                  <strong>{it.title}</strong>
+                  <small>
+                    {fmtDuration(it.minutes)} · {timesLabel(it.times, it.days, it.perMonth)}
+                  </small>
+                </span>
+                <span className="pill-check">{on && <Icon name="check" size={14} />}</span>
+              </button>
+              {on && (
+                <button type="button" className="pill-edit" aria-label={`Ajustar ${it.title}`} onClick={() => onEdit(it.title)}>
+                  <Icon name="note" size={15} />
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="add-own">
+        <input value={text} placeholder={placeholder} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} />
+        <button type="button" className="btn soft" disabled={!text.trim()} onClick={add}>
+          Añadir
+        </button>
+      </div>
+    </>
+  );
+}
 
-const TITLES: Record<Step, string> = {
-  hola: '',
-  nombre: '¿Cómo te llamas?',
-  despertar: 'Tus mañanas',
-  trabajo: 'Tu trabajo',
-  pausas: '¿Puedes hacer pausas?',
-  comidas: 'Tus comidas',
-  noche: 'Tus noches',
-  valores: '¿Qué es importante para ti?',
-  cotidianas: 'Lo de cada día',
-  cuidar: '¿Qué quieres cuidar?',
-  proyectos: '¿Qué quieres conseguir?',
-  listo: 'Preparando tu plan',
+type Step = 'hola' | 'tu' | 'horario' | 'trabajo' | 'valores' | 'habitos' | 'proyectos' | 'listo';
+type ListKey = 'routine' | 'habit' | 'hobby';
+
+const STEP_INFO: Record<Step, { title: string; sub?: string; icon: IconName }> = {
+  hola: { title: '', icon: 'leaf' },
+  tu: { title: 'Encantado de conocerte', sub: 'Dos preguntas rápidas para empezar.', icon: 'person' },
+  horario: { title: 'Tu día tipo', sub: 'Lo justo para saber dónde caben tus cosas.', icon: 'clock' },
+  trabajo: { title: 'Tu trabajo', sub: 'Así nunca te pongo nada encima.', icon: 'trabajo' },
+  valores: { title: '¿Qué es importante para ti?', icon: 'balance' },
+  habitos: { title: 'Tu semana ideal', sub: 'Toca lo que quieras incluir. Todo es opcional y se puede cambiar.', icon: 'star' },
+  proyectos: { title: '¿Qué quieres conseguir?', icon: 'proyectos' },
+  listo: { title: 'Preparando tu plan', icon: 'spark' },
 };
 
-export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInput[], values: ValueGoal[], vision?: string) => void }) {
+const HOBBY_WHEN: [DayType, string][] = [
+  ['any', 'Cuando haya hueco'],
+  ['weekdays', 'Entre semana'],
+  ['weekends', 'Sobre todo el finde'],
+];
+
+export function Onboarding({
+  onDone,
+  palette,
+  onPalette,
+}: {
+  onDone: (p: Profile, tasks: NewTaskInput[], values: ValueGoal[], vision?: string) => void;
+  palette?: PaletteId;
+  onPalette: (id: PaletteId) => void;
+}) {
   const [i, setI] = useState(0);
+  const [dir, setDir] = useState<1 | -1>(1);
   const [p, setP] = useState<Profile>({ ...DEFAULT_PROFILE });
-  const [routines, setRoutines] = useState<string[]>([]);
-  const [habits, setHabits] = useState<string[]>([]);
-  const [customRoutines, setCustomRoutines] = useState<RecurringSuggestion[]>([]);
-  const [customHabits, setCustomHabits] = useState<RecurringSuggestion[]>([]);
+  const [picked, setPicked] = useState<Record<ListKey, string[]>>({ routine: [], habit: [], hobby: [] });
+  const [custom, setCustom] = useState<Record<ListKey, RecurringSuggestion[]>>({ routine: [], habit: [], hobby: [] });
+  const [tab, setTab] = useState<ListKey>('routine');
+  const [hobbyWhen, setHobbyWhen] = useState<DayType>('any');
   const [projects, setProjects] = useState<NewTaskInput[]>([]);
   // ajustes de la persona sobre las sugerencias (duración, días, momento…), por título
   const [tweaks, setTweaks] = useState<Record<string, RecurringSuggestion>>({});
-  const [editing, setEditing] = useState<{ title: string; list: 'routine' | 'habit' } | null>(null);
+  const [editing, setEditing] = useState<{ title: string; list: ListKey } | null>(null);
   const [addRecharge, setAddRecharge] = useState(true);
   const [values, setValues] = useState<ValueGoal[]>(goalsFromVision(VISIONS[3]));
   const [vision, setVision] = useState<string | undefined>();
 
-  const steps: Step[] = ['hola', 'nombre', 'despertar', 'trabajo', ...(p.works ? (['pausas'] as Step[]) : []), 'comidas', 'noche', 'valores', 'cotidianas', 'cuidar', 'proyectos', 'listo'];
+  const steps: Step[] = ['hola', 'tu', 'horario', 'trabajo', 'valores', 'habitos', 'proyectos', 'listo'];
   const step = steps[Math.min(i, steps.length - 1)];
+  const info = STEP_INFO[step];
   const set = (patch: Partial<Profile>) => setP((x) => ({ ...x, ...patch }));
-  const next = () => setI((x) => Math.min(steps.length - 1, x + 1));
-  const back = () => setI((x) => Math.max(0, x - 1));
-  const toggle = (list: string[], setList: (l: string[]) => void) => (t: string) =>
-    setList(list.includes(t) ? list.filter((x) => x !== t) : [...list, t]);
+  const go = (d: 1 | -1) => {
+    setDir(d);
+    setI((x) => Math.max(0, Math.min(steps.length - 1, x + d)));
+    window.scrollTo({ top: 0 });
+  };
 
-  const withTweaks = (l: RecurringSuggestion[]) => l.map((x) => tweaks[x.title] ?? x);
-  const allRoutines = withTweaks([...ROUTINE_SUGGESTIONS, ...customRoutines]);
-  const allHabits = withTweaks([...HABIT_SUGGESTIONS, ...customHabits]);
-  const editingItem = editing ? (editing.list === 'routine' ? allRoutines : allHabits).find((x) => x.title === editing.title) : undefined;
+  const BASE: Record<ListKey, RecurringSuggestion[]> = { routine: ROUTINE_SUGGESTIONS, habit: HABIT_SUGGESTIONS, hobby: AFICION_SUGGESTIONS };
+  const all = (k: ListKey) => [...BASE[k], ...custom[k]].map((x) => tweaks[x.title] ?? x);
+  const toggle = (k: ListKey) => (t: string) => setPicked((pk) => ({ ...pk, [k]: pk[k].includes(t) ? pk[k].filter((x) => x !== t) : [...pk[k], t] }));
+  const editingItem = editing ? all(editing.list).find((x) => x.title === editing.title) : undefined;
   /** título original (clave de los ajustes) de una sugerencia que quizá se ha renombrado */
-  const originalTitle = (shown: string, list: 'routine' | 'habit') =>
-    (list === 'routine' ? [...ROUTINE_SUGGESTIONS, ...customRoutines] : [...HABIT_SUGGESTIONS, ...customHabits]).find(
-      (b) => (tweaks[b.title]?.title ?? b.title) === shown,
-    )?.title ?? shown;
+  const originalTitle = (shown: string, k: ListKey) => [...BASE[k], ...custom[k]].find((b) => (tweaks[b.title]?.title ?? b.title) === shown)?.title ?? shown;
+
+  const hobbyGoal = values.find((g) => g.area === 'aficiones');
+  const hobbies = spreadHobbies(
+    all('hobby')
+      .filter((h) => picked.hobby.includes(h.title))
+      .map((h) => (tweaks[h.title] || hobbyWhen === 'any' ? h : { ...h, dayType: hobbyWhen })),
+    hobbyGoal ? weeklyMinutes(hobbyGoal) : 0,
+  );
   const chosen: NewTaskInput[] = [
-    ...allRoutines.filter((r) => routines.includes(r.title)).map((r) => recurringToTask(r, true)),
-    ...allHabits.filter((h) => habits.includes(h.title)).map((h) => recurringToTask(h, false)),
+    ...all('routine').filter((r) => picked.routine.includes(r.title)).map((r) => recurringToTask(r, true)),
+    ...all('habit').filter((h) => picked.habit.includes(h.title)).map((h) => recurringToTask(h, false)),
+    ...hobbies.map((h) => recurringToTask(h, false)),
     ...projects,
   ];
   const needsRecharge = analyzePlan(p, chosen).suggestRecharge;
   const finish = () => onDone(p, needsRecharge && addRecharge ? [...chosen, RECHARGE_TASK] : chosen, values, vision);
+  const total = picked.routine.length + picked.habit.length + picked.hobby.length;
+  const middle = steps.length - 2;
+
+  const TABS: { id: ListKey; label: string; hint: string; placeholder: string; fallback: Partial<RecurringSuggestion> }[] = [
+    {
+      id: 'routine',
+      label: 'Cada día',
+      hint: 'Las tareas de siempre también ocupan tiempo: así las tengo en cuenta.',
+      placeholder: 'Otra: «Recoger a los niños 30 min cada día»',
+      fallback: { category: 'hogar', icon: '', times: 7, minutes: 30 },
+    },
+    {
+      id: 'habit',
+      label: 'Cuidarte',
+      hint: 'Bienestar y la gente que quieres: lo coloco cada semana.',
+      placeholder: 'La tuya: «Yoga 45 min 2 veces por semana»',
+      fallback: { category: 'bienestar', times: 2, minutes: 30 },
+    },
+    {
+      id: 'hobby',
+      label: 'Aficiones',
+      hint: '¿Qué te gusta hacer? Reparto en tus ratos libres las horas que quieres dedicarle.',
+      placeholder: 'Otra: «Cerámica 2 h los sábados»',
+      fallback: { category: 'aficiones', times: 1, minutes: 60 },
+    },
+  ];
+  const cur = TABS.find((t) => t.id === tab)!;
 
   return (
     <div className="onboarding">
-      <div className="progress-dots">
-        {steps.map((s, k) => (
-          <span key={s} className={k <= i ? 'on' : ''} />
-        ))}
-      </div>
+      {step !== 'hola' && (
+        <div className="ob-progress">
+          <span className="ob-progress-bar">
+            <span style={{ width: `${(Math.min(i, middle) / middle) * 100}%` }} />
+          </span>
+          <span className="ob-progress-text">{step === 'listo' ? 'Último paso' : `${i} de ${middle}`}</span>
+        </div>
+      )}
 
       {step === 'hola' ? (
-        <div className="hello">
+        <div className="hello" key="hola">
           <div className="hello-art" aria-hidden="true">
             <div className="hello-sun">
               <Icon name="leaf" size={54} />
@@ -450,21 +570,108 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
           </div>
           <h1>Sereno</h1>
           <p className="lead">Mente tranquila, máximo potencial.</p>
-          <p className="muted">
-            Rindes más cuando estás bien. Cuéntame tu rutina y lo que quieres conseguir: equilibraré foco, descanso,
-            bienestar y vida social para que avances sin estrés y des lo mejor de ti.
-          </p>
+          <p className="muted">Cuéntame tu rutina y lo que quieres conseguir. Yo lo coloco en tu calendario, sin estrés.</p>
+          <div className="hello-style">
+            <span className="muted small">Elige tu estilo</span>
+            <PalettePicker value={palette} onChange={onPalette} />
+          </div>
         </div>
       ) : (
-        <div className="step">
-          <h2>{TITLES[step]}</h2>
-          {step === 'nombre' && (
-            <label className="field">
-              <span>Así podré saludarte cada mañana</span>
-              <input autoFocus value={p.name} placeholder="Tu nombre" onChange={(e) => set({ name: e.target.value })} onKeyDown={(e) => e.key === 'Enter' && next()} />
-            </label>
+        <div className={`step ${dir > 0 ? 'in-right' : 'in-left'}`} key={step}>
+          <div className="step-head">
+            <span className="step-badge">
+              <Icon name={info.icon} size={26} />
+            </span>
+            <div>
+              <h2>{info.title}</h2>
+              {info.sub && <p className="muted small">{info.sub}</p>}
+            </div>
+          </div>
+
+          {step === 'tu' && (
+            <>
+              <label className="field">
+                <span>¿Cómo te llamas?</span>
+                <input autoFocus value={p.name} placeholder="Tu nombre" onChange={(e) => set({ name: e.target.value })} onKeyDown={(e) => e.key === 'Enter' && go(1)} />
+              </label>
+              <div className="field">
+                <span>¿Cuándo te concentras mejor?</span>
+                <div className="choice-cards">
+                  {(
+                    [
+                      ['manana', 'Por la mañana', 'sunrise'],
+                      ['neutro', 'Me da igual', 'balance'],
+                      ['noche', 'Por la tarde-noche', 'moon'],
+                    ] as [Chronotype, string, IconName][]
+                  ).map(([v, label, icon]) => (
+                    <button key={v} type="button" className={`choice-card ${p.chronotype === v ? 'on' : ''}`} onClick={() => set({ chronotype: v })}>
+                      <Icon name={icon} size={26} />
+                      <span>{label}</span>
+                    </button>
+                  ))}
+                </div>
+                <small className="muted">Ahí colocaré lo que pide más foco.</small>
+              </div>
+            </>
           )}
-          <ProfileFields p={p} set={set} step={step} />
+
+          {step === 'horario' && (
+            <div className="day-cards">
+              <section className="day-card" style={{ '--c': '#F2A74B' } as CSSProperties}>
+                <span className="day-card-icon">
+                  <Icon name="sunrise" size={22} />
+                </span>
+                <div className="grow">
+                  <TimeInput label="Me despierto" value={p.wake} onChange={(wake) => set({ wake })} />
+                  <div className="field mini">
+                    <span>Tardo en arrancar</span>
+                    <NumberChips value={p.morningRoutine} options={[15, 30, 45, 60, 90]} onChange={(morningRoutine) => set({ morningRoutine })} fmt={fmtDuration} />
+                  </div>
+                </div>
+              </section>
+              <section className="day-card" style={{ '--c': '#F0875A' } as CSSProperties}>
+                <span className="day-card-icon">
+                  <Icon name="meal" size={22} />
+                </span>
+                <div className="grow">
+                  <div className="row2">
+                    <TimeInput label="Como" value={p.lunch} onChange={(lunch) => set({ lunch })} />
+                    <TimeInput label="Ceno" value={p.dinner} onChange={(dinner) => set({ dinner })} />
+                  </div>
+                  <div className="field mini">
+                    <span>Cada comida, unos</span>
+                    <NumberChips value={p.dinnerDuration} options={[30, 45, 60, 90]} onChange={(v) => set({ dinnerDuration: v, lunchDuration: v })} fmt={fmtDuration} />
+                  </div>
+                </div>
+              </section>
+              <section className="day-card" style={{ '--c': '#8E7AD8' } as CSSProperties}>
+                <span className="day-card-icon">
+                  <Icon name="moon" size={22} />
+                </span>
+                <div className="grow">
+                  <TimeInput label="Me acuesto" value={p.bed} onChange={(bed) => set({ bed })} />
+                  <div className="field mini">
+                    <span>Antes, para desconectar (tiempo protegido)</span>
+                    <DurationPicker value={p.relaxMinutes} onChange={(relaxMinutes) => set({ relaxMinutes })} options={[30, 60, 90, 120, 180]} />
+                  </div>
+                </div>
+              </section>
+            </div>
+          )}
+
+          {step === 'trabajo' && (
+            <>
+              <ProfileFields p={p} set={set} step="trabajo" />
+              {p.works && (
+                <details className="more ob-more">
+                  <summary>¿Puedes hacer pausas cortas mientras trabajas?</summary>
+                  <p className="muted small">Si teletrabajas, aprovecho esas pausas para cosas cortas: meditar, estirar, poner una lavadora…</p>
+                  <BreaksEditor value={p.breaks ?? []} onChange={(breaks) => set({ breaks })} />
+                </details>
+              )}
+            </>
+          )}
+
           {step === 'valores' && (
             <ValuesEditor
               vision={vision}
@@ -475,46 +682,56 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
               }}
             />
           )}
-          {step === 'cotidianas' && (
+
+          {step === 'habitos' && (
             <>
-              <p className="muted">
-                Las tareas de siempre también ocupan tiempo. Marca las tuyas y las tendré en cuenta. Si la ducha ya la
-                cuentas en tu rutina de la mañana, no hace falta marcarla.
-              </p>
-              <SuggestionTiles
-                items={allRoutines}
-                selected={routines}
-                onToggle={toggle(routines, setRoutines)}
-                onEdit={(title) => setEditing({ title, list: 'routine' })}
-                placeholder="Otra: p. ej. «Recoger a los niños 30 min cada día»"
-                onAddCustom={(t) => {
-                  const c = customRecurring(t, { category: 'hogar', icon: '', times: 7, minutes: 30 });
-                  setCustomRoutines((x) => [...x, c]);
-                  setRoutines((x) => [...x, c.title]);
-                }}
-              />
+              <div className="segmented three ob-tabs">
+                {TABS.map((t) => (
+                  <button key={t.id} className={tab === t.id ? 'on' : ''} onClick={() => setTab(t.id)}>
+                    {t.label}
+                    {picked[t.id].length > 0 && <span className="count">{picked[t.id].length}</span>}
+                  </button>
+                ))}
+              </div>
+              <div className="ob-tab-body" key={tab}>
+                <p className="muted small">{cur.hint}</p>
+                {tab === 'hobby' && (
+                  <div className="chips hobby-when">
+                    {HOBBY_WHEN.map(([v, l]) => (
+                      <button key={v} type="button" className={`chip ${hobbyWhen === v ? 'on' : ''}`} onClick={() => setHobbyWhen(v)}>
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <PickPills
+                  items={all(tab)}
+                  selected={picked[tab]}
+                  onToggle={toggle(tab)}
+                  onEdit={(title) => setEditing({ title, list: tab })}
+                  placeholder={cur.placeholder}
+                  onAddCustom={(t) => {
+                    const c = customRecurring(t, cur.fallback);
+                    setCustom((x) => ({ ...x, [tab]: [...x[tab], c] }));
+                    setPicked((x) => ({ ...x, [tab]: [...x[tab], c.title] }));
+                  }}
+                />
+                {tab === 'hobby' && hobbyGoal && picked.hobby.length > 0 && (
+                  <p className="ob-note">
+                    <Icon name="spark" size={16} /> Quieres dedicar {hobbyGoal.hours} h {hobbyGoal.per === 'semana' ? 'a la semana' : 'al mes'} a tus aficiones: lo reparto entre{' '}
+                    {picked.hobby.length === 1 ? 'esta' : `estas ${picked.hobby.length}`}.
+                  </p>
+                )}
+              </div>
             </>
           )}
-          {step === 'cuidar' && (
+
+          {step === 'proyectos' && (
             <>
-              <p className="muted">
-                Ideas para cuidarte y no olvidarte de la gente. Son solo sugerencias: elige las que quieras o escribe las tuyas.
-              </p>
-              <SuggestionTiles
-                items={allHabits}
-                selected={habits}
-                onToggle={toggle(habits, setHabits)}
-                onEdit={(title) => setEditing({ title, list: 'habit' })}
-                placeholder="La tuya: p. ej. «Yoga 45 min 2 veces por semana»"
-                onAddCustom={(t) => {
-                  const c = customRecurring(t, { category: 'bienestar', times: 2, minutes: 30 });
-                  setCustomHabits((x) => [...x, c]);
-                  setHabits((x) => [...x, c.title]);
-                }}
-              />
+              <ProjectsStep projects={projects} setProjects={setProjects} />
+              <WeekendFocusField p={p} set={set} />
             </>
           )}
-          {step === 'proyectos' && <ProjectsStep projects={projects} setProjects={setProjects} />}
           {step === 'listo' && <PlanAnalysisView profile={p} tasks={chosen} values={values} addRecharge={addRecharge} setAddRecharge={setAddRecharge} />}
         </div>
       )}
@@ -524,7 +741,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
           value={editingItem}
           onClose={() => setEditing(null)}
           onRemove={() => {
-            (editing.list === 'routine' ? setRoutines : setHabits)((l) => l.filter((t) => t !== editing.title));
+            setPicked((pk) => ({ ...pk, [editing.list]: pk[editing.list].filter((t) => t !== editing.title) }));
             setEditing(null);
           }}
           onSave={(v) => {
@@ -532,8 +749,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
             const key = originalTitle(editing.title, editing.list);
             setTweaks((t) => ({ ...t, [key]: v }));
             if (v.title !== editing.title) {
-              const rename = (l: string[]) => l.map((t) => (t === editing.title ? v.title : t));
-              (editing.list === 'routine' ? setRoutines : setHabits)(rename);
+              setPicked((pk) => ({ ...pk, [editing.list]: pk[editing.list].map((t) => (t === editing.title ? v.title : t)) }));
             }
             setEditing(null);
           }}
@@ -542,7 +758,7 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
 
       <div className="onboarding-actions">
         {i > 0 && (
-          <button className="btn ghost" onClick={back}>
+          <button className="btn ghost" onClick={() => go(-1)}>
             Atrás
           </button>
         )}
@@ -551,16 +767,11 @@ export function Onboarding({ onDone }: { onDone: (p: Profile, tasks: NewTaskInpu
             Empezar mi plan
           </button>
         ) : (
-          <button className="btn primary" onClick={next}>
-            {i === 0
-              ? 'Empezar'
-              : (step === 'cotidianas' && routines.length === 0) || (step === 'cuidar' && habits.length === 0) || (step === 'proyectos' && projects.length === 0)
-                ? 'Saltar por ahora'
-                : 'Siguiente'}
+          <button className="btn primary" onClick={() => go(1)}>
+            {i === 0 ? 'Empezar' : (step === 'habitos' && total === 0) || (step === 'proyectos' && projects.length === 0) ? 'Saltar por ahora' : 'Siguiente'}
           </button>
         )}
       </div>
     </div>
   );
 }
-

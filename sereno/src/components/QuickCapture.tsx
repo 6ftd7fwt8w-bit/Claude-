@@ -8,6 +8,7 @@ import { detectCategory, estimateMinutes, parseQuick } from '../lib/parse';
 import { addDays, fmtLong, fmtShort, hmToMin, minToHm, monthEnd, todayKey, weekday } from '../lib/time';
 import { DurationPicker, NumberChips, Sheet, TimeMode } from './ui';
 import { CatIcon, CatMark, Icon } from './Icons';
+import { ADD_EXAMPLES } from './AskBar';
 
 /** fijo: un día y hora concretos (se apunta tal cual) · hueco: Sereno le busca sitio */
 type Mode = 'fijo' | 'hueco';
@@ -75,7 +76,7 @@ function deadlineFor(when: When | undefined, date: string, today: string): strin
 
 const PROJECTISH: CategoryId[] = ['proyectos', 'aficiones', 'trabajo'];
 
-function toDraft(line: string, today: string, learned?: Record<string, CategoryId>, favorites: Favorite[] = []): Draft {
+function toDraft(line: string, today: string, learned?: Record<string, CategoryId>, favorites: Favorite[] = [], defaultDate?: string): Draft {
   const fav = favorites.find((f) => f.title.toLowerCase() === line.trim().toLowerCase());
   const q = parseQuick(line, today, learned);
   const detected = fav?.category ?? q.category ?? detectCategory(line, learned);
@@ -91,8 +92,8 @@ function toDraft(line: string, today: string, learned?: Record<string, CategoryI
     detected,
     mode: fav?.mode ?? (fixed ? 'fijo' : 'hueco'),
     repeat,
-    when: q.deadline ? 'fecha' : undefined,
-    date: q.date ?? q.deadline ?? today,
+    when: q.deadline || (defaultDate && !q.date) ? 'fecha' : undefined,
+    date: q.date ?? q.deadline ?? defaultDate ?? today,
     start: fav?.start ?? q.start ?? 19 * 60,
     minutes,
     big: est.big && !q.totalMinutes && !fav,
@@ -142,7 +143,13 @@ export function QuickCapture({
   onFinish,
   onFullForm,
   onClose,
+  initialText,
+  defaultDate,
 }: {
+  /** texto escrito en la barra de Hoy: empezamos directamente por las preguntas */
+  initialText?: string;
+  /** día elegido en el calendario */
+  defaultDate?: string;
   learned?: Record<string, CategoryId>;
   state: AppState;
   onFix: (taskId: string, fix: ConflictFix) => void;
@@ -152,19 +159,23 @@ export function QuickCapture({
   onClose: () => void;
 }) {
   const today = todayKey();
-  const [stage, setStage] = useState<'dump' | 'ask' | 'done'>('dump');
-  const [text, setText] = useState('');
-  const [drafts, setDrafts] = useState<Draft[]>([]);
+  const splitLines = (t: string) =>
+    t
+      .split(/\n+/)
+      .map((l) => l.replace(/^\s*[-•*·\d.)]+\s*/, '').trim())
+      .filter(Boolean);
+  const [stage, setStage] = useState<'dump' | 'ask' | 'done'>(initialText ? 'ask' : 'dump');
+  const [text, setText] = useState(initialText ?? '');
+  const [drafts, setDrafts] = useState<Draft[]>(() =>
+    initialText ? splitLines(initialText).map((l) => toDraft(l, today, learned, state.favorites, defaultDate)) : [],
+  );
   const [i, setI] = useState(0);
   const [results, setResults] = useState<CaptureResult[]>([]);
 
-  const lines = text
-    .split(/\n+/)
-    .map((l) => l.replace(/^\s*[-•*·\d.)]+\s*/, '').trim())
-    .filter(Boolean);
+  const lines = splitLines(text);
 
   const start = () => {
-    setDrafts(lines.map((l) => toDraft(l, today, learned, state.favorites)));
+    setDrafts(lines.map((l) => toDraft(l, today, learned, state.favorites, defaultDate)));
     setI(0);
     setStage('ask');
   };
@@ -183,16 +194,45 @@ export function QuickCapture({
 
   if (stage === 'dump')
     return (
-      <Sheet title="¿Qué tienes en la cabeza?" onClose={onClose}>
-        <p className="muted">Escríbelo todo, una cosa por línea, como te salga. Yo lo ordeno y te pregunto lo que falte.</p>
+      <Sheet title={defaultDate ? `¿Qué tienes ${defaultDate === today ? 'hoy' : `el ${fmtShort(defaultDate).toLowerCase()}`}?` : '¿Qué tienes en mente?'} onClose={onClose}>
+        <div className="how-strip" aria-hidden="true">
+          <span>
+            <Icon name="note" size={16} /> Escribe
+          </span>
+          <i>›</i>
+          <span>
+            <Icon name="spark" size={16} /> Te pregunto
+          </span>
+          <i>›</i>
+          <span>
+            <Icon name="calendar" size={16} /> Lo coloco
+          </span>
+        </div>
+        <p className="muted">Una cita, una tarea, un proyecto, un hábito… Escribe una cosa por línea, como te salga.</p>
         <textarea
           autoFocus
           className="dump"
           rows={6}
           value={text}
-          placeholder={'El sábado como con mis padres de 10 a 2\nTrabajar en las láminas de la tienda\nReclamar el vuelo\nQuedar con amigas 2 veces al mes'}
+          placeholder={
+            defaultDate
+              ? 'Dentista a las 17:00\nComprar el regalo de Ana\nCena con amigos de 21 a 23'
+              : 'El sábado como con mis padres de 10 a 2\nTrabajar en las láminas de la tienda\nReclamar el vuelo\nQuedar con amigas 2 veces al mes'
+          }
           onChange={(e) => setText(e.target.value)}
         />
+        {!text && !defaultDate && (
+          <div className="examples">
+            <span className="muted small">Toca un ejemplo para probar:</span>
+            <div className="chips">
+              {ADD_EXAMPLES.map((e) => (
+                <button key={e} type="button" className="chip example" onClick={() => setText(e)}>
+                  {e}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {favorites.length > 0 && (
           <div className="favs">
             <span className="muted small fav-label"><Icon name="star" size={15} /> Tus favoritos</span>

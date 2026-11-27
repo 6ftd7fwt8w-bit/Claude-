@@ -4,7 +4,7 @@ import { CATEGORIES, catById, taskColor } from '../types';
 import { projectStatus, type ConflictFix, type TaskPatch } from '../lib/scheduler';
 import { ConflictBox } from './ConflictBox';
 import { RecurringEditor } from './RecurringEditor';
-import { HABIT_SUGGESTIONS, ROUTINE_SUGGESTIONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
+import { AFICION_SUGGESTIONS, HABIT_SUGGESTIONS, ROUTINE_SUGGESTIONS, TIME_OF_DAY_LABEL, timesLabel, type RecurringSuggestion } from '../lib/suggestions';
 import { addDays, diffDays, fmtDuration, fmtRelative, minToHm, monthEnd, weekStart } from '../lib/time';
 import { CatIcon, CatMark, Icon } from './Icons';
 
@@ -116,7 +116,8 @@ export function GoalsView({
   const looseByCat = CATEGORIES.map((c) => ({ c, items: loose.filter((t) => t.category === c.id) })).filter((g) => g.items.length);
   const routines = active.filter((t) => t.kind === 'habito' && t.routine);
   const CARE = ['bienestar', 'social', 'autocuidado', 'familia', 'pareja', 'aficiones'];
-  const habits = active.filter((t) => t.kind === 'habito' && !t.routine && CARE.includes(t.category));
+  const habits = active.filter((t) => t.kind === 'habito' && !t.routine && CARE.includes(t.category) && t.category !== 'aficiones');
+  const hobbies = active.filter((t) => t.kind === 'habito' && !t.routine && t.category === 'aficiones');
   const periodic = active.filter((t) => t.kind === 'habito' && !t.routine && !CARE.includes(t.category));
   const events = active
     .filter((t) => t.kind === 'evento' && (t.date ?? '') >= today)
@@ -227,6 +228,22 @@ export function GoalsView({
         today={today}
         items={habits}
         suggestions={HABIT_SUGGESTIONS}
+        onEdit={setTuning}
+        onArchive={onArchive}
+        onQuickAdd={(s) => onQuickAdd(s, false)}
+      />
+
+      <RecurringSection
+        title="Tus aficiones"
+        hint={
+          hobbies.some((t) => !t.valueBlock)
+            ? 'Lo que te gusta de verdad: lo reparto en tus ratos libres según las horas que quieres dedicarle.'
+            : '¿Qué te gusta hacer? Elige tus aficiones concretas y las planifico en tus ratos libres, en vez de un genérico «Mis aficiones».'
+        }
+        state={state}
+        today={today}
+        items={hobbies}
+        suggestions={AFICION_SUGGESTIONS}
         onEdit={setTuning}
         onArchive={onArchive}
         onQuickAdd={(s) => onQuickAdd(s, false)}

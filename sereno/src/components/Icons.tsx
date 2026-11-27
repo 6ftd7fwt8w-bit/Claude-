@@ -43,7 +43,11 @@ export type IconName =
   | 'phone'
   | 'cheers'
   | 'music'
-  | 'game';
+  | 'game'
+  | 'camera'
+  | 'film'
+  | 'palette'
+  | 'wand';
 
 const PATHS: Record<IconName, ReactNode> = {
   bienestar: (
@@ -346,6 +350,34 @@ const PATHS: Record<IconName, ReactNode> = {
       <circle cx="17" cy="13" r="1" fill="currentColor" />
     </>
   ),
+  camera: (
+    <>
+      <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.4-2h5.8l1.4 2h2.2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5Z" {...F} />
+      <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.4-2h5.8l1.4 2h2.2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5Z" {...S} />
+      <circle cx="12" cy="12.8" r="3.3" {...S} />
+    </>
+  ),
+  film: (
+    <>
+      <rect x="3.5" y="6" width="17" height="12" rx="2.6" {...F} />
+      <rect x="3.5" y="6" width="17" height="12" rx="2.6" {...S} />
+      <path d="m10.3 9.6 4.2 2.4-4.2 2.4Z" fill="currentColor" />
+    </>
+  ),
+  palette: (
+    <>
+      <circle cx="8.5" cy="9" r="4.5" fill="currentColor" opacity={0.35} />
+      <circle cx="15.5" cy="9" r="4.5" fill="currentColor" opacity={0.6} />
+      <circle cx="12" cy="15" r="4.5" fill="currentColor" opacity={0.85} />
+    </>
+  ),
+  wand: (
+    <>
+      <path d="M4.5 19.5 15 9" {...S} strokeWidth={2.2} />
+      <path d="M16.5 3.5c.4 2 1 2.6 3 3-2 .4-2.6 1-3 3-.4-2-1-2.6-3-3 2-.4 2.6-1 3-3Z" fill="currentColor" />
+      <path d="M8 4.5c.2 1 .5 1.3 1.5 1.5-1 .2-1.3.5-1.5 1.5-.2-1-.5-1.3-1.5-1.5 1-.2 1.3-.5 1.5-1.5ZM19 13.5c.2 1 .5 1.3 1.5 1.5-1 .2-1.3.5-1.5 1.5-.2-1-.5-1.3-1.5-1.5 1-.2 1.3-.5 1.5-1.5Z" fill="currentColor" opacity={0.6} />
+    </>
+  ),
 };
 
 
@@ -363,7 +395,14 @@ const BY_TITLE: [RegExp, IconName][] = [
   [/correr|ejercicio|moverme|gimnasio|gym|deporte|yoga|abdominal|estirar|nadar|natación/i, 'run'],
   [/llamar|teléfono|llamada/i, 'phone'],
   [/quedar|amig|cerveza|fiesta/i, 'cheers'],
-  [/guitarra|piano|música|cantar|instrument/i, 'music'],
+  [/guitarra|piano|música|cantar|instrument|bailar/i, 'music'],
+  [/foto/i, 'camera'],
+  [/serie|cine|película/i, 'film'],
+  [/dibuj|pint|manualidad/i, 'aficiones'],
+  [/escribir|diario/i, 'note'],
+  [/idioma|inglés|novela/i, 'book'],
+  [/senderismo|monte/i, 'leaf'],
+  [/juegos de mesa|puzzle/i, 'game'],
   [/videojuego|jugar|consola/i, 'game'],
   [/medit|respirar|recarga/i, 'bienestar'],
   [/pasear|paseo|aire libre/i, 'leaf'],

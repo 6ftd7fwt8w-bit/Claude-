@@ -4,6 +4,8 @@ import { isNative } from '../native';
 import { ProfileFields } from './Onboarding';
 import { NumberChips, Sheet } from './ui';
 import { Icon } from './Icons';
+import { PalettePicker } from './PalettePicker';
+import type { PaletteId } from '../lib/palettes';
 
 export function SettingsView({
   profile,
@@ -16,7 +18,11 @@ export function SettingsView({
   onExport,
   onImport,
   ask,
+  palette,
+  onPalette,
 }: {
+  palette?: PaletteId;
+  onPalette: (id: PaletteId) => void;
   profile: Profile;
   onSave: (p: Profile) => void;
   onReplan: () => void;
@@ -36,6 +42,10 @@ export function SettingsView({
   };
   return (
     <Sheet title="Tu rutina" onClose={onClose}>
+      <div className="field">
+        <span>Estilo de color</span>
+        <PalettePicker value={palette} onChange={onPalette} />
+      </div>
       <label className="field">
         <span>Nombre</span>
         <input value={p.name} onChange={(e) => set({ name: e.target.value })} />

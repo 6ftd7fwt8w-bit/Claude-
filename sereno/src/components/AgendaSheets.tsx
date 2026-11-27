@@ -122,7 +122,14 @@ export function FillGapSheet({
           <DurationPicker value={minutes} onChange={setMinutes} options={[10, 15, 20, 30, 45, 60, 90, 120].filter((m) => m <= length)} />
         </div>
         <div className="hobbies">
-          {HOBBY_SUGGESTIONS.map((h) => (
+          {[
+            ...state.tasks
+              .filter((t) => !t.archived && !t.valueBlock && t.kind === 'habito' && t.category === 'aficiones')
+              .map((t) => ({ title: t.title, icon: t.icon ?? '', category: t.category, minutes: t.totalMinutes })),
+            ...HOBBY_SUGGESTIONS,
+          ]
+            .filter((h, k, l) => l.findIndex((x) => x.title === h.title) === k)
+            .map((h) => (
             <button
               key={h.title}
               className="hobby"
@@ -131,7 +138,7 @@ export function FillGapSheet({
               <CatMark cat={h.category} title={h.title} />
               {h.title}
             </button>
-          ))}
+            ))}
         </div>
       </div>
 
