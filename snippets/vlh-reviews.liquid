@@ -31,7 +31,7 @@
     var cache = null;
     function load(shop) {
       if (cache) return cache;
-      var key = 'vlh_reviews_v3';
+      var key = 'vlh_reviews_v4';
       try { var c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 600000) { cache = Promise.resolve(c.r); return cache; } } catch (e) {}
       var base = 'https://cdn.judge.me/reviews/all_reviews_js_based?widget_type=review-widget&sort_by=created_at&sort_dir=desc&platform=shopify&shop_domain=' + encodeURIComponent(shop) + '&review_type=';
       // Judge.me devuelve 5 por página: se piden todas las páginas
@@ -57,14 +57,54 @@
       return cache;
     }
     function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+    // Visor de fotos a pantalla completa (flechas, deslizar, Esc)
+    var lb = null;
+    function lightbox(pics, i, name) {
+      if (!lb) {
+        lb = el('div', 'vrv-lb'); lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true');
+        lb.innerHTML = '<button type="button" class="vrv-lb__close" aria-label="Cerrar">×</button><button type="button" class="vrv-lb__nav vrv-lb__prev" aria-label="Foto anterior">‹</button><img class="vrv-lb__img" alt=""><button type="button" class="vrv-lb__nav vrv-lb__next" aria-label="Foto siguiente">›</button><span class="vrv-lb__count"></span>';
+        document.body.appendChild(lb);
+        var x0 = null;
+        lb.addEventListener('click', function (e) { if (e.target === lb || e.target.classList.contains('vrv-lb__close')) close(); });
+        lb.querySelector('.vrv-lb__prev').onclick = function () { lb._go(-1); };
+        lb.querySelector('.vrv-lb__next').onclick = function () { lb._go(1); };
+        lb.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+        lb.addEventListener('touchend', function (e) { if (x0 == null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) lb._go(dx < 0 ? 1 : -1); x0 = null; });
+        document.addEventListener('keydown', function (e) { if (lb.hidden) return; if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') lb._go(1); if (e.key === 'ArrowLeft') lb._go(-1); });
+      }
+      function close() { lb.hidden = true; document.documentElement.style.overflow = ''; }
+      var cur = i;
+      lb._go = function (d) { cur = (cur + d + pics.length) % pics.length; paint(); };
+      function paint() {
+        var img = lb.querySelector('.vrv-lb__img'); img.src = pics[cur].l; img.alt = 'Foto ' + (cur + 1) + ' de ' + name;
+        lb.querySelector('.vrv-lb__count').textContent = pics.length > 1 ? (cur + 1) + ' / ' + pics.length : '';
+        lb.querySelectorAll('.vrv-lb__nav').forEach(function (b) { b.hidden = pics.length < 2; });
+      }
+      paint(); lb.hidden = false; document.documentElement.style.overflow = 'hidden';
+    }
     function card(r, mode) {
-      var c = el('figure', 'vrv__card' + (r.p.length ? ' has-photo' : ''));
-      if (r.p.length) {
-        var a = el('a', 'vrv__photo'); a.href = r.p[0].l; a.target = '_blank'; a.rel = 'noopener';
-        var img = el('img'); img.src = mode === 'mini' ? r.p[0].s : r.p[0].l.replace('width=1024', 'width=320'); img.alt = 'Foto de ' + r.n; img.loading = 'lazy';
-        a.appendChild(img); c.appendChild(a);
+      var c = el('figure', 'vrv__card' + (r.p.length ? ' has-photo' : '') + (r.p.length > 1 ? ' has-photos' : ''));
+      var thumb = function (p, i, cls) {
+        var b = el('button', cls); b.type = 'button'; b.setAttribute('aria-label', 'Ver foto ' + (i + 1) + ' de ' + r.n);
+        var img = el('img'); img.src = mode === 'mini' ? p.s : p.l.replace('width=1024', 'width=240'); img.alt = ''; img.loading = 'lazy';
+        b.appendChild(img); b.onclick = function () { lightbox(r.p, i, r.n); }; return b;
+      };
+      if (r.p.length && mode === 'mini') {
+        // Miniatura que va pasando sola por las fotos de la reseña
+        var ph = el('div', 'vrv__photo');
+        r.p.forEach(function (p, i) { var t = thumb(p, i, 'vrv__slide' + (i ? '' : ' is-on')); ph.appendChild(t); });
+        if (r.p.length > 1) {
+          ph.appendChild(el('span', 'vrv__pcount', r.p.length + ' fotos'));
+          var k = 0; setInterval(function () { if (document.hidden) return; var sl = ph.querySelectorAll('.vrv__slide'); sl[k].classList.remove('is-on'); k = (k + 1) % sl.length; sl[k].classList.add('is-on'); }, 2200);
+        }
+        c.appendChild(ph);
       }
       var body = el('figcaption', 'vrv__body');
+      if (r.p.length && mode !== 'mini') {
+        var g = el('div', 'vrv__gallery');
+        r.p.forEach(function (p, i) { g.appendChild(thumb(p, i, 'vrv__thumb')); });
+        body.appendChild(g);
+      }
       var stars = el('span', 'vrv__stars'); stars.setAttribute('aria-label', r.st + ' de 5 estrellas');
       stars.appendChild(document.createTextNode('★★★★★'.slice(0, r.st)));
       if (r.st < 5) stars.appendChild(el('span', 'vrv__stars-off', '★★★★★'.slice(0, 5 - r.st)));

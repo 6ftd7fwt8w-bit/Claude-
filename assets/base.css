@@ -1524,12 +1524,25 @@ body.has-vlh-offer .sticky-buy { visibility: hidden; }
 .vrv__legal { text-align: center; font-size: 12px; color: var(--color-muted, #7B7168); margin: 14px auto 0; max-width: 560px; line-height: 1.45; }
 .vrv--mini .vrv__score { margin: 0 0 6px; font-size: 13px; }
 .vrv--mini .vrv__score-label { display: none; }
-/* foto de la clienta pequeña (tarjetas y lista): miniatura cuadrada junto a las estrellas, no a todo el ancho */
-.vrv--cards .vrv__card.has-photo, .vrv--list .vrv__card.has-photo { display: grid; grid-template-columns: 92px 1fr; gap: 12px; padding: 14px; align-items: start; }
-.vrv--cards .vrv__card.has-photo .vrv__photo, .vrv--list .vrv__card.has-photo .vrv__photo { width: 92px; height: 92px; border-radius: 10px; }
-.vrv--cards .vrv__card.has-photo .vrv__body, .vrv--list .vrv__card.has-photo .vrv__body { padding: 0; }
 .vrv--cards .vrv__text, .vrv--list .vrv__text { display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; }
 .vrv__text.is-open { -webkit-line-clamp: unset; display: block; }
 .vrv__more { align-self: flex-start; background: none; border: 0; padding: 0; font-size: 13px; text-decoration: underline; color: var(--color-text); cursor: pointer; }
 .vrv__seemore-wrap { text-align: center; margin: 18px 0 0; }
 .vrv__card[hidden] { display: none !important; }
+/* Fotos de las reseñas (todas): fila de miniaturas en tarjetas y lista; en el mini van pasando solas; visor a pantalla completa */
+.vrv__gallery { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 0 4px; }
+.vrv__gallery::-webkit-scrollbar { display: none; }
+.vrv__thumb { flex: 0 0 auto; width: 72px; height: 72px; padding: 0; border: 0; border-radius: 8px; overflow: hidden; cursor: zoom-in; background: var(--color-background-alt, #EFE8DE); }
+.vrv__thumb img, .vrv__slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vrv--mini .vrv__photo { position: relative; padding: 0; }
+.vrv__slide { position: absolute; inset: 0; padding: 0; border: 0; background: none; opacity: 0; transition: opacity .5s; cursor: zoom-in; }
+.vrv__slide.is-on { opacity: 1; z-index: 1; }
+.vrv__pcount { position: absolute; z-index: 2; right: 3px; bottom: 3px; padding: 1px 5px; border-radius: 99px; background: rgba(35,31,28,.72); color: #fff; font-size: 9.5px; line-height: 1.5; pointer-events: none; }
+.vrv-lb { position: fixed; inset: 0; z-index: 9999; background: rgba(20,17,14,.92); display: flex; align-items: center; justify-content: center; }
+.vrv-lb[hidden] { display: none; }
+.vrv-lb__img { max-width: 92vw; max-height: 84vh; object-fit: contain; border-radius: 6px; }
+.vrv-lb__close { position: absolute; top: 10px; right: 14px; background: none; border: 0; color: #fff; font-size: 38px; line-height: 1; cursor: pointer; }
+.vrv-lb__nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.18); color: #fff; font-size: 30px; line-height: 1; cursor: pointer; }
+.vrv-lb__prev { left: 10px; } .vrv-lb__next { right: 10px; }
+.vrv-lb__nav[hidden] { display: none; }
+.vrv-lb__count { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 13px; }
